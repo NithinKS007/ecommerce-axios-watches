@@ -1,0 +1,76 @@
+﻿<%-include('../layouts/header')%>   
+<%-include('../layouts/navbar1')%>   
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="#" rel="nofollow">Home</a>
+                    <span></span> Signup
+                </div>
+            </div>
+        </div>
+        <section class="pt-150 pb-150">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 m-auto">
+                        <div class="row">
+                            <div class="container">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-lg-6">
+                                        <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                                            <div class="padding_eight_all bg-white">
+                                                <div class="heading_s1 text-center">
+                                                    <h3 class="mb-30">Create an Account</h3>
+                                                </div>
+                                                <% if (locals.error) { %>
+                                                    <div class="text-danger text-center" style="font-size: 12px; padding: 10px;">
+                                                        <p><%= error %></p>
+                                                    </div>
+                                                <% } %>
+                                                
+                                                
+                                                <form method="post" action="">
+                                                    <div class="form-group">
+                                                        <input type="text" required="" name="fname" placeholder="First Name">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" required="" name="lname" placeholder="Last Name">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" required="" name="email" placeholder="Email">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" required="" name="phone" placeholder="Phone Number">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input required="" type="password" name="password" placeholder="Password">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input required="" type="password" name="cpassword" placeholder="Confirm Password">
+                                                    </div>
+                                                    <div class="form-group text-center">
+                                                        <button type="submit" class="btn btn-fill-out btn-block hover-up" >Submit &amp; Register</button>
+                                                    </div>
+                                                </form>
+                                                <div class="divider-text-center mt-15 mb-15">
+                                                    <span> or</span>
+                                                </div>
+                                                <ul class="btn-login list_none text-center mb-15">
+                                                    <li><a href="#" class="btn btn-facebook hover-up mb-lg-0 mb-sm-4">Login With Facebook</a></li>
+                                                    <li><a href="#" class="btn btn-google hover-up">Login With Google</a></li>
+                                                </ul>
+                                                <div class="text-muted text-center">Already have an account? <a href="/signin">Sign in now</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <%-include('../layouts/footer')%>
