@@ -38,7 +38,7 @@ const generateOtp = async (req,res) => {
     const {email}        = req.session.formData
 
     try {
-        console.log("Helloo nithin")
+        console.log("generate otp function working")
         const otp = await utils.generateOtp()
 
         console.log(otp)
@@ -63,18 +63,33 @@ const generateOtp = async (req,res) => {
 
 //verifying the otp 
 
-const verifyOtp = async () => {
-    const otp    = req.body.otp
-    const email  = req.session.formData.email
-    const userDataSession = req.session.formData
+const verifyOtp = async (req,res) => {
+   
 
     try {
 
+        console.log(`verify otp function working`);
+
+        const otp    = req.body.otp
+        
+        console.log(`otp from verificaton page`,otp);
+
+        const email  = req.session.formData.email
+
+        const userDataSession = req.session.formData
+
+        console.log(`email from the form data `,email)
+
+        console.log(`form data from the session`,userDataSession)
+
         const otpDataBase = await OTP.findOne({email,otp}).exec()
+
+        console.log(`otp data from the otpdatabase`,otpDataBase);
 
         if(otpDataBase){
                  
-            const hashedPassword = await securePassword(password,10)
+                   
+            const hashedPassword = await securePassword(userDataSession.password)
 
             const user = new users({
 
@@ -84,15 +99,19 @@ const verifyOtp = async () => {
                 phone:userDataSession.phone,
                 password:hashedPassword     
             })
-
+            
+            console.log(`user data received from the session`,user);
 
             const userData = await user.save()
 
             if(userData){
 
                 return res.status(200).send('successfully registered')
+
             }else{
-                res.send('Something went wrong while registering')
+
+               return  res.send('Something went wrong while registering')
+
             }
         }
         
