@@ -38,7 +38,7 @@ const generateOtp = async (req,res) => {
     const {email}        = req.session.formData
 
     try {
-
+        console.log("Helloo nithin")
         const otp = await utils.generateOtp()
 
         console.log(otp)
@@ -64,9 +64,8 @@ const generateOtp = async (req,res) => {
 //verifying the otp 
 
 const verifyOtp = async () => {
-      
-    const otp    = req.body
-    const email  = req.session.formData
+    const otp    = req.body.otp
+    const email  = req.session.formData.email
     const userDataSession = req.session.formData
 
     try {
@@ -76,8 +75,6 @@ const verifyOtp = async () => {
         if(otpDataBase){
                  
             const hashedPassword = await securePassword(password,10)
-
-            
 
             const user = new users({
 
@@ -91,8 +88,12 @@ const verifyOtp = async () => {
 
             const userData = await user.save()
 
-        //    return res.status(200).redirect("user/userHome")
+            if(userData){
 
+                return res.status(200).send('successfully registered')
+            }else{
+                res.send('Something went wrong while registering')
+            }
         }
         
     } catch (error) {
