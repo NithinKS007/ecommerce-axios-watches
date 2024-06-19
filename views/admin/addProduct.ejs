@@ -20,7 +20,7 @@
                         <h4>Product Details</h4>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="/admin/addproducts">
+                        <form method="post" action="/admin/addproducts" enctype="multipart/form-data">
                             <!-- Product Name -->
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product Name</label>
@@ -88,28 +88,23 @@
                                     <% } %>
                                 </select>
                             </div>
-                            <!-- Submit Button -->
-                            <div>
-                                <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
-                            </div>
+  
+                                        <div class="input-upload">
+                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 1">
+                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 2">
+                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 3">
+                                            <input class="form-control" type="file" name="productimages" multiple>
+                                        </div>
+                             <div>
+                                 <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
+                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
             <!-- Media Container -->
-            <div class="col-lg-3">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="input-upload">
-                            <img src="https://via.placeholder.com/150" alt="Dummy Image 1">
-                            <img src="https://via.placeholder.com/150" alt="Dummy Image 2">
-                            <img src="https://via.placeholder.com/150" alt="Dummy Image 3">
-                            <input class="form-control" type="file" name="media">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </section>
 </main>

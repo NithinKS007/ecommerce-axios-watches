@@ -5,6 +5,8 @@ const adminRoute = express.Router()
 
 const adminController = require('../controllers/adminController')
 
+//requiring the multer function to upload the file
+const imageUpload = require('../utils/imageUpload')
 
 //registering the admin
 adminRoute.post("/signup",adminController.registerAdmin)
@@ -38,7 +40,7 @@ adminRoute.get("/addproducts",adminController.loadaddProduct)
 
 //inserting the products
 
-adminRoute.post("/addproducts",adminController.addProduct)
+adminRoute.post("/addproducts",imageUpload.array('productimages',3),adminController.addProduct)
 
 
 

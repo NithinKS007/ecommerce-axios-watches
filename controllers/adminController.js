@@ -132,7 +132,7 @@ const loadDashboard = async (req,res) =>{
 const loadCustomer = async (req, res) => {
     try {
         const userDataArray = await users.find({})
-
+       
         if (userDataArray.length === 0) {
 
             res.render("admin/customerList", { message: `No user found` })
@@ -262,10 +262,11 @@ const addCategoryBrand = async (req,res) =>{
 const loadProducts = async (req,res) =>{
 
     try {
+        const productData = await products.find({}).populate('brand')
 
-        console.log(`loading the products page with its function`)
-
-        res.render("admin/productList")
+        const categoriesData = await categories.find({})
+        
+       res.render("admin/productList",{productData,categoriesData})
 
     } catch (error) {
         
@@ -300,15 +301,9 @@ const addProduct = async (req,res) =>{
 
         const {name,brand,category,dialshape,type,regularPrice,salesPrice,strapmaterial,color,stock,description} = req.body
 
-
-        console.log(brand);
-
         const brandFromcollection =await brands.find({name:brand})
         
         const categoryFromcollection =await categories.find({name:category})
-
-        console.log(brandFromcollection[0]._id);
-
 
         const product = new products({
     
@@ -322,7 +317,8 @@ const addProduct = async (req,res) =>{
             strapmaterial:strapmaterial,
             color:color,
             stock:stock,
-            description:description
+            description:description,
+            images: req.files //converting it to array because its 3 images
         })
     
         const productData = await product.save()

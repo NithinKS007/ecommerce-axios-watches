@@ -33,9 +33,9 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    image: {
-        type: String,
-        
+    images: {
+        type: Array,
+    
     },
     strapmaterial: {
         type: String,

@@ -9,6 +9,7 @@ require("dotenv").config();
 const app = express()
 const PORT = process.env.PORT;
 
+
 //connecting to mongodb
 connectDB()
   
@@ -17,6 +18,8 @@ app.set('view engine', 'ejs')
 
 app.use(express.static('public'))
 app.use(express.static('public/assets'));
+
+
 
 
 app.use(express.urlencoded({extended: true}))

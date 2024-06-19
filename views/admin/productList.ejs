@@ -19,19 +19,15 @@
                 <div class="row align-items-center">
                    
                     <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                        <select class="form-select">
-                            <option selected>All category</option>
-                            <option>Premium</option>
-                            <option>Mens</option>
-                            <option>Kids</option>
-                            <option>Brand</option>
-                            <option>Luxury</option>
-                            <option>Casual</option>
-                            <option>Sports</option>
-                            <option>Analog</option>
-                            <option>Digital</option>
-                            <option>Hybrid</option>
-                        </select>
+                                <select class="form-select" name="category">
+                                    <% if(categoriesData.length > 0) { %>
+                                        <% categoriesData.forEach(category => { %>
+                                            <option><%= category.name %></option>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <option>No Category Found</option>
+                                    <% } %>
+                                </select>
                     </div>
                     <div class="col-md-2 col-6">
                         <select class="form-select">
@@ -49,11 +45,10 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Sl.No.</th>
                                 <th scope="col">Product Image</th>
                                 <th scope="col">ProductID</th>
                                 <th scope="col">Product Name</th>
-                                <th scope="col">Category</th>
+                                <th scope="col">brand</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Status</th>
@@ -61,36 +56,35 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Example Data Row -->
-                            <tr>
-                                <th scope="col">1</th>
-                                <td>
-                                 image
-                                </td>
-                                <td>PID123456</td>
-                                <td>Example Product Name</td>
-                                <td>Example Category</td>
-                                <td>$99.99</td>
-                                <td>50</td>
-                                <td>In Stock</td>
-                                <td>
-                                    <!-- editbutton -->
-                                   <form action="customerlist?id=USER_ID_DELETE" method="post" style="display:inline;">
-
-                                     <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Edit</button>
-
-                                    </form>
-                                     <!-- deletebutton -->
-                                    <form action="customerlist?id=USER_ID_DELETE" method="post" style="display:inline;">
-                                        <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">
-                                            Delete
-                                        </button>
-                                    </form>
-                                    
-                                </td>
-                            </tr>
-                            
+                            <% if (productData.length > 0) { %>
+                                <% productData.forEach((product) => { %>
+                                    <tr>
+                                        <td>
+                                            <!-- Write your logic here if needed -->
+                                        </td>
+                                        <td><%= product._id %></td>
+                                        <td><%= product.name %></td>
+                                        <td><%= product.brand.name %></td>
+                                        <td><%= product.regularPrice %></td>
+                                        <td><%= product.stock %></td>
+                                        <td>
+                                           
+                                            <!-- <form action="/customerlist?id=<%= product._id %>" method="post" style="display:inline;">
+                                                <button type="submit" name="action" value="edit" class="btn btn-sm btn-primary">Edit</button>
+                                            </form>
+                                            <form action="/customerlist?id=<%= product._id %>" method="post" style="display:inline;">
+                                                <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Delete</button>
+                                            </form> -->
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="7">No Products Found Yet</td>
+                                </tr>
+                            <% } %>
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
