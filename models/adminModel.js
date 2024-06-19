@@ -7,16 +7,13 @@ const adminSchema = new mongoose.Schema({
     }, 
     lname: {
         type: String,
-        required: true
+        required : true
     },
     dob :{
         type : Date,
-        required :true
     },
     image: {
         type: String,
-        required:true
-  
     },
     email: {
         type: String,
@@ -24,15 +21,20 @@ const adminSchema = new mongoose.Schema({
     },
     phone: {
         type: Number,
-        required: true
+        
     },
     password: {
         type: String,
         required: true
     },
+    isAdmin :{
+        type:Boolean,
+        default:true
+
+    }
    
 })
 
-const admin = mongoose.model('user',adminSchema)
+const admin = mongoose.model('admin',adminSchema)
 
 module.exports = admin

@@ -1,0 +1,101 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+    <%- include('../layouts/adminLayouts/sidebar') %>
+    <main class="main-wrap">
+        <%- include('../layouts/adminLayouts/searchbar') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Customers List </h2>
+                    <p>Dashboard> customerslist</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search order ID" class="form-control bg-white">
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <header class="card-header">
+                    <div class="row gx-3">
+                        <div class="col-lg-4 col-md-6 me-auto">
+                            <input type="text" placeholder="Search..." class="form-control">
+                        </div>
+                        <div class="col-lg-2 col-6 col-md-3">
+                            <select class="form-select">
+                                <option>Status</option>
+                                <option>Active</option>
+                                <option>Disabled</option>
+                                <option>Show all</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-6 col-md-3">
+                            <select class="form-select">
+                                <option>Show 20</option>
+                                <option>Show 30</option>
+                                <option>Show 40</option>
+                            </select>
+                        </div>
+                    </div>
+                </header> 
+            <!-- table content starts -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Sl.No.</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Reg.Date</th>
+                                    <th scope="col"> Action </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%if(userDataArray.length>0) { %>
+                                    <%for(let i =0;i < userDataArray.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= userDataArray[i].fname +" "+userDataArray[i].lname%></td>
+                                    <td><%= userDataArray[i].email %></td>
+                                    <td><%= userDataArray[i].phone %></td>
+                                    <td><%= new Date(userDataArray[i].createdAt).toLocaleString() %></td>
+                                    <td>
+                                        <form action="customerlist?id=<%=userDataArray[i]._id %>" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm <%= userDataArray.is_blocked ? 'btn-success' : 'btn-danger' %>">
+                                                <%= userDataArray.is_blocked ? 'Unblock' : 'Block' %>
+                                            </button>
+                                            
+                                        </form>
+
+                                    </td>
+                                </tr>
+                                <%}%>
+                                <%}else {%>}
+                                <tr>
+                                    <tr>
+                                        <td colspan="5">No Users Found Yet</td>
+                                      </tr>
+                                      <%}%>
+                                  
+                            </tbody>
+                        </table>
+                    </div> <!-- table-responsive //end -->
+                </div> <!-- card-body end// -->
+            </div> <!-- card end// -->
+            <div class="pagination-area mt-15 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section> <!-- content-main end// -->
+    </main>
+
+    <%- include('../layouts/adminLayouts/footer') %>

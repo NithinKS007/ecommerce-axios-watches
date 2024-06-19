@@ -51,7 +51,7 @@ const generateOtp = async (req,res) => {
 
         console.log(`otp sended to email ${email}`);
 
-        return res.status(200).render('user/otpVerification')
+        return res.status(200).redirect('/verify-otp')
         
     } catch (error) {
 
@@ -60,7 +60,19 @@ const generateOtp = async (req,res) => {
     }
 }
 
+//loading the otp verification page 
 
+const otpVPage = async (req,res) =>{
+
+    try {
+        
+        return res.status(200).render('user/otpVerification')
+
+    } catch (error) {
+        
+        console.log(`error loading the otp verification page`,error.message);
+    }
+}
 //verifying the otp 
 
 const verifyOtp = async (req,res) => {
@@ -122,57 +134,6 @@ const verifyOtp = async (req,res) => {
     }
 
 }
-//registering new user
-// const insertUser = async (req,res) => {
-
-//     console.log(req.body)
-
-//     const {fname,lname,email,phone,password,cpassword} = req.body
-
-//     try {
-
-//         if(password!==cpassword){
-   
-//             return res.status(400).render('user/signup', { error: 'Password does not match' });
-
-//         }
-//         const existinguser = await users.findOne ({email:email})
-
-//         if(existinguser){
-
-//             return res.status(400).render('user/signup', { error: 'User already exists' });
-
-//         }
-
-//         const hashedPassword = await securePassword(password,10)
-//         const user = new users({
-//             fname:fname,
-//             lname:lname,
-//             email:email,
-//             phone:phone,
-//             password:hashedPassword
-//         })
-
-//         const otp = utils.generateOtp()
-
-//         const otpDocument = new OTP({ email, otp })
-
-//         await otpDocument.save()
-
-//         await utils.sendOtpEmail(email,otp)
-
-//         console.log(`otp sended to email ${email}`);
-
-//         const userData = await user.save()
-
-
-//     } catch (error) {
-
-//         console.log(error.message);
-        
-//     }
-
-// }
 
 //loading signinpage
 const loadsignin = async (req,res) => {
@@ -197,6 +158,7 @@ module.exports = {
     // insertUser,
     loadsignin,
     generateOtp,
-    verifyOtp
+    verifyOtp,
+    otpVPage
     
 }

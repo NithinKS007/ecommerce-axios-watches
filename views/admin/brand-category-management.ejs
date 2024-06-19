@@ -1,0 +1,166 @@
+<%- include('../layouts/adminLayouts/header') %>
+    <div class="screen-overlay"></div>
+    <%- include('../layouts/adminLayouts/sidebar') %>
+    <main class="main-wrap">
+        <%- include('../layouts/adminLayouts/searchbar') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories </h2>
+                    <p>Dashboard > Category & Brand</p>
+                    <p>Add, edit or delete a category</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            <form action="/admin/brand-category-management" method="post">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Name</label>
+                                    <input type="text" name="cName" placeholder="Type here" class="form-control"  id="product_name" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="cDescription" placeholder="Type here" class="form-control"></textarea>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create category</button>
+                                </div>
+                            </form>
+
+
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" />
+                                                </div>
+                                            </th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <%if(categoriesData.length>0){ %>
+                                            <% for(let i =0; i < categoriesData.length ; i++) {%>
+                                        <tr>
+                                            <td class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" />
+                                                </div>
+                                            </td>
+                                            <td><%= categoriesData[i]._id %></td>
+                                            <td><%= categoriesData[i].name %></td>
+                                            <td><%= categoriesData[i].description %></td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end">
+                                                    <a href="#" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</a>
+                                                    <a href="#" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</a>
+                                                </div>
+                                            </td>
+                                            
+                                        </tr>
+                                        <%}%>
+                                        <%} else { %>
+                                        <tr>
+                                            <tr>
+                                                <td colspan="5">No Categories Found </td>
+                                              </tr>
+                                              <%}%>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Brands </h2>
+                    <p>Add, edit or delete a brand</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search Brands" class="form-control bg-white">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            <form action="/admin/brand-category-management" method="post">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Name</label>
+                                    <input type="text" name="bName" placeholder="Type here" class="form-control"  id="product_name" />
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create brand</button>
+                                </div>
+                            </form>
+
+
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" />
+                                                </div>
+                                            </th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <%if(brandsData.length>0){ %>
+                                            <% for(let i =0; i < brandsData.length ; i++) {%>
+                                        <tr>
+                                            <td class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" />
+                                                </div>
+                                            </td>
+                                            <td><%= brandsData[i]._id %></td>
+                                            <td><%= brandsData[i].name %></td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end">
+                                                    <a href="#" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</a>
+                                                    <a href="#" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</a>
+                                                </div>
+                                            </td>
+                                            
+                                        </tr>
+                                        <%}%>
+                                        <%} else { %>
+                                        <tr>
+                                            <tr>
+                                                <td colspan="5">No brands Found </td>
+                                              </tr>
+                                              <%}%>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+
+        <%- include('../layouts/adminLayouts/footer') %>

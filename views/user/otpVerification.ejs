@@ -1,5 +1,5 @@
-<%- include('../layouts/header') %>
-<%- include('../layouts/navbar1') %>  
+<%- include('../layouts/userLayouts/header') %>
+<%- include('../layouts/userLayouts/navbar1') %>  
 <div class="page-header breadcrumb-wrap">
     <div class="container">
         <div class="breadcrumb">
@@ -16,7 +16,7 @@
                     <div class="heading_s1 text-center">
                         <h3 class="mb-30">OTP Verification</h3>
                     </div>
-                    <form method="post" action="/signup/verify-otp"> 
+                    <form method="post" action="/home"> 
                         <div class="form-group">
                             <input type="text" name="otp" placeholder="Enter OTP" class="form-control">
                         </div>
@@ -33,4 +33,4 @@
         </div>
     </div>
 </div>
-<%- include('../layouts/footer') %>
+<%- include('../layouts/userLayouts/footer') %>

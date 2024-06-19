@@ -1,11 +1,57 @@
 const express = require('express')
 
+
 const adminRoute = express.Router()
 
+const adminController = require('../controllers/adminController')
 
-adminRoute.get('/', (req, res) => {
-    
-    res.send("hello admin...")
-})
+
+//registering the admin
+adminRoute.post("/signup",adminController.registerAdmin)
+
+//loading the login page of the admin
+adminRoute.get("/signin",adminController.loadLogin)
+
+// Verifying the logged-in person is an admin
+adminRoute.post("/signin",adminController.verifyAdmin)
+
+//loading the dashboard of the admin 
+adminRoute.get("/dashboard",adminController.loadDashboard)
+
+//loading the customers list in admins dashboard
+adminRoute.get("/customerlist",adminController.loadCustomer)
+
+//blocking or unblocking the user
+adminRoute.post("/customerlist",adminController.blockUnblock)
+
+//loading the category page
+adminRoute.get("/brand-category-management",adminController.loadCategoryBrand)
+
+//inserting the category
+adminRoute.post("/brand-category-management",adminController.addCategoryBrand)
+
+//loading the products page
+adminRoute.get("/products",adminController.loadProducts)
+
+//loading the add products page
+adminRoute.get("/addproducts",adminController.loadaddProduct)
+
+//inserting the products
+
+adminRoute.post("/addproducts",adminController.addProduct)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = adminRoute

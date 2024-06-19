@@ -25,9 +25,7 @@ app.use(sessionConfig)
 //using user routes
 app.use("/",userRoute)
 //using admin routes
-app.use("/admin",adminRoute)
-
-
+app.use("/admin", adminRoute)
 
 
 //server running on port   

@@ -11,7 +11,7 @@ const userAddressSchema = new mongoose.Schema({
     landmark: { type: String },
     alternativePhone: { type: String }, 
     defaultAddress: { type: Boolean, default: false }, 
-})
+},{_id:false})
 
 const userSchema = new mongoose.Schema({
     fname: {
@@ -47,16 +47,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    is_authorised:{
+    isAdmin:{
         type:Boolean,
-        default:true
+        default:false
     },
     is_blocked:{
         type:Boolean,
         default:false
     }
-      
-})
+    },{timestamps:true});
 
 const users = mongoose.model('user',userSchema)
 

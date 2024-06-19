@@ -1,0 +1,116 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+
+<main class="main-wrap">
+    <%- include('../layouts/adminLayouts/searchbar') %>
+    <section class="content-main">
+        <div class="row">
+            <!-- Content Header -->
+            <div class="col-12 mb-3">
+                <div class="content-header">
+                    <h2 class="content-title">Add New Product</h2>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Product Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/admin/addproducts">
+                            <!-- Product Name -->
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Product Name</label>
+                                <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name">
+                            </div>
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" placeholder="Type here" class="form-control" rows="4"></textarea>
+                            </div>
+                            <!-- Prices and Attributes -->
+                            <div class="row">
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Regular Price</label>
+                                    <input name="regularPrice" type="text" placeholder="RS" class="form-control">
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Sales Price</label>
+                                    <input name="salesPrice" type="text" placeholder="RS" class="form-control">
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Dial Shape</label>
+                                    <input name="dialshape" type="text" placeholder="Type here" class="form-control">
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Type</label>
+                                    <input name="type" type="text" placeholder="Type here" class="form-control">
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Strap Material</label>
+                                    <input name="strapmaterial" type="text" placeholder="Type here" class="form-control">
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <label class="form-label">Color</label>
+                                    <input name="color" type="text" placeholder="Type here" class="form-control">
+                                </div>
+                            </div>
+                            <!-- Stock Quantity -->
+                            <div class="mb-4">
+                                <label for="stock" class="form-label">Stock Quantity</label>
+                                <input type="text" name="stock" class="form-control">
+                            </div>
+                            <!-- Category and Brand -->
+                            <div class="mb-4">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" name="category">
+                                    <% if(categoriesData.length > 0) { %>
+                                        <% categoriesData.forEach(category => { %>
+                                            <option><%= category.name %></option>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <option>No Category Found</option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Brands</label>
+                                <select class="form-select" name="brand">
+                                    <% if(brandsData.length > 0) { %>
+                                        <% brandsData.forEach(brand => { %>
+                                            <option><%= brand.name %></option>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <option>No Category Found</option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <!-- Submit Button -->
+                            <div>
+                                <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Container -->
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="input-upload">
+                            <img src="https://via.placeholder.com/150" alt="Dummy Image 1">
+                            <img src="https://via.placeholder.com/150" alt="Dummy Image 2">
+                            <img src="https://via.placeholder.com/150" alt="Dummy Image 3">
+                            <input class="form-control" type="file" name="media">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<%- include('../layouts/adminLayouts/footer') %>
