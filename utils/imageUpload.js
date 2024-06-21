@@ -2,7 +2,7 @@ const multer = require('multer')
 const path = require('path')
 
 
-const maxSize = 10*1000*1000
+// const maxSize = 10*1000*1000
 
 const storage = multer.diskStorage({
     
@@ -28,7 +28,11 @@ const storage = multer.diskStorage({
 })
 
 
+
 const upload = multer({storage:storage})
 
+module.exports ={
 
-module.exports = upload
+    upload 
+
+} 

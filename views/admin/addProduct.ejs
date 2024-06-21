@@ -1,9 +1,8 @@
 <%- include('../layouts/adminLayouts/header') %>
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
-
 <main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %>
+    <%- include('../layouts/adminLayouts/searchbar') %> 
     <section class="content-main">
         <div class="row">
             <!-- Content Header -->
@@ -90,14 +89,16 @@
                             </div>
   
                                         <div class="input-upload">
-                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 1">
-                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 2">
-                                            <img src="https://via.placeholder.com/150" alt="Dummy Image 3">
-                                            <input class="form-control" type="file" name="productimages" multiple>
+
+                                            <input class="form-control" id="fileAccess" type="file" name="productimages" multiple>
+
                                         </div>
                              <div>
                                  <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
                              </div>
+                           
+
+
                         </form>
                     </div>
                 </div>
@@ -107,5 +108,6 @@
             
         </div>
     </section>
+   
 </main>
 <%- include('../layouts/adminLayouts/footer') %>

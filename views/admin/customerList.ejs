@@ -62,8 +62,8 @@
                                     <td><%= new Date(userDataArray[i].createdAt).toLocaleString() %></td>
                                     <td>
                                         <form action="customerlist?id=<%=userDataArray[i]._id %>" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm <%= userDataArray.is_blocked ? 'btn-success' : 'btn-danger' %>">
-                                                <%= userDataArray.is_blocked ? 'Unblock' : 'Block' %>
+                                            <button type="submit" class="btn btn-sm <%= userDataArray[i].is_blocked ? 'btn-success' : 'btn-danger' %>">
+                                                <%= userDataArray[i].is_blocked ? 'Unblock' : 'Block' %>
                                             </button>
                                             
                                         </form>
@@ -83,7 +83,7 @@
                     </div> <!-- table-responsive //end -->
                 </div> <!-- card-body end// -->
             </div> <!-- card end// -->
-            <div class="pagination-area mt-15 mb-50">
+            <!-- <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-start">
                         <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -94,7 +94,7 @@
                         <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
                     </ul>
                 </nav>
-            </div>
+            </div> -->
         </section> <!-- content-main end// -->
     </main>
 

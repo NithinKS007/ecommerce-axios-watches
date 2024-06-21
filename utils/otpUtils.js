@@ -27,12 +27,29 @@ const sendOtpEmail = async (email,otp) =>{
         await transporter.sendMail({
             to: email,
             subject: 'OTP for Registration',
-            text: `Your OTP is ${otp}`
+            text: `Your OTP is ${otp} . Please do not share this otp with anyone`
         });
 
     } catch (error) {
 
         console.log(`error in sending the otp`,error.message);
+        
+    }
+}
+
+
+const resendOtp = async () =>{
+
+    try {
+
+        const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000)
+
+
+        const OldOneExpT = await  OTP.find({createdAt})
+        
+    } catch (error) {
+
+        console.log(`something happended while resending the otp`,error.message);
         
     }
 }

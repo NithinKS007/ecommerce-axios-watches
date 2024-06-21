@@ -67,14 +67,12 @@
                                         <td><%= product.brand.name %></td>
                                         <td><%= product.regularPrice %></td>
                                         <td><%= product.stock %></td>
+                                        <td><%= product.stock %></td>
                                         <td>
-                                           
-                                            <!-- <form action="/customerlist?id=<%= product._id %>" method="post" style="display:inline;">
-                                                <button type="submit" name="action" value="edit" class="btn btn-sm btn-primary">Edit</button>
-                                            </form>
-                                            <form action="/customerlist?id=<%= product._id %>" method="post" style="display:inline;">
-                                                <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Delete</button>
-                                            </form> -->
+                                            <div class="d-flex justify-content-end">
+                                                <a href="#" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</a>
+                                                <a href="#" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <% }) %>
@@ -89,7 +87,7 @@
                 </div>
             </div>
         
-        <div class="pagination-area mt-30 mb-50">
+        <!-- <div class="pagination-area mt-30 mb-50">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-start">
                     <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -100,7 +98,7 @@
                     <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
                 </ul>
             </nav>
-        </div>
+        </div> -->
     </section> <!-- content-main end// -->
 
 

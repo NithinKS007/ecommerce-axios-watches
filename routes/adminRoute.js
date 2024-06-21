@@ -8,6 +8,10 @@ const adminController = require('../controllers/adminController')
 //requiring the multer function to upload the file
 const imageUpload = require('../utils/imageUpload')
 
+//requiring the middle ware for auto cropping the image
+const cropImage = require('../middleware/cropImage')
+
+
 //registering the admin
 adminRoute.post("/signup",adminController.registerAdmin)
 
@@ -40,7 +44,9 @@ adminRoute.get("/addproducts",adminController.loadaddProduct)
 
 //inserting the products
 
-adminRoute.post("/addproducts",imageUpload.array('productimages',3),adminController.addProduct)
+adminRoute.post("/addproducts",imageUpload.upload.array('productimages',3),adminController.addProduct)
+
+
 
 
 

@@ -17,11 +17,24 @@ const securePassword = async(password)=>{
     }
 }
 
+//loading the home page 
+
+const loadHome = async (req,res) => {
+    
+    try {
+
+        return res.status(200).render("user/home")
+
+    } catch (error) {
+        
+        console.log(`error while loading the home page before logging in`,error.message);
+    }
+}
 //loading the registraion page 
 const loadRegister = async (req,res) => {
     try {
         
-        res.render('user/signup')
+        res.status(200).render('user/signup')
         
     } catch (error) {
 
@@ -50,6 +63,8 @@ const generateOtp = async (req,res) => {
         await utils.sendOtpEmail(email,otp)
 
         console.log(`otp sended to email ${email}`);
+
+        
 
         return res.status(200).redirect('/verify-otp')
         
@@ -118,7 +133,7 @@ const verifyOtp = async (req,res) => {
 
             if(userData){
 
-                return res.status(200).send('successfully registered')
+                return res.status(200).render("user/home")
 
             }else{
 
@@ -159,6 +174,7 @@ module.exports = {
     loadsignin,
     generateOtp,
     verifyOtp,
-    otpVPage
+    otpVPage,
+    loadHome
     
 }

@@ -1,36 +1,25 @@
-<%- include('../layouts/userLayouts/header') %>
-<%- include('../layouts/userLayouts/navbar1') %>  
-<div class="page-header breadcrumb-wrap">
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="#" rel="nofollow">Home</a>
-            <span></span> OTP Verification
-        </div>
-    </div>
-</div> 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-            <div class="login_wrap widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5">
-                <div class="padding_eight_all bg-white">
-                    <div class="heading_s1 text-center">
-                        <h3 class="mb-30">OTP Verification</h3>
-                    </div>
-                    <form method="post" action="/home"> 
-                        <div class="form-group">
-                            <input type="text" name="otp" placeholder="Enter OTP" class="form-control">
-                        </div>
-                        <div class="form-group d-flex justify-content-center">
-                            <button type="submit" class="btn btn-fill-out hover-up" name="login">Verify OTP</button>
-                        </div>
-                        <div class="form-group d-flex justify-content-center">
-                            <button type="submit" class="btn btn-outline-primary" name="resend">Resend OTP</button>
-                        </div>
-                    </form>
-                    
-                </div>
+<%- include('../layouts/adminLayouts/header') %>
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<main class="d-flex align-items-center justify-content-center vh-100">
+    <section class="content-main">
+        <div class="card mx-auto card-login" style="width: 380px;">
+            <div class="card-body">
+                <h4 class="card-title mb-4 text-center">OTP Verification</h4>
+                <form method="post" action="/home">
+                    <div class="mb-3">
+                        <input class="form-control" name="otp" placeholder="Enter OTP" type="text">
+                    </div> <!-- form-group// -->
+                    <div class="mb-4">
+                        <button type="submit" name="signin" class="btn btn-primary w-100"> Verify OTP </button>
+                    </div> <!-- form-group// -->
+                    <div class="mb-4">
+                        <button type="submit" name="resendotp" class="btn btn-primary w-100"> Resend OTP </button>
+                    </div> <!-- form-group// -->
+                    <p class="text-center mb-4">Don't have account? <a href="/signup">Sign up</a></p>
+                </form>
             </div>
         </div>
-    </div>
-</div>
-<%- include('../layouts/userLayouts/footer') %>
+    </section>
+</main>
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<%- include('../layouts/adminLayouts/footer') %>
