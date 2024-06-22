@@ -14,13 +14,18 @@ const userAddressSchema = new mongoose.Schema({
 },{_id:false})
 
 const userSchema = new mongoose.Schema({
+    googleId: {
+        type: String,
+        required: false,
+        unique: true,
+      },
     fname: {
         type: String,
-        required: true
+        required:true
     }, 
     lname: {
         type: String,
-        required: true
+        required:true
     },
     dob :{
         type : Date
@@ -31,21 +36,22 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required:true
     },
     phone: {
         type: Number,
-        required: true
+        
     },
 
     address: {
+
         type: [userAddressSchema],
-        required: true
+        
     },
    
     password: {
         type: String,
-        required: true
+        
     },
     isAdmin:{
         type:Boolean,

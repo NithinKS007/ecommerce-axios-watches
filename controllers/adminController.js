@@ -38,7 +38,7 @@ const loadLogin = (req,res) =>{
 const registerAdmin = async (req,res) =>{
 
     const {fname,lname,email,password,phone} = req.body
-    console.log(req.body)
+
     try {
 
         const hashedPassword = await securePassword(password)
@@ -52,8 +52,6 @@ const registerAdmin = async (req,res) =>{
             phone:phone
 
         })
-
-        console.log(regAdmin);
 
         const adminData = await regAdmin.save()
         
@@ -102,8 +100,6 @@ const verifyAdmin = async (req,res) =>{
         
     }
 
-    
-    // res.redirect("/admin/dashboard")
 }
  
 //rendering the dashboard of the admin
@@ -154,12 +150,10 @@ const loadCustomer = async (req, res) => {
 const blockUnblock = async (req,res) =>{
 
     const id = req.query.id
-    console.log(id)
+
     try {
 
         const user = await users.findById({_id:id})
-
-        console.log(user);
 
         if(!user){
 
@@ -193,9 +187,6 @@ const loadCategoryBrand = async (req,res) =>{
  
         const categoriesData = await categories.find({})
         const brandsData = await brands.find({})
-
-        console.log(categoriesData);
-        console.log(brandsData);
 
         res.render('admin/brand-category-management',{categoriesData,brandsData})
 

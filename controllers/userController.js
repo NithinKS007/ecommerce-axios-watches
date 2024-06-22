@@ -2,6 +2,7 @@ const users = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const utils = require('../utils/otpUtils')
 const OTP = require('../models/otpModel')
+const products = require('../models/productModel')
 
 // //hashing the password
 const securePassword = async(password)=>{
@@ -23,7 +24,11 @@ const loadHome = async (req,res) => {
     
     try {
 
-        return res.status(200).render("user/home")
+        const productsArray =await products.find({})
+
+       
+
+        return res.status(200).render("user/home",{ productsArray: productsArray})
 
     } catch (error) {
         
@@ -51,7 +56,7 @@ const generateOtp = async (req,res) => {
     const {email}        = req.session.formData
 
     try {
-        console.log("generate otp function working")
+
         const otp = await utils.generateOtp()
 
         console.log(otp)
@@ -61,10 +66,6 @@ const generateOtp = async (req,res) => {
         await otpDocument.save() //saving the otp to database 
 
         await utils.sendOtpEmail(email,otp)
-
-        console.log(`otp sended to email ${email}`);
-
-        
 
         return res.status(200).redirect('/verify-otp')
         
@@ -95,8 +96,6 @@ const verifyOtp = async (req,res) => {
 
     try {
 
-        console.log(`verify otp function working`);
-
         const otp    = req.body.otp
         
         console.log(`otp from verificaton page`,otp);
@@ -105,13 +104,7 @@ const verifyOtp = async (req,res) => {
 
         const userDataSession = req.session.formData
 
-        console.log(`email from the form data `,email)
-
-        console.log(`form data from the session`,userDataSession)
-
         const otpDataBase = await OTP.findOne({email,otp}).exec()
-
-        console.log(`otp data from the otpdatabase`,otpDataBase);
 
         if(otpDataBase){
                  
@@ -126,10 +119,8 @@ const verifyOtp = async (req,res) => {
                 phone:userDataSession.phone,
                 password:hashedPassword     
             })
-            
-            console.log(`user data received from the session`,user);
-
-            const userData = await user.save()
+    
+           const userData = await user.save()
 
             if(userData){
 
@@ -154,8 +145,7 @@ const verifyOtp = async (req,res) => {
 const loadsignin = async (req,res) => {
 
     try {
-        console.log("loginpage loaded");
-
+        
         res.render('user/signin')
         
     } catch (error) {

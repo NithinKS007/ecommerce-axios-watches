@@ -5,10 +5,13 @@ const sessionConfig = require('./config/sessionConfig')
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
 
+const passport = require('passport')
+
 require("dotenv").config();
 const app = express()
 const PORT = process.env.PORT;
 
+require('./middleware/userAuth')
 
 //connecting to mongodb
 connectDB()
@@ -20,11 +23,15 @@ app.use(express.static('public'))
 app.use(express.static('public/assets'));
 
 
-
-
 app.use(express.urlencoded({extended: true}))
-   
+
+//configuring the session 
 app.use(sessionConfig)
+
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 //using user routes
 app.use("/",userRoute)
 //using admin routes
