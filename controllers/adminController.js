@@ -73,7 +73,7 @@ const verifyAdmin = async (req,res) =>{
 
         if(!adminData){
               
-           return res.status(404).send("admin not found in verfication function")
+           return res.status(404).send("admin not found ")
   
         }
             const passwordMatch = await bcrypt.compare(password,adminData.password)
@@ -89,7 +89,7 @@ const verifyAdmin = async (req,res) =>{
             }
             
             req.session.admin_id = adminData._id;
-            req.session.isAdmin = adminData.isAdmin 
+            req.session.isAdmin  = adminData.isAdmin 
                                                                                 
           
             return res.status(200). redirect("/admin/dashboard")
@@ -131,7 +131,7 @@ const loadCustomer = async (req, res) => {
        
         if (userDataArray.length === 0) {
 
-            res.render("admin/customerList", { message: `No user found` })
+            res.render("admin/customerList")
 
         } else {
 
@@ -290,11 +290,11 @@ const addProduct = async (req,res) =>{
 
     try {
 
-        const {name,brand,category,dialshape,type,regularPrice,salesPrice,strapmaterial,color,stock,description} = req.body
+        const {name,brand,category,dialshape,type,regularPrice,salesPrice,strapmaterial,color,stock,description,targetGroup} = req.body
 
-        const brandFromcollection =await brands.find({name:brand})
+        const brandFromcollection = await brands.find({name:brand})
         
-        const categoryFromcollection =await categories.find({name:category})
+        const categoryFromcollection = await categories.find({name:category})
 
         const product = new products({
     
@@ -309,6 +309,7 @@ const addProduct = async (req,res) =>{
             color:color,
             stock:stock,
             description:description,
+            targetGroup:targetGroup,
             images: req.files //converting it to array because its 3 images
         })
     

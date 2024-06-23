@@ -44,7 +44,7 @@ adminRoute.get("/addproducts",adminController.loadaddProduct)
 
 //inserting the products
 
-adminRoute.post("/addproducts",imageUpload.upload.array('productimages',3),adminController.addProduct)
+adminRoute.post("/addproducts",imageUpload.upload.array('productimages',3),cropImage.cropImg,adminController.addProduct)
 
 
 

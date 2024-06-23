@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt')
 const utils = require('../utils/otpUtils')
 const OTP = require('../models/otpModel')
 const products = require('../models/productModel')
+const brands = require('../models/brandModel')
+const categories = require('../models/categoryModel')
 
 // //hashing the password
 const securePassword = async(password)=>{
@@ -24,11 +26,9 @@ const loadHome = async (req,res) => {
     
     try {
 
-        const productsArray =await products.find({})
-
+        const productsArray =await products.find({}).populate('brand')
        
-
-        return res.status(200).render("user/home",{ productsArray: productsArray})
+        return res.status(200).render("user/home",{productsArray:productsArray})
 
     } catch (error) {
         
@@ -156,6 +156,56 @@ const loadsignin = async (req,res) => {
 
 }
 
+//loading mens page
+const loadMens = async (req,res) =>{
+
+    try {
+
+        const categoriesArray = await categories.find({})
+        const productsArray = await products.find({targetGroup:"men"}).populate('brand')
+
+        console.log(productsArray);
+        res.status(200).render("user/mens-collection",{categoriesArray,productsArray})
+
+    } catch (error) {
+        
+        console.log(`error while loading mens page`,error.message);
+    }
+}
+
+//loading womens page
+
+const loadWomens = async (req,res) =>{
+
+    try {
+
+        const categoriesArray = await categories.find({})
+        const productsArray = await products.find({targetGroup:"women"}).populate('brand')
+
+        res.status(200).render("user/womens-collection",{categoriesArray,productsArray})
+
+    } catch (error) {
+        
+        console.log(`error while loading mens page`,error.message);
+    }
+}
+
+//loading kids page
+
+const loadKids = async (req,res) =>{
+
+    try {
+
+        const categoriesArray = await categories.find({})
+        const productsArray = await products.find({targetGroup:"kids"}).populate('brand')
+
+        res.status(200).render("user/kids-collection",{categoriesArray,productsArray})
+
+    } catch (error) {
+        
+        console.log(`error while loading mens page`,error.message);
+    }
+}
 
 module.exports = {
 
@@ -165,6 +215,9 @@ module.exports = {
     generateOtp,
     verifyOtp,
     otpVPage,
-    loadHome
+    loadHome,
+    loadMens,
+    loadWomens,
+    loadKids
     
 }

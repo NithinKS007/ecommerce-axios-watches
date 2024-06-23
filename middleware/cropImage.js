@@ -1,52 +1,52 @@
-// const sharp = require('sharp')
-// const fs = require('fs')
+const sharp = require('sharp')
+const fs = require('fs')
 
 
-// //image resizing using sharp
+//image resizing using sharp
 
-// const cropImg = async (req,res,next) =>{
+const cropImg = async (req,res,next) =>{
    
-//     console.log(`resizing function is working but check if its proper`);
-//     try {
+    console.log(`resizing function is working but check if its proper`);
+    try {
 
-//         const result = []
+        const result = []
 
-//         for(const file of req.files){
+        for(const file of req.files){
             
-//             const { originalname, path:originalPath } = file
+            const { originalname, path:originalPath } = file
              
-//             console.log(originalname);
+            console.log(originalname);
 
-//             console.log(originalPath)
+            console.log(originalPath)
 
-//             const width = 640
-//             const height = 640
+            const width = 280
+            const height = 280
  
-//             const readMe = fs.readFileSync(originalPath)
+            const readMe = fs.readFileSync(originalPath)
              
-//             console.log('this is readme',readMe)
+            console.log('this is readme',readMe)
 
-//             const croppedImg = await sharp(readMe)
+            const croppedImg = await sharp(readMe)
 
-//             .resize(width,height)
-//             .toBuffer()
+            .resize(width,height)
+            .toBuffer()
             
-//             fs.writeFileSync(originalPath,croppedImg)
+            fs.writeFileSync(originalPath,croppedImg)
         
-//             result.push({originalname:originalname,originalPath:originalPath})
+            result.push({originalname:originalname,originalPath:originalPath})
 
-//             console.log(result);
+            console.log(result);
           
-//             console.log(`file resized successfully`);
-//             next()
-//         }
+            console.log(`file resized successfully`);
+            next()
+        }
         
-//     } catch (error) {
+    } catch (error) {
 
-//         console.log(`error while cropping the image: ` ,error.message);
+        console.log(`error while cropping the image: ` ,error.message);
         
-//     }
-// }
+    }
+}
 
 
-// module.exports = { cropImg }
+module.exports = { cropImg }

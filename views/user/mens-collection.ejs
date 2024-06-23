@@ -1,0 +1,197 @@
+<%- include('../layouts/userLayouts/header') %>
+<%- include('../layouts/userLayouts/navbar1') %>
+    <main class="main">
+        <!-- slider banner starts -->
+        <section class="home-slider position-relative">
+            <div class="hero-slider-1 style-2 dot-style-1 dot-style-1-position-1">
+                <div class="single-hero-slider single-animation-wrap">
+                    <div class="container">
+                        <div class="slider-1-height-2 slider-animated-1">
+                            <div class="hero-slider-content-2">
+                                <h5 class="animated">Trade-In Offer</h5>
+                                <h3 class="animated fw-900">Supper Value Deals</h3>
+                                <h3 class="animated fw-900 text-brand">On All Products</h3>
+                                <p class="animated">Save more with coupons & up to 70% off</p>
+                                <a class="animated btn btn-brush btn-brush-3" href="#"> Shop Now </a>
+                            </div>
+                            <div class="single-slider-img single-slider-img-1">
+                                <img class="animated" src="assets/imgs/slider/slider-3.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="single-hero-slider single-animation-wrap">
+                    <div class="container">
+                        <div class="slider-1-height-2 slider-animated-1">
+                            <div class="hero-slider-content-2">
+                                <h5 class="animated">Tech Promotions</h5>
+                                <h3 class="animated fw-900">Tech Trending</h3>
+                                <h3 class="animated fw-900 text-brand">Great Collection</h3>
+                                <p class="animated">Save more with coupons & up to 20% off</p>
+                                <a class="animated btn btn-brush btn-brush-1" href="shop-product-right.html"> Shop Now </a>
+                            </div>
+                            <div class="single-slider-img single-slider-img-1">
+                                <img class="animated" src="assets/imgs/slider/slider-1.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="single-hero-slider single-animation-wrap">
+                    <div class="container">
+                        <div class="slider-1-height-2 slider-animated-1">
+                            <div class="hero-slider-content-2">
+                                <h5 class="animated">Upcoming Offer</h5>
+                                <h3 class="animated fw-900">Big Deals From</h3>
+                                <h2 class="animated fw-900 text-brand">Manufacturer</h2>
+                                <p class="animated">Headphone, Gaming Laptop, PC and more...</p>
+                                <a class="animated btn btn-brush btn-brush-3" href="#"> Shop Now </a>
+                            </div>
+                            <div class="single-slider-img single-slider-img-1">
+                                <img class="animated" src="assets/imgs/slider/slider-2.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-arrow hero-slider-1-arrow"></div>
+        </section>
+        <!-- slider banner ends -->
+      
+        <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
+            <div class="container">
+                <div class="row">
+                  
+                            <div class="col-lg-3">
+                                <div class="widget-category mb-30">
+                                    <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+
+                                    <% if(categoriesArray.length > 0) { %>
+                                        <% for(let i = 0; i < categoriesArray.length; i++) { %>
+                                    <ul class="categories">
+
+                                        <li><a href="#"><%= categoriesArray[i].name %></a></li>
+                                    </ul>
+                                    <% } %>
+                                <% } else { %>
+                                    <p>No categories available.</p>
+                                <% } %>
+                                </div>
+                                
+                                <div class="widget-category mb-30">
+                                    <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
+                                    <ul class="categories">
+                                        <li><a href="shop-grid-right.html">Popularity</a></li>
+                                        <li><a href="shop-grid-right.html">Average rating</a></li>
+                                        <li><a href="shop-grid-right.html">Price: Low to High</a></li>
+                                        <li><a href="shop-grid-right.html">Price: High to Low</a></li>
+                                    </ul>
+                                </div>
+                                <div class="widget-category mb-30">
+                                    <h5 class="section-title style-1 mb-30 wow fadeIn animated">Price Range</h5>
+                                    <ul class="categories">
+                                        <li><a href="shop-grid-right.html">$0-$200</a></li>
+                                        <li><a href="shop-grid-right.html">$200-$400</a></li>
+                                        <li><a href="shop-grid-right.html">$400-$600</a></li>
+                                        <li><a href="shop-grid-right.html">$600-$800</a></li>
+                                        <li><a href="shop-grid-right.html">$800+</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                   
+                    
+
+                            <div class="col-lg-9">
+                                <div class="tab-content wow fadeIn animated" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
+                                        <div class="row product-grid-4">
+                                            <% if(productsArray.length > 0) { %>
+                                                <% for (let i = 0; i < productsArray.length; i++) { %>
+                                                    <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+                                                        <div class="product-cart-wrap mb-30">
+                                                            <div class="product-img-action-wrap">
+                                                                <div class="product-img product-img-zoom">
+                                                                    <a href="#">
+                                                                        <img class="default-img" src="/productImages/<%= productsArray[i].images[0].filename %>" alt="">
+                                                                        
+                                                                     
+                                                                        
+                                                                    </a>
+                                                                </div>
+                                                                <div class="product-action-1">
+
+                                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="product-content-wrap">
+                                                                <div class="product-category">
+                                                                    <a href="#"><%= productsArray[i].brand.name %></a>
+                                                                </div>
+                                                                <h2><a href="#"><%= productsArray[i].name %></a></h2>
+                                                                <div class="rating-result" title="90%">
+                                                                    <span>
+                                                                        <span>90%</span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="product-price">
+                                                                    <span><%= productsArray[i].salesPrice %></span>
+                                                                    <span class="old-price"><%= productsArray[i].regularPrice %></span>
+                                                                </div>
+                                                                <div class="product-action-1 show">
+                                                                    <a aria-label="Add To Cart" class="btn btn-outline-primary btn-sm hover-up" href="#">
+                                                                        <i class="fi-rs-shopping-bag-add"></i> Add to Cart
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <% } %>
+                                            <% } else { %>
+                                                <div class="col-12">
+                                                    <p>No Products Found Yet</p>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </section>
+      
+        <section class="section-padding">
+            <div class="container wow fadeIn animated">
+                <h3 class="section-title mb-20"><span>New</span> Arrivals</h3>
+                <div class="carausel-6-columns-cover position-relative">
+                    <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-2-arrows"></div>
+                    <div class="carausel-6-columns carausel-arrow-center" id="carausel-6-columns-2">
+                        <div class="product-cart-wrap small hover-up">
+                            <div class="product-img-action-wrap">
+                                <div class="product-img product-img-zoom">
+                                    <a href="shop-product-right.html">
+                                        <img class="default-img" src="assets/imgs/shop/product-2-1.jpg" alt="">
+                                        <img class="hover-img" src="assets/imgs/shop/product-2-2.jpg" alt="">
+                                    </a>
+                                </div>
+                                <div class="product-action-1">
+                                    <a aria-label="Add To Wishlist" class="action-btn small hover-up" href="shop-wishlist.html" tabindex="0"><i class="fi-rs-heart"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-content-wrap">
+                                <h2><a href="shop-product-right.html">Lorem ipsum dolor</a></h2>
+                                <div class="rating-result" title="90%">
+                                    <span>
+                                    </span>
+                                </div>
+                                <div class="product-price">
+                                    <span>$238.85 </span>
+                                    <span class="old-price">$245.8</span>
+                                </div>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <%- include('../layouts/userLayouts/footer') %>

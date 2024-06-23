@@ -30,4 +30,13 @@ userRoute.get("/auth/google",passport.authenticate('google',{scope:['email','pro
 
 userRoute.get("/google/callback",passport.authenticate('google',{successRedirect:"/",failureRedirect:"/signup"}))
 
+//loading the mens page
+userRoute.get("/mens-collection",userController.loadMens)
+
+//loading the mens page
+userRoute.get("/womens-collection",userController.loadMens)
+
+//loading the mens page
+userRoute.get("/kids-collection",userController.loadMens)
+
 module.exports = userRoute  

@@ -58,6 +58,10 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    targetGroup:{
+        type:String,
+        required:true
+    }
       
 },{ timestamps: true });
 
