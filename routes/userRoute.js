@@ -14,29 +14,45 @@ userRoute.get("/",userController.loadHome)
 userRoute.get("/signup",userController.loadRegister)
 //generating the otp for registration
 userRoute.post("/signup",userController.generateOtp)
+
 //loading the otp verificaton page after sending the otp
 userRoute.get("/verify-otp",userController.otpVPage)
-//loading the home page after registering
-userRoute.post("/home",userController.verifyOtp)
+
+//from here redirecting to home page if otp is correct
+userRoute.post("/verify-otp",userController.verifyOtp)
+
+//loading the home page after verifying the otp after reg or using signin form
+userRoute.get("/home",userController.loadHome)
+
+
+
 
 //loading the signin page
 userRoute.get("/signin",userController.loadsignin)
 
-//loading the home page after signin
-userRoute.post("/signin",userController.loadHome)
+//verifying the user in the signin page
+userRoute.post("/signin",userController.verifySignin)
+
+
 
 //registering with google
 userRoute.get("/auth/google",passport.authenticate('google',{scope:['email','profile']}))
 
-userRoute.get("/google/callback",passport.authenticate('google',{successRedirect:"/",failureRedirect:"/signup"}))
+userRoute.get("/google/callback",passport.authenticate('google',{successRedirect:"/home",failureRedirect:"/signup"}))
+
+
+
 
 //loading the mens page
 userRoute.get("/mens-collection",userController.loadMens)
 
 //loading the mens page
-userRoute.get("/womens-collection",userController.loadMens)
+userRoute.get("/womens-collection",userController.loadWomens)
 
 //loading the mens page
-userRoute.get("/kids-collection",userController.loadMens)
+userRoute.get("/kids-collection",userController.loadKids)
+
+//loading the product details page
+userRoute.get("/product-details",userController.loadProductDetails)
 
 module.exports = userRoute  

@@ -20,8 +20,6 @@ passport.use(new GoogleStrategy({
           
           const user = await users.findOne({email:profile._json.email})
            
-          console.log(`guest user function finding if any existing users `,user)
-
           if(!user){
 
            const user = new users({
@@ -34,9 +32,11 @@ passport.use(new GoogleStrategy({
             })
 
             await user.save()
+            
+           return cb(null,user)
+
           }
 
-          return cb(null,user)
 
         } catch (error) {
 
@@ -49,7 +49,7 @@ passport.use(new GoogleStrategy({
 
 passport.serializeUser((user,done)=>{
 
-    done(null,user.id)
+    done(null,user)
 
 })
 

@@ -17,11 +17,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    dialshape: {
+    dialShape: {
         type: String,
         required: true
     },
-    type: {
+    displayType: {
         type: String,
         required: true
     },
@@ -37,11 +37,11 @@ const productSchema = new mongoose.Schema({
         type: Array,
     
     },
-    strapmaterial: {
+    strapMaterial: {
         type: String,
         required:true
     },
-    color : {
+    strapColor : {
         type: String,
         required:true
         

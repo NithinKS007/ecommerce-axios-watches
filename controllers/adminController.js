@@ -23,7 +23,6 @@ const securePassword = async(password) =>{
 const loadLogin = (req,res) =>{
     try {
 
-        console.log(`admin login page loaded`)
 
        return  res.status(200).render('admin/signin')
 
@@ -39,6 +38,7 @@ const registerAdmin = async (req,res) =>{
 
     const {fname,lname,email,password,phone} = req.body
 
+    console.log(req.body);
     try {
 
         const hashedPassword = await securePassword(password)
@@ -54,7 +54,8 @@ const registerAdmin = async (req,res) =>{
         })
 
         const adminData = await regAdmin.save()
-        
+
+         
     } catch (error) {
 
         console.log(`error while registering admin`,error.message);
@@ -73,19 +74,19 @@ const verifyAdmin = async (req,res) =>{
 
         if(!adminData){
               
-           return res.status(404).send("admin not found ")
+           return res.status(404).render("admin/signin",{message:"admin does not exist"})
   
         }
             const passwordMatch = await bcrypt.compare(password,adminData.password)
 
             if(!passwordMatch){
 
-                return res.status(404).send(`email or password is incorrect`)
+                return res.status(404).render("admin/signin",{message:"email or password is incorrect"})
             }
 
             if(!adminData.isAdmin){
 
-                return res.status(404).send(`user cannot login here`)
+                return res.status(404).render("admin/signin",{message:"user cannot login here"})
             }
             
             req.session.admin_id = adminData._id;
@@ -107,12 +108,6 @@ const loadDashboard = async (req,res) =>{
 
     try {
 
-        const adminData = await admin.findById(req.session.admin_id)
-
-        if(!adminData){
-
-            return res.status(404).send('admin not found in dashboard function')
-        }
         return res.status(200).render('admin/dashboard');
 
     } catch (error) {
@@ -142,7 +137,6 @@ const loadCustomer = async (req, res) => {
 
         console.log(`Error while loading the customers:`, error.message);
         
-        res.status(500).send('Internal Server Error');
     }
 }
 
@@ -171,7 +165,7 @@ const blockUnblock = async (req,res) =>{
 
            await  user.save()
  
-        res.redirect("/admin/customerlist")
+       return res.redirect("/admin/customerlist")
     
     } catch (error) {
 
@@ -188,7 +182,7 @@ const loadCategoryBrand = async (req,res) =>{
         const categoriesData = await categories.find({})
         const brandsData = await brands.find({})
 
-        res.render('admin/brand-category-management',{categoriesData,brandsData})
+        res.render('admin/brandCategoryManagement',{categoriesData,brandsData})
 
 
     } catch (error) {
@@ -200,7 +194,6 @@ const loadCategoryBrand = async (req,res) =>{
 //adding category to the category page 
 const addCategoryBrand = async (req,res) =>{
 
-   // console.log(`category received`,req.body)
     const {cName,cDescription} = req.body   
     const {bName} = req.body
 
@@ -215,7 +208,7 @@ const addCategoryBrand = async (req,res) =>{
 
         })
 
-      const   categoryData = await category.save()
+      const  categoryData = await category.save()
 
       res.redirect("/admin/brand-category-management")
 
@@ -290,7 +283,7 @@ const addProduct = async (req,res) =>{
 
     try {
 
-        const {name,brand,category,dialshape,type,regularPrice,salesPrice,strapmaterial,color,stock,description,targetGroup} = req.body
+        const {name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup} = req.body
 
         const brandFromcollection = await brands.find({name:brand})
         
@@ -301,12 +294,12 @@ const addProduct = async (req,res) =>{
             name:name,
             brand:brandFromcollection[0]._id,
             category:categoryFromcollection[0]._id,
-            dialshape:dialshape,
-            type:type,
+            dialShape:dialShape,
+            displayType:displayType,
             regularPrice:regularPrice,
             salesPrice:salesPrice,
-            strapmaterial:strapmaterial,
-            color:color,
+            strapMaterial:strapMaterial,
+            strapColor:strapColor,
             stock:stock,
             description:description,
             targetGroup:targetGroup,

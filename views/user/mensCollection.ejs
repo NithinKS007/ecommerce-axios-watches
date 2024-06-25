@@ -1,5 +1,13 @@
 <%- include('../layouts/userLayouts/header') %>
 <%- include('../layouts/userLayouts/navbar1') %>
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html" rel="nofollow">Home</a>
+            <span></span> Mens Collection
+        </div>
+    </div>
+</div>
     <main class="main">
         <!-- slider banner starts -->
         <section class="home-slider position-relative">
@@ -110,11 +118,12 @@
                                                         <div class="product-cart-wrap mb-30">
                                                             <div class="product-img-action-wrap">
                                                                 <div class="product-img product-img-zoom">
-                                                                    <a href="#">
+                                                                    <a href="/product-details?id=<%= productsArray[i]._id %>">
+
                                                                         <img class="default-img" src="/productImages/<%= productsArray[i].images[0].filename %>" alt="">
                                                                         
-                                                                     
-                                                                        
+                                                
+                                            
                                                                     </a>
                                                                 </div>
                                                                 <div class="product-action-1">
@@ -126,14 +135,14 @@
                                                                 <div class="product-category">
                                                                     <a href="#"><%= productsArray[i].brand.name %></a>
                                                                 </div>
-                                                                <h2><a href="#"><%= productsArray[i].name %></a></h2>
+                                                                <h5><a href="#"><%= productsArray[i].name %></a></h5>
                                                                 <div class="rating-result" title="90%">
                                                                     <span>
                                                                         <span>90%</span>
                                                                     </span>
                                                                 </div>
                                                                 <div class="product-price">
-                                                                    <span><%= productsArray[i].salesPrice %></span>
+                                                                    <span>₹ <%= productsArray[i].salesPrice %></span>
                                                                     <span class="old-price"><%= productsArray[i].regularPrice %></span>
                                                                 </div>
                                                                 <div class="product-action-1 show">
@@ -157,41 +166,47 @@
                 </div>
             </div>
         </section>
-      
         <section class="section-padding">
             <div class="container wow fadeIn animated">
                 <h3 class="section-title mb-20"><span>New</span> Arrivals</h3>
                 <div class="carausel-6-columns-cover position-relative">
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-2-arrows"></div>
                     <div class="carausel-6-columns carausel-arrow-center" id="carausel-6-columns-2">
-                        <div class="product-cart-wrap small hover-up">
-                            <div class="product-img-action-wrap">
-                                <div class="product-img product-img-zoom">
-                                    <a href="shop-product-right.html">
-                                        <img class="default-img" src="assets/imgs/shop/product-2-1.jpg" alt="">
-                                        <img class="hover-img" src="assets/imgs/shop/product-2-2.jpg" alt="">
-                                    </a>
+                        <% if(latestProducts.length > 0) { %>
+                            <% for (let i = 0; i < latestProducts.length; i++) { %>
+                                <div class="product-cart-wrap small hover-up">
+                                    <div class="product-img-action-wrap">
+                                        <div class="product-img product-img-zoom">
+                                            <a href="#">
+                                                <img class="default-img" src="/productImages/<%= latestProducts[i].images[0].filename %>" alt="">
+                                                <!-- <img class="hover-img" src="assets/imgs/shop/product-2-2.jpg" alt=""> -->
+                                            </a>
+                                        </div>
+                                        <div class="product-action-1">
+                                            <a aria-label="Add To Wishlist" class="action-btn small hover-up" href="#" tabindex="0"><i class="fi-rs-heart"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="product-content-wrap">
+                                        <h6><a href="#"><%= latestProducts[i].name %></a></h6>
+                                        <div class="rating-result" title="90%">
+                                            <span></span>
+                                        </div>
+                                        <div class="product-price">
+                                            <span>₹ <%= latestProducts[i].salesPrice %></span>
+                                            <span class="old-price"><%= latestProducts[i].regularPrice %></span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="product-action-1">
-                                    <a aria-label="Add To Wishlist" class="action-btn small hover-up" href="shop-wishlist.html" tabindex="0"><i class="fi-rs-heart"></i></a>
-                                </div>
+                            <% } %>
+                        <% } else { %>
+                            <div class="col-12">
+                                <p>No Products Found Yet</p>
                             </div>
-                            <div class="product-content-wrap">
-                                <h2><a href="shop-product-right.html">Lorem ipsum dolor</a></h2>
-                                <div class="rating-result" title="90%">
-                                    <span>
-                                    </span>
-                                </div>
-                                <div class="product-price">
-                                    <span>$238.85 </span>
-                                    <span class="old-price">$245.8</span>
-                                </div>
-                            </div>
-                        </div>
-                      
+                        <% } %>
                     </div>
                 </div>
             </div>
         </section>
+        
     </main>
     <%- include('../layouts/userLayouts/footer') %>

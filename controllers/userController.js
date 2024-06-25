@@ -39,7 +39,7 @@ const loadHome = async (req,res) => {
 const loadRegister = async (req,res) => {
     try {
         
-        res.status(200).render('user/signup')
+        return res.status(200).render('user/signup')
         
     } catch (error) {
 
@@ -124,7 +124,7 @@ const verifyOtp = async (req,res) => {
 
             if(userData){
 
-                return res.status(200).render("user/home")
+                return res.status(200).redirect("/home")
 
             }else{
 
@@ -141,13 +141,50 @@ const verifyOtp = async (req,res) => {
 
 }
 
-//loading signinpage
-const loadsignin = async (req,res) => {
+
+//loading the signin page
+const loadsignin = async (req,res) =>{
 
     try {
         
-        res.render('user/signin')
+       return res.status(200).render("user/signin")
+
+    } catch (error) {
         
+        console.log(`error while loading the login page`,error.message);
+    }
+}
+
+
+//verifying the user from the signin page
+const verifySignin = async (req,res) => {
+
+    const {email,password} = req.body
+
+    try {
+
+        const userData = await users.findOne({email:email})
+
+        if (!userData) {
+
+            return res.render('user/signin', { message: "No user found" });
+        }
+
+        if(userData.isAdmin===1){
+
+            return res.render("user/signin",{message:"admins cannot use this page"})
+        }
+       
+        const passwordMatch = await bcrypt.compare(password,userData.password)
+        
+        if(!passwordMatch){
+
+            return res.render("user/signin",{message:"email or password is incorrect"})
+        }
+
+
+        res.redirect("/home")
+
     } catch (error) {
 
         console.log(error.message);
@@ -162,10 +199,10 @@ const loadMens = async (req,res) =>{
     try {
 
         const categoriesArray = await categories.find({})
-        const productsArray = await products.find({targetGroup:"men"}).populate('brand')
-
-        console.log(productsArray);
-        res.status(200).render("user/mens-collection",{categoriesArray,productsArray})
+        const productsArray   = await products.find({targetGroup:"men"}).populate('brand')
+        const latestProducts  = await products.find({targetGroup:"men"}).sort({createdAt:-1}).limit(10)
+        
+        return res.status(200).render("user/mensCollection",{categoriesArray,productsArray,latestProducts})
 
     } catch (error) {
         
@@ -181,8 +218,11 @@ const loadWomens = async (req,res) =>{
 
         const categoriesArray = await categories.find({})
         const productsArray = await products.find({targetGroup:"women"}).populate('brand')
+        const latestProducts = await products.find({targetGroup:"women"}).sort({createdAt:-1}).limit(10)
 
-        res.status(200).render("user/womens-collection",{categoriesArray,productsArray})
+        
+
+        return res.status(200).render("user/womensCollection",{categoriesArray,productsArray,latestProducts})
 
     } catch (error) {
         
@@ -198,8 +238,9 @@ const loadKids = async (req,res) =>{
 
         const categoriesArray = await categories.find({})
         const productsArray = await products.find({targetGroup:"kids"}).populate('brand')
+        const latestProducts = await products.find({targetGroup:"kids"}).sort({createdAt:-1}).limit(10)
 
-        res.status(200).render("user/kids-collection",{categoriesArray,productsArray})
+       return res.status(200).render("user/kidsCollection",{categoriesArray,productsArray,latestProducts})
 
     } catch (error) {
         
@@ -207,10 +248,36 @@ const loadKids = async (req,res) =>{
     }
 }
 
+//loading the product details page 
+
+const loadProductDetails = async (req,res) =>{
+
+    try {
+
+        const productId = req.query.id //getting the id from the query and passing it to the product details page
+    
+        const productDetails = await products.findById({_id:productId}).populate('category').populate('brand')
+
+        const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup}).limit(4)
+
+   
+
+
+        if(!productDetails){
+
+            return res.status(404).send("product not found")
+        }
+
+        res.status(200).render("user/productDetails",{productDetails,relatedProducts})
+        
+    } catch (error) {
+        
+        console.log(`error while loading the product details page`,error.message);
+    }
+}
 module.exports = {
 
     loadRegister,
-    // insertUser,
     loadsignin,
     generateOtp,
     verifyOtp,
@@ -218,6 +285,8 @@ module.exports = {
     loadHome,
     loadMens,
     loadWomens,
-    loadKids
+    loadKids,
+    loadProductDetails,
+    verifySignin
     
 }

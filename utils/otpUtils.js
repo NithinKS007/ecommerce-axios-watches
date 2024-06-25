@@ -38,21 +38,7 @@ const sendOtpEmail = async (email,otp) =>{
 }
 
 
-const resendOtp = async () =>{
 
-    try {
-
-        const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000)
-
-
-        const OldOneExpT = await  OTP.find({createdAt})
-        
-    } catch (error) {
-
-        console.log(`something happended while resending the otp`,error.message);
-        
-    }
-}
 
 module.exports = {
 
