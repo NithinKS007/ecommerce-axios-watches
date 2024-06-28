@@ -21,6 +21,12 @@ userRoute.get("/verify-otp",userController.otpVPage)
 //from here redirecting to home page if otp is correct
 userRoute.post("/verify-otp",userController.verifyOtp)
 
+
+
+//resend otp route
+userRoute.get("/resend-otp",userController.resendOtp)
+
+
 //loading the home page after verifying the otp after reg or using signin form
 userRoute.get("/home",userController.loadHome)
 
@@ -42,15 +48,9 @@ userRoute.get("/google/callback",passport.authenticate('google',{successRedirect
 
 
 
+//loading all the pages mens,womens,kids
+userRoute.get("/showcase",userController.loadShowCase)
 
-//loading the mens page
-userRoute.get("/mens-collection",userController.loadMens)
-
-//loading the mens page
-userRoute.get("/womens-collection",userController.loadWomens)
-
-//loading the mens page
-userRoute.get("/kids-collection",userController.loadKids)
 
 //loading the product details page
 userRoute.get("/product-details",userController.loadProductDetails)

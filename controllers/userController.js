@@ -54,12 +54,13 @@ const generateOtp = async (req,res) => {
 
     req.session.formData = req.body
     const {email}        = req.session.formData
+   
 
     try {
 
         const otp = await utils.generateOtp()
 
-        console.log(otp)
+        console.log(`first otp form generate otp `,otp)
 
         const otpDocument = new OTP({ email, otp })
 
@@ -89,6 +90,36 @@ const otpVPage = async (req,res) =>{
         console.log(`error loading the otp verification page`,error.message);
     }
 }
+
+//resend otp function
+
+const resendOtp = async (req,res) =>{
+
+    const {email}        = req.session.formData
+
+    
+
+    try {
+
+        const otp = await utils.generateOtp()
+
+        console.log(`resend otp`,otp)
+
+        const otpDocument = new OTP({ email, otp })
+
+        await otpDocument.save() //saving the otp to database 
+
+        await utils.sendOtpEmail(email,otp)
+
+        return res.status(200).json({success:true,message : "OTP send to your email.."})
+        
+    } catch (error) {
+
+        console.log(`error while resending the otp`,error.message);
+        
+    }
+}
+
 //verifying the otp 
 
 const verifyOtp = async (req,res) => {
@@ -98,8 +129,6 @@ const verifyOtp = async (req,res) => {
 
         const otp    = req.body.otp
         
-        console.log(`otp from verificaton page`,otp);
-
         const email  = req.session.formData.email
 
         const userDataSession = req.session.formData
@@ -163,11 +192,11 @@ const verifySignin = async (req,res) => {
 
     try {
 
-        const userData = await users.findOne({email:email})
+        const userData = await users.findOne({email:email,is_blocked:false})
 
         if (!userData) {
 
-            return res.render('user/signin', { message: "No user found" });
+            return res.render('user/signin', { message: "No user found or you can't access" });
         }
 
         if(userData.isAdmin===1){
@@ -194,53 +223,17 @@ const verifySignin = async (req,res) => {
 }
 
 //loading mens page
-const loadMens = async (req,res) =>{
+const loadShowCase = async (req,res) =>{
 
+    const targetGroup = req.query.targetGroup
     try {
 
         const categoriesArray = await categories.find({})
-        const productsArray   = await products.find({targetGroup:"men"}).populate('brand')
-        const latestProducts  = await products.find({targetGroup:"men"}).sort({createdAt:-1}).limit(10)
+        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand')
+        const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10)
         
-        return res.status(200).render("user/mensCollection",{categoriesArray,productsArray,latestProducts})
-
-    } catch (error) {
-        
-        console.log(`error while loading mens page`,error.message);
-    }
-}
-
-//loading womens page
-
-const loadWomens = async (req,res) =>{
-
-    try {
-
-        const categoriesArray = await categories.find({})
-        const productsArray = await products.find({targetGroup:"women"}).populate('brand')
-        const latestProducts = await products.find({targetGroup:"women"}).sort({createdAt:-1}).limit(10)
-
-        
-
-        return res.status(200).render("user/womensCollection",{categoriesArray,productsArray,latestProducts})
-
-    } catch (error) {
-        
-        console.log(`error while loading mens page`,error.message);
-    }
-}
-
-//loading kids page
-
-const loadKids = async (req,res) =>{
-
-    try {
-
-        const categoriesArray = await categories.find({})
-        const productsArray = await products.find({targetGroup:"kids"}).populate('brand')
-        const latestProducts = await products.find({targetGroup:"kids"}).sort({createdAt:-1}).limit(10)
-
-       return res.status(200).render("user/kidsCollection",{categoriesArray,productsArray,latestProducts})
+        console.log(productsArray);
+        return res.status(200).render("user/showCase",{categoriesArray,productsArray,latestProducts})
 
     } catch (error) {
         
@@ -280,12 +273,11 @@ module.exports = {
     loadRegister,
     loadsignin,
     generateOtp,
+    resendOtp,
     verifyOtp,
     otpVPage,
     loadHome,
-    loadMens,
-    loadWomens,
-    loadKids,
+    loadShowCase,
     loadProductDetails,
     verifySignin
     

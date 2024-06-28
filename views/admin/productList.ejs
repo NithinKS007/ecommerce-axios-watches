@@ -45,6 +45,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th scope="col">No</th>
                                 <th scope="col">Product Image</th>
                                 <th scope="col">ProductID</th>
                                 <th scope="col">Product Name</th>
@@ -57,30 +58,43 @@
                         </thead>
                         <tbody>
                             <% if (productData.length > 0) { %>
-                                <% productData.forEach((product) => { %>
+                                <% for (let i = 0; i < productData.length; i++) { %>
                                     <tr>
-                                        <td>
-                                            
+                                        <td class="text-center">
+                                            <%= i + 1 %> <!-- Adjusting to display the index as 1-based -->
                                         </td>
-                                        <td><%= product._id %></td>
-                                        <td><%= product.name %></td>
-                                        <td><%= product.brand.name %></td>
-                                        <td><%= product.regularPrice %></td>
-                                        <td><%= product.stock %></td>
-                                        <td><%= product.stock %></td>
+                                        <td>
+                                            <img class="img-sm img-thumbnail" src="/productImages/<%= productData[i].images[0].filename %>" alt="">
+                                        </td>
+                                        <td><%= productData[i]._id %></td>
+                                        <td><%= productData[i].name %></td>
+                                        <td><%= productData[i].brand.name %></td>
+                                        <td><%= productData[i].regularPrice %></td>
+                                        <td><%= productData[i].stock %></td>
+                                        <td>out of stock</td>
                                         <td>
                                             <div class="d-flex justify-content-end">
-                                                <a href="#" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</a>
-                                                <a href="#" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</a>
+                                                <button onclick="editProduct('<%= productData[i]._id %>')" id="" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</button>   
+
+                                                <% if(productData[i].isActive) { %>
+
+                                                    <button onclick="softDeleteProduct('<%= productData[i]._id %>')" id="softDeleteButton<%= productData[i]._id %>" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Unlist</button>
+
+                                                <% } else { %>
+
+                                                    <button onclick="softDeleteProduct('<%= productData[i]._id %>')" id="softDeleteButton<%= productData[i]._id %>" class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">List</button>
+                                                    
+                                                <% } %>
                                             </div>
                                         </td>
                                     </tr>
-                                <% }) %>
+                                <% } %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="7">No Products Found Yet</td>
+                                    <td colspan="9">No Products Found Yet</td>
                                 </tr>
                             <% } %>
+                            
                         </tbody>
                         
                     </table>
@@ -101,5 +115,56 @@
         </div> -->
     </section> <!-- content-main end// -->
 
+<script>
 
+const softDeleteProduct = (productId) =>{
+        
+        
+        fetch(`http://localhost:7000/admin/products/?productId=${productId}`,{
+
+            method: 'PATCH',
+            headers: {
+
+                 'Content-Type': 'application/json'
+            },
+            
+        }).then(response =>{
+
+            if(response.status!=200){
+
+                throw new Error('Network response was not ok')
+            }
+
+            return response.json()
+
+        }).then(data =>{
+
+
+            const deleteButton = document.getElementById(`softDeleteButton${productId}`)
+
+            if(data.productId.isActive){
+                
+                deleteButton.classList.remove('btn-danger');
+                deleteButton.classList.add('btn-success');
+                deleteButton.textContent = 'List'
+              
+            }else{
+
+                deleteButton.classList.remove('btn-success');
+                deleteButton.classList.add('btn-danger');
+                deleteButton.textContent = 'Unlist'
+            
+            }
+
+        }).catch(error =>{
+
+            console.log(`There is a problem with the fetch operation`,error)
+
+        })
+    
+    }
+
+
+
+</script>
 <%- include('../layouts/adminLayouts/footer') %>

@@ -7,8 +7,15 @@
             <div class="card-body">
                 <h4 class="card-title mb-4 text-center">Admin Sign in</h4>
 
+                <% if (typeof message != 'undefined') { %>
+            
+                    <p style="color: red; text-align: center; font-size: 0.9rem;"><%= message %></p>
+      
+                   <% } %>
                 <form method="post" action="/admin/signin">
+                    
                     <div class="mb-3">
+                       
                         <input class="form-control" name="email" placeholder="Email" type="text">
                     </div>
 

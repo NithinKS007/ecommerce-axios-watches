@@ -14,12 +14,7 @@ const userAddressSchema = new mongoose.Schema({
 },{_id:false})
 
 const userSchema = new mongoose.Schema({
-    googleId: {
-        type: String,
-        required: false,
-        unique: true,
-       
-      },
+
     fname: {
         type: String,
         required:true

@@ -52,21 +52,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <%if(userDataArray.length>0) { %>
-                                    <%for(let i =0;i < userDataArray.length; i++) { %>
+                                <%if(userData.length>0) { %>
+                                    <%for(let i =0;i < userData.length; i++) { %>
                                 <tr>
                                     <td><%= i + 1 %></td>
-                                    <td><%= userDataArray[i].fname +" "+userDataArray[i].lname%></td>
-                                    <td><%= userDataArray[i].email %></td>
-                                    <td><%= userDataArray[i].phone %></td>
-                                    <td><%= new Date(userDataArray[i].createdAt).toLocaleString() %></td>
+                                    <td><%= userData[i].fname +" "+userData[i].lname%></td>
+                                    <td><%= userData[i].email %></td>
+                                    <td><%= userData[i].phone %></td>
+                                    <td><%= new Date(userData[i].createdAt).toLocaleString() %></td>
                                     <td>
-                                        <form action="customerlist?id=<%=userDataArray[i]._id %>" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm <%= userDataArray[i].is_blocked ? 'btn-success' : 'btn-danger' %>">
-                                                <%= userDataArray[i].is_blocked ? 'Unblock' : 'Block' %>
-                                            </button>
-                                            
-                                        </form>
+
+                                        <div class="d-flex justify-content-end">
+                                            <button onclick="editUser('<%= userData[i]._id %>')" id="" class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit info</button>   
+
+                                            <% if(userData[i].is_blocked) { %>
+
+                                                <button onclick="softDeleteUser('<%= userData[i]._id %>')" id="softDeleteButton<%= userData[i]._id %>" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Unlist</button>
+
+                                            <% } else { %>
+
+                                                <button onclick="softDeleteUser('<%= userData[i]._id %>')" id="softDeleteButton<%= userData[i]._id %>" class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">List</button>
+                                                
+                                            <% } %>
+                                        </div>
 
                                     </td>
                                 </tr>
@@ -97,5 +105,52 @@
             </div> -->
         </section> <!-- content-main end// -->
     </main>
+<script>
 
+    const softDeleteUser = (userId) =>{
+
+        fetch(`http://localhost:7000/admin/customerlist/?userId=${userId}`,{
+
+               method: 'PATCH',
+               headers: {
+
+                     'Content-Type': 'application/json'
+               },
+
+            }).then(response =>{
+
+               if(response.status!=200){
+
+                    throw new Error('Network response was not ok')
+                }
+
+                 return response.json()
+
+            }).then(data =>{
+
+
+                 const deleteButton = document.getElementById(`softDeleteButton${userId}`)
+
+             if(data.userId.is_blocked){
+    
+                  deleteButton.classList.remove('btn-danger');
+                  deleteButton.classList.add('btn-success');
+                  deleteButton.textContent = 'List'
+    
+              }else{
+
+                  deleteButton.classList.remove('btn-success');
+                  deleteButton.classList.add('btn-danger');
+                  deleteButton.textContent = 'Unlist'
+
+              }
+
+              }).catch(error =>{
+
+                      console.log(`There is a problem with the fetch operation`,error)
+
+              })
+
+    }
+</script>
     <%- include('../layouts/adminLayouts/footer') %>

@@ -122,15 +122,15 @@ const loadDashboard = async (req,res) =>{
 //loading the list of customers in admins dashboard
 const loadCustomer = async (req, res) => {
     try {
-        const userDataArray = await users.find({})
+        const userData = await users.find({})
        
-        if (userDataArray.length === 0) {
+        if (userData.length === 0) {
 
             res.render("admin/customerList")
 
         } else {
 
-            res.render('admin/customerList', { userDataArray: userDataArray })
+            res.render('admin/customerList', { userData: userData })
 
         }
     } catch (error) {
@@ -143,11 +143,11 @@ const loadCustomer = async (req, res) => {
 //blocking and unblocking the customers from the customers list 
 const blockUnblock = async (req,res) =>{
 
-    const id = req.query.id
+    const userId = req.query.userId
 
     try {
 
-        const user = await users.findById({_id:id})
+        const user = await users.findById({_id:userId})
 
         if(!user){
 
@@ -156,16 +156,33 @@ const blockUnblock = async (req,res) =>{
 
         if(user.is_blocked){
 
-            user.is_blocked = false
+           const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{is_blocked:false}})
+
+           console.log(`softdeleting happened for user from the backend isblocked to false`)
+
+           return res.status(200).json({
+
+            success:true,
+            message:"user successfully soft deleted",
+            userId:updatedUser
+
+           })
 
         }else{
             
-            user.is_blocked = true
+            const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{is_blocked:true}})
+
+            console.log(`soft delete happened for user from the backend isblocked to true`)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"undone user soft deletion",
+                userId:updatedUser
+            })
+
         }
 
-           await  user.save()
- 
-       return res.redirect("/admin/customerlist")
     
     } catch (error) {
 
@@ -240,6 +257,46 @@ const addCategoryBrand = async (req,res) =>{
      
      
    
+}
+
+//editing the categories data
+
+const editCategory = async (req,res) =>{
+
+    const categoryId = req.query.categoryId
+    const categoryName = req.query.categoryName
+    const categoryDescription = req.query.categoryDescription
+
+    try {
+        
+        const category = await categories.findById({_id:categoryId})
+
+        if(!category){
+
+            return res.status(404).send("category not found")
+          }
+
+          if(category){
+
+            const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:categoryName,description:categoryDescription}})
+   
+   
+               console.log(`category data edited function worked `)
+   
+               return res.status(200).json({
+   
+                   success:true,
+                   message:"category successfully edited",
+                   categoryDetails:UpdatedCategory
+   
+               })
+   
+           }
+
+
+    } catch (error) {
+        
+    }
 }
 
 //loading the product page
@@ -321,6 +378,157 @@ const addProduct = async (req,res) =>{
     }
 }
 
+//soft deleting the category using fetch method in frontend
+
+const softDeleteCategory = async (req,res) =>{
+
+    const categoryId = req.query.categoryId
+
+
+    try {
+        
+        const category = await categories.findById({_id:categoryId})
+        
+        if(!category){
+
+          return res.status(404).send("category not found")
+        }
+        
+        if(category.isActive){
+
+         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{isActive:false}})
+
+
+            console.log(`soft delete happened for category from the backend isactive to false `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"category successfully soft deleted",
+                categoryId:UpdatedCategory
+
+            })
+
+        }else{
+
+        const UpdatedCategory =  await categories.findByIdAndUpdate({_id:categoryId},{$set:{isActive:true}})
+
+        console.log(`soft delete happened for category from the backend isactive to true `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"undone category soft deletion",
+                categoryId:UpdatedCategory
+
+            })
+        }
+
+
+    } catch (error) {
+
+        console.log(`error while soft deleting the category`,error.message)
+        
+        
+    }
+}
+
+const softDeleteBrand = async (req,res) =>{
+
+    const brandId = req.query.brandId 
+
+    try {
+
+        const brandData = await brands.findById({_id:brandId})
+
+        if(!brandData){
+
+            return res.status(404).send("brand not found")
+        }
+
+        if(brandData.isActive){
+
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isActive:false}})
+
+            console.log(`softdelete happened for brand from the backend isactive to false `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"brand successfully soft deleted",
+                brandId:updatedBrand
+            })
+        }else{
+
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isActive:true}})
+
+            
+            console.log(`softdelete happened for brand from the backend isactive to true `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"undone brand soft deletion",
+                brandId:updatedBrand
+            })
+        }
+        
+    } catch (error) {
+        
+        console.log(`error while deleting the brand`,error.message);
+    }
+
+}
+
+//soft deleting products
+
+const softDeleteProduct = async (req,res) =>{
+
+    const productId = req.query.productId 
+
+    try {
+
+        const productData = await products.findById({_id:productId})
+
+        if(!productData){
+
+            return res.status(404).send("product not found")
+        }
+
+        if(productData.isActive){
+
+            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isActive:false}})
+
+            console.log(`softdelete happened for product from the backend isactive to false `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"product successfully soft deleted",
+                productId:updatedProduct
+            })
+        }else{
+
+            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isActive:true}})
+
+            
+            console.log(`softdelete happened for product from the backend isactive to true `)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"undone product soft deletion",
+                productId:updatedProduct
+            })
+        }
+        
+    } catch (error) {
+        
+        console.log(`error while deleting the brand`,error.message);
+    }
+
+}
+
 module.exports = {
 
     loadLogin,
@@ -328,11 +536,15 @@ module.exports = {
     verifyAdmin,
     loadDashboard,
     loadCustomer,
-    blockUnblock,
+    blockUnblock, //used normal method
     loadCategoryBrand,
     addCategoryBrand,
     loadProducts,
     loadaddProduct,
-    addProduct
+    addProduct,
+    softDeleteCategory,
+    softDeleteBrand,
+    softDeleteProduct,
+    editCategory
 
 }

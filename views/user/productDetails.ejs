@@ -14,14 +14,33 @@
                                 <div class="product-image-slider">
                                     <figure class="border-radius-10">
 
-                                        <img src="" alt="product image">
-
+                                        <% if (productDetails && productDetails.images && productDetails.images.length > 0) { %>
+                                            <div class="row justify-content-center">
+                                                <% for (let i = 0; i < Math.min(productDetails.images.length, 4); i++) { %>
+                                                    <div class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
+                                                        <img src="/productImages/<%= productDetails.images[i].filename %>" class="img-fluid" id="zoom_04"  data-zoom-image="/productImages/<%= productDetails.images[i].filename %>" alt="product image">
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                        <% } else { %>
+                                            <p>No images available.</p>
+                                        <% } %>
                                     </figure>
                                 </div>
                                 <!-- THUMBNAILS -->
                                 <div class="slider-nav-thumbnails pl-15 pr-15">
 
-                                    <div><img src="assets/imgs/shop/thumbnail-3.jpg" alt="product image"></div>
+                                    <% if (productDetails && productDetails.images && productDetails.images.length > 0) { %>
+                                        <div class="row justify-content-center">
+                                            <% for (let i = 0; i < Math.min(productDetails.images.length, 4); i++) { %>
+                                                <div class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
+                                                    <img src="/productImages/<%= productDetails.images[i].filename %>" class="img-fluid" id="zoom_04"  data-zoom-image="/productImages/<%= productDetails.images[i].filename %>" alt="product image">
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    <% } else { %>
+                                        <p>No images available.</p>
+                                    <% } %>
                                     
                                 </div>
                             </div>
@@ -40,10 +59,10 @@
                         <div class="col-md-6 col-sm-12 col-xs-12">
                             <div class="detail-info">
                                 
-                                <h3 class="title-detail mt-30">h</h3>
+                                <h3 class="title-detail mt-30"><%= productDetails.name %></h3>
                                 <div class="product-detail-rating">
                                     <div class="pro-details-brand">
-                                        <span> Brands: <a href="shop-grid-right.html">h</a></span>
+                                        <span> Brands: <a href="shop-grid-right.html"><%= productDetails.brand.name %></a></span>
                                     </div>
                                     <div class="product-rate-cover text-end">
                                         <div class="product-rate d-inline-block">
@@ -55,35 +74,18 @@
                                 </div>
                                 <div class="clearfix product-price-cover">
                                     <div class="product-price primary-color float-left">
-                                        <ins><span class="text-brand">h</span></ins>
-                                        <ins><span class="old-price font-md ml-15">h</span></ins>
+                                        <ins><span class="text-brand">Rs <%= productDetails.salesPrice %></span></ins>
+                                        <ins><span class="old-price font-md ml-15"><%= productDetails.regularPrice %></span></ins>
                                         <span class="save-price  font-md color3 ml-15">25% Off</span>
                                     </div>
                                 </div>
                                 <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                                 <div class="short-desc mb-30">
-                                    <p class="font-sm">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam rem officia, corrupti reiciendis minima nisi modi,!</p>
+                                    <p class="font-sm"> <%= productDetails.description %></p>
                                 </div>
-                                <div class="attr-detail attr-color mb-15">
-                                    <strong class="mr-10">Color</strong>
-                                    <ul class="list-filter color-filter">
-                                        <li><a href="#" data-color="Red"><span class="product-color-red"></span></a></li>
-                                        <li><a href="#" data-color="Yellow"><span class="product-color-yellow"></span></a></li>
-                                        <li class="active"><a href="#" data-color="White"><span class="product-color-white"></span></a></li>
-                                        <li><a href="#" data-color="Orange"><span class="product-color-orange"></span></a></li>
-                                        <li><a href="#" data-color="Cyan"><span class="product-color-cyan"></span></a></li>
-                                        <li><a href="#" data-color="Green"><span class="product-color-green"></span></a></li>
-                                        <li><a href="#" data-color="Purple"><span class="product-color-purple"></span></a></li>
-                                    </ul>
-                                </div>
-                               
                                 <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                 <div class="detail-extralink">
-                                    <div class="detail-qty border radius">
-                                        <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                        <span class="qty-val">1</span>
-                                        <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                                    </div>
+                                   
                                     <div class="product-extra-link2">
                                         <button type="submit" class="button button-add-to-cart">Add to cart</button>
                                         <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
@@ -91,9 +93,19 @@
                                     </div>
                                 </div>
                                 <ul class="product-meta font-xs color-grey mt-50">
-                                    <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
-                                    <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li>
-                                    <li>Availability:<span class="in-stock text-success ml-5">8 Items In Stock</span></li>
+
+                                    <!-- <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
+                                    <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li> -->
+
+                                    <% if (productDetails.stock === 0) { %>
+
+                                        <li>Availability: <span class="in-stock text-danger ml-5">Out of stock</span></li>
+
+                                    <% } else { %>
+
+                                        <li>Availability: <span class="in-stock text-success ml-5"><%= productDetails.stock %> Items In Stock</span></li>
+
+                                    <% } %>
                                 </ul>
                             </div>
                             <!-- Detail Info -->
@@ -148,40 +160,23 @@
                     <div class="col-lg-9">
                         <div class="product-detail accordion-detail">
                             <div class="row mb-50">
-                                <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="col-md-6 col-sm-12">
                                     <div class="detail-gallery">
-                                
-                                        <!-- MAIN SLIDES -->
-
-                                            <% if (productDetails && productDetails.images && productDetails.images.length > 0) { %>
-                                           
-                                        <div class="product-image-slider">
-
-                                            <% productDetails.images.forEach((images, index)  => { %>
-                                            <figure class="border-radius-10">
-
-                                                <img src="/productImages/<%= images.filename %>"alt="product image">
-                                            </figure>
-                                            <% }) %>
-                                        </div>
-                                        <!-- THUMBNAILS -->
-                                        <div class="slider-nav-thumbnails pl-15 pr-15">
-
-                                            <% productDetails.images.forEach((images, index) => { %>
-
-                                            <div><img src="/productImages/<%= images.filename %>" alt="product image"></div>
-                                            <% }); %>
-                                        </div>
-                                     
-                                    <% } else { %>
-                                        <p>No images available.</p>
-                                    <% } %>
+                                        <% if (productDetails && productDetails.images && productDetails.images.length > 0) { %>
+                                            <div class="row justify-content-center">
+                                                <% for (let i = 0; i < Math.min(productDetails.images.length, 4); i++) { %>
+                                                    <div class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
+                                                        <img src="/productImages/<%= productDetails.images[i].filename %>" class="img-fluid" id="zoom_04"  data-zoom-image="/productImages/<%= productDetails.images[i].filename %>" alt="product image">
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                        <% } else { %>
+                                            <p>No images available.</p>
+                                        <% } %>
                                     </div>
                                     <!-- End Gallery -->
-                                 
                                 </div>
                                 
-
                                 <div class="col-md-6 col-sm-12 col-xs-12">
                                     <div class="detail-info">
                                         <h3 class="title-detail"><%= productDetails.name %></h3>
@@ -201,20 +196,20 @@
                                             <div class="product-price primary-color float-left">
                                                 <ins><span class="text-brand">₹ <%= productDetails.salesPrice %></span></ins>
                                                 <ins><span class="old-price font-md ml-15"><%= productDetails.regularPrice %></span></ins>
-                                                <span class="save-price  font-md color3 ml-15">25% Off</span>
+                                                <!-- <span class="save-price  font-md color3 ml-15">25% Off</span> -->
                                             </div>
                                         </div>
                                         <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                                         <div class="short-desc mb-30">
                                             <p>  <%= productDetails.description %></p>
                                         </div>
-                                        <div class="product_sort_info font-xs mb-30">
+                                        <!-- <div class="product_sort_info font-xs mb-30">
                                             <ul>
                                                 <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year AL Jazeera Brand Warranty</li>
                                                 <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
                                                 <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
                                             </ul>
-                                        </div>
+                                        </div> -->
                                       
                                        
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
@@ -239,9 +234,18 @@
                                         </div>
                                        
                                         <ul class="product-meta font-xs color-grey mt-50">
-                                            <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
-                                            <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li>
-                                            <li>Availability:<span class="in-stock text-success ml-5"><%= productDetails.stock %> Items In Stock</span></li>
+                                            <!-- <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
+                                            <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li> -->
+                                            <% if (productDetails.stock === 0) { %>
+
+                                                <li>Availability: <span class="in-stock text-danger ml-5">Out of stock</span></li>
+
+                                            <% } else { %>
+
+                                                <li>Availability: <span class="in-stock text-success ml-5"><%= productDetails.stock %> Items In Stock</span></li>
+
+                                            <% } %>
+                                            
                                         </ul>
                                     </div>
                                     <!-- Detail Info -->
@@ -516,4 +520,17 @@
             </div>
         </section>
     </main>
+
+    <!-- <script>
+    $(document).ready(function(){
+
+   $('#zoom_image').each(function() { 
+
+    $(this).ezPlus({
+        scrollZoom: true
+    });
+})
+});
+    </script> -->
+ 
     <%- include('../layouts/userLayouts/footer') %>
