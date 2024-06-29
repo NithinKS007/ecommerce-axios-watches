@@ -1,102 +1,102 @@
 <%- include('../layouts/adminLayouts/header') %>
-<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-<main class="d-flex align-items-center justify-content-center vh-100">
-    <section class="content-main">
-        <div class="card mx-auto card-login" style="width: 380px;">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">OTP Verification</h4>
-                <form method="post" action="/verify-otp">
+    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+    <main class="d-flex align-items-center justify-content-center vh-100">
+        <section class="content-main">
+            <div class="card mx-auto card-login" style="width: 380px;">
+                <div class="card-body">
+                    <h4 class="card-title mb-4 text-center">OTP Verification</h4>
+                    <form method="post" action="/verifyOtp">
 
-                    <div class="mb-3">
+                        <div class="mb-3">
 
-                        <input class="form-control" name="otp" placeholder="Enter OTP" type="text">
+                            <input class="form-control" name="otp" placeholder="Enter OTP" type="text">
+
+                        </div>
+
+                        <div id="timer" class="mb-3 text-center"><span id="countdown"></span></div>
+
+                        <div class="mb-4" style="display: block;">
+
+                            <button type="submit" name="signin" id="verify-button" class="btn btn-primary w-100"> Verify
+                                OTP </button>
+
+                        </div>
+
+                    </form>
+                    <div class="mb-4" style="display:none;" id="resend-container">
+
+                        <button id="resendotp" name="resendotp" class="btn btn-primary w-100"> Resend OTP </button>
 
                     </div>
-
-                    <div id="timer" class="mb-3 text-center"><span id="countdown"></span></div>
-
-                    <div class="mb-4" style="display: block;">
-
-                        <button type="submit" name="signin" id="verify-button" class="btn btn-primary w-100"> Verify OTP </button>
-                        
-                    </div> 
-
-                </form>
-                <div class="mb-4" style="display:none;" id="resend-container">
-   
-                    <button id="resendotp" name="resendotp" class="btn btn-primary w-100"> Resend OTP </button>
-                        
+                    <p class="text-center mb-4">Don't have account? <a href="/signup">Sign up</a></p>
                 </div>
-                <p class="text-center mb-4">Don't have account? <a href="/signup">Sign up</a></p>
             </div>
-        </div>
-    </section>
-</main>
-<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-<script>
+        </section>
+    </main>
+    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+    <script>
 
-    //countdown for the otp page
-    
-    const startTimer = (n) => {
-        
-        if (n <= 0) {
-         
-            document.getElementById('countdown').textContent = "Time's up "
-            document.getElementById('verify-button').style.display = "none"
-            document.getElementById('resend-container').style.display = "block"
-    
-        } else {
-       
-            n--
-    
-            document.getElementById('countdown').textContent = ` Time remaining : ${n} seconds`
-    
-    
-            setTimeout(() => {
-    
-                startTimer(n)
-    
-            }, 1000)
+        //countdown for the otp page
+
+        const startTimer = (n) => {
+
+            if (n <= 0) {
+
+                document.getElementById('countdown').textContent = "Time's up "
+                document.getElementById('verify-button').style.display = "none"
+                document.getElementById('resend-container').style.display = "block"
+
+            } else {
+
+                n--
+
+                document.getElementById('countdown').textContent = ` Time remaining : ${n} seconds`
+
+
+                setTimeout(() => {
+
+                    startTimer(n)
+
+                }, 1000)
+            }
         }
-    }
-    
-    startTimer(15)
-    
-//on clicking the resend otp button
 
- document.addEventListener("DOMContentLoaded",()=>{
-    
-        const resendButton = document.getElementById('resendotp')
-    
-        resendButton.addEventListener("click",()=>{
-            
-            fetch("http://localhost:7000/resend-otp",{
+        startTimer(15)
 
-            }).then(response =>{
-    
-                if(response.status!=200){
-    
-                    throw new  Error('Network response was not ok')
-                }
-     
-                return response.json() //is not necessary but this block will return to the next then block written below
-    
-            }).then(data => {
+        //on clicking the resend otp button
 
-            startTimer(15)
-            document.getElementById('verify-button').style.display = "block"
-            document.getElementById('resend-container').style.display = "none"
-               
-            }).catch(error => {
-    
-               console.error('There was a problem with the fetch operation:', error)
-    
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const resendButton = document.getElementById('resendotp')
+
+            resendButton.addEventListener("click", () => {
+
+                fetch("http://localhost:7000/resendOtp", {
+
+                }).then(response => {
+
+                    if (response.status != 200) {
+
+                        throw new Error('Network response was not ok')
+                    }
+
+                    return response.json() //is not necessary but this block will return to the next then block written below
+
+                }).then(data => {
+
+                    startTimer(15)
+                    document.getElementById('verify-button').style.display = "block"
+                    document.getElementById('resend-container').style.display = "none"
+
+                }).catch(error => {
+
+                    console.error('There was a problem with the fetch operation:', error)
+
+                })
             })
         })
-    })
-   
-    
+
+
     </script>
 
-<%- include('../layouts/adminLayouts/footer') %>
-    
+    <%- include('../layouts/adminLayouts/footer') %>

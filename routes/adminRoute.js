@@ -8,12 +8,15 @@ const adminController = require('../controllers/adminController')
 //requiring the multer function to upload the file
 const imageUpload = require('../utils/imageUpload')
 
-//requiring the middle ware for auto cropping the image
-const cropImage = require('../middleware/cropImage')
 
 //requiring the middlware for softdeleting to identify which query is coming from the brand-category-page
 
 const softdeleteHandle = require('../middleware/softDeletehandle')
+
+//requiring the middleware for editing to identify which query is coming from the brand-category-page
+
+const editHandle = require('../middleware/handleEdit')
+
 
 //registering the admin
 adminRoute.post("/signup",adminController.registerAdmin)
@@ -34,17 +37,19 @@ adminRoute.get("/customerlist",adminController.loadCustomer)
 adminRoute.patch("/customerlist",adminController.blockUnblock)
 
 //loading the category page
-adminRoute.get("/brand-category-management",adminController.loadCategoryBrand)
+adminRoute.get("/brandCategoryManagement",adminController.loadCategoryBrand)
 
 
 //soft deleting the category
-adminRoute.patch("/brand-category-management",softdeleteHandle.handleSoftDelete)
+adminRoute.patch("/brandCategoryManagement",softdeleteHandle.handleSoftDelete)
 
-//changing the category name and discription
-adminRoute.put("/brand-category-management",adminController.editCategory)
+
+//for managing editing the brand and category in the same page
+
+adminRoute.put("/brandCategoryManagement",editHandle.handleEdit)
 
 //inserting the category
-adminRoute.post("/brand-category-management",adminController.addCategoryBrand)
+adminRoute.post("/brandCategoryManagement",adminController.addCategoryBrand)
 
 
 //loading the products page
@@ -54,11 +59,11 @@ adminRoute.get("/products",adminController.loadProducts)
 adminRoute.patch("/products",adminController.softDeleteProduct)
 
 //loading the add products page
-adminRoute.get("/addproducts",adminController.loadaddProduct)
+adminRoute.get("/addProducts",adminController.loadaddProduct)
 
 //inserting the products
 
-adminRoute.post("/addproducts",imageUpload.upload.array('productimages',4),cropImage.cropImg,adminController.addProduct)
+adminRoute.post("/addProducts",imageUpload.upload.array('productimages',4),adminController.addProduct)
 
 
 

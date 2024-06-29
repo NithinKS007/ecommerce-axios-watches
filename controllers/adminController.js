@@ -227,7 +227,7 @@ const addCategoryBrand = async (req,res) =>{
 
       const  categoryData = await category.save()
 
-      res.redirect("/admin/brand-category-management")
+      res.redirect("/admin/brandCategoryManagement")
 
     } catch (error) {
 
@@ -246,7 +246,7 @@ const addCategoryBrand = async (req,res) =>{
 
       const   brandData = await brand.save()
 
-      res.redirect("/admin/brand-category-management")
+      res.redirect("/admin/brandCategoryManagement")
 
     } catch (error) {
 
@@ -295,10 +295,48 @@ const editCategory = async (req,res) =>{
 
 
     } catch (error) {
+
+        console.log(`error while editing the category`,error.message);
         
     }
 }
 
+//for editing brand 
+
+ const editBrand = async (req,res) =>{
+
+    const brandId = req.query.brandId
+    const brandName = req.query.brandName
+
+    try {
+        
+        const brand = await brands.findById({_id:brandId})
+
+        if(!brand){
+
+            return res.status(404).send("brand not found")
+        }
+
+        if(brand){
+
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{name:brandName}})
+
+            console.log(`brand data edited function worked`)
+
+            return res.status(200).json({
+
+                success:true,
+                message:"brand successfully edited",
+                brandDetails:updatedBrand
+            })
+        }
+
+    } catch (error) {
+        
+        console.log(`error while editing the brand`,error.message);
+    }
+
+ }
 //loading the product page
 const loadProducts = async (req,res) =>{
 
@@ -370,7 +408,7 @@ const addProduct = async (req,res) =>{
             console.log(`successfull registration`,productData);
         }
 
-      return  res.redirect("/admin/addproducts")
+      return  res.redirect("/admin/addProducts")
         
     } catch (error) {
         
@@ -536,7 +574,7 @@ module.exports = {
     verifyAdmin,
     loadDashboard,
     loadCustomer,
-    blockUnblock, //used normal method
+    blockUnblock, 
     loadCategoryBrand,
     addCategoryBrand,
     loadProducts,
@@ -545,6 +583,7 @@ module.exports = {
     softDeleteCategory,
     softDeleteBrand,
     softDeleteProduct,
-    editCategory
+    editCategory,
+    editBrand
 
 }

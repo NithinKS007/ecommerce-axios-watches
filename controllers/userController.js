@@ -68,7 +68,7 @@ const generateOtp = async (req,res) => {
 
         await utils.sendOtpEmail(email,otp)
 
-        return res.status(200).redirect('/verify-otp')
+        return res.status(200).redirect('/verifyOtp')
         
     } catch (error) {
 
@@ -232,7 +232,6 @@ const loadShowCase = async (req,res) =>{
         const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand')
         const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10)
         
-        console.log(productsArray);
         return res.status(200).render("user/showCase",{categoriesArray,productsArray,latestProducts})
 
     } catch (error) {
@@ -251,7 +250,7 @@ const loadProductDetails = async (req,res) =>{
     
         const productDetails = await products.findById({_id:productId}).populate('category').populate('brand')
 
-        const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup}).limit(4)
+        const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup})
 
    
 

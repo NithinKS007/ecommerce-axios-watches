@@ -56,7 +56,7 @@
                         </svg> Google
                     </a>
                 </div>
-                <p class="text-center mb-2">Already have an account? <a href="/signin">Sign in now</a></p>
+                <p class="text-center mb-2">Already have an account? <a href="/signin">Sign in now</a><a href="/"> <br>or Go to Home</a></p>
             </div>
         </div>
     </section>
@@ -67,145 +67,145 @@
 
 <script>
 
-//     const form = document.getElementById('formData')
-//     form.addEventListener('submit', function(event) {
+    const form = document.getElementById('formData')
+    form.addEventListener('submit', function(event) {
 
-//         event.preventDefault(); 
+        event.preventDefault(); 
 
-//         if (validation()) {
+        if (validation()) {
             
-//             this.submit(); 
-//         }
+            this.submit(); 
+        }
         
-//     });
+    });
 
-//     const validation = () =>{
+    const validation = () =>{
 
-//         const fnameError = document.getElementById('fnameError')
-//         const lnameError = document.getElementById('lnameError')
-//         const emailError = document.getElementById('emailError')
-//         const phoneError = document.getElementById('phoneError')
-//         const passwordError = document.getElementById('passwordError')
+        const fnameError = document.getElementById('fnameError')
+        const lnameError = document.getElementById('lnameError')
+        const emailError = document.getElementById('emailError')
+        const phoneError = document.getElementById('phoneError')
+        const passwordError = document.getElementById('passwordError')
 
-//         fnameError.textContent = ''
-//         lnameError.textContent = ''
-//         emailError.textContent = ''
-//         phoneError.textContent = ''
-//         passwordError.textContent = ''
+        fnameError.textContent = ''
+        lnameError.textContent = ''
+        emailError.textContent = ''
+        phoneError.textContent = ''
+        passwordError.textContent = ''
 
-//         const fname = document.getElementById('fname').value
-//         const lname = document.getElementById('lname').value
-//         const email = document.getElementById('email').value
-//         const phone = document.getElementById('phone').value
-//         const password = document.getElementById('password').value
+        const fname = document.getElementById('fname').value
+        const lname = document.getElementById('lname').value
+        const email = document.getElementById('email').value
+        const phone = document.getElementById('phone').value
+        const password = document.getElementById('password').value
 
-//         let isValid = true;
+        let isValid = true;
 
-//         if(fname.trim()===''){
+        if(fname.trim()===''){
 
-//             fnameError.textContent = "First name is required"
+            fnameError.textContent = "First name is required"
 
-//             isValid = false
+            isValid = false
 
-//         }else if(!isValidFirstName(fname.trim())){
+        }else if(!isValidFirstName(fname.trim())){
 
-//             fnameError.textContent = "First name must be  2 to 30 charactors and letters only"
+            fnameError.textContent = "First name must be  2 to 30 charactors and letters only"
 
-//             isValid = false
-//         }
+            isValid = false
+        }
 
-//         if(lname.trim()===''){
+        if(lname.trim()===''){
 
-//             lnameError.textContent = "Last name is required"
+            lnameError.textContent = "Last name is required"
 
-//             isValid = false
+            isValid = false
 
-//         }else if(!isValidLastName(lname.trim())){
+        }else if(!isValidLastName(lname.trim())){
 
-//             lnameError.textContent = "First name must be  2 to 30 charactors and letters only"
+            lnameError.textContent = "First name must be  2 to 30 charactors and letters only"
 
-//             isValid = false
-//         }
+            isValid = false
+        }
 
-//         if(email.trim()===''){
+        if(email.trim()===''){
 
-//             emailError.textContent = "Email is required"
+            emailError.textContent = "Email is required"
 
-//             isValid = false
+            isValid = false
 
-//         }else if(!isValidEmail(email.trim())){
+        }else if(!isValidEmail(email.trim())){
 
-//             emailError.textContent = "Please enter a valid email"
+            emailError.textContent = "Please enter a valid email"
 
-//             isValid = false
-//         }
+            isValid = false
+        }
 
-//         if(phone.trim()===''){
+        if(phone.trim()===''){
 
-//             phoneError.textContent = "Phone number is required"
+            phoneError.textContent = "Phone number is required"
 
-//             isValid = false
+            isValid = false
 
-//         }else if(!isvalidPhone(phone.trim())){
+        }else if(!isvalidPhone(phone.trim())){
 
-//             phoneError.textContent = "Please enter a valid phone number"
+            phoneError.textContent = "Please enter a valid phone number"
 
-//             isValid = false
-//         }
+            isValid = false
+        }
 
-//         if(password.trim()===''){
+        if(password.trim()===''){
 
-//             passwordError.textContent = "Password is required"
+            passwordError.textContent = "Password is required"
 
-//             isValid = false
-//         }else if(!isValidPassword(password.trim())){
+            isValid = false
+        }else if(!isValidPassword(password.trim())){
 
-//             passwordError.textContent = "Please enter a valid Password'Password must be at least 6 characters long and include at least one number, one lowercase letter, and one uppercase letter"
+            passwordError.textContent = "Please enter a valid Password'Password must be at least 6 characters long and include at least one number, one lowercase letter, and one uppercase letter"
 
-//             isValid = false
-//         }
+            isValid = false
+        }
 
-//         return isValid
+        return isValid
 
-//     }
-
-
-//     const isValidFirstName = (fname) =>{
-
-//         const fnameRegex = /^[A-Za-z]{2,30}$/
-//         return fnameRegex.test(fname) 
-//     }
-//     const isValidLastName = (lname) =>{
-
-//         const lnameRegex = /^[A-Za-z]{2,30}$/
-//         return lnameRegex.test(lname) 
-//     }
-
-//     const isValidEmail = (email) =>{
-
-//         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-//         return emailRegex.test(email);
-//     }
-
-//     const isvalidPhone = (phone) =>{
-
-//         const phoneRegex = /^\+?(\d{1,3})?[-.\s]?(\(?\d{1,4}\)?)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/
-//         return phoneRegex.test(phone)
-//     }
-
-//     const isValidPassword = (password) =>{
-
-//         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-//         return passwordRegex.test(password);
-//     }
+    }
 
 
-//    const inputs = document.querySelectorAll('input');
-// for (let i = 0; i < inputs.length; i++) {
-//     inputs[i].addEventListener('input', function() {
-//         validateForm();
-//     });
-// }
+    const isValidFirstName = (fname) =>{
+
+        const fnameRegex = /^[A-Za-z]{2,30}$/
+        return fnameRegex.test(fname) 
+    }
+    const isValidLastName = (lname) =>{
+
+        const lnameRegex = /^[A-Za-z]{2,30}$/
+        return lnameRegex.test(lname) 
+    }
+
+    const isValidEmail = (email) =>{
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email);
+    }
+
+    const isvalidPhone = (phone) =>{
+
+        const phoneRegex = /^\+?(\d{1,3})?[-.\s]?(\(?\d{1,4}\)?)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/
+        return phoneRegex.test(phone)
+    }
+
+    const isValidPassword = (password) =>{
+
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+        return passwordRegex.test(password);
+    }
+
+
+   const inputs = document.querySelectorAll('input');
+for (let i = 0; i < inputs.length; i++) {
+    inputs[i].addEventListener('input', function() {
+        validateForm();
+    });
+}
 
 
 

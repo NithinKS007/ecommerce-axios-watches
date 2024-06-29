@@ -16,15 +16,15 @@ userRoute.get("/signup",userController.loadRegister)
 userRoute.post("/signup",userController.generateOtp)
 
 //loading the otp verificaton page after sending the otp
-userRoute.get("/verify-otp",userController.otpVPage)
+userRoute.get("/verifyOtp",userController.otpVPage)
 
 //from here redirecting to home page if otp is correct
-userRoute.post("/verify-otp",userController.verifyOtp)
+userRoute.post("/verifyOtp",userController.verifyOtp)
 
 
 
 //resend otp route
-userRoute.get("/resend-otp",userController.resendOtp)
+userRoute.get("/resendOtp",userController.resendOtp)
 
 
 //loading the home page after verifying the otp after reg or using signin form
@@ -53,6 +53,6 @@ userRoute.get("/showcase",userController.loadShowCase)
 
 
 //loading the product details page
-userRoute.get("/product-details",userController.loadProductDetails)
+userRoute.get("/productDetails",userController.loadProductDetails)
 
 module.exports = userRoute  

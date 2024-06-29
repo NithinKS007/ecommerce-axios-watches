@@ -1,39 +1,41 @@
 <%- include('../layouts/adminLayouts/header') %>
 
-<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-<main class="d-flex align-items-center justify-content-center vh-100">
-    <section class="content-main" style="width: 100%; max-width: 400px;">
-        <div class="card mx-auto card-login">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">Admin Sign in</h4>
+    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+    <main class="d-flex align-items-center justify-content-center vh-100">
+        <section class="content-main" style="width: 100%; max-width: 400px;">
+            <div class="card mx-auto card-login">
+                <div class="card-body">
+                    <h4 class="card-title mb-4 text-center">Admin Sign in</h4>
 
-                <% if (typeof message != 'undefined') { %>
-            
-                    <p style="color: red; text-align: center; font-size: 0.9rem;"><%= message %></p>
-      
-                   <% } %>
-                <form method="post" action="/admin/signin">
-                    
-                    <div class="mb-3">
-                       
-                        <input class="form-control" name="email" placeholder="Email" type="text">
-                    </div>
+                    <% if (typeof message !='undefined' ) { %>
 
-                    <div class="mb-3">
-                        <input class="form-control" name="password" placeholder="Password" type="password">
-                    </div>
+                        <p style="color: red; text-align: center; font-size: 0.9rem;">
+                            <%= message %>
+                        </p>
 
-                    <div class="mb-3">
-                    </div>
+                        <% } %>
+                            <form method="post" action="/admin/signin">
 
-                    <div class="mb-4">
-                        <button type="submit" name="signin" class="btn btn-primary w-100">Login</button>
-                    </div>
-                </form>
+                                <div class="mb-3">
+
+                                    <input class="form-control" name="email" placeholder="Email" type="text">
+                                </div>
+
+                                <div class="mb-3">
+                                    <input class="form-control" name="password" placeholder="Password" type="password">
+                                </div>
+
+                                <div class="mb-3">
+                                </div>
+
+                                <div class="mb-4">
+                                    <button type="submit" name="signin" class="btn btn-primary w-100">Login</button>
+                                </div>
+                            </form>
+                </div>
             </div>
-        </div>
-    </section>
-</main>
+        </section>
+    </main>
 
-<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-<%- include('../layouts/adminLayouts/footer') %>
+    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+    <%- include('../layouts/adminLayouts/footer') %>

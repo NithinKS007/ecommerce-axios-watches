@@ -1,130 +1,161 @@
 <%- include('../layouts/adminLayouts/header') %>
-<div class="screen-overlay"></div>
-<%- include('../layouts/adminLayouts/sidebar') %>
-<main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %> 
-    <section class="content-main">
-        <div class="row">
-            <!-- Content Header -->
-            <div class="col-12 mb-3">
-                <div class="content-header">
-                    <h2 class="content-title">Add New Product</h2>
-                </div>
-            </div>
+    <div class="screen-overlay"></div>
+    <%- include('../layouts/adminLayouts/sidebar') %>
+        <main class="main-wrap">
+            <%- include('../layouts/adminLayouts/searchbar') %>
+                <section class="content-main">
+                    <div class="row">
+                        <!-- Content Header -->
+                        <div class="col-12 mb-3">
+                            <div class="content-header">
+                                <h2 class="content-title">Add New Product</h2>
+                            </div>
+                        </div>
 
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Product Details</h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="post" action="/admin/addproducts" enctype="multipart/form-data">
-                            <!-- Product Name -->
-                            <div class="mb-4">
-                                <label for="product_name" class="form-label">Product Name</label>
-                                <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name">
-                            </div>
-                            <!-- Description -->
-                            <div class="mb-4">
-                                <label class="form-label">Description</label>
-                                <textarea name="description" placeholder="Type here" class="form-control" rows="4"></textarea>
-                            </div>
-                            <!-- Prices and Attributes -->
-                            <div class="row">
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Regular Price</label>
-                                    <input name="regularPrice" type="text" placeholder="RS" class="form-control">
+                        <!-- Main Content -->
+                        <div class="col-lg-9">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h4>Product Details</h4>
                                 </div>
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Sales Price</label>
-                                    <input name="salesPrice" type="text" placeholder="RS" class="form-control">
-                                </div>
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Dial Shape</label>
-                                    <input name="dialShape" type="text" placeholder="Type here" class="form-control">
-                                </div>
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Display Type</label>
-                                    <input name="displayType" type="text" placeholder="Type here" class="form-control">
-                                </div>
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Strap Material</label>
-                                    <input name="strapMaterial" type="text" placeholder="Type here" class="form-control">
-                                </div>
-                                <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Strap Color</label>
-                                    <input name="strapColor" type="text" placeholder="Type here" class="form-control">
-                                </div>
-                            </div>
-                            <!-- Stock Quantity -->
-                            <div class="mb-4">
-                                <label for="stock" class="form-label">Stock Quantity</label>
-                                <input type="text" name="stock" class="form-control">
-                            </div>
-                            <!-- Category and Brand -->
-                            <div class="mb-4">
-                                <label class="form-label">Category</label>
-                                <select class="form-select" name="category">
-                                    <% if(categoriesData.length > 0) { %>
-                                        <% categoriesData.forEach(category => { %>
-                                            <option><%= category.name %></option>
-                                        <% }) %>
-                                    <% } else { %>
-                                        <option>No Category Found</option>
-                                    <% } %>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Brands</label>
-                                <select class="form-select" name="brand">
-                                    <% if(brandsData.length > 0) { %>
-                                        <% brandsData.forEach(brand => { %>
-                                            <option><%= brand.name %></option>
-                                        <% }) %>
-                                    <% } else { %>
-                                        <option>No Category Found</option>
-                                    <% } %>
-                                </select>
-                            </div>
-                            <div class="container mt-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Select Target Group:</label><br>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" id="men" name="targetGroup" value="men">
-                                        <label class="form-check-label" for="men">Men</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" id="women" name="targetGroup" value="women">
-                                        <label class="form-check-label" for="women">Women</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" id="kids" name="targetGroup" value="kids">
-                                        <label class="form-check-label" for="kids">Kids</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
+                                <div class="card-body">
+                                    <form method="post" action="/admin/addProducts" enctype="multipart/form-data">
+                                        <!-- Product Name -->
+                                        <div class="mb-4">
+                                            <label for="product_name" class="form-label">Product Name</label>
+                                            <input type="text" name="name" placeholder="Type here" class="form-control"
+                                                id="product_name">
+                                        </div>
+                                        <!-- Description -->
+                                        <div class="mb-4">
+                                            <label class="form-label">Description</label>
+                                            <textarea name="description" placeholder="Type here" class="form-control"
+                                                rows="4"></textarea>
+                                        </div>
+                                        <!-- Prices and Attributes -->
+                                        <div class="row">
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Regular Price</label>
+                                                <input name="regularPrice" type="text" placeholder="RS"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Sales Price</label>
+                                                <input name="salesPrice" type="text" placeholder="RS"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Dial Shape</label>
+                                                <input name="dialShape" type="text" placeholder="Type here"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Display Type</label>
+                                                <input name="displayType" type="text" placeholder="Type here"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Strap Material</label>
+                                                <input name="strapMaterial" type="text" placeholder="Type here"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="col-lg-4 mb-4">
+                                                <label class="form-label">Strap Color</label>
+                                                <input name="strapColor" type="text" placeholder="Type here"
+                                                    class="form-control">
+                                            </div>
+                                        </div>
+                                        <!-- Stock Quantity -->
+                                        <div class="mb-4">
+                                            <label for="stock" class="form-label">Stock Quantity</label>
+                                            <input type="text" name="stock" class="form-control">
+                                        </div>
+                                        <!-- Category and Brand -->
+                                        <div class="mb-4">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select" name="category">
+                                                <% if(categoriesData.length> 0) { %>
+                                                    <% categoriesData.forEach(category=> { %>
+                                                        <option>
+                                                            <%= category.name %>
+                                                        </option>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <option>No Category Found</option>
+                                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Brands</label>
+                                            <select class="form-select" name="brand">
+                                                <% if(brandsData.length> 0) { %>
+                                                    <% brandsData.forEach(brand=> { %>
+                                                        <option>
+                                                            <%= brand.name %>
+                                                        </option>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <option>No Category Found</option>
+                                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="container mt-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Select Target Group:</label><br>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" id="men"
+                                                        name="targetGroup" value="men">
+                                                    <label class="form-check-label" for="men">Men</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" id="women"
+                                                        name="targetGroup" value="women">
+                                                    <label class="form-check-label" for="women">Women</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" id="kids"
+                                                        name="targetGroup" value="kids">
+                                                    <label class="form-check-label" for="kids">Kids</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="input-upload">
 
-                                            <input class="form-control" id="fileAccess" type="file" name="productimages" multiple>
+                                            <input class="form-control" id="fileAccess" type="file" name="productimages"
+                                                multiple>
 
+
+                                                <div id="image-preview-container" class="d-flex flex-wrap mt-3" style="max-width: auto; max-height: auto; overflow: auto; border: 1px solid #ddd; padding: 10px;">
+                                                </div>
+                
                                         </div>
-                             <div>
-                                 <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
-                             </div>
-                           
+                                        <div>
+                                            <button class="btn btn-md rounded font-sm hover-up" type="submit">Add
+                                                Product</button>
+                                        </div>
 
 
-                        </form>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media Container -->
+
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Media Container -->
-            
-        </div>
-    </section>
-   
-</main>
-<%- include('../layouts/adminLayouts/footer') %>
+        </main>
+
+
+<script>
+//image cropping
+document.addEventListener("DOMContentLoaded",()=>{
+
+})
+
+
+</script>
+        <%- include('../layouts/adminLayouts/footer') %>
