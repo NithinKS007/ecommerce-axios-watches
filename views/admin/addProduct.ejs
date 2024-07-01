@@ -3,6 +3,43 @@
     <%- include('../layouts/adminLayouts/sidebar') %>
         <main class="main-wrap">
             <%- include('../layouts/adminLayouts/searchbar') %>
+                <!--  modal section starts-->
+                <button type="button" style="display: none" id="openCropperModalBtn" data-bs-toggle="modal"
+                    data-bs-target="#cropperModal"></button>
+
+                <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          ">
+                                <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="button" id="cropAndSave" class="btn btn-primary">
+                                    Crop and Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  modal section  ends-->
+
                 <section class="content-main">
                     <div class="row">
                         <!-- Content Header -->
@@ -19,12 +56,12 @@
                                     <h4>Product Details</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form method="post" action="/admin/addProducts" enctype="multipart/form-data">
+                                    <form method="post" enctype="multipart/form-data" >
                                         <!-- Product Name -->
                                         <div class="mb-4">
                                             <label for="product_name" class="form-label">Product Name</label>
                                             <input type="text" name="name" placeholder="Type here" class="form-control"
-                                                id="product_name">
+                                                id="product_name" />
                                         </div>
                                         <!-- Description -->
                                         <div class="mb-4">
@@ -37,45 +74,45 @@
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Regular Price</label>
                                                 <input name="regularPrice" type="text" placeholder="RS"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Sales Price</label>
                                                 <input name="salesPrice" type="text" placeholder="RS"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Dial Shape</label>
                                                 <input name="dialShape" type="text" placeholder="Type here"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Display Type</label>
                                                 <input name="displayType" type="text" placeholder="Type here"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Strap Material</label>
                                                 <input name="strapMaterial" type="text" placeholder="Type here"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                             <div class="col-lg-4 mb-4">
                                                 <label class="form-label">Strap Color</label>
                                                 <input name="strapColor" type="text" placeholder="Type here"
-                                                    class="form-control">
+                                                    class="form-control" />
                                             </div>
                                         </div>
                                         <!-- Stock Quantity -->
                                         <div class="mb-4">
                                             <label for="stock" class="form-label">Stock Quantity</label>
-                                            <input type="text" name="stock" class="form-control">
+                                            <input type="text" name="stock" class="form-control" />
                                         </div>
                                         <!-- Category and Brand -->
                                         <div class="mb-4">
                                             <label class="form-label">Category</label>
                                             <select class="form-select" name="category">
-                                                <% if(categoriesData.length> 0) { %>
-                                                    <% categoriesData.forEach(category=> { %>
+                                                <% if(categoriesData.length> 0) { %> <%
+                                                        categoriesData.forEach(category=> { %>
                                                         <option>
                                                             <%= category.name %>
                                                         </option>
@@ -88,74 +125,207 @@
                                         <div class="mb-4">
                                             <label class="form-label">Brands</label>
                                             <select class="form-select" name="brand">
-                                                <% if(brandsData.length> 0) { %>
-                                                    <% brandsData.forEach(brand=> { %>
+                                                <% if(brandsData.length> 0) { %> <% brandsData.forEach(brand=>
+                                                        { %>
                                                         <option>
                                                             <%= brand.name %>
                                                         </option>
                                                         <% }) %>
                                                             <% } else { %>
-                                                                <option>No Category Found</option>
+                                                                <option>No Brand Found</option>
                                                                 <% } %>
                                             </select>
                                         </div>
                                         <div class="container mt-4">
                                             <div class="mb-3">
-                                                <label class="form-label">Select Target Group:</label><br>
+                                                <label class="form-label">Select Target Group:</label><br />
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" id="men"
-                                                        name="targetGroup" value="men">
+                                                        name="targetGroup" value="men" />
                                                     <label class="form-check-label" for="men">Men</label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" id="women"
-                                                        name="targetGroup" value="women">
+                                                        name="targetGroup" value="women" />
                                                     <label class="form-check-label" for="women">Women</label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" id="kids"
-                                                        name="targetGroup" value="kids">
+                                                        name="targetGroup" value="kids" />
                                                     <label class="form-check-label" for="kids">Kids</label>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="input-upload">
-
                                             <input class="form-control" id="fileAccess" type="file" name="productimages"
-                                                multiple>
+                                                multiple />
 
-
-                                                <div id="image-preview-container" class="d-flex flex-wrap mt-3" style="max-width: auto; max-height: auto; overflow: auto; border: 1px solid #ddd; padding: 10px;">
-                                                </div>
-                
+                                            <div class="container" style="width: 100%">
+                                                <h4 style="padding-top: 5px">Image Preview</h4>
+                                                <div id="imagePreview" style="
+                      width: 100%;
+                      overflow: auto;
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                    "></div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <button class="btn btn-md rounded font-sm hover-up" type="submit">Add
-                                                Product</button>
+
+                                        <div style="
+                  display: flex;
+                  justify-content: center;
+                  padding-top: 15px;
+                ">
+                                            <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">
+                                                Add Product
+                                            </button>
                                         </div>
-
-
-
                                     </form>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Media Container -->
-
                     </div>
                 </section>
-
         </main>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const imageInput = document.getElementById("fileAccess");
+                const imagePreview = document.getElementById("imagePreview");
+                const openCropperModalBtn = document.getElementById("openCropperModalBtn") //hidden button to open the modal
+                const imageToCrop = document.getElementById("imageToCrop");
+                const cropAndSave = document.getElementById("cropAndSave");
+                const cropperModalElement = document.getElementById("cropperModal")
 
+                let cropper;
+                let currentImage;
+                let croppedImageBlob = null;
 
-<script>
-//image cropping
-document.addEventListener("DOMContentLoaded",()=>{
+                imageInput.addEventListener("change", (event) => {
+                    const files = event.target.files;
 
-})
+                    Array.from(files).forEach((file) => {
+                        const reader = new FileReader();
 
+                        reader.onload = (event) => {
+                            const imageContainer = document.createElement("div");
+                            imageContainer.style.position = "relative";
+                            imageContainer.style.marginBottom = "10px";
+                            imageContainer.style.display = "flex";
+                            imageContainer.style.alignItems = "center";
+                            imageContainer.style.justifyContent = "space-between";
 
-</script>
+                            const img = document.createElement("img");
+                            img.src = event.target.result;
+                            img.className = "imagePreview";
+                            img.style.maxWidth = "280px";
+                            img.style.maxHeight = "280px";
+                            img.style.marginRight = "10px";
+                            img.style.objectFit = "cover";
+
+                            const buttonContainer = document.createElement("div");
+                            buttonContainer.style.display = "flex";
+                            buttonContainer.style.flexDirection = "column";
+
+                            const deleteButton = document.createElement("button");
+                            deleteButton.className = "btn btn-danger btn-sm mb-2";
+                            deleteButton.innerText = "Remove";
+                            deleteButton.addEventListener("click", () => {
+                                imageContainer.remove();
+                            });
+
+                            buttonContainer.appendChild(deleteButton);
+                            imageContainer.appendChild(img);
+                            imageContainer.appendChild(buttonContainer);
+                            imagePreview.appendChild(imageContainer);
+
+                            img.addEventListener("click", () => {
+                                imageToCrop.src = img.src;
+                                currentImage = img;
+                                openCropperModalBtn.click(); // Using the hidden button to open the modal
+                            });
+                        };
+
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                cropperModalElement.addEventListener("shown.bs.modal", () => {
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1,
+                        viewMode: 2,
+                        autoCropArea: 1,
+                    });
+                });
+
+                cropperModalElement.addEventListener("hidden.bs.modal", () => {
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
+                });
+
+                cropAndSave.addEventListener("click", () => {
+                if (cropper) {
+                    const canvas = cropper.getCroppedCanvas();
+
+                    canvas.toBlob((blob) => {
+                    croppedImageBlob = blob;
+
+                    const url = URL.createObjectURL(blob);
+                    currentImage.src = url;
+
+                    $("#cropperModal").modal("hide");
+                        });
+                    }
+                });
+
+                document
+                    .getElementById("submitForm")
+                    .addEventListener("submit", (event) => {
+                        event.preventDefault();
+
+                        const formData = new FormData();
+
+                        const formElements = document.getElementById("submitForm").elements;
+
+                        console.log(formElements)
+
+                        for (let element of formElements) {
+                            if (element.name && element.type !== "file") {
+                                formData.append(element.name, element.value);
+                            }
+                        }
+                        if (croppedImageBlob) {
+                            console.log(formData);
+                            formData.append("productimages", croppedImageBlob, 'croppedImageBlob.jpg'); 
+
+                            fetch("http://localhost:7000/admin/addProducts", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then((response) => {
+                                    if (!response.ok) {
+                                        throw new Error("Network response was not ok");
+                                    }
+                                    return response.json();
+                                })
+                                .then((data) => {
+                                    console.log("Success:", data);
+                                })
+                                .catch((error) => {
+                                    console.error(
+                                        "There was a problem with the fetch operation:",
+                                        error
+                                    );
+                                });
+
+                        } else {
+                            console.error("No cropped image to upload");
+                        }
+                    });
+            });
+        </script>
         <%- include('../layouts/adminLayouts/footer') %>

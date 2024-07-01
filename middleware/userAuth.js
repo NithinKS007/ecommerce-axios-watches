@@ -15,6 +15,7 @@ passport.use(new GoogleStrategy({
     console.log('Google OAuth function is working')
     
     try {
+      
       let user = await users.findOne({ email: profile._json.email });
 
       if (!user) {

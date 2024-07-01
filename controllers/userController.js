@@ -78,16 +78,17 @@ const generateOtp = async (req,res) => {
 }
 
 //loading the otp verification page 
-
-const otpVPage = async (req,res) =>{
-
+const otpVPage = async (req, res) => {
     try {
-        
+
         return res.status(200).render('user/otpVerification')
 
     } catch (error) {
+
+        console.error('Error loading the OTP verification page:', error.message)
+
+        return res.status(500).send('Internal Server Error')
         
-        console.log(`error loading the otp verification page`,error.message);
     }
 }
 
