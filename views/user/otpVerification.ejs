@@ -1,102 +1,135 @@
 <%- include('../layouts/adminLayouts/header') %>
-    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-    <main class="d-flex align-items-center justify-content-center vh-100">
-        <section class="content-main">
-            <div class="card mx-auto card-login" style="width: 380px;">
-                <div class="card-body">
-                    <h4 class="card-title mb-4 text-center">OTP Verification</h4>
-                    <form method="post" action="/verifyOtp">
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<main class="d-flex align-items-center justify-content-center vh-100">
+  <section class="content-main">
+    <div class="card mx-auto card-login" style="width: 380px">
+      <div class="card-body">
+        <h4 class="card-title mb-4 text-center">OTP Verification</h4>
 
-                        <div class="mb-3">
+        <!-- for validating otp -->
 
-                            <input class="form-control" name="otp" placeholder="Enter OTP" type="text">
+        <p id="errorInvalid" style="display: none; text-align: center"></p>
 
-                        </div>
+        <div class="mb-3">
+          <input
+            class="form-control"
+            name="otp"
+            id="otpInput"
+            placeholder="Enter OTP"
+            type="text"
+          />
+        </div>
 
-                        <div id="timer" class="mb-3 text-center"><span id="countdown"></span></div>
+        <div id="timer" class="mb-3 text-center">
+          <span id="countdown"></span>
+        </div>
 
-                        <div class="mb-4" style="display: block;">
+        <div class="mb-4" style="display: block">
+          <button
+            type="submit"
+            name="signin"
+            id="verifyButton"
+            class="btn btn-primary w-100"
+          >
+            Verify OTP
+          </button>
+        </div>
 
-                            <button type="submit" name="signin" id="verify-button" class="btn btn-primary w-100"> Verify
-                                OTP </button>
+        <div class="mb-4" style="display: none" id="resendContainer">
+          <button id="resendotp" name="resendotp" class="btn btn-primary w-100">
+            Resend OTP
+          </button>
+        </div>
+        <p class="text-center mb-4">
+          Don't have account? <a href="/signup">Sign up</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<script>
+  //countdown for the otp page
 
-                        </div>
+  const startTimer = (n) => {
+    if (n <= 0) {
+      document.getElementById("countdown").textContent = "Time's up ";
+      document.getElementById("verifyButton").style.display = "none";
+      document.getElementById("resendContainer").style.display = "block";
+    } else {
+      n--;
 
-                    </form>
-                    <div class="mb-4" style="display:none;" id="resend-container">
+      document.getElementById(
+        "countdown"
+      ).textContent = ` Time remaining : ${n} seconds`;
 
-                        <button id="resendotp" name="resendotp" class="btn btn-primary w-100"> Resend OTP </button>
+      setTimeout(() => {
+        startTimer(n);
+      }, 1000);
+    }
+  };
 
-                    </div>
-                    <p class="text-center mb-4">Don't have account? <a href="/signup">Sign up</a></p>
-                </div>
-            </div>
-        </section>
-    </main>
-    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-    <script>
+  startTimer(15);
 
-        //countdown for the otp page
+  //on clicking the resend otp button
 
-        const startTimer = (n) => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const resendButton = document.getElementById("resendotp");
 
-            if (n <= 0) {
+    resendButton.addEventListener("click", () => {
+      fetch("http://localhost:7000/resendOtp", {})
+        .then((response) => {
+          if (response.status != 200) {
+            throw new Error("Network response was not ok");
+          }
 
-                document.getElementById('countdown').textContent = "Time's up "
-                document.getElementById('verify-button').style.display = "none"
-                document.getElementById('resend-container').style.display = "block"
-
-            } else {
-
-                n--
-
-                document.getElementById('countdown').textContent = ` Time remaining : ${n} seconds`
-
-
-                setTimeout(() => {
-
-                    startTimer(n)
-
-                }, 1000)
-            }
-        }
-
-        startTimer(15)
-
-        //on clicking the resend otp button
-
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const resendButton = document.getElementById('resendotp')
-
-            resendButton.addEventListener("click", () => {
-
-                fetch("http://localhost:7000/resendOtp", {
-
-                }).then(response => {
-
-                    if (response.status != 200) {
-
-                        throw new Error('Network response was not ok')
-                    }
-
-                    return response.json() //is not necessary but this block will return to the next then block written below
-
-                }).then(data => {
-
-                    startTimer(15)
-                    document.getElementById('verify-button').style.display = "block"
-                    document.getElementById('resend-container').style.display = "none"
-
-                }).catch(error => {
-
-                    console.error('There was a problem with the fetch operation:', error)
-
-                })
-            })
+          return response.json(); //is not necessary but this block will return to the next then block written below
         })
+        .then((data) => {
+          startTimer(15);
+          document.getElementById("verifyButton").style.display = "block";
+          document.getElementById("resendContainer").style.display = "none";
+        })
+        .catch((error) => {
+          console.error("There was a problem with the fetch operation:", error);
+        });
+    });
 
+    verifyButton.addEventListener("click", () => {
+      const otp = document.getElementById("otpInput").value;
+      const verifyButton = document.getElementById("verifyButton");
+      const result = document.getElementById("errorInvalid");
 
-    </script>
+      console.log(`this is message from fron end`, otp);
 
-    <%- include('../layouts/adminLayouts/footer') %>
+      fetch("http://localhost:7000/verifyOtp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ otp }),
+      })
+        .then((response) => {
+          if (response.status === 401) {
+            result.style.display = "block";
+            result.innerText = "Invalid OTP";
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            window.location.href = "http://localhost:7000/home";
+          }
+        })
+        .catch((error) => {
+          console.log(`error while fetching the otp data`, error.message);
+
+          result.style.display = "block";
+
+          result.innerText = "An error occurred. Please try again.";
+        });
+    });
+  });
+</script>
+
+<%- include('../layouts/adminLayouts/footer') %>

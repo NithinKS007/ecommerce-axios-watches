@@ -23,13 +23,13 @@ const securePassword = async(password) =>{
 const loadLogin = (req,res) =>{
     try {
 
-
        return  res.status(200).render('admin/signin')
 
     } catch (error) {
 
         console.log(`cannot load login page of the admin`,error.message);
         
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -59,6 +59,8 @@ const registerAdmin = async (req,res) =>{
     } catch (error) {
 
         console.log(`error while registering admin`,error.message);
+
+        return res.status(500).send("Internal server Error")
         
     }
 }
@@ -74,31 +76,32 @@ const verifyAdmin = async (req,res) =>{
 
         if(!adminData){
               
-           return res.status(404).render("admin/signin",{message:"admin does not exist"})
+           return res.status(401).render("admin/signin",{message:"Admin does not exist"})
   
         }
             const passwordMatch = await bcrypt.compare(password,adminData.password)
 
             if(!passwordMatch){
 
-                return res.status(404).render("admin/signin",{message:"email or password is incorrect"})
+                return res.status(401).render("admin/signin",{message:"Email or password is incorrect"})
             }
 
             if(!adminData.isAdmin){
 
-                return res.status(404).render("admin/signin",{message:"user cannot login here"})
+                return res.status(403).render("admin/signin",{message:"user cannot login here"})
             }
             
             req.session.admin_id = adminData._id;
             req.session.isAdmin  = adminData.isAdmin 
                                                                                 
           
-            return res.status(200). redirect("/admin/dashboard")
+            return res.status(200).redirect("/admin/dashboard")
 
     } catch (error) {
 
         console.log(`error while verifying and finding the admin`,error.message);
         
+        return res.status(500).send("Internal server Error")
     }
 
 }
@@ -114,9 +117,11 @@ const loadDashboard = async (req,res) =>{
 
         console.log(`error while loading the dashboard of the admin`,error.message)
 
+        return res.status(500).send("Internal server Error")
+
     }
 
-    // res.render('admin/dashboard')
+   
 }
 
 //loading the list of customers in admins dashboard
@@ -126,16 +131,18 @@ const loadCustomer = async (req, res) => {
        
         if (userData.length === 0) {
 
-            res.render("admin/customerList")
+           return res.status(200).render("admin/customerList")
 
         } else {
 
-            res.render('admin/customerList', { userData: userData })
+          return  res.status(200).render('admin/customerList', { userData: userData })
 
         }
     } catch (error) {
 
         console.log(`Error while loading the customers:`, error.message);
+
+        return res.status(500).send("Internal server Error")
         
     }
 }
@@ -188,6 +195,7 @@ const blockUnblock = async (req,res) =>{
 
         console.log(`error while blocking or unblocking the customer`,error.message);
         
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -199,12 +207,15 @@ const loadCategoryBrand = async (req,res) =>{
         const categoriesData = await categories.find({})
         const brandsData = await brands.find({})
 
-        res.render('admin/brandCategoryManagement',{categoriesData,brandsData})
+       return res.status(200).render('admin/brandCategoryManagement',{categoriesData,brandsData})
 
 
     } catch (error) {
         
         console.log(`cannot load the category page`,error.message);
+
+        
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -231,7 +242,10 @@ const addCategoryBrand = async (req,res) =>{
 
     } catch (error) {
 
-        console.log(`error adding the category`,error.message);   
+        console.log(`error adding the category`,error.message); 
+        
+        return res.status(500).send("Internal server Error")
+        
     }    
 
    }else if(bName){
@@ -250,7 +264,9 @@ const addCategoryBrand = async (req,res) =>{
 
     } catch (error) {
 
-        console.log(`error adding the brand`,error.message);   
+        console.log(`error adding the brand`,error.message); 
+        
+        return res.status(500).send("Internal server Error")
     }    
 
    }
@@ -263,9 +279,13 @@ const addCategoryBrand = async (req,res) =>{
 
 const editCategory = async (req,res) =>{
 
-    const categoryId = req.query.categoryId
-    const categoryName = req.query.categoryName
-    const categoryDescription = req.query.categoryDescription
+    const { categoryId, categoryName, categoryDescription } = req.body; 
+
+    if (!categoryId ||!categoryName ||!categoryDescription) {
+
+        return res.status(400).json({ success: false, message: "Category ID, name, and description are required" })
+
+    }
 
     try {
         
@@ -273,12 +293,13 @@ const editCategory = async (req,res) =>{
 
         if(!category){
 
-            return res.status(404).send("category not found")
-          }
+            return res.status(404).json({ success: false, message: "Category not found" });
 
-          if(category){
+        }
 
-            const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:categoryName,description:categoryDescription}})
+        if(category){
+
+         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:categoryName,description:categoryDescription}})
    
    
                console.log(`category data edited function worked `)
@@ -297,6 +318,8 @@ const editCategory = async (req,res) =>{
     } catch (error) {
 
         console.log(`error while editing the category`,error.message);
+
+        return res.status(500).send("Internal server Error")
         
     }
 }
@@ -305,8 +328,12 @@ const editCategory = async (req,res) =>{
 
  const editBrand = async (req,res) =>{
 
-    const brandId = req.query.brandId
-    const brandName = req.query.brandName
+    const { brandId, brandName } = req.body; 
+
+    if (!brandId ||!brandName) {
+
+        return res.status(400).json({ success: false, message: "Brand ID and name are required" });
+    }
 
     try {
         
@@ -314,7 +341,7 @@ const editCategory = async (req,res) =>{
 
         if(!brand){
 
-            return res.status(404).send("brand not found")
+            return res.status(404).json({ success: false, message: "Brand not found" });
         }
 
         if(brand){
@@ -334,6 +361,8 @@ const editCategory = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while editing the brand`,error.message);
+        
+        return res.status(500).send("Internal server Error")
     }
 
  }
@@ -345,11 +374,13 @@ const loadProducts = async (req,res) =>{
 
         const categoriesData = await categories.find({})
         
-       res.render("admin/productList",{productData,categoriesData})
+       return res.status(200).render("admin/productList",{productData,categoriesData})
 
     } catch (error) {
         
         console.log(`error while loading the products page`,error.message);
+          
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -361,12 +392,13 @@ const loadaddProduct = async (req,res) =>{
         const categoriesData = await categories.find({})
         const brandsData = await brands.find()
 
-        res.render("admin/addProduct",{categoriesData,brandsData})
+      return res.status(200).render("admin/addProduct",{categoriesData,brandsData})
 
     } catch (error) {
 
         console.log(`error while adding the product`,)
         
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -408,11 +440,13 @@ const addProduct = async (req,res) =>{
             console.log(`successfull registration`,productData);
         }
 
-      return  res.redirect("/admin/addProducts")
+      return  res.status(200).redirect("/admin/addProducts")
         
     } catch (error) {
         
         console.log(`cannot add the products `,error.message);
+          
+        return res.status(500).send("Internal server Error")
     }
 }
 
@@ -429,7 +463,7 @@ const softDeleteCategory = async (req,res) =>{
         
         if(!category){
 
-          return res.status(404).send("category not found")
+            return res.status(404).json({ success: false, message: "Category not found" });
         }
         
         if(category.isActive){
@@ -466,6 +500,9 @@ const softDeleteCategory = async (req,res) =>{
     } catch (error) {
 
         console.log(`error while soft deleting the category`,error.message)
+
+          
+        return res.status(500).send("Internal server Error")
         
         
     }
@@ -481,7 +518,7 @@ const softDeleteBrand = async (req,res) =>{
 
         if(!brandData){
 
-            return res.status(404).send("brand not found")
+            return res.status(404).json({ success: false, message: "Brand not found" });
         }
 
         if(brandData.isActive){
@@ -514,6 +551,9 @@ const softDeleteBrand = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while deleting the brand`,error.message);
+
+          
+        return res.status(500).send("Internal server Error")
     }
 
 }
@@ -530,7 +570,8 @@ const softDeleteProduct = async (req,res) =>{
 
         if(!productData){
 
-            return res.status(404).send("product not found")
+            return res.status(404).json({ success: false, message: "Product not found" });
+
         }
 
         if(productData.isActive){
@@ -563,6 +604,9 @@ const softDeleteProduct = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while deleting the brand`,error.message);
+
+          
+        return res.status(500).send("Internal server Error")
     }
 
 }

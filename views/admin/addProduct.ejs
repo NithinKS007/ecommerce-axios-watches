@@ -201,7 +201,8 @@
 
                 let cropper;
                 let currentImage;
-                let croppedImageBlob = null;
+                let croppedImageBlob = null
+                
 
                 imageInput.addEventListener("change", (event) => {
                     const files = event.target.files;
@@ -233,7 +234,9 @@
                             deleteButton.className = "btn btn-danger btn-sm mb-2";
                             deleteButton.innerText = "Remove";
                             deleteButton.addEventListener("click", () => {
-                                imageContainer.remove();
+                                
+                                imageContainer.remove()
+                             
                             });
 
                             buttonContainer.appendChild(deleteButton);
@@ -274,6 +277,8 @@
                     canvas.toBlob((blob) => {
                     croppedImageBlob = blob;
 
+                    console.log(`hello`,croppedImageBlob);
+
                     const url = URL.createObjectURL(blob);
                     currentImage.src = url;
 
@@ -291,7 +296,7 @@
 
                         const formElements = document.getElementById("submitForm").elements;
 
-                        console.log(formElements)
+                   
 
                         for (let element of formElements) {
                             if (element.name && element.type !== "file") {
@@ -299,10 +304,13 @@
                             }
                         }
                         if (croppedImageBlob) {
-                            console.log(formData);
-                            formData.append("productimages", croppedImageBlob, 'croppedImageBlob.jpg'); 
+
+                            console.log(`hello12344`,croppedImageBlob);
+
+                            formData.append("images", croppedImageBlob, 'croppedImageBlob.jpg'); 
 
                             fetch("http://localhost:7000/admin/addProducts", {
+                            
                                 method: "POST",
                                 body: formData,
                             })

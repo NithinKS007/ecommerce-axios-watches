@@ -3,6 +3,8 @@ const users = require("../models/userModel");
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 require('dotenv').config();
 
+
+//authentication using google
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -65,4 +67,12 @@ passport.deserializeUser(async (id, done) => {
 
 })
 
-module.exports = passport;
+
+
+
+
+module.exports = {
+
+  passport
+
+}

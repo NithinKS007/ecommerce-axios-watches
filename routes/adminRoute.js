@@ -17,6 +17,10 @@ const softdeleteHandle = require('../middleware/softDeletehandle')
 
 const editHandle = require('../middleware/handleEdit')
 
+//requiring the adminAuthetication middleware 
+
+const adminAuth = require('../middleware/adminAuth')
+
 
 //registering the admin
 adminRoute.post("/signup",adminController.registerAdmin)
@@ -28,42 +32,42 @@ adminRoute.get("/signin",adminController.loadLogin)
 adminRoute.post("/signin",adminController.verifyAdmin)
 
 //loading the dashboard of the admin 
-adminRoute.get("/dashboard",adminController.loadDashboard)
+adminRoute.get("/dashboard",adminAuth.isAdminLogin,adminController.loadDashboard)
 
 //loading the customers list in admins dashboard
-adminRoute.get("/customerlist",adminController.loadCustomer)
+adminRoute.get("/customerlist",adminAuth.isAdminLogin,adminController.loadCustomer)
 
 //blocking or unblocking the user
-adminRoute.patch("/customerlist",adminController.blockUnblock)
+adminRoute.patch("/customerlist",adminAuth.isAdminLogin,adminController.blockUnblock)
 
 //loading the category page
-adminRoute.get("/brandCategoryManagement",adminController.loadCategoryBrand)
+adminRoute.get("/brandCategoryManagement",adminAuth.isAdminLogin,adminController.loadCategoryBrand)
 
 
 //soft deleting the category
-adminRoute.patch("/brandCategoryManagement",softdeleteHandle.handleSoftDelete)
+adminRoute.patch("/brandCategoryManagement",adminAuth.isAdminLogin,softdeleteHandle.handleSoftDelete)
 
 
 //for managing editing the brand and category in the same page
 
-adminRoute.put("/brandCategoryManagement",editHandle.handleEdit)
+adminRoute.put("/brandCategoryManagement",adminAuth.isAdminLogin,editHandle.handleEdit)
 
 //inserting the category
-adminRoute.post("/brandCategoryManagement",adminController.addCategoryBrand)
+adminRoute.post("/brandCategoryManagement",adminAuth.isAdminLogin,adminController.addCategoryBrand)
 
 
 //loading the products page
-adminRoute.get("/products",adminController.loadProducts)
+adminRoute.get("/products",adminAuth.isAdminLogin,adminController.loadProducts)
 
 //softdeleting the product
-adminRoute.patch("/products",adminController.softDeleteProduct)
+adminRoute.patch("/products",adminAuth.isAdminLogin,adminController.softDeleteProduct)
 
 //loading the add products page
-adminRoute.get("/addProducts",adminController.loadaddProduct)
+adminRoute.get("/addProducts",adminAuth.isAdminLogin,adminController.loadaddProduct)
 
 //inserting the products
 
-adminRoute.post("/addProducts",imageUpload.upload.array('productimages',4),adminController.addProduct)
+adminRoute.post("/addProducts",adminAuth.isAdminLogin,imageUpload.upload.array('productimages',4),adminController.addProduct)
 
 
 

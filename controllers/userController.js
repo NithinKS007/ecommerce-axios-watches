@@ -33,6 +33,9 @@ const loadHome = async (req,res) => {
     } catch (error) {
         
         console.log(`error while loading the home page before logging in`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
     }
 }
 //loading the registraion page 
@@ -44,6 +47,9 @@ const loadRegister = async (req,res) => {
     } catch (error) {
 
         console.log(`cannot render signup page`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
         
     }
 }
@@ -73,6 +79,9 @@ const generateOtp = async (req,res) => {
     } catch (error) {
 
         console.log(`cannot render otpverification page or generate otp`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
         
     }
 }
@@ -98,8 +107,6 @@ const resendOtp = async (req,res) =>{
 
     const {email}        = req.session.formData
 
-    
-
     try {
 
         const otp = await utils.generateOtp()
@@ -112,12 +119,13 @@ const resendOtp = async (req,res) =>{
 
         await utils.sendOtpEmail(email,otp)
 
-        return res.status(200).json({success:true,message : "OTP send to your email.."})
+        return res.status(200).json({success:true,message : "OTP send to your email"})
         
     } catch (error) {
 
-        console.log(`error while resending the otp`,error.message);
+        console.log(`error while resending the otp`,error.message)
         
+        return res.status(500).json({ success: false, message: "Error sending OTP. Please try again" })
     }
 }
 
@@ -125,7 +133,6 @@ const resendOtp = async (req,res) =>{
 
 const verifyOtp = async (req,res) => {
    
-
     try {
 
         const otp    = req.body.otp
@@ -134,7 +141,7 @@ const verifyOtp = async (req,res) => {
 
         const userDataSession = req.session.formData
 
-        const otpDataBase = await OTP.findOne({email,otp}).exec()
+        const otpDataBase = await OTP.findOne({email,otp})
 
         if(otpDataBase){
                  
@@ -154,18 +161,23 @@ const verifyOtp = async (req,res) => {
 
             if(userData){
 
-                return res.status(200).redirect("/home")
+                return res.status(200).json({success :true, message:"otp validaton successfull"})
 
             }else{
 
-               return  res.send('Something went wrong while registering')
+                return res.status(500).json({ success: false, message: "Something went wrong while registering" })
 
             }
+        }else{
+
+            return res.status(401).json({success:false,message:"Invalid OTP or Expired"})
         }
         
     } catch (error) {
 
-        console.log(`otp verification is not working`,error.message);
+        console.log(`otp verification is not working`,error.message)
+        
+        return res.status(500).json({ success: false, message: "Error during OTP verification" })
         
     }
 
@@ -182,6 +194,9 @@ const loadsignin = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the login page`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
     }
 }
 
@@ -217,7 +232,10 @@ const verifySignin = async (req,res) => {
 
     } catch (error) {
 
-        console.log(error.message);
+        console.log(`error in the signin function`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
         
     }
 
@@ -238,6 +256,9 @@ const loadShowCase = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading mens page`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
     }
 }
 
@@ -266,6 +287,9 @@ const loadProductDetails = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the product details page`,error.message);
+
+        return res.status(500).send("Internal server Error")
+
     }
 }
 module.exports = {
