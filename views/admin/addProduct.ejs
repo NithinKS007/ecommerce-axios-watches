@@ -275,14 +275,22 @@
                     const canvas = cropper.getCroppedCanvas();
 
                     canvas.toBlob((blob) => {
+
                     croppedImageBlob = blob;
 
-                    console.log(`hello`,croppedImageBlob);
-
                     const url = URL.createObjectURL(blob);
+
                     currentImage.src = url;
 
+
+                    const dataTransfer = new DataTransfer()
+
+                    dataTransfer.items.add( new File([blob],`croppedImage.jpg`,{type:`image/jpeg`}))
+
+                    imageInput.files = dataTransfer.files
+
                     $("#cropperModal").modal("hide");
+
                         });
                     }
                 });
@@ -304,8 +312,6 @@
                             }
                         }
                         if (croppedImageBlob) {
-
-                            console.log(`hello12344`,croppedImageBlob);
 
                             formData.append("images", croppedImageBlob, 'croppedImageBlob.jpg'); 
 

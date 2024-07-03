@@ -3,7 +3,16 @@
   <%- include('../layouts/adminLayouts/sidebar') %>
     <main class="main-wrap">
       <%- include('../layouts/adminLayouts/searchbar') %>
-
+      <style>
+        .error {
+        font-size: 0.8em;
+        color: red;
+    }
+    .small-text {
+        font-size: 0.8em;
+        line-height: 1.2;
+    }
+    </style>
         <!-- Modal starts for category -->
         <div class="modal fade" id="exampleModalOne" tabindex="-1" aria-labelledby="exampleModalLabel"
           aria-hidden="true">
@@ -13,17 +22,18 @@
                 <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">Edit Category</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body" id="EditCategory">
 
                 <div class="mb-3">
                   <label for="categoryName" class="form-label">Change Name</label>
                   <input type="text" class="form-control" id="changeCName" name="categoryName" placeholder="" required>
-
+                  <span id="categoryChangeNameError" class="error"></span>
                 </div>
                 <div class="mb-3">
                   <label for="categoryDescription" class="form-label">Change Description</label>
                   <textarea class="form-control" id="changeCDescription" name="categoryDescription" rows="3"
                     placeholder="" required></textarea>
+                    <span id="categoryChangeDescriptionError" class="error"></span>
                 </div>
 
 
@@ -48,12 +58,12 @@
                 <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">Edit Brand</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body" id="editBrand">
 
                 <div class="mb-3">
                   <label for="brandName" class="form-label">Change Name</label>
                   <input type="text" class="form-control" id="changeBName" name=" brandName" placeholder="" required>
-
+                  <span id="brandChangeNameError" class="error"></span>
                 </div>
 
               </div>
@@ -84,14 +94,16 @@
               <div class="row">
                 <div class="col-md-3">
 
-                  <form action="/admin/brandCategoryManagement" method="post">
+                  <form action="/admin/brandCategoryManagement" id="formDataCreateCategory" method="post">
                     <div class="mb-4">
-                      <label for="product_name" class="form-label">Name</label>
-                      <input type="text" name="cName" placeholder="Type here" class="form-control" id="product_name" />
+                      <label for="categoryName" class="form-label">Name</label>
+                      <input type="text" name="cName" placeholder="Type here" class="form-control" id="categoryName" />
+                      <span id="categoryNameError" class="error"></span>
                     </div>
                     <div class="mb-4">
                       <label class="form-label">Description</label>
-                      <textarea name="cDescription" placeholder="Type here" class="form-control"></textarea>
+                      <textarea name="cDescription" id="categoryDescription" placeholder="Type here" class="form-control"></textarea>
+                      <span id="categoryDescriptionError" class="error"></span>
                     </div>
                     <div class="d-grid">
                       <button type="submit" class="btn btn-primary">Create category</button>
@@ -190,10 +202,11 @@
               <div class="row">
                 <div class="col-md-3">
 
-                  <form action="/admin/brandCategoryManagement" method="post">
+                  <form action="/admin/brandCategoryManagement"  id="formDataCreateBrand" method="post">
                     <div class="mb-4">
                       <label for="product_name" class="form-label">Name</label>
-                      <input type="text" name="bName" placeholder="Type here" class="form-control" id="product_name" />
+                      <input type="text" name="bName" placeholder="Type here" class="form-control" id="brandName" />
+                      <span id="brandNameError" class="error"></span>
                     </div>
                     <div class="d-grid">
                       <button type="submit" class="btn btn-primary">Create brand</button>
@@ -632,7 +645,240 @@
           })
 
 
+//form validation for adding new category
+ 
+        let isCategoryNameValid = false;
+        const categoryNameInput = document.getElementById('categoryName');
+        const categoryNameError = document.getElementById('categoryNameError');
+        
+        const validateCategoryName = () =>{
+        
+            if (categoryNameInput.value.trim() === '') {
 
+                categoryNameError.textContent = '* Category Name is required';
+                isCategoryNameValid = false;
+
+            }else {
+                categoryNameError.textContent = '';
+                isCategoryNameValid = true;
+            }
+        }
+        
+        categoryNameInput.addEventListener('input', validateCategoryName);
+        
+        
+     
+        let isCategoryDescriptionValid = false;
+        const categoryDescriptionInput = document.getElementById('categoryDescription');
+        const categoryDescriptionError = document.getElementById('categoryDescriptionError');
+        
+        const validateCategoryDescription = () =>{
+        
+            if (categoryDescriptionInput.value.trim() === '') {
+                categoryDescriptionError.textContent = '* Category is Description required';
+                isCategoryDescriptionValid = false;
+            }else if(categoryDescriptionInput.value.trim().length < 5){
+        
+                categoryDescriptionError.textContent = '* Description should be atleast 5 charactors';
+                isCategoryDescriptionValid = false;
+        
+            }else {
+                categoryDescriptionError.textContent = '';
+                isCategoryDescriptionValid = true;
+            }
+        }
+        
+        categoryDescriptionInput.addEventListener('input', validateCategoryDescription);
+        
+        
+        
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        
+        const form = document.getElementById('formDataCreateCategory');
+        
+        form.addEventListener('submit', (event) => {
+        
+        
+            validateCategoryName()
+            validateCategoryDescription()
+        
+            
+            if (!isCategoryNameValid&&!isCategoryDescriptionValid) {
+        
+                event.preventDefault();
+        
+            }
+        });
+        });
+        
+
+
+        //form validation for adding new brand
+ 
+        let isBrandNameValid = false;
+        const brandNameInput = document.getElementById('brandName');
+        const brandNameError = document.getElementById('brandNameError');
+        
+        const validateBrandName = () =>{
+        
+            if (brandNameInput.value.trim() === '') {
+
+                brandNameError.textContent = '* Brand Name is required';
+                isBrandNameValid = false;
+
+            }else if(brandNameInput.value.trim().length < 2){
+        
+                brandNameError.textContent = '* Name should be atleast 2 charactors';
+                isBrandNameValid = false;
+
+            
+            
+            
+             } else {
+                brandNameError.textContent = '';
+                isBrandNameValid = true;
+            }
+        }
+        
+        brandNameInput.addEventListener('input', validateBrandName);
+           
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        
+        const form = document.getElementById('formDataCreateBrand');
+        
+        form.addEventListener('submit', (event) => {
+        
+        
+            validateBrandName()
+          
+        
+            
+            if (!isBrandNameValid) {
+        
+                event.preventDefault();
+        
+            }
+        });
+     });
+
+ //form validation for editing existing category
+ 
+        let   isCategoryNameEditValid = false;
+        const categoryNameEditedInput = document.getElementById('changeCName');
+        const categoryNameEditedError = document.getElementById('categoryChangeNameError');
+        
+        const validateEditCategoryName = () =>{
+        
+            if (categoryNameEditedInput.value.trim() === '') {
+
+                categoryNameEditedError.textContent = '* Category Name is required';
+                categoryNameEditedError = false;
+
+            }else {
+              categoryNameEditedError.textContent = '';
+              isCategoryNameEditValid= true;
+            }
+        }
+
+        categoryNameEditedInput.addEventListener('input', validateEditCategoryName);
+        
+        
+     
+        let isCategoryDescriptionEditValid = false;
+        const categoryDescriptionEditInput = document.getElementById('changeCDescription');
+        const categoryDescriptionEditError = document.getElementById('categoryChangeDescriptionError');
+        
+        const validateEditCategoryDescription = () =>{
+        
+            if (categoryDescriptionEditInput.value.trim() === '') {
+                categoryDescriptionEditError.textContent = '* Category is Description required';
+                isCategoryDescriptionEditValid = false;
+            }else if(categoryDescriptionEditInput.value.trim().length < 5){
+        
+              categoryDescriptionEditError.textContent = '* Description should be atleast 5 charactors';
+              isCategoryDescriptionEditValid = false;
+        
+            }else {
+              categoryDescriptionEditError.textContent = '';
+              isCategoryDescriptionEditValid = true;
+            }
+        }
+        
+        categoryDescriptionEditInput.addEventListener('input', validateEditCategoryDescription);
+        
+        
+        
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        
+        const form = document.getElementById('EditCategory');
+        
+        form.addEventListener('submit', (event) => {
+        
+        validateEditCategoryName()
+        validateEditCategoryDescription()
+        
+            
+            if (!isCategoryNameEditValid&&!isCategoryDescriptionEditValid) {
+        
+                event.preventDefault();
+        
+            }
+        });
+        });
+        
+
+
+         //form validation for editing existing brand
+ 
+        let  isBrandNameEditValid = false;
+        const brandNameEditedInput = document.getElementById('changeBName');
+        const brandNameEditedError = document.getElementById('brandChangeNameError');
+        
+        const validateEditBrandName = () =>{
+        
+            if (brandNameEditedInput.value.trim() === '') {
+
+                brandNameEditedError.textContent = '* Brand Name is required';
+                isBrandNameEditValid = false;
+
+            }else if(brandNameEditedInput.value.trim().length < 2){
+        
+                brandNameEditedError.textContent = '* Name should be atleast 2 charactors';
+                isBrandNameEditValid = false;
+
+            
+            
+            
+             } else {
+                brandNameEditedError.textContent = '';
+                isBrandNameEditValid = true;
+            }
+        }
+        
+        brandNameEditedInput.addEventListener('input', validateEditBrandName);
+           
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        
+        const form = document.getElementById('editBrand');
+        
+        form.addEventListener('submit', (event) => {
+        
+        
+            validateEditBrandName()
+          
+        
+            
+            if (!isBrandNameEditValid) {
+        
+                event.preventDefault();
+        
+            }
+        });
+     });
 
         </script>
         <%- include('../layouts/adminLayouts/footer') %>

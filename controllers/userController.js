@@ -215,7 +215,7 @@ const verifySignin = async (req,res) => {
             return res.render('user/signin', { message: "No user found or you can't access" });
         }
 
-        if(userData.isAdmin===1){
+        if(userData.isAdmin){
 
             return res.render("user/signin",{message:"admins cannot use this page"})
         }

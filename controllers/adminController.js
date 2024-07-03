@@ -79,23 +79,24 @@ const verifyAdmin = async (req,res) =>{
            return res.status(401).render("admin/signin",{message:"Admin does not exist"})
   
         }
-            const passwordMatch = await bcrypt.compare(password,adminData.password)
+        if(!adminData.isAdmin){
 
-            if(!passwordMatch){
+            return res.status(403).render("admin/signin",{message:"user cannot login here"})
+        }
+        const passwordMatch = await bcrypt.compare(password,adminData.password)
 
-                return res.status(401).render("admin/signin",{message:"Email or password is incorrect"})
-            }
+        if(!passwordMatch){
 
-            if(!adminData.isAdmin){
+           return res.status(401).render("admin/signin",{message:"Email or password is incorrect"})
 
-                return res.status(403).render("admin/signin",{message:"user cannot login here"})
-            }
+        }
+
+                
+                req.session.admin_id = adminData._id;
+                req.session.isAdmin  = adminData.isAdmin 
+                                                                                    
             
-            req.session.admin_id = adminData._id;
-            req.session.isAdmin  = adminData.isAdmin 
-                                                                                
-          
-            return res.status(200).redirect("/admin/dashboard")
+         return res.status(200).redirect("/admin/dashboard")
 
     } catch (error) {
 
