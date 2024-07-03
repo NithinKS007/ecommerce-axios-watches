@@ -611,6 +611,41 @@ const softDeleteProduct = async (req,res) =>{
 
 }
 
+//logout admin
+
+const isSignout = async (req,res) =>{
+
+    try {
+
+        req.session.destroy()
+
+        res.redirect('/admin/signin')
+        
+    } catch (error) {
+        
+        console.log(`error while using the logging out function`,error.message);
+    }
+
+
+
+}
+
+//filtering products on the product listing page of the admin
+
+// const filterProductsOnList = async (req,res) =>{
+
+//     try {
+        
+//         const {categoryValue,statusValue} = req.query
+
+//     } catch (error) {
+        
+//         console.log(`error while filtering the products`,error.message);
+//     }
+
+
+
+// }
 module.exports = {
 
     loadLogin,
@@ -628,6 +663,7 @@ module.exports = {
     softDeleteBrand,
     softDeleteProduct,
     editCategory,
-    editBrand
+    editBrand,
+    isSignout
 
 }

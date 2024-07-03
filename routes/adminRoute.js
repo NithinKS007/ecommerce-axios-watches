@@ -26,10 +26,18 @@ const adminAuth = require('../middleware/adminAuth')
 adminRoute.post("/signup",adminController.registerAdmin)
 
 //loading the login page of the admin
-adminRoute.get("/signin",adminController.loadLogin)
+adminRoute.get("/signin",adminAuth.isAdminLogout,adminController.loadLogin)
 
 // Verifying the logged-in person is an admin
-adminRoute.post("/signin",adminController.verifyAdmin)
+adminRoute.post("/signin",adminAuth.isAdminLogout,adminController.verifyAdmin)
+
+//singn out route for the admin he can only logout after singin in
+adminRoute.get("/signout",adminAuth.isAdminLogin,adminController.isSignout)
+
+
+
+
+
 
 //loading the dashboard of the admin 
 adminRoute.get("/dashboard",adminAuth.isAdminLogin,adminController.loadDashboard)

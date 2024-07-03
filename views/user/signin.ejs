@@ -2,6 +2,16 @@
 
     <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
     <main class="d-flex align-items-center justify-content-center vh-100">
+        <style>
+            .error {
+            font-size: 0.8em;
+            color: red;
+        }
+        .small-text {
+            font-size: 0.8em;
+            line-height: 1.2;
+        }
+        </style>
         <section class="content-main" style="width: 100%; max-width: 400px;">
             <div class="card mx-auto card-login">
                 <div class="card-body">
@@ -14,16 +24,18 @@
                         </p>
 
                         <% } %>
-                            <form method="post" action="/signin">
+                            <form method="post" id="formData" action="/signin">
 
                                 <div class="mb-3">
-                                    <input class="form-control" name="email" placeholder="Email" type="text">
+                                    <input class="form-control" id="email" name="email" placeholder="Email" type="text">
+                                    <span id="emailError" class="error"></span>
                                 </div>
-
+                               
                                 <div class="mb-3">
-                                    <input class="form-control" name="password" placeholder="Password" type="password">
+                                    <input class="form-control" id="password" name="password" placeholder="Password" type="password">
+                                    <span id="passwordError" class="error"></span>
                                 </div>
-
+                               
                                 <div class="mb-3">
                                     <a href="#" class="float-end font-sm text-muted">Forgot password?</a>
                                 </div>
@@ -62,4 +74,88 @@
     </main>
 
     <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<script>
+
+
+
+
+
+
+
+
+//email validaton
+let isEmailValid = false;
+const emailInput = document.getElementById('email');
+const emailError = document.getElementById('emailError');
+
+const validateEmail = () =>{
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailInput.value.trim() === '') {
+        emailError.textContent = '* Email is required';
+        isEmailValid = false;
+    }else if( !emailRegex.test(emailInput.value.trim()) ){
+
+        emailError.textContent = '* Enter a valid email';
+        isEmailValid = false;
+
+    }else {
+        emailError.textContent = '';
+        isEmailValid = true;
+    }
+}
+
+emailInput.addEventListener('input', validateEmail);
+
+
+//password validaton
+let isPasswordValid = false;
+const passwordInput = document.getElementById('password');
+const passwordError = document.getElementById('passwordError');
+
+const validatePassword = () =>{
+
+    if (passwordInput.value.trim() === '') {
+        passwordError.textContent = '* Password is required';
+        isPasswordValid = false;
+    }else if(passwordInput.value.trim().length < 4){
+
+        passwordError.textContent = '* Password should be atleast 4 charactors';
+        isPasswordValid = false;
+
+    }else {
+        passwordError.textContent = '';
+        isPasswordValid = true;
+    }
+}
+
+passwordInput.addEventListener('input', validatePassword);
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+const form = document.getElementById('formData');
+
+form.addEventListener('submit', (event) => {
+
+
+    validateEmail()
+    validatePassword()
+
+    
+    if (!isEmailValid&&!isPasswordValid) {
+
+        event.preventDefault();
+
+    }
+});
+});
+
+
+</script>
+
+   
     <%- include('../layouts/adminLayouts/footer') %>

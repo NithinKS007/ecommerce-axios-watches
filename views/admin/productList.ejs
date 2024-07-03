@@ -15,36 +15,39 @@
                         </div>
                     </div>
                     <div class="card mb-4">
-                        <header class="card-header">
-                            <div class="row align-items-center">
-
-                                <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                                    <select class="form-select" name="category">
-                                        <% if(categoriesData.length> 0) { %>
-                                            <% categoriesData.forEach(category=> { %>
-                                                <option>
-                                                    <%= category.name %>
-                                                </option>
-                                                <% }) %>
-                                                    <% } else { %>
-                                                        <option>No Category Found</option>
-                                                        <% } %>
-                                    </select>
+                        <form id="filterForm">
+                            <header class="card-header">
+                                <div class="row align-items-center">
+    
+                                    <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                                        <select class="form-select"  id="categoryFilter" name="category">
+                                            <% if(categoriesData.length> 0) { %>
+                                                <% categoriesData.forEach(category=> { %>
+                                                    <option>
+                                                        <%= category.name %>
+                                                    </option>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <option>No Category Found</option>
+                                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <select class="form-select" id="statusFilter" name="status">
+                                            <option selected>Out of stock</option>
+                                            <option>Active</option>
+                                            <option>Unlisted</option>
+                                            <option>Newly added</option>
+                                            <option>Show all</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-2 col-6">
-                                    <select class="form-select">
-                                        <option selected>Status</option>
-                                        <option>Active</option>
-                                        <option>Disabled</option>
-                                        <option>Newly added</option>
-                                        <option>Show all</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </header> <!-- card-header end// -->
+                            </header> <!-- card-header end// -->
+                        </form>
+                       
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="productTable">
                                     <thead>
                                         <tr>
                                             <th scope="col">No</th>
@@ -58,7 +61,7 @@
                                             <th scope="col" class="text-center">Update</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="productTableBody">
                                         <% if (productData.length> 0) { %>
                                             <% for (let i=0; i < productData.length; i++) { %>
                                                 <tr>
@@ -142,7 +145,7 @@
 
                     const softDeleteProduct = (productId) => {
                         const deleteButton = document.getElementById(`softDeleteButton${productId}`)
-                const isDeleting = deleteButton.classList.contains('btn-danger')
+                        const isDeleting = deleteButton.classList.contains('btn-danger')
 
                 Swal.fire({
                     title: `Are you sure you want to ${isDeleting ? 'block' : 'undo blocking of'} this product ?`,
@@ -225,6 +228,91 @@
 
                     }
 
+                    const category = document.getElementById('categoryFilter')
+                    const status = document.getElementById('statusFilter')
 
+                        category.addEventListener("change",()=>{
+
+                           categoryValue = category.value
+                           statusValue = status.value
+
+                           displayFilterProducts(categoryValue,statusValue)
+                        })
+
+                        status.addEventListener("change",()=>{
+
+                           categoryValue = category.value
+                            statusValue = status.value
+
+                            displayFilterProducts(categoryValue,statusValue)
+                            
+
+                        })
+
+                    //filtering the products
+                    const displayFilterProducts = (categoryValue,statusValue) =>{
+
+
+                        fetch(`http://localhost:7000/admin/products/?categoryId=${categoryValue}&statusId=${statusValue}`,{
+
+                            
+                                }).then(response =>{
+
+                                    if(response.status!=200){
+                                        throw new Error('Network response was not ok')
+                                    }
+                                    return response.json()
+                                }).then(products =>{
+                                    
+                                    const productTableBody = document.getElementById('productTableBody')
+
+                                    productTableBody.innerHTML = ""
+
+                                    products.forEach((product, i) => {
+
+                                        const row = document.createElement('tr');
+                                        row.innerHTML = `
+                                            <td class="text-center">${i + 1}</td>
+                                            <td>
+                                                <img class="img-sm img-thumbnail"
+                                                    src="/productImages/${product.images[0].filename}"
+                                                    alt="">
+                                            </td>
+                                            <td>${product._id}</td>
+                                            <td>${product.name}</td>
+                                            <td>${product.brand.name}</td>
+                                            <td>${product.regularPrice}</td>
+                                            <td>${product.stock}</td>
+                                            <td>${product.stock === 0 ? 'out of stock' : 'in stock'}</td>
+                                            <td>
+                                                <div class="d-flex justify-content-end">
+                                                    <button onclick="editProduct('${product._id}')"
+                                                        class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">
+                                                        Edit Info
+                                                    </button>
+
+                                                    ${product.isActive ?
+                                                        `<button onclick="softDeleteProduct('${product._id}')"
+                                                            id="softDeleteButton${product._id}"
+                                                            class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
+                                                            Unlist
+                                                        </button>` :
+                                                        `<button onclick="softDeleteProduct('${product._id}')"
+                                                            id="softDeleteButton${product._id}"
+                                                            class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
+                                                            List
+                                                        </button>`}
+                                                </div>
+                                            </td>
+                                        `;
+                                        productTableBody.appendChild(row);
+                                    });
+                                }).catch(error =>{
+
+                                    console.log(`There is a problem with the fetch operation`,error)
+
+                                })
+                            
+                            }
                 </script>
                 <%- include('../layouts/adminLayouts/footer') %>

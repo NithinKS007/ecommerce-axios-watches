@@ -1,4 +1,4 @@
-// admin authentication
+// admin authentication 
 
 const isAdminLogin = async (req, res, next) => {
   try {
@@ -19,18 +19,20 @@ const isAdminLogin = async (req, res, next) => {
   }
 };
 
+
+
 const isAdminLogout = async (req, res, next) => {
 
   try {
 
-    if (!req.session.isAdmin) {
+    if (req.session.isAdmin) {
 
       console.log("Access denied for admin logout");
 
       return res.status(403).send("Access Denied");
 
     }
-    next();
+    next()
   } catch (error) {
 
     console.error("Error from isAdminLogout middleware:", error.message);
