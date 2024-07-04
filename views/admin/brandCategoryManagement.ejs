@@ -3,46 +3,49 @@
   <%- include('../layouts/adminLayouts/sidebar') %>
     <main class="main-wrap">
       <%- include('../layouts/adminLayouts/searchbar') %>
-      <style>
-        .error {
-        font-size: 0.8em;
-        color: red;
-    }
-    .small-text {
-        font-size: 0.8em;
-        line-height: 1.2;
-    }
-    </style>
+        <style>
+          .error {
+            font-size: 0.8em;
+            color: red;
+          }
+
+          .small-text {
+            font-size: 0.8em;
+            line-height: 1.2;
+          }
+        </style>
         <!-- Modal starts for category -->
         <div class="modal fade" id="exampleModalOne" tabindex="-1" aria-labelledby="exampleModalLabel"
           aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">Edit Category</h1>
+                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">
+                  Edit Category
+                </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body" id="EditCategory">
-
+              <div class="modal-body" id="editCategoryModal">
                 <div class="mb-3">
                   <label for="categoryName" class="form-label">Change Name</label>
-                  <input type="text" class="form-control" id="changeCName" name="categoryName" placeholder="" required>
+                  <input type="text" class="form-control" id="changeCName" name="categoryName" placeholder=""
+                    required />
                   <span id="categoryChangeNameError" class="error"></span>
                 </div>
                 <div class="mb-3">
                   <label for="categoryDescription" class="form-label">Change Description</label>
                   <textarea class="form-control" id="changeCDescription" name="categoryDescription" rows="3"
                     placeholder="" required></textarea>
-                    <span id="categoryChangeDescriptionError" class="error"></span>
+                  <span id="categoryChangeDescriptionError" class="error"></span>
                 </div>
-
-
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="saveChangesCategory" data-bs-dismiss="modal" class="btn btn-primary">Save
-                  changes</button>
-
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+                <button type="button" id="saveChangesCategory" data-bs-dismiss="modal" class="btn btn-primary">
+                  Save changes
+                </button>
               </div>
             </div>
           </div>
@@ -55,23 +58,25 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">Edit Brand</h1>
+                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">
+                  Edit Brand
+                </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body" id="editBrand">
-
+              <div class="modal-body" id="editBrandModal">
                 <div class="mb-3">
                   <label for="brandName" class="form-label">Change Name</label>
-                  <input type="text" class="form-control" id="changeBName" name=" brandName" placeholder="" required>
+                  <input type="text" class="form-control" id="changeBName" name=" brandName" placeholder="" required />
                   <span id="brandChangeNameError" class="error"></span>
                 </div>
-
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="saveChangesBrand" data-bs-dismiss="modal" class="btn btn-primary">Save
-                  changes</button>
-
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+                <button type="button" id="saveChangesBrand" data-bs-dismiss="modal" class="btn btn-primary">
+                  Save changes
+                </button>
               </div>
             </div>
           </div>
@@ -81,19 +86,18 @@
         <section class="content-main">
           <div class="content-header">
             <div>
-              <h2 class="content-title card-title">Categories </h2>
+              <h2 class="content-title card-title">Categories</h2>
               <p>Dashboard > Category & Brand</p>
               <p>Add, edit or delete a category</p>
             </div>
             <div>
-              <input type="text" placeholder="Search Categories" class="form-control bg-white">
+              <input type="text" placeholder="Search Categories" class="form-control bg-white" />
             </div>
           </div>
           <div class="card">
             <div class="card-body">
               <div class="row">
                 <div class="col-md-3">
-
                   <form action="/admin/brandCategoryManagement" id="formDataCreateCategory" method="post">
                     <div class="mb-4">
                       <label for="categoryName" class="form-label">Name</label>
@@ -102,24 +106,23 @@
                     </div>
                     <div class="mb-4">
                       <label class="form-label">Description</label>
-                      <textarea name="cDescription" id="categoryDescription" placeholder="Type here" class="form-control"></textarea>
+                      <textarea name="cDescription" id="categoryDescription" placeholder="Type here"
+                        class="form-control"></textarea>
                       <span id="categoryDescriptionError" class="error"></span>
                     </div>
                     <div class="d-grid">
-                      <button type="submit" class="btn btn-primary">Create category</button>
+                      <button type="submit" class="btn btn-primary">
+                        Create category
+                      </button>
                     </div>
                   </form>
-
-
                 </div>
                 <div class="col-md-9">
                   <div class="table-responsive">
                     <table class="table table-hover">
                       <thead>
                         <tr>
-                          <th class="text-center">
-                            No
-                          </th>
+                          <th class="text-center">No</th>
                           <th>ID</th>
                           <th>Name</th>
                           <th>Description</th>
@@ -127,9 +130,7 @@
                         </tr>
                       </thead>
                       <tbody id="categoriesTbody">
-
-                        <%if(categoriesData.length>0){ %>
-                          <% for(let i=0; i < categoriesData.length ; i++) {%>
+                        <%if(categoriesData.length>0){ %> <% for(let i=0; i < categoriesData.length ; i++) {%>
                             <tr id="<%= categoriesData[i]._id %>">
                               <td class="text-center">
                                 <%= [i +1] %>
@@ -147,7 +148,6 @@
 
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-
                                   <button type="button" data-category-name="<%= categoriesData[i].name %>"
                                     data-category-description="<%= categoriesData[i].description %>"
                                     data-category-id="<%= categoriesData[i]._id %>"
@@ -160,78 +160,79 @@
 
                                     <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                       id="softDeleteButton<%= categoriesData[i]._id %>"
-                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Unlist</button>
+                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
+                                      Unlist
+                                    </button>
 
                                     <% } else { %>
 
                                       <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                         id="softDeleteButton<%= categoriesData[i]._id %>"
-                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">List</button>
+                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
+                                        List
+                                      </button>
 
                                       <% } %>
-
                                 </div>
                               </td>
-
                             </tr>
                             <%}%>
                               <%} else { %>
+                                <tr></tr>
                                 <tr>
-                                <tr>
-                                  <td colspan="5">No Categories Found </td>
+                                  <td colspan="5">No Categories Found</td>
                                 </tr>
                                 <%}%>
                       </tbody>
                     </table>
                   </div>
-                </div> <!-- .col// -->
-              </div> <!-- .row // -->
-            </div> <!-- card body .// -->
-          </div> <!-- card .// -->
+                </div>
+                <!-- .col// -->
+              </div>
+              <!-- .row // -->
+            </div>
+            <!-- card body .// -->
+          </div>
+          <!-- card .// -->
           <div class="content-header">
             <div>
-              <h2 class="content-title card-title">Brands </h2>
+              <h2 class="content-title card-title">Brands</h2>
               <p>Add, edit or delete a brand</p>
             </div>
             <div>
-              <input type="text" placeholder="Search Brands" class="form-control bg-white">
+              <input type="text" placeholder="Search Brands" class="form-control bg-white" />
             </div>
           </div>
           <div class="card">
             <div class="card-body">
               <div class="row">
                 <div class="col-md-3">
-
-                  <form action="/admin/brandCategoryManagement"  id="formDataCreateBrand" method="post">
+                  <form action="/admin/brandCategoryManagement" id="formDataCreateBrand" method="post">
                     <div class="mb-4">
                       <label for="product_name" class="form-label">Name</label>
                       <input type="text" name="bName" placeholder="Type here" class="form-control" id="brandName" />
                       <span id="brandNameError" class="error"></span>
                     </div>
                     <div class="d-grid">
-                      <button type="submit" class="btn btn-primary">Create brand</button>
+                      <button type="submit" class="btn btn-primary">
+                        Create brand
+                      </button>
                     </div>
                   </form>
-
-
                 </div>
                 <div class="col-md-9">
                   <div class="table-responsive">
                     <table class="table table-hover">
                       <thead>
                         <tr>
-                          <th class="text-center">
-                            No
-                          </th>
+                          <th class="text-center">No</th>
                           <th>ID</th>
                           <th>Name</th>
                           <th class="text-center">Action</th>
                         </tr>
                       </thead>
                       <tbody id="brandsTbody">
-
-                        <%if(brandsData.length>0){ %>
-                          <% for(let i=0; i < brandsData.length ; i++) {%>
+                        <%if(brandsData.length>0){ %> <% for(let i=0; i < brandsData.length ; i++) {%>
                             <tr id="<%= brandsData[i]._id %>">
                               <td class="text-center">
                                 <%= [i +1] %>
@@ -244,7 +245,6 @@
                               </td>
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-
                                   <button type="button" data-brand-name="<%= brandsData[i].name %>"
                                     data-brand-id="<%= brandsData[i]._id %>"
                                     class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand"
@@ -255,630 +255,518 @@
 
                                     <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                       id="softDeleteButton<%=  brandsData[i]._id %>"
-                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Unlist</button>
+                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
+                                      Unlist
+                                    </button>
 
                                     <% } else { %>
 
                                       <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                         id="softDeleteButton<%=  brandsData[i]._id %>"
-                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">List</button>
+                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
+                                        List
+                                      </button>
 
                                       <% } %>
-
                                 </div>
                               </td>
-
                             </tr>
                             <%}%>
                               <%} else { %>
+                                <tr></tr>
                                 <tr>
-                                <tr>
-                                  <td colspan="5">No brands Found </td>
+                                  <td colspan="5">No brands Found</td>
                                 </tr>
                                 <%}%>
                       </tbody>
                     </table>
                   </div>
-                </div> <!-- .col// -->
-              </div> <!-- .row // -->
-            </div> <!-- card body .// -->
-          </div> <!-- card .// -->
-        </section> <!-- content-main end// -->
+                </div>
+                <!-- .col// -->
+              </div>
+              <!-- .row // -->
+            </div>
+            <!-- card body .// -->
+          </div>
+          <!-- card .// -->
+        </section>
+        <!-- content-main end// -->
 
         <script>
-
-
           //soft deleting the categories
 
           const softDeleteCategory = (categoryId) => {
-
-            const deleteButton = document.getElementById(`softDeleteButton${categoryId}`)
-            const isDeleting = deleteButton.classList.contains('btn-danger')
+            const deleteButton = document.getElementById(
+              `softDeleteButton${categoryId}`
+            );
+            const isDeleting = deleteButton.classList.contains("btn-danger");
 
             Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? 'delete' : 'undo deletion of'} this category?`,
+              title: `Are you sure you want to ${isDeleting ? "delete" : "undo deletion of"
+                } this category?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? 'delete' : 'undo'} it!`
+              confirmButtonText: `Yes, ${isDeleting ? "delete" : "undo"} it!`,
             }).then((result) => {
-
               if (result.isConfirmed) {
-
-                fetch(`http://localhost:7000/admin/brandCategoryManagement/?categoryId=${categoryId}`, {
-
-                  method: 'PATCH',
-                  headers: {
-
-                    'Content-Type': 'application/json'
-
-                  },
-
-                }).then(response => {
-
-                  if (response.status !== 200) {
-
-                    throw new Error('Network response was not ok')
-
+                fetch(
+                  `http://localhost:7000/admin/brandCategoryManagement/?categoryId=${categoryId}`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
                   }
+                )
+                  .then((response) => {
+                    if (response.status !== 200) {
+                      throw new Error("Network response was not ok");
+                    }
 
-                  return response.json()
-
-                }).then(data => {
-
-                  const deleteButton = document.getElementById(`softDeleteButton${categoryId}`)
-
-                  if (data.categoryId.isActive) {
-
-                    deleteButton.classList.remove('btn-danger')
-                    deleteButton.classList.add('btn-success')
-                    deleteButton.textContent = 'List'
-                    Swal.fire({
-                      title: "Deleted!",
-                      text: "Successfully deleted category",
-                      icon: "success"
-                    })
-
-                  } else {
-
-                    deleteButton.classList.remove('btn-success')
-                    deleteButton.classList.add('btn-danger')
-                    deleteButton.textContent = 'Unlist'
-                    Swal.fire({
-                      title: "Retrieved!",
-                      text: "Category has been retrieved.",
-                      icon: "success"
-                    })
-                  }
-
-
-
-                }).catch(error => {
-
-                  console.log(`There is a problem with the fetch operation`, error)
-
-                  Swal.fire({
-
-                    title: "Error!",
-                    text: "There was a problem deleting the category.",
-                    icon: "error"
-
+                    return response.json();
                   })
+                  .then((data) => {
+                    const deleteButton = document.getElementById(
+                      `softDeleteButton${categoryId}`
+                    );
 
-                })
+                    if (data.categoryId.isActive) {
+                      deleteButton.classList.remove("btn-danger");
+                      deleteButton.classList.add("btn-success");
+                      deleteButton.textContent = "List";
+                      Swal.fire({
+                        title: "Deleted!",
+                        text: "Successfully deleted category",
+                        icon: "success",
+                      });
+                    } else {
+                      deleteButton.classList.remove("btn-success");
+                      deleteButton.classList.add("btn-danger");
+                      deleteButton.textContent = "Unlist";
+                      Swal.fire({
+                        title: "Retrieved!",
+                        text: "Category has been retrieved.",
+                        icon: "success",
+                      });
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(`There is a problem with the fetch operation`, error);
 
+                    Swal.fire({
+                      title: "Error!",
+                      text: "There was a problem deleting the category.",
+                      icon: "error",
+                    });
+                  });
               }
-
-            })
-
-          }
-
+            });
+          };
 
           //soft deleting brand
 
           const softDeleteBrand = (brandId) => {
-
-
-            const deleteButton = document.getElementById(`softDeleteButton${brandId}`)
-            const isDeleting = deleteButton.classList.contains('btn-danger')
+            const deleteButton = document.getElementById(
+              `softDeleteButton${brandId}`
+            );
+            const isDeleting = deleteButton.classList.contains("btn-danger");
 
             Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? 'delete' : 'undo deletion of'} this brand?`,
+              title: `Are you sure you want to ${isDeleting ? "delete" : "undo deletion of"
+                } this brand?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? 'delete' : 'undo'} it!`
-
+              confirmButtonText: `Yes, ${isDeleting ? "delete" : "undo"} it!`,
             }).then((result) => {
-
               if (result.isConfirmed) {
-
-
-                fetch(`http://localhost:7000/admin/brandCategoryManagement/?brandId=${brandId}`, {
-
-                  method: 'PATCH',
-                  headers: {
-
-                    'Content-Type': 'application/json'
-                  },
-
-                }).then(response => {
-
-                  if (response.status != 200) {
-
-                    throw new Error('Network response was not ok')
+                fetch(
+                  `http://localhost:7000/admin/brandCategoryManagement/?brandId=${brandId}`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
                   }
+                )
+                  .then((response) => {
+                    if (response.status != 200) {
+                      throw new Error("Network response was not ok");
+                    }
 
-                  return response.json()
-
-                }).then(data => {
-
-
-                  const deleteButton = document.getElementById(`softDeleteButton${brandId}`)
-
-                  if (data.brandId.isActive) {
-
-                    deleteButton.classList.remove('btn-danger');
-                    deleteButton.classList.add('btn-success');
-                    deleteButton.textContent = 'List'
-
-                    Swal.fire({
-                      title: "Deleted!",
-                      text: "Successfully deleted Brand",
-                      icon: "success"
-                    })
-
-
-                  } else {
-
-                    deleteButton.classList.remove('btn-success');
-                    deleteButton.classList.add('btn-danger');
-                    deleteButton.textContent = 'Unlist'
-                    Swal.fire({
-                      title: "Retrieved!",
-                      text: "Brand has been retrieved.",
-                      icon: "success"
-                    })
-
-                  }
-
-                }).catch(error => {
-
-                  console.log(`There is a problem with the fetch operation`, error)
-                  Swal.fire({
-
-                    title: "Error!",
-                    text: "There was a problem deleting the Brand.",
-                    icon: "error"
-
+                    return response.json();
                   })
+                  .then((data) => {
+                    const deleteButton = document.getElementById(
+                      `softDeleteButton${brandId}`
+                    );
 
-                })
+                    if (data.brandId.isActive) {
+                      deleteButton.classList.remove("btn-danger");
+                      deleteButton.classList.add("btn-success");
+                      deleteButton.textContent = "List";
 
+                      Swal.fire({
+                        title: "Deleted!",
+                        text: "Successfully deleted Brand",
+                        icon: "success",
+                      });
+                    } else {
+                      deleteButton.classList.remove("btn-success");
+                      deleteButton.classList.add("btn-danger");
+                      deleteButton.textContent = "Unlist";
+                      Swal.fire({
+                        title: "Retrieved!",
+                        text: "Brand has been retrieved.",
+                        icon: "success",
+                      });
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(`There is a problem with the fetch operation`, error);
+                    Swal.fire({
+                      title: "Error!",
+                      text: "There was a problem deleting the Brand.",
+                      icon: "error",
+                    });
+                  });
               }
+            });
+          };
+
+            //category adding category done using backend
+
+            //form validation for adding new category
+
+            const categoryNameInput = document.getElementById("categoryName");
+            const categoryNameError = document.getElementById("categoryNameError");
+
+            const validateCategoryName = () => {
+              if (categoryNameInput.value.trim() === "") {
+                categoryNameError.textContent = "* Category Name is required";
+                return false;
+              } 
+                categoryNameError.textContent = "";
+                return true;
+              
+            };
+
+            categoryNameInput.addEventListener("input", validateCategoryName);
+            
+            const categoryDescriptionInput = document.getElementById(
+              "categoryDescription"
+            );
+            const categoryDescriptionError = document.getElementById(
+              "categoryDescriptionError"
+            );
+
+            const validateCategoryDescription = () => {
+              if (categoryDescriptionInput.value.trim() === "") {
+                categoryDescriptionError.textContent =
+                  "* Category is Description required";
+                return false
+              } else if (categoryDescriptionInput.value.trim().length < 5) {
+                categoryDescriptionError.textContent =
+                  "* Description should be atleast 5 charactors";
+                return false
+              } 
+                categoryDescriptionError.textContent = "";
+                return true
+              
+            }
+
+            categoryDescriptionInput.addEventListener(
+              "input",
+              validateCategoryDescription
+            );
+
+            const formDataCreateCategory = document.getElementById(
+              "formDataCreateCategory"
+            );
+
+            formDataCreateCategory.addEventListener("submit", (event) => {
+             
+             
+
+              if ( !validateCategoryName() || ! validateCategoryDescription()) {
+
+                event.preventDefault();
+              }
+            });
 
 
-            })
-
-          }
-
-          //for category editing 
+          //for category editing
 
           document.addEventListener("DOMContentLoaded", (event) => {
 
+            const tableBodyCategory = document.querySelector("#categoriesTbody");
 
+            tableBodyCategory.addEventListener("click", (event) => {
+              if (event.target.classList.contains("editCategory")) {
+                const idOftheParticularCategory1 =
+                  event.target.getAttribute("data-category-id");
 
-            const tableBody = document.querySelector('#categoriesTbody')
+                const tempCname = event.target.getAttribute("data-category-name");
 
+                const tempCDescription = event.target.getAttribute(
+                  "data-category-description"
+                );
 
+                document.getElementById("changeCName").value = tempCname;
 
+                document.getElementById("changeCDescription").value =
+                  tempCDescription;
 
-            tableBody.addEventListener("click", (event) => {
-
-
-
-              if (event.target.classList.contains('editCategory')) {
-
-
-
-                const idOftheParticularCategory1 = event.target.getAttribute('data-category-id')
-
-                const tempCname = event.target.getAttribute('data-category-name')
-
-                const tempCDescription = event.target.getAttribute('data-category-description')
-
-
-
-                document.getElementById('changeCName').value = tempCname
-
-                document.getElementById('changeCDescription').value = tempCDescription
-
-
-                document.getElementById('saveChangesCategory').setAttribute('data-category-id', idOftheParticularCategory1)
-
-
+                document
+                  .getElementById("saveChangesCategory")
+                  .setAttribute("data-category-id", idOftheParticularCategory1);
               }
+            });
 
-
-            })
-
-
-            const saveChangesCategory = document.getElementById('saveChangesCategory')
-
+            const saveChangesCategory = document.getElementById(
+              "saveChangesCategory"
+            );
 
             saveChangesCategory.addEventListener("click", () => {
 
+              const idOftheParticularCategory2 =
+                saveChangesCategory.getAttribute("data-category-id");
 
-              const idOftheParticularCategory2 = saveChangesCategory.getAttribute('data-category-id')
+              const categoryName = document.getElementById("changeCName").value;
 
-              const categoryName = document.getElementById('changeCName').value
+              const categoryDescription =
 
-              const categoryDescription = document.getElementById('changeCDescription').value
+                document.getElementById("changeCDescription").value;
 
-
-              fetch(`http://localhost:7000/admin/brandCategoryManagement/?categoryId=${idOftheParticularCategory2}&categoryName=${categoryName}&categoryDescription=${categoryDescription}`, {
-
-                method: 'PUT',
-                headers: {
-
-                  'Content-Type': 'application/json'
-                },
-
-              }).then(response => {
-
-                if (response.status != 200) {
-
-                  throw new Error('Network response was not ok')
+              fetch(
+                `http://localhost:7000/admin/brandCategoryManagement/?categoryId=${idOftheParticularCategory2}&categoryName=${categoryName}&categoryDescription=${categoryDescription}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
                 }
+              )
+                .then((response) => {
+                  if (response.status != 200) {
+                    throw new Error("Network response was not ok");
+                  }
 
-                return response.json()
+                  return response.json();
+                })
+                .then((data) => {
+                  const categoryNameElement = document.getElementById(
+                    `displayChangedCname${idOftheParticularCategory2}`
+                  );
 
-              }).then(data => {
+                  categoryNameElement.textContent = categoryName;
 
-                const categoryNameElement = document.getElementById(`displayChangedCname${idOftheParticularCategory2}`)
+                  const categoryDescriptionElement = document.getElementById(
+                    `displayChangedCdescription${idOftheParticularCategory2}`
+                  );
 
-
-                categoryNameElement.textContent = categoryName;
-
-
-                const categoryDescriptionElement = document.getElementById(`displayChangedCdescription${idOftheParticularCategory2}`)
-
-
-                categoryDescriptionElement.textContent = categoryDescription
-
-
-
-              }).catch(error => {
-
-                console.log(`There is a problem with the fetch operation`, error)
-
-              })
-            })
-
-
-          })
+                  categoryDescriptionElement.textContent = categoryDescription;
+                })
+                .catch((error) => {
+                  console.log(`There is a problem with the fetch operation`, error);
+                });
+            });
 
 
 
-          //for editing brand
+            //form validation for editing category
 
-          document.addEventListener("DOMContentLoaded", (event) => {
+            const categoryNameEditedInput = document.getElementById("changeCName");
+            const categoryNameEditedError = document.getElementById(
+              "categoryChangeNameError"
+            );
 
-
-
-            const tableBody = document.querySelector('#brandsTbody')
-
-
-
-
-            tableBody.addEventListener("click", (event) => {
-
-
-
-              if (event.target.classList.contains('editBrand')) {
-
-
-
-
-                const idOftheParticularBrand1 = event.target.getAttribute('data-brand-id')
-
-                const tempBname = event.target.getAttribute('data-brand-name')
-
-
-                document.getElementById('changeBName').value = tempBname
-
-
-                document.getElementById('saveChangesBrand').setAttribute('data-brand-id', idOftheParticularBrand1)
-
+            const validateEditCategoryName = () => {
+              if (categoryNameEditedInput.value.trim() === "") {
+                categoryNameEditedError.textContent = "* Category Name is required";
+                return false
+              } 
+                categoryNameEditedError.textContent = "";
+                return true
               }
+            
 
+            categoryNameEditedInput.addEventListener(
+              "input",
+              validateEditCategoryName
+            );
 
-            })
+            
+            const categoryDescriptionEditInput =
+              document.getElementById("changeCDescription");
+            const categoryDescriptionEditError = document.getElementById(
+              "categoryChangeDescriptionError"
+            );
 
+            const validateEditCategoryDescription = () => {
+              if (categoryDescriptionEditInput.value.trim() === "") {
+                categoryDescriptionEditError.textContent =
+                  "* Category is Description required";
+                return false
+              } else if (categoryDescriptionEditInput.value.trim().length < 5) {
+                categoryDescriptionEditError.textContent =
+                  "* Description should be atleast 5 charactors";
+                return false
+              } 
+                categoryDescriptionEditError.textContent = "";
+                 return true;
+              
+            };
 
-            const saveChangesBrand = document.getElementById('saveChangesBrand')
+            categoryDescriptionEditInput.addEventListener(
+              "input",
+              validateEditCategoryDescription
+            );
 
+            
+            saveChangesCategory.addEventListener("click", (event) => {
+             
+             
+
+              if ( !validateEditCategoryName() || ! validateEditCategoryDescription()) {
+
+                event.preventDefault();
+              }
+            });
+                       
+
+            //brand adding category done using backend
+
+            //form validation for adding new brand
+
+           
+            const brandNameInput = document.getElementById("brandName");
+            const brandNameError = document.getElementById("brandNameError");
+
+            const validateBrandName = () => {
+              if (brandNameInput.value.trim() === "") {
+                brandNameError.textContent = "* Brand Name is required";
+                return false;
+              } else if (brandNameInput.value.trim().length < 2) {
+                brandNameError.textContent = "* Name should be atleast 2 charactors";
+                return false
+              } else {
+                brandNameError.textContent = "";
+               return true
+              }
+            };
+
+            brandNameInput.addEventListener("input", validateBrandName);
+
+            const formDataCreateBrand = document.getElementById(
+              "formDataCreateBrand"
+            );
+
+            formDataCreateBrand.addEventListener("submit", (event) => {
+            
+
+              if (!validateBrandName()) {
+
+                event.preventDefault()
+                
+              }
+            });
+
+            //form validation for editing existing brand
+
+            let isBrandNameEditValid = false;
+            const brandNameEditedInput = document.getElementById("changeBName");
+            const brandNameEditedError = document.getElementById(
+              "brandChangeNameError"
+            );
+
+            const validateEditBrandName = () => {
+              if (brandNameEditedInput.value.trim() === "") {
+                brandNameEditedError.textContent = "* Brand Name is required";
+                isBrandNameEditValid = false;
+              } else if (brandNameEditedInput.value.trim().length < 2) {
+                brandNameEditedError.textContent =
+                  "* Name should be atleast 2 charactors";
+                isBrandNameEditValid = false;
+              } else {
+                brandNameEditedError.textContent = "";
+                isBrandNameEditValid = true;
+              }
+            };
+
+            brandNameEditedInput.addEventListener("input", validateEditBrandName);
+
+            const formDataEditBrand = document.getElementById("editBrandModal");
+
+            formDataEditBrand.addEventListener("submit", (event) => {
+              validateEditBrandName();
+
+              if (!isBrandNameEditValid) {
+                event.preventDefault();
+              }
+            });
+
+            const tableBodyBrand = document.querySelector("#brandsTbody");
+
+            tableBodyBrand.addEventListener("click", (event) => {
+              if (event.target.classList.contains("editBrand")) {
+                const idOftheParticularBrand1 =
+                  event.target.getAttribute("data-brand-id");
+
+                const tempBname = event.target.getAttribute("data-brand-name");
+
+                document.getElementById("changeBName").value = tempBname;
+
+                document
+                  .getElementById("saveChangesBrand")
+                  .setAttribute("data-brand-id", idOftheParticularBrand1);
+              }
+            });
+
+            const saveChangesBrand = document.getElementById("saveChangesBrand");
 
             saveChangesBrand.addEventListener("click", () => {
 
+              const idOftheParticularBrand2 =
+                saveChangesBrand.getAttribute("data-brand-id");
 
-              const idOftheParticularBrand2 = saveChangesBrand.getAttribute('data-brand-id')
+              const brandName = document.getElementById("changeBName").value;
 
-              const brandName = document.getElementById('changeBName').value
-
-
-              fetch(`http://localhost:7000/admin/brandCategoryManagement/?brandId=${idOftheParticularBrand2}&brandName=${brandName}`, {
-
-                method: 'PUT',
-                headers: {
-
-                  'Content-Type': 'application/json'
-                },
-
-              }).then(response => {
-
-                if (response.status != 200) {
-
-                  throw new Error('Network response was not ok')
+              fetch(
+                `http://localhost:7000/admin/brandCategoryManagement/?brandId=${idOftheParticularBrand2}&brandName=${brandName}`,
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
                 }
+              )
+                .then((response) => {
+                  if (response.status != 200) {
+                    throw new Error("Network response was not ok");
+                  }
 
-                return response.json()
+                  return response.json();
+                })
+                .then((data) => {
+                  const brandNameElement = document.getElementById(
+                    `displayChangedBname${idOftheParticularBrand2}`
+                  );
 
-              }).then(data => {
-
-                const brandNameElement = document.getElementById(`displayChangedBname${idOftheParticularBrand2}`)
-
-
-                brandNameElement.textContent = brandName
-
-
-              }).catch(error => {
-
-                console.log(`There is a problem with the fetch operation`, error)
-
-              })
-            })
-
-
-          })
-
-
-//form validation for adding new category
- 
-        let isCategoryNameValid = false;
-        const categoryNameInput = document.getElementById('categoryName');
-        const categoryNameError = document.getElementById('categoryNameError');
-        
-        const validateCategoryName = () =>{
-        
-            if (categoryNameInput.value.trim() === '') {
-
-                categoryNameError.textContent = '* Category Name is required';
-                isCategoryNameValid = false;
-
-            }else {
-                categoryNameError.textContent = '';
-                isCategoryNameValid = true;
-            }
-        }
-        
-        categoryNameInput.addEventListener('input', validateCategoryName);
-        
-        
-     
-        let isCategoryDescriptionValid = false;
-        const categoryDescriptionInput = document.getElementById('categoryDescription');
-        const categoryDescriptionError = document.getElementById('categoryDescriptionError');
-        
-        const validateCategoryDescription = () =>{
-        
-            if (categoryDescriptionInput.value.trim() === '') {
-                categoryDescriptionError.textContent = '* Category is Description required';
-                isCategoryDescriptionValid = false;
-            }else if(categoryDescriptionInput.value.trim().length < 5){
-        
-                categoryDescriptionError.textContent = '* Description should be atleast 5 charactors';
-                isCategoryDescriptionValid = false;
-        
-            }else {
-                categoryDescriptionError.textContent = '';
-                isCategoryDescriptionValid = true;
-            }
-        }
-        
-        categoryDescriptionInput.addEventListener('input', validateCategoryDescription);
-        
-        
-        
-        
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('formDataCreateCategory');
-        
-        form.addEventListener('submit', (event) => {
-        
-        
-            validateCategoryName()
-            validateCategoryDescription()
-        
-            
-            if (!isCategoryNameValid&&!isCategoryDescriptionValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-        });
-        
-
-
-        //form validation for adding new brand
- 
-        let isBrandNameValid = false;
-        const brandNameInput = document.getElementById('brandName');
-        const brandNameError = document.getElementById('brandNameError');
-        
-        const validateBrandName = () =>{
-        
-            if (brandNameInput.value.trim() === '') {
-
-                brandNameError.textContent = '* Brand Name is required';
-                isBrandNameValid = false;
-
-            }else if(brandNameInput.value.trim().length < 2){
-        
-                brandNameError.textContent = '* Name should be atleast 2 charactors';
-                isBrandNameValid = false;
+                  brandNameElement.textContent = brandName;
+                })
+                .catch((error) => {
+                  console.log(`There is a problem with the fetch operation`, error);
+                });
+            });
 
             
-            
-            
-             } else {
-                brandNameError.textContent = '';
-                isBrandNameValid = true;
-            }
-        }
-        
-        brandNameInput.addEventListener('input', validateBrandName);
-           
-        
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('formDataCreateBrand');
-        
-        form.addEventListener('submit', (event) => {
-        
-        
-            validateBrandName()
-          
-        
-            
-            if (!isBrandNameValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-     });
+          });
 
- //form validation for editing existing category
- 
-        let   isCategoryNameEditValid = false;
-        const categoryNameEditedInput = document.getElementById('changeCName');
-        const categoryNameEditedError = document.getElementById('categoryChangeNameError');
-        
-        const validateEditCategoryName = () =>{
-        
-            if (categoryNameEditedInput.value.trim() === '') {
-
-                categoryNameEditedError.textContent = '* Category Name is required';
-                categoryNameEditedError = false;
-
-            }else {
-              categoryNameEditedError.textContent = '';
-              isCategoryNameEditValid= true;
-            }
-        }
-
-        categoryNameEditedInput.addEventListener('input', validateEditCategoryName);
-        
-        
-     
-        let isCategoryDescriptionEditValid = false;
-        const categoryDescriptionEditInput = document.getElementById('changeCDescription');
-        const categoryDescriptionEditError = document.getElementById('categoryChangeDescriptionError');
-        
-        const validateEditCategoryDescription = () =>{
-        
-            if (categoryDescriptionEditInput.value.trim() === '') {
-                categoryDescriptionEditError.textContent = '* Category is Description required';
-                isCategoryDescriptionEditValid = false;
-            }else if(categoryDescriptionEditInput.value.trim().length < 5){
-        
-              categoryDescriptionEditError.textContent = '* Description should be atleast 5 charactors';
-              isCategoryDescriptionEditValid = false;
-        
-            }else {
-              categoryDescriptionEditError.textContent = '';
-              isCategoryDescriptionEditValid = true;
-            }
-        }
-        
-        categoryDescriptionEditInput.addEventListener('input', validateEditCategoryDescription);
-        
-        
-        
-        
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('EditCategory');
-        
-        form.addEventListener('submit', (event) => {
-        
-        validateEditCategoryName()
-        validateEditCategoryDescription()
-        
-            
-            if (!isCategoryNameEditValid&&!isCategoryDescriptionEditValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-        });
-        
-
-
-         //form validation for editing existing brand
- 
-        let  isBrandNameEditValid = false;
-        const brandNameEditedInput = document.getElementById('changeBName');
-        const brandNameEditedError = document.getElementById('brandChangeNameError');
-        
-        const validateEditBrandName = () =>{
-        
-            if (brandNameEditedInput.value.trim() === '') {
-
-                brandNameEditedError.textContent = '* Brand Name is required';
-                isBrandNameEditValid = false;
-
-            }else if(brandNameEditedInput.value.trim().length < 2){
-        
-                brandNameEditedError.textContent = '* Name should be atleast 2 charactors';
-                isBrandNameEditValid = false;
-
-            
-            
-            
-             } else {
-                brandNameEditedError.textContent = '';
-                isBrandNameEditValid = true;
-            }
-        }
-        
-        brandNameEditedInput.addEventListener('input', validateEditBrandName);
-           
-        
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('editBrand');
-        
-        form.addEventListener('submit', (event) => {
-        
-        
-            validateEditBrandName()
-          
-        
-            
-            if (!isBrandNameEditValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-     });
 
         </script>
         <%- include('../layouts/adminLayouts/footer') %>
+    </main>

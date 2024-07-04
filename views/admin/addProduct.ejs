@@ -7,6 +7,7 @@
       font-size: 0.8em;
       color: red;
     }
+
     .small-text {
       font-size: 0.8em;
       line-height: 1.2;
@@ -87,7 +88,7 @@
             <h4>Product Details</h4>
           </div>
           <div class="card-body">
-            <form method="post" id="product-form" enctype="multipart/form-data">
+            <form method="post" id="productForm" enctype="multipart/form-data">
               <!-- Product Name -->
               <div class="mb-4">
                 <label for="product_name" class="form-label"
@@ -305,8 +306,7 @@
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-
-    const form = document.getElementById("product-form");
+    const form = document.getElementById("productForm");
     const imageInput = document.getElementById("fileAccess");
     const imagePreview = document.getElementById("imagePreview");
     const openCropperModalBtn = document.getElementById("openCropperModalBtn");
@@ -314,33 +314,21 @@
     const cropAndSave = document.getElementById("cropAndSave");
     const cropperModalElement = document.getElementById("cropperModal");
 
+    const formSubmitButton = document.getElementById("submitForm");
+
     const fileAccessError = document.getElementById("fileAccessError");
 
     let cropper; //hold the cropper js instance
     let currentImage;
     let originalImageBlobs = [];
 
-    
-
-    const validateImage = (file) => {
-
-      const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
-
-      if (!allowedExtensions.test(file)) {
-        fileAccessError.textContent =
-          "* Please upload a valid image file (jpg, jpeg, png, gif)";
-        return false;
-      } else {
-        fileAccessError.textContent = "";
-        return true;
-      }
-    };
-
     imageInput.addEventListener("change", (event) => {
       const files = event.target.files;
 
       Array.from(files).forEach((file) => {
         if (!validateImage(file)) {
+          console.log(`Skipping invalid file: ${file.name}`);
+
           return;
         }
         const reader = new FileReader();
@@ -453,108 +441,97 @@
       imageInput.files = dataTransfer.files;
     }
 
-    document
-      .getElementById("submitForm")
-      .addEventListener("submit", (event) => {
+    formSubmitButton.addEventListener("click", (event) => {
+
+      console.log("submitted");
+
+      if (imageInput.files.length === 0) {
+        fileAccessError.textContent = "* image is required";
         event.preventDefault();
+      }
 
-        const formData = new FormData();
-        const formElements = document.getElementById("submitForm").elements;
+      if ( !validateProductName() ||!validateProductDescription() ||!validateRegularPrice()||!validateSalesPrice()||!validateDialShape()||!validateDisplayType()||!validateStrapMaterial()||!validateStrapColor()||!validateStock()||!validateTargetGroup()||!validateImage()) {
+        console.log("Not ok")
+        event.preventDefault()
+      }
+      
 
-        for (let element of formElements) {
-          if (element.name && element.type !== "file") {
-            formData.append(element.name, element.value);
-          }
+      const formData = new FormData();
+      const formElements = document.getElementById("submitForm").elements;
+
+      for (let element of formElements) {
+        if (element.name && element.type !== "file") {
+          formData.append(element.name, element.value);
         }
+      }
 
-        // Add all files from the file input
-        Array.from(imageInput.files).forEach((file, index) => {
-          formData.append(`images`, file, file.name);
-        });
-
-        if (imageInput.files.length > 0) {
-          fetch("http://localhost:7000/admin/addProducts", {
-            method: "POST",
-            body: formData,
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              console.log("Success:", data);
-            })
-            .catch((error) => {
-              console.error(
-                "There was a problem with the fetch operation:",
-                error
-              );
-            });
-        } else {
-          console.error("No images to upload");
-        }
+      // Add all files from the file input
+      Array.from(imageInput.files).forEach((file, index) => {
+        formData.append(`images`, file, file.name);
       });
 
-    form.addEventListener("submit", (event) => {
-      if (imageInput.files.length === 0) {
-        console.log("Image is required");
-        event.preventDefault();
-      }
-      validateProductName();
-      validateProductDescription();
-      validateRegularPrice();
-      validateSalesPrice();
-      validateDialShape();
-      validateDisplayType();
-      validateStrapMaterial();
-      validateStrapColor();
-      validateStock();
-      validateTargetGroup();
-      validateImage();
-
-      if (
-        !isProductNameValid &&
-        !isProductDescriptionValid &&
-        !isRegularPriceValid &&
-        !isSalesPriceValid &&
-        !isDialShapeValid &&
-        !isDisplayTypeValid &&
-        !isStrapMaterialValid &&
-        !isStrapColorValid&&
-        !isStockValid &&
-        !isTargetGroupValid 
-      ) {
-
-        event.preventDefault();
-
+      if (imageInput.files.length > 0) {
+        fetch("http://localhost:7000/admin/addProducts", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+      } else {
+        console.error("No images to upload");
       }
     });
-  });
 
-  //form validation for product adding
+   
+  const validateImage = (file) => {
+    const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
 
-  //form validation for product nameing
-  let isProductNameValid = false;
+    if (
+      !allowedExtensions.test(file.name) ||
+      !allowedMimeTypes.includes(file.type)
+    ) {
+      
+      fileAccessError.textContent =
+        "* Please upload a valid image file (jpg, jpeg, png, gif)";
+      return false;
+    } 
+      fileAccessError.textContent = "";
+      return true;
+    
+  };
+
   const productNameInput = document.getElementById("productName");
   const productNameError = document.getElementById("productNameError");
-
+  
   const validateProductName = () => {
+
     if (productNameInput.value.trim() === "") {
       productNameError.textContent = "* Product Name is required";
-      isProductNameValid = false;
-    } else {
-      productNameError.textContent = "";
-      isProductNameValid = true;
+      return false;
     }
+
+    productNameError.textContent = "";
+    return true;
   };
 
   productNameInput.addEventListener("input", validateProductName);
 
   //form validation for product description
 
-  let isProductDescriptionValid = false;
   const productDescriptionInput = document.getElementById("productDescription");
   const productDescriptionError = document.getElementById(
     "productDescriptionError"
@@ -563,22 +540,23 @@
   const validateProductDescription = () => {
     if (productDescriptionInput.value.trim() === "") {
       productDescriptionError.textContent = "* Product Description required";
-      isProductDescriptionValid = false;
+      
+      return false;
     } else if (productDescriptionInput.value.trim().length < 5) {
       productDescriptionError.textContent =
         "* Description should be atleast 5 charactors";
-      isProductDescriptionValid = false;
-    } else {
-      productDescriptionError.textContent = "";
-      isProductDescriptionValid = true;
+      
+      return false;
     }
+      productDescriptionError.textContent = "";
+     
+      return true;
+    
   };
 
   productDescriptionInput.addEventListener("input", validateProductDescription);
 
   //form validation for product regular price
-
-  let isRegularPriceValid = false;
 
   const regularPriceInput = document.getElementById("regularPrice");
   const regularPriceError = document.getElementById("regularPriceError");
@@ -586,28 +564,26 @@
   const validateRegularPrice = () => {
     if (regularPriceInput.value.trim() === "") {
       regularPriceError.textContent = "* Regular Price is required";
-      isRegularPriceValid = false;
-    } else {
-      const priceValue = parseFloat(regularPriceInput.value.trim());
-      if (isNaN(priceValue)) {
+      return false;
+
+    } else if (isNaN(regularPriceInput.value.trim())) {
         regularPriceError.textContent = "* Regular Price must be a number";
-        isRegularPriceValid = false;
-      } else if (priceValue <= 0) {
+        return false;
+      } else if (!/^[1-9]\d*$/.test(regularPriceInput.value.trim())) {
         regularPriceError.textContent =
           "* Regular Price must be a positive number";
-        isRegularPriceValid = false;
-      } else {
+        return false;
+      } 
         regularPriceError.textContent = "";
-        isRegularPriceValid = true;
-      }
+        return true;
+      
     }
-  };
+  
 
   regularPriceInput.addEventListener("input", validateRegularPrice);
 
   //form validation for product sales price
 
-  let isSalesPriceValid = false;
 
   const salesPriceInput = document.getElementById("salesPrice");
   const salesPriceError = document.getElementById("salesPriceError");
@@ -615,27 +591,24 @@
   const validateSalesPrice = () => {
     if (salesPriceInput.value.trim() === "") {
       salesPriceError.textContent = "* Sales Price is required";
-      isSalesPriceValid = false;
-    } else {
-      const priceValue = parseFloat(salesPriceInput.value.trim());
-      if (isNaN(priceValue)) {
+      return false;
+    } else if (isNaN(salesPriceInput.value.trim())) {
         salesPriceError.textContent = "* Sales Price must be a number";
-        isSalesPriceValid = false;
-      } else if (priceValue <= 0) {
+        return false;
+      } else if (!/^[1-9]\d*$/.test(salesPriceInput.value.trim())) {
         salesPriceError.textContent = "* Sales Price must be a positive number";
-        isSalesPriceValid = false;
-      } else {
+        return false;
+      } 
         salesPriceError.textContent = "";
-        isSalesPriceValid = true;
-      }
-    }
+        return true;
+      
+    
   };
 
   salesPriceInput.addEventListener("input", validateSalesPrice);
 
   //form validation for product display shape
 
-  let isDialShapeValid = false;
 
   const dialShapeInput = document.getElementById("dialShape");
   const dialShapeError = document.getElementById("dialShapeError");
@@ -643,22 +616,20 @@
   const validateDialShape = () => {
     if (dialShapeInput.value.trim() === "") {
       dialShapeError.textContent = "* Dial Shape is required";
-      isDialShapeValid = false;
+      return false;
     } else if (!/^[A-Za-z\s-]*$/.test(dialShapeInput.value.trim())) {
       dialShapeError.textContent =
         "* Dial Shape must contain only letters,spaces";
-      isDialShapeValid = false;
-    } else {
-      dialShapeError.textContent = "";
-      isDialShapeValid = true;
+      return false;
     }
+      dialShapeError.textContent = "";
+      return true;
+    
   };
 
   dialShapeInput.addEventListener("input", validateDialShape);
 
   //form validation for product display type
-
-  let isDisplayTypeValid = false;
 
   const displayTypeInput = document.getElementById("displayType");
   const displayTypeError = document.getElementById("displayTypeError");
@@ -666,21 +637,20 @@
   const validateDisplayType = () => {
     if (displayTypeInput.value.trim() === "") {
       displayTypeError.textContent = "* Display Type is required";
-      isDisplayTypeValid = false;
-    } else if (!/^[A-Za-z]*$/.test(displayTypeInput.value.trim())) {
-      displayTypeError.textContent = "* Display Type must contain only letters";
-      isDisplayTypeValid = false;
-    } else {
+      return  false;
+    } else if (!/^[A-Za-z\s-]*$/.test(displayTypeInput.value.trim())) {
+      displayTypeError.textContent = "* Display Type must contain only letters,spaces";
+      return  false;
+    } 
       displayTypeError.textContent = "";
-      isDisplayTypeValid = true;
-    }
+      return  true;
+    
   };
 
   displayTypeInput.addEventListener("input", validateDisplayType);
 
   //form validation for product strap material
 
-  let isStrapMaterialValid = false;
 
   const strapMaterialInput = document.getElementById("strapMaterial");
   const strapMaterialError = document.getElementById("strapMaterialError");
@@ -688,22 +658,21 @@
   const validateStrapMaterial = () => {
     if (strapMaterialInput.value.trim() === "") {
       strapMaterialError.textContent = "* strap material is required";
-      isStrapMaterialValid = false;
-    } else if (!/^[A-Za-z]*$/.test(strapMaterialInput.value.trim())) {
+      return false;
+    } else if (!/^[A-Za-z\s-]*$/.test(strapMaterialInput.value.trim())) {
       strapMaterialError.textContent =
         "* strap material must contain only letters";
-      isStrapMaterialValid = false;
-    } else {
+      return false;
+    } 
       strapMaterialError.textContent = "";
-      isStrapMaterialValid = true;
-    }
+      return true;
+    
   };
 
   strapMaterialInput.addEventListener("input", validateStrapMaterial);
 
   //form validation for product display type
 
-  let isStrapColorValid = false;
 
   const strapColorInput = document.getElementById("strapColor");
   const strapColorError = document.getElementById("strapColorError");
@@ -711,21 +680,21 @@
   const validateStrapColor = () => {
     if (strapColorInput.value.trim() === "") {
       strapColorError.textContent = "* strap color is required";
-      isStrapColorValid = false;
-    } else if (!/^[A-Za-z]*$/.test(strapColorInput.value.trim())) {
+      return false;
+    } else if (!/^[A-Za-z\s-]*$/.test(strapColorInput.value.trim())) {
       strapColorError.textContent = "* strap color must contain only letters";
-      isStrapColorValid = false;
-    } else {
+      return false;
+    } 
       strapColorError.textContent = "";
-      isStrapColorValid = true;
-    }
+      return true;
+    
   };
 
   strapColorInput.addEventListener("input", validateStrapColor);
 
   //form validation for product stock
 
-  let isStockValid = false;
+ 
 
   const stockInput = document.getElementById("stock");
   const stockError = document.getElementById("stockError");
@@ -733,41 +702,43 @@
   const validateStock = () => {
     if (stockInput.value.trim() === "") {
       stockError.textContent = "* Stock is required";
-      isStockValid = false;
+      return false;
     } else if (!/^[1-9]\d*$/.test(stockInput.value.trim())) {
       stockError.textContent = "* Stock must be a positive integer";
-      isStockValid = false;
-    } else {
+      return false;
+    } 
       stockError.textContent = "";
-      isStockValid = true;
-    }
+      return true;
+    
   };
 
   stockInput.addEventListener("input", validateStock);
 
-
   //form validation for product target group
 
-  let isTargetGroupValid = false;
 
-const menRadio = document.getElementById("men");
-const womenRadio = document.getElementById("women");
-const kidsRadio = document.getElementById("kids");
-const targetGroupError = document.getElementById("targetGroupError");
 
-const validateTargetGroup = () => {
+  const menRadio = document.getElementById("men");
+  const womenRadio = document.getElementById("women");
+  const kidsRadio = document.getElementById("kids");
+  const targetGroupError = document.getElementById("targetGroupError");
+
+  const validateTargetGroup = () => {
     if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
-        targetGroupError.textContent = "";
-        isTargetGroupValid = true;
-    } else {
-        targetGroupError.textContent = "* Please select a target group";
-        isTargetGroupValid = false;
-    }
-};
+      targetGroupError.textContent = "";
+      return  true;
+    } 
+      targetGroupError.textContent = "* Please select a target group";
+      return  false;
+    
+  };
 
-menRadio.addEventListener("change", validateTargetGroup)
-womenRadio.addEventListener("change", validateTargetGroup)
-kidsRadio.addEventListener("change", validateTargetGroup)
+  menRadio.addEventListener("change", validateTargetGroup);
+  womenRadio.addEventListener("change", validateTargetGroup);
+  kidsRadio.addEventListener("change", validateTargetGroup);
+  });
 
+
+  
 </script>
 <%- include('../layouts/adminLayouts/footer') %>
