@@ -16,15 +16,7 @@ const storage = multer.diskStorage({
 
         cb(null,name)
     },
-    // onFileUploadStart:(file,req,res) =>{
-
-    //     if(req.files.file.length>maxSize){
-
-    //         console.log(`file is more than 10 mb`)
-
-    //         return false
-    //     }
-    // }
+    
 })
 
 

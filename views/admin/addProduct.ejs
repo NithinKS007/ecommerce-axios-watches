@@ -1,219 +1,312 @@
 <%- include('../layouts/adminLayouts/header') %>
-    <div class="screen-overlay"></div>
-    <%- include('../layouts/adminLayouts/sidebar') %>
-        <main class="main-wrap">
-            <style>
-                .error {
-                font-size: 0.8em;
-                color: red;
-            }
-            .small-text {
-                font-size: 0.8em;
-                line-height: 1.2;
-            }
-            </style>
-            <%- include('../layouts/adminLayouts/searchbar') %>
-                <!--  modal section starts-->
-                <button type="button" style="display: none" id="openCropperModalBtn" data-bs-toggle="modal"
-                    data-bs-target="#cropperModal"></button>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <style>
+    .error {
+      font-size: 0.8em;
+      color: red;
+    }
+    .small-text {
+      font-size: 0.8em;
+      line-height: 1.2;
+    }
+  </style>
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <!--  modal section starts-->
+  <button
+    type="button"
+    style="display: none"
+    id="openCropperModalBtn"
+    data-bs-toggle="modal"
+    data-bs-target="#cropperModal"
+  ></button>
 
-                <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body" style="
+  <div
+    class="modal fade"
+    id="cropperModal"
+    tabindex="-1"
+    aria-labelledby="cropperModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div
+          class="modal-body"
+          style="
             width: 100%;
             height: 400px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-          ">
-                                <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Close
-                                </button>
-                                <button type="button" id="cropAndSave" class="btn btn-primary">
-                                    Crop and Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+          "
+        >
+          <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" id="cropAndSave" class="btn btn-primary">
+            Crop and Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  modal section  ends-->
+
+  <section class="content-main">
+    <div class="row">
+      <!-- Content Header -->
+      <div class="col-12 mb-3">
+        <div class="content-header">
+          <h2 class="content-title">Add New Product</h2>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h4>Product Details</h4>
+          </div>
+          <div class="card-body">
+            <form method="post" id="product-form" enctype="multipart/form-data">
+              <!-- Product Name -->
+              <div class="mb-4">
+                <label for="product_name" class="form-label"
+                  >Product Name</label
+                >
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="productName"
+                />
+                <span id="productNameError" class="error"></span>
+              </div>
+              <!-- Description -->
+              <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                  name="description"
+                  id="productDescription"
+                  placeholder="Type here"
+                  class="form-control"
+                  rows="4"
+                ></textarea>
+                <span id="productDescriptionError" class="error"></span>
+              </div>
+              <!-- Prices and Attributes -->
+              <div class="row">
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Regular Price</label>
+                  <input
+                    name="regularPrice"
+                    id="regularPrice"
+                    type="text"
+                    placeholder="RS"
+                    class="form-control"
+                  />
+                  <span id="regularPriceError" class="error"></span>
                 </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Sales Price</label>
+                  <input
+                    name="salesPrice"
+                    id="salesPrice"
+                    type="text"
+                    placeholder="RS"
+                    class="form-control"
+                  />
+                  <span id="salesPriceError" class="error"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Dial Shape</label>
+                  <input
+                    name="dialShape"
+                    id="dialShape"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="dialShapeError" class="error"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Display Type</label>
+                  <input
+                    name="displayType"
+                    id="displayType"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="displayTypeError" class="error"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Strap Material</label>
+                  <input
+                    name="strapMaterial"
+                    id="strapMaterial"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="strapMaterialError" class="error"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Strap Color</label>
+                  <input
+                    name="strapColor"
+                    id="strapColor"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="strapColorError" class="error"></span>
+                </div>
+              </div>
+              <!-- Stock Quantity -->
+              <div class="mb-4">
+                <label for="stock" class="form-label">Stock Quantity</label>
+                <input
+                  type="text"
+                  id="stock"
+                  name="stock"
+                  class="form-control"
+                />
+                <span id="stockError" class="error"></span>
+              </div>
+              <!-- Category and Brand -->
+              <div class="mb-4">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="category">
+                  <% if(categoriesData.length> 0) { %> <%
+                  categoriesData.forEach(category=> { %>
+                  <option><%= category.name %></option>
+                  <% }) %> <% } else { %>
+                  <option>No Category Found</option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Brands</label>
+                <select class="form-select" name="brand">
+                  <% if(brandsData.length> 0) { %> <% brandsData.forEach(brand=>
+                  { %>
+                  <option><%= brand.name %></option>
+                  <% }) %> <% } else { %>
+                  <option>No Brand Found</option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="container mt-4">
+                <div class="mb-3">
+                  <label class="form-label">Select Target Group:</label><br />
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="men"
+                      name="targetGroup"
+                      value="men"
+                    />
+                    <label class="form-check-label" for="men">Men</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="women"
+                      name="targetGroup"
+                      value="women"
+                    />
+                    <label class="form-check-label" for="women">Women</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="kids"
+                      name="targetGroup"
+                      value="kids"
+                    />
+                    <label class="form-check-label" for="kids">Kids</label>
+                  </div>
+                  <span id="targetGroupError" class="error"></span>
+                </div>
+              </div>
 
-                <!--  modal section  ends-->
+              <div class="input-upload">
+                <span id="fileAccessError" class="error"></span>
+                <input
+                  class="form-control"
+                  id="fileAccess"
+                  accept="image/*"
+                  type="file"
+                  name="productimages"
+                  multiple
+                />
 
-                <section class="content-main">
-                    <div class="row">
-                        <!-- Content Header -->
-                        <div class="col-12 mb-3">
-                            <div class="content-header">
-                                <h2 class="content-title">Add New Product</h2>
-                            </div>
-                        </div>
-
-                        <!-- Main Content -->
-                        <div class="col-lg-9">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h4>Product Details</h4>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" id="formDataAddProduct" enctype="multipart/form-data" >
-                                        <!-- Product Name -->
-                                        <div class="mb-4">
-                                            <label for="product_name" class="form-label">Product Name</label>
-                                            <input type="text" name="name" placeholder="Type here" class="form-control"
-                                                id="productName" />
-                                                <span id="productNameError" class="error"></span>
-                                        </div>
-                                        <!-- Description -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Description</label>
-                                            <textarea name="description" id="productDescription" placeholder="Type here" class="form-control"
-                                                rows="4"></textarea>
-                                                <span id="productDescriptionError" class="error"></span>
-                                        </div>
-                                        <!-- Prices and Attributes -->
-                                        <div class="row">
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Regular Price</label>
-                                                <input name="regularPrice" id="regularPrice" type="text" placeholder="RS"
-                                                    class="form-control" />
-                                                    <span id="regularPriceError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Sales Price</label>
-                                                <input name="salesPrice" id="salesPrice" type="text" placeholder="RS"
-                                                    class="form-control" />
-                                                    <span id="salesPriceError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Dial Shape</label>
-                                                <input name="dialShape" id="dialShape" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                    <span id="dialShapeError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Display Type</label>
-                                                <input name="displayType" id="displayType" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                    <span id="displayTypeError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Strap Material</label>
-                                                <input name="strapMaterial" id="strapMaterial" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                    <span id="strapMaterialError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Strap Color</label>
-                                                <input name="strapColor" id="strapColor" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                    <span id="strapColorError" class="error"></span>
-                                            </div>
-                                        </div>
-                                        <!-- Stock Quantity -->
-                                        <div class="mb-4">
-                                            <label for="stock" class="form-label">Stock Quantity</label>
-                                            <input type="text" id="stock" name="stock" class="form-control" />
-                                            <span id="stockError" class="error"></span>
-                                        </div>
-                                        <!-- Category and Brand -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Category</label>
-                                            <select class="form-select" name="category">
-                                                <% if(categoriesData.length> 0) { %> <%
-                                                        categoriesData.forEach(category=> { %>
-                                                        <option>
-                                                            <%= category.name %>
-                                                        </option>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <option>No Category Found</option>
-                                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label">Brands</label>
-                                            <select class="form-select" name="brand">
-                                                <% if(brandsData.length> 0) { %> <% brandsData.forEach(brand=>
-                                                        { %>
-                                                        <option>
-                                                            <%= brand.name %>
-                                                        </option>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <option>No Brand Found</option>
-                                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div class="container mt-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Select Target Group:</label><br />
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="men"
-                                                        name="targetGroup" value="men" />
-                                                    <label class="form-check-label" for="men">Men</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="women"
-                                                        name="targetGroup" value="women" />
-                                                    <label class="form-check-label" for="women">Women</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="kids"
-                                                        name="targetGroup" value="kids" />
-                                                    <label class="form-check-label" for="kids">Kids</label>
-                                                </div>
-                                            </div>
-                                            <span id="targetGroupError" class="error"></span>
-                                        </div>
-
-                                        <div class="input-upload">
-                                            <span id="fileAccessError" class="error"></span>
-                                            <input class="form-control" id="fileAccess" type="file" name="productimages"
-                                                multiple />
-
-                                            <div class="container" style="width: 100%">
-                                                <h4 style="padding-top: 5px">Image Preview</h4>
-                                                <div id="imagePreview" style="
+                <div class="container" style="width: 100%">
+                  <h4 style="padding-top: 5px">Image Preview</h4>
+                  <div
+                    id="imagePreview"
+                    style="
                       width: 100%;
                       overflow: auto;
                       border: 1px solid #ddd;
                       padding: 10px;
-                    "></div>
-                                            </div>
-                                            
-                                        </div>
+                    "
+                  ></div>
+                </div>
+              </div>
 
-                                        <div style="
+              <div
+                style="
                   display: flex;
                   justify-content: center;
                   padding-top: 15px;
-                ">
-                                            <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">
-                                                Add Product
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                "
+              >
+                <button
+                  class="btn btn-md rounded font-sm hover-up"
+                  id="submitForm"
+                  type="submit"
+                >
+                  Add Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
-                        <!-- Media Container -->
-                    </div>
-                </section>
-        </main>
-        <script>
-           document.addEventListener("DOMContentLoaded", () => {
+      <!-- Media Container -->
+    </div>
+  </section>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("product-form");
     const imageInput = document.getElementById("fileAccess");
     const imagePreview = document.getElementById("imagePreview");
     const openCropperModalBtn = document.getElementById("openCropperModalBtn");
@@ -221,376 +314,460 @@
     const cropAndSave = document.getElementById("cropAndSave");
     const cropperModalElement = document.getElementById("cropperModal");
 
+    const fileAccessError = document.getElementById("fileAccessError");
+
     let cropper; //hold the cropper js instance
     let currentImage;
     let originalImageBlobs = [];
 
+    
+
+    const validateImage = (file) => {
+
+      const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+
+      if (!allowedExtensions.test(file)) {
+        fileAccessError.textContent =
+          "* Please upload a valid image file (jpg, jpeg, png, gif)";
+        return false;
+      } else {
+        fileAccessError.textContent = "";
+        return true;
+      }
+    };
+
     imageInput.addEventListener("change", (event) => {
-        const files = event.target.files;
+      const files = event.target.files;
 
-        Array.from(files).forEach((file) => {
-            
-            const reader = new FileReader();
+      Array.from(files).forEach((file) => {
+        if (!validateImage(file)) {
+          return;
+        }
+        const reader = new FileReader();
 
-            reader.onload = (event) => {
-                const imageContainer = document.createElement("div");
-                imageContainer.style.position = "relative";
-                imageContainer.style.marginBottom = "10px";
-                imageContainer.style.display = "flex";
-                imageContainer.style.alignItems = "center";
-                imageContainer.style.justifyContent = "space-between";
+        reader.onload = (event) => {
+          const imageContainer = document.createElement("div");
+          imageContainer.style.position = "relative";
+          imageContainer.style.marginBottom = "10px";
+          imageContainer.style.display = "flex";
+          imageContainer.style.alignItems = "center";
+          imageContainer.style.justifyContent = "space-between";
 
-                const img = document.createElement("img");
-                img.src = event.target.result;
-                img.className = "imagePreview";
-                img.style.maxWidth = "280px";
-                img.style.maxHeight = "280px";
-                img.style.marginRight = "10px";
-                img.style.objectFit = "cover";
+          const img = document.createElement("img");
+          img.src = event.target.result;
+          img.className = "imagePreview";
+          img.style.maxWidth = "280px";
+          img.style.maxHeight = "280px";
+          img.style.marginRight = "10px";
+          img.style.objectFit = "cover";
 
-                const buttonContainer = document.createElement("div");
-                buttonContainer.style.display = "flex";
-                buttonContainer.style.flexDirection = "column";
+          const buttonContainer = document.createElement("div");
+          buttonContainer.style.display = "flex";
+          buttonContainer.style.flexDirection = "column";
 
-                const deleteButton = document.createElement("button");
-                deleteButton.className = "btn btn-danger btn-sm mb-2";
-                deleteButton.innerText = "Remove";
-                deleteButton.addEventListener("click", () => {
-                    imageContainer.remove();  //Removes the image container from the DOM
-                    originalImageBlobs = originalImageBlobs.filter(item => item.id !== img.src); //filters out the removed image from the array
-                    updateFileInput();  //Updates the file input with the current images
-                });
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn btn-danger btn-sm mb-2";
+          deleteButton.innerText = "Remove";
+          deleteButton.addEventListener("click", () => {
+            imageContainer.remove(); //Removes the image container from the DOM
+            originalImageBlobs = originalImageBlobs.filter(
+              (item) => item.id !== img.src
+            ); //filters out the removed image from the array
+            updateFileInput(); //Updates the file input with the current images
+          });
 
-                buttonContainer.appendChild(deleteButton);
-                imageContainer.appendChild(img);
-                imageContainer.appendChild(buttonContainer);
-                imagePreview.appendChild(imageContainer);
+          buttonContainer.appendChild(deleteButton);
+          imageContainer.appendChild(img);
+          imageContainer.appendChild(buttonContainer);
+          imagePreview.appendChild(imageContainer);
 
-                img.addEventListener("click", () => {
-                    imageToCrop.src = img.src;
-                    currentImage = img;
-                    openCropperModalBtn.click();
-                });
+          img.addEventListener("click", () => {
+            imageToCrop.src = img.src;
+            currentImage = img;
+            openCropperModalBtn.click();
+          });
 
-                
-                const originalFile = new File([file], file.name, { type: file.type });
-                originalImageBlobs.push({ id: event.target.result, blob: originalFile });
-                updateFileInput();
-            };
+          const originalFile = new File([file], file.name, { type: file.type });
+          originalImageBlobs.push({
+            id: event.target.result,
+            blob: originalFile,
+          });
+          updateFileInput();
+        };
 
-            reader.readAsDataURL(file);
-        });
+        reader.readAsDataURL(file);
+      });
     });
 
     cropperModalElement.addEventListener("shown.bs.modal", () => {
-        cropper = new Cropper(imageToCrop, {
-            aspectRatio: 1,
-            viewMode: 2,
-            autoCropArea: 1,
-        });
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: 1,
+        viewMode: 2,
+        autoCropArea: 1,
+      });
     });
 
     cropperModalElement.addEventListener("hidden.bs.modal", () => {
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
     });
 
     cropAndSave.addEventListener("click", () => {
-        if (cropper) {
-            const canvas = cropper.getCroppedCanvas();
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas();
 
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
 
-                currentImage.src = url;
+          currentImage.src = url;
 
-                // Create a new File object from the blob
-                const croppedFile = new File([blob], `croppedImage_${Date.now()}.jpg`, { type: 'image/jpeg' });
+          // Create a new File object from the blob
+          const croppedFile = new File(
+            [blob],
+            `croppedImage_${Date.now()}.jpg`,
+            { type: "image/jpeg" }
+          );
 
-                // Replace the original blob with the cropped blob
-                originalImageBlobs = originalImageBlobs.map(item => {
-                if (item.id === imageToCrop.src) {
-                    return { id: url, blob: croppedFile };
-                }
-                return item;
-            });
+          // Replace the original blob with the cropped blob
+          originalImageBlobs = originalImageBlobs.map((item) => {
+            if (item.id === imageToCrop.src) {
+              return { id: url, blob: croppedFile };
+            }
+            return item;
+          });
 
-                updateFileInput();
+          updateFileInput();
 
-                $("#cropperModal").modal("hide");
-            }, 'image/jpeg');
-        }
+          $("#cropperModal").modal("hide");
+        }, "image/jpeg");
+      }
     });
 
     function updateFileInput() {
-        const dataTransfer = new DataTransfer();
-        originalImageBlobs.forEach(item => {
-            dataTransfer.items.add(item.blob);
-        });
-        imageInput.files = dataTransfer.files;
+      const dataTransfer = new DataTransfer();
+      originalImageBlobs.forEach((item) => {
+        dataTransfer.items.add(item.blob);
+      });
+      imageInput.files = dataTransfer.files;
     }
 
-    document.getElementById("submitForm").addEventListener("submit", (event) => {
+    document
+      .getElementById("submitForm")
+      .addEventListener("submit", (event) => {
         event.preventDefault();
 
         const formData = new FormData();
         const formElements = document.getElementById("submitForm").elements;
 
         for (let element of formElements) {
-            if (element.name && element.type !== "file") {
-                formData.append(element.name, element.value);
-            }
+          if (element.name && element.type !== "file") {
+            formData.append(element.name, element.value);
+          }
         }
 
         // Add all files from the file input
         Array.from(imageInput.files).forEach((file, index) => {
-
-            formData.append(`images`, file, file.name);
-
+          formData.append(`images`, file, file.name);
         });
 
         if (imageInput.files.length > 0) {
-            fetch("http://localhost:7000/admin/addProducts", {
-                method: "POST",
-                body: formData,
-            })
+          fetch("http://localhost:7000/admin/addProducts", {
+            method: "POST",
+            body: formData,
+          })
             .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
             })
             .then((data) => {
-                console.log("Success:", data);
+              console.log("Success:", data);
             })
             .catch((error) => {
-                console.error("There was a problem with the fetch operation:", error);
+              console.error(
+                "There was a problem with the fetch operation:",
+                error
+              );
             });
         } else {
-            console.error("No images to upload");
+          console.error("No images to upload");
         }
+      });
+
+    form.addEventListener("submit", (event) => {
+      if (imageInput.files.length === 0) {
+        console.log("Image is required");
+        event.preventDefault();
+      }
+      validateProductName();
+      validateProductDescription();
+      validateRegularPrice();
+      validateSalesPrice();
+      validateDialShape();
+      validateDisplayType();
+      validateStrapMaterial();
+      validateStrapColor();
+      validateStock();
+      validateTargetGroup();
+      validateImage();
+
+      if (
+        !isProductNameValid &&
+        !isProductDescriptionValid &&
+        !isRegularPriceValid &&
+        !isSalesPriceValid &&
+        !isDialShapeValid &&
+        !isDisplayTypeValid &&
+        !isStrapMaterialValid &&
+        !isStrapColorValid&&
+        !isStockValid &&
+        !isTargetGroupValid 
+      ) {
+
+        event.preventDefault();
+
+      }
     });
-});
+  });
 
+  //form validation for product adding
 
-//form validation for product adding
+  //form validation for product nameing
+  let isProductNameValid = false;
+  const productNameInput = document.getElementById("productName");
+  const productNameError = document.getElementById("productNameError");
 
-        let isProductNameValid = false;
-        const productNameInput = document.getElementById('productName');
-        const productNameError = document.getElementById('productNameError');
-        
-        const validateProductName = () =>{
-        
-            if (productNameInput.value.trim() === '') {
+  const validateProductName = () => {
+    if (productNameInput.value.trim() === "") {
+      productNameError.textContent = "* Product Name is required";
+      isProductNameValid = false;
+    } else {
+      productNameError.textContent = "";
+      isProductNameValid = true;
+    }
+  };
 
-                productNameError.textContent = '* Product Name is required';
-                isProductNameValid = false;
+  productNameInput.addEventListener("input", validateProductName);
 
-            }else {
-                productNameError.textContent = '';
-                isProductNameValid = true;
-            }
-        }
-        
-        productNameInput.addEventListener('input', validateProductName);
-        
-        
-     
-        let isProductDescriptionValid = false;
-        const productDescriptionInput = document.getElementById('productDescription');
-        const productDescriptionError = document.getElementById('productDescriptionError');
-        
-        const validateProductDescription = () =>{
-        
-            if (productDescriptionInput.value.trim() === '') {
-                productDescriptionError.textContent = '* Product Description required';
-                isProductDescriptionValid = false;
-            }else if(productDescriptionInput.value.trim().length < 5){
-        
-                productDescriptionError.textContent = '* Description should be atleast 5 charactors';
-                isProductDescriptionValid = false;
-        
-            }else {
-                productDescriptionError.textContent = '';
-                isProductDescriptionValid = true;
-            }
-        }
-        
-        productDescriptionInput.addEventListener('input', validateProductDescription);
-        
+  //form validation for product description
 
-        let isRegularPriceValid = false;
+  let isProductDescriptionValid = false;
+  const productDescriptionInput = document.getElementById("productDescription");
+  const productDescriptionError = document.getElementById(
+    "productDescriptionError"
+  );
 
-const regularPriceInput = document.getElementById('regularPrice');
-const regularPriceError = document.getElementById('regularPriceError');
+  const validateProductDescription = () => {
+    if (productDescriptionInput.value.trim() === "") {
+      productDescriptionError.textContent = "* Product Description required";
+      isProductDescriptionValid = false;
+    } else if (productDescriptionInput.value.trim().length < 5) {
+      productDescriptionError.textContent =
+        "* Description should be atleast 5 charactors";
+      isProductDescriptionValid = false;
+    } else {
+      productDescriptionError.textContent = "";
+      isProductDescriptionValid = true;
+    }
+  };
 
-const validateRegularPrice = () => {
-    if (regularPriceInput.value.trim() === '') {
-        regularPriceError.textContent = '* Regular Price is required';
+  productDescriptionInput.addEventListener("input", validateProductDescription);
+
+  //form validation for product regular price
+
+  let isRegularPriceValid = false;
+
+  const regularPriceInput = document.getElementById("regularPrice");
+  const regularPriceError = document.getElementById("regularPriceError");
+
+  const validateRegularPrice = () => {
+    if (regularPriceInput.value.trim() === "") {
+      regularPriceError.textContent = "* Regular Price is required";
+      isRegularPriceValid = false;
+    } else {
+      const priceValue = parseFloat(regularPriceInput.value.trim());
+      if (isNaN(priceValue)) {
+        regularPriceError.textContent = "* Regular Price must be a number";
         isRegularPriceValid = false;
-    } else {
-        const priceValue = parseFloat(regularPriceInput.value.trim());
-        if (isNaN(priceValue)) {
-            regularPriceError.textContent = '* Regular Price must be a number';
-            isRegularPriceValid = false;
-        } else if (priceValue <= 0) {
-            regularPriceError.textContent = '* Regular Price must be a positive number';
-            isRegularPriceValid = false;
-        } else {
-            regularPriceError.textContent = '';
-            isRegularPriceValid = true;
-        }
+      } else if (priceValue <= 0) {
+        regularPriceError.textContent =
+          "* Regular Price must be a positive number";
+        isRegularPriceValid = false;
+      } else {
+        regularPriceError.textContent = "";
+        isRegularPriceValid = true;
+      }
     }
-};
-regularPriceInput.addEventListener('input', validateRegularPrice);
-        
+  };
 
+  regularPriceInput.addEventListener("input", validateRegularPrice);
 
+  //form validation for product sales price
 
-let isSalesPriceValid = false;
+  let isSalesPriceValid = false;
 
-const salesPriceInput = document.getElementById('salesPrice');
-const salesPriceError = document.getElementById('salesPriceError');
+  const salesPriceInput = document.getElementById("salesPrice");
+  const salesPriceError = document.getElementById("salesPriceError");
 
-const validateSalesPrice = () => {
-    if (salesPriceInput.value.trim() === '') {
-        salesPriceError.textContent = '* Sales Price is required';
+  const validateSalesPrice = () => {
+    if (salesPriceInput.value.trim() === "") {
+      salesPriceError.textContent = "* Sales Price is required";
+      isSalesPriceValid = false;
+    } else {
+      const priceValue = parseFloat(salesPriceInput.value.trim());
+      if (isNaN(priceValue)) {
+        salesPriceError.textContent = "* Sales Price must be a number";
         isSalesPriceValid = false;
-    } else {
-        const priceValue = parseFloat(salesPriceInput.value.trim());
-        if (isNaN(priceValue)) {
-            salesPriceError.textContent = '* Sales Price must be a number';
-            isSalesPriceValid = false;
-        } else if (priceValue <= 0) {
-            salesPriceError.textContent = '* Sales Price must be a positive number';
-            isSalesPriceValid = false;
-        } else {
-            salesPriceError.textContent = '';
-            isSalesPriceValid = true;
-        }
+      } else if (priceValue <= 0) {
+        salesPriceError.textContent = "* Sales Price must be a positive number";
+        isSalesPriceValid = false;
+      } else {
+        salesPriceError.textContent = "";
+        isSalesPriceValid = true;
+      }
     }
-};
+  };
 
-salesPriceInput.addEventListener('input', validateSalesPrice);
-        
+  salesPriceInput.addEventListener("input", validateSalesPrice);
 
+  //form validation for product display shape
 
-    let isDialShapeValid = false;
+  let isDialShapeValid = false;
 
-    const dialShapeInput = document.getElementById('dialShape');
-    const dialShapeError = document.getElementById('dialShapeError');
+  const dialShapeInput = document.getElementById("dialShape");
+  const dialShapeError = document.getElementById("dialShapeError");
 
-    const validateDialShape = () => {
-        if (dialShapeInput.value.trim() === '') {
-            dialShapeError.textContent = '* Dial Shape is required';
-            isDialShapeValid = false;
+  const validateDialShape = () => {
+    if (dialShapeInput.value.trim() === "") {
+      dialShapeError.textContent = "* Dial Shape is required";
+      isDialShapeValid = false;
+    } else if (!/^[A-Za-z\s-]*$/.test(dialShapeInput.value.trim())) {
+      dialShapeError.textContent =
+        "* Dial Shape must contain only letters,spaces";
+      isDialShapeValid = false;
+    } else {
+      dialShapeError.textContent = "";
+      isDialShapeValid = true;
+    }
+  };
 
-        }else if (!/^[A-Za-z\s-]*$/.test(dialShapeInput.value.trim())) {
+  dialShapeInput.addEventListener("input", validateDialShape);
 
-        dialShapeError.textContent = '* Dial Shape must contain only letters,spaces'
-        isDialShapeValid = false;
+  //form validation for product display type
 
-        }else {
-       
-            dialShapeError.textContent = '';
-            isDialShapeValid = true;
-        }
-    };
+  let isDisplayTypeValid = false;
 
-    dialShapeInput.addEventListener('input', validateDialShape);
+  const displayTypeInput = document.getElementById("displayType");
+  const displayTypeError = document.getElementById("displayTypeError");
 
-
-
-    let isDisplayTypeValid = false;
-
-const displayTypeInput = document.getElementById('displayType');
-const displayTypeError = document.getElementById('displayTypeError');
-
-const validateDisplayType = () => {
-     
-
-    if (displayTypeInput.value.trim() === '') {
-        displayTypeError.textContent = '* Display Type is required';
-        isDisplayTypeValid = false;
+  const validateDisplayType = () => {
+    if (displayTypeInput.value.trim() === "") {
+      displayTypeError.textContent = "* Display Type is required";
+      isDisplayTypeValid = false;
     } else if (!/^[A-Za-z]*$/.test(displayTypeInput.value.trim())) {
-        displayTypeError.textContent = '* Display Type must contain only letters';
-        isDisplayTypeValid = false;
+      displayTypeError.textContent = "* Display Type must contain only letters";
+      isDisplayTypeValid = false;
     } else {
-        displayTypeError.textContent = '';
-        isDisplayTypeValid = true;
+      displayTypeError.textContent = "";
+      isDisplayTypeValid = true;
     }
-};
+  };
 
-displayTypeInput.addEventListener('input', validateDisplayType);
+  displayTypeInput.addEventListener("input", validateDisplayType);
 
-let isStockValid = false;
+  //form validation for product strap material
 
-const stockInput = document.getElementById('stock');
-const stockError = document.getElementById('stockError');
+  let isStrapMaterialValid = false;
 
-const validateStock = () => {
+  const strapMaterialInput = document.getElementById("strapMaterial");
+  const strapMaterialError = document.getElementById("strapMaterialError");
 
+  const validateStrapMaterial = () => {
+    if (strapMaterialInput.value.trim() === "") {
+      strapMaterialError.textContent = "* strap material is required";
+      isStrapMaterialValid = false;
+    } else if (!/^[A-Za-z]*$/.test(strapMaterialInput.value.trim())) {
+      strapMaterialError.textContent =
+        "* strap material must contain only letters";
+      isStrapMaterialValid = false;
+    } else {
+      strapMaterialError.textContent = "";
+      isStrapMaterialValid = true;
+    }
+  };
 
-    if (stockInput.value.trim() === '') {
-        stockError.textContent = '* Stock is required';
-        isStockValid = false;
+  strapMaterialInput.addEventListener("input", validateStrapMaterial);
+
+  //form validation for product display type
+
+  let isStrapColorValid = false;
+
+  const strapColorInput = document.getElementById("strapColor");
+  const strapColorError = document.getElementById("strapColorError");
+
+  const validateStrapColor = () => {
+    if (strapColorInput.value.trim() === "") {
+      strapColorError.textContent = "* strap color is required";
+      isStrapColorValid = false;
+    } else if (!/^[A-Za-z]*$/.test(strapColorInput.value.trim())) {
+      strapColorError.textContent = "* strap color must contain only letters";
+      isStrapColorValid = false;
+    } else {
+      strapColorError.textContent = "";
+      isStrapColorValid = true;
+    }
+  };
+
+  strapColorInput.addEventListener("input", validateStrapColor);
+
+  //form validation for product stock
+
+  let isStockValid = false;
+
+  const stockInput = document.getElementById("stock");
+  const stockError = document.getElementById("stockError");
+
+  const validateStock = () => {
+    if (stockInput.value.trim() === "") {
+      stockError.textContent = "* Stock is required";
+      isStockValid = false;
     } else if (!/^[1-9]\d*$/.test(stockInput.value.trim())) {
-        stockError.textContent = '* Stock must be a positive integer';
-        isStockValid = false;
+      stockError.textContent = "* Stock must be a positive integer";
+      isStockValid = false;
     } else {
-        stockError.textContent = '';
-        isStockValid = true;
+      stockError.textContent = "";
+      isStockValid = true;
+    }
+  };
+
+  stockInput.addEventListener("input", validateStock);
+
+
+  //form validation for product target group
+
+  let isTargetGroupValid = false;
+
+const menRadio = document.getElementById("men");
+const womenRadio = document.getElementById("women");
+const kidsRadio = document.getElementById("kids");
+const targetGroupError = document.getElementById("targetGroupError");
+
+const validateTargetGroup = () => {
+    if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
+        targetGroupError.textContent = "";
+        isTargetGroupValid = true;
+    } else {
+        targetGroupError.textContent = "* Please select a target group";
+        isTargetGroupValid = false;
     }
 };
 
-stockInput.addEventListener('input', validateStock)
+menRadio.addEventListener("change", validateTargetGroup)
+womenRadio.addEventListener("change", validateTargetGroup)
+kidsRadio.addEventListener("change", validateTargetGroup)
 
-
-let isTargetGroupValid = false;
-
-    const targetGroupSelect = document.getElementById('targetGroup');
-    const targetGroupError = document.getElementById('targetGroupError');
-
-    const validateTargetGroup = () => {
-    
-
-        if (targetGroupSelect.value === '') {
-            targetGroupError.textContent = '* Please select a target group';
-            isTargetGroupValid = false;
-        } else {
-            targetGroupError.textContent = '';
-            isTargetGroupValid = true;
-        }
-    };
-
-    targetGroupSelect.addEventListener('change', validateTargetGroup);
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('formDataAddProduct');
-        
-        form.addEventListener('submit', (event) => {
-        
-        
-            validateProductName()
-            validateProductDescription()
-            validateRegularPrice()
-            validateSalesPrice()
-            validateDialShape()
-            validateDisplayType()
-            validateStock()
-            validateTargetGroup()
-        
-            
-            if (!isProductNameValid&&!isProductDescriptionValid&&!isRegularPriceValid&&!isSalesPriceValid&&!isDialShapeValid&&!isDisplayTypeValid&&!isStockValid&&!isTargetGroupValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-        });
-        
-
-        </script>
-        <%- include('../layouts/adminLayouts/footer') %>
+</script>
+<%- include('../layouts/adminLayouts/footer') %>
