@@ -55,9 +55,9 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isActive: {
+    isBlocked: {
         type: Boolean,
-        default: true
+        default: false
     },
     targetGroup:{
         type:String,

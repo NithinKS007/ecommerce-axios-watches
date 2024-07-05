@@ -26,7 +26,7 @@ const loadHome = async (req,res) => {
     
     try {
 
-        const productsArray =await products.find({}).populate('brand')
+        const productsArray =await products.find({}).populate('brand').populate('category')
        
         return res.status(200).render("user/home",{productsArray:productsArray})
 
@@ -208,7 +208,7 @@ const verifySignin = async (req,res) => {
 
     try {
 
-        const userData = await users.findOne({email:email,is_blocked:false})
+        const userData = await users.findOne({email:email,isBlocked:false})
 
         if (!userData) {
 
@@ -247,11 +247,11 @@ const loadShowCase = async (req,res) =>{
     const targetGroup = req.query.targetGroup
     try {
 
-        const categoriesArray = await categories.find({})
-        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand')
-        const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10)
+        const categoriesArray = await categories.find({isBlocked:false})
+        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category')
+        const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10).populate('brand').populate('category')
         
-        return res.status(200).render("user/showCase",{categoriesArray,productsArray,latestProducts})
+        return res.status(200).render("user/showCase",{categoriesArray,productsArray,latestProducts,targetGroup})
 
     } catch (error) {
         
@@ -272,7 +272,7 @@ const loadProductDetails = async (req,res) =>{
     
         const productDetails = await products.findById({_id:productId}).populate('category').populate('brand')
 
-        const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup})
+        const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup}).populate('category').populate('brand')
 
    
 
@@ -282,7 +282,7 @@ const loadProductDetails = async (req,res) =>{
             return res.status(404).send("product not found")
         }
 
-        res.status(200).render("user/productDetails",{productDetails,relatedProducts})
+       return res.status(200).render("user/productDetails",{productDetails,relatedProducts})
         
     } catch (error) {
         

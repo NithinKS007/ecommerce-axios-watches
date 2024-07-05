@@ -6,9 +6,9 @@ const brandSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isActive:{
+    isBlocked:{
         type:Boolean,
-        default:true
+        default:false
     }
       
 })

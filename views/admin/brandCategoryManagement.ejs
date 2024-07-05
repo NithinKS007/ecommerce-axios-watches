@@ -156,20 +156,20 @@
                                     Edit info
                                   </button>
 
-                                  <% if(categoriesData[i].isActive) { %>
+                                  <% if(categoriesData[i].isBlocked) { %>
 
                                     <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                       id="softDeleteButton<%= categoriesData[i]._id %>"
-                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
-                                      Unlist
+                                      class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
+                                      List
                                     </button>
 
                                     <% } else { %>
 
                                       <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                         id="softDeleteButton<%= categoriesData[i]._id %>"
-                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
-                                        List
+                                        class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
+                                        Unlist
                                       </button>
 
                                       <% } %>
@@ -251,20 +251,20 @@
                                     data-bs-toggle="modal" data-bs-target="#exampleModalTwo">
                                     Edit info
                                   </button>
-                                  <% if(brandsData[i].isActive) { %>
+                                  <% if(brandsData[i].isBlocked) { %>
 
                                     <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                       id="softDeleteButton<%=  brandsData[i]._id %>"
-                                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
-                                      Unlist
+                                      class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
+                                     List
                                     </button>
 
                                     <% } else { %>
 
                                       <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                         id="softDeleteButton<%=  brandsData[i]._id %>"
-                                        class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
-                                        List
+                                        class="btn btn-danger  rounded btn-sm font-sm flex-fill mx-1">
+                                     Unlist
                                       </button>
 
                                       <% } %>
@@ -302,13 +302,13 @@
             const isDeleting = deleteButton.classList.contains("btn-danger");
 
             Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? "delete" : "undo deletion of"
+              title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'
                 } this category?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? "delete" : "undo"} it!`,
+              confirmButtonText:  `Yes, ${isDeleting ? 'Unlist' : 'List'}`
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
@@ -332,12 +332,12 @@
                       `softDeleteButton${categoryId}`
                     );
 
-                    if (data.categoryId.isActive) {
+                    if (data.categoryId.isBlocked) {
                       deleteButton.classList.remove("btn-danger");
                       deleteButton.classList.add("btn-success");
                       deleteButton.textContent = "List";
                       Swal.fire({
-                        title: "Deleted!",
+                        title:  "Unlist!",
                         text: "Successfully deleted category",
                         icon: "success",
                       });
@@ -374,13 +374,13 @@
             const isDeleting = deleteButton.classList.contains("btn-danger");
 
             Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? "delete" : "undo deletion of"
-                } this brand?`,
+              title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'} this Brand ?`,
+                
               icon: "warning",
               showCancelButton: true,
               confirmButtonColor: "#3085d6",
               cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? "delete" : "undo"} it!`,
+              confirmButtonText: `Yes, ${isDeleting ?  'Unlist' : 'List'}`
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
@@ -404,7 +404,7 @@
                       `softDeleteButton${brandId}`
                     );
 
-                    if (data.brandId.isActive) {
+                    if (data.brandId.isBlocked) {
                       deleteButton.classList.remove("btn-danger");
                       deleteButton.classList.add("btn-success");
                       deleteButton.textContent = "List";
@@ -436,6 +436,11 @@
               }
             });
           };
+
+
+
+          
+
 
             //category adding category done using backend
 
@@ -498,146 +503,7 @@
             });
 
 
-          //for category editing
-
-          document.addEventListener("DOMContentLoaded", (event) => {
-
-            const tableBodyCategory = document.querySelector("#categoriesTbody");
-
-            tableBodyCategory.addEventListener("click", (event) => {
-              if (event.target.classList.contains("editCategory")) {
-                const idOftheParticularCategory1 =
-                  event.target.getAttribute("data-category-id");
-
-                const tempCname = event.target.getAttribute("data-category-name");
-
-                const tempCDescription = event.target.getAttribute(
-                  "data-category-description"
-                );
-
-                document.getElementById("changeCName").value = tempCname;
-
-                document.getElementById("changeCDescription").value =
-                  tempCDescription;
-
-                document
-                  .getElementById("saveChangesCategory")
-                  .setAttribute("data-category-id", idOftheParticularCategory1);
-              }
-            });
-
-            const saveChangesCategory = document.getElementById(
-              "saveChangesCategory"
-            );
-
-            saveChangesCategory.addEventListener("click", () => {
-
-              const idOftheParticularCategory2 =
-                saveChangesCategory.getAttribute("data-category-id");
-
-              const categoryName = document.getElementById("changeCName").value;
-
-              const categoryDescription =
-
-                document.getElementById("changeCDescription").value;
-
-              fetch(
-                `http://localhost:7000/admin/brandCategoryManagement/?categoryId=${idOftheParticularCategory2}&categoryName=${categoryName}&categoryDescription=${categoryDescription}`,
-                {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              )
-                .then((response) => {
-                  if (response.status != 200) {
-                    throw new Error("Network response was not ok");
-                  }
-
-                  return response.json();
-                })
-                .then((data) => {
-                  const categoryNameElement = document.getElementById(
-                    `displayChangedCname${idOftheParticularCategory2}`
-                  );
-
-                  categoryNameElement.textContent = categoryName;
-
-                  const categoryDescriptionElement = document.getElementById(
-                    `displayChangedCdescription${idOftheParticularCategory2}`
-                  );
-
-                  categoryDescriptionElement.textContent = categoryDescription;
-                })
-                .catch((error) => {
-                  console.log(`There is a problem with the fetch operation`, error);
-                });
-            });
-
-
-
-            //form validation for editing category
-
-            const categoryNameEditedInput = document.getElementById("changeCName");
-            const categoryNameEditedError = document.getElementById(
-              "categoryChangeNameError"
-            );
-
-            const validateEditCategoryName = () => {
-              if (categoryNameEditedInput.value.trim() === "") {
-                categoryNameEditedError.textContent = "* Category Name is required";
-                return false
-              } 
-                categoryNameEditedError.textContent = "";
-                return true
-              }
-            
-
-            categoryNameEditedInput.addEventListener(
-              "input",
-              validateEditCategoryName
-            );
-
-            
-            const categoryDescriptionEditInput =
-              document.getElementById("changeCDescription");
-            const categoryDescriptionEditError = document.getElementById(
-              "categoryChangeDescriptionError"
-            );
-
-            const validateEditCategoryDescription = () => {
-              if (categoryDescriptionEditInput.value.trim() === "") {
-                categoryDescriptionEditError.textContent =
-                  "* Category is Description required";
-                return false
-              } else if (categoryDescriptionEditInput.value.trim().length < 5) {
-                categoryDescriptionEditError.textContent =
-                  "* Description should be atleast 5 charactors";
-                return false
-              } 
-                categoryDescriptionEditError.textContent = "";
-                 return true;
-              
-            };
-
-            categoryDescriptionEditInput.addEventListener(
-              "input",
-              validateEditCategoryDescription
-            );
-
-            
-            saveChangesCategory.addEventListener("click", (event) => {
-             
-             
-
-              if ( !validateEditCategoryName() || ! validateEditCategoryDescription()) {
-
-                event.preventDefault();
-              }
-            });
-                       
-
+           
             //brand adding category done using backend
 
             //form validation for adding new brand
@@ -675,96 +541,149 @@
               }
             });
 
-            //form validation for editing existing brand
 
-            let isBrandNameEditValid = false;
-            const brandNameEditedInput = document.getElementById("changeBName");
-            const brandNameEditedError = document.getElementById(
-              "brandChangeNameError"
-            );
 
-            const validateEditBrandName = () => {
-              if (brandNameEditedInput.value.trim() === "") {
-                brandNameEditedError.textContent = "* Brand Name is required";
-                isBrandNameEditValid = false;
-              } else if (brandNameEditedInput.value.trim().length < 2) {
-                brandNameEditedError.textContent =
-                  "* Name should be atleast 2 charactors";
-                isBrandNameEditValid = false;
-              } else {
-                brandNameEditedError.textContent = "";
-                isBrandNameEditValid = true;
-              }
-            };
 
-            brandNameEditedInput.addEventListener("input", validateEditBrandName);
 
-            const formDataEditBrand = document.getElementById("editBrandModal");
 
-            formDataEditBrand.addEventListener("submit", (event) => {
-              validateEditBrandName();
+             
+          //for category editing
 
-              if (!isBrandNameEditValid) {
-                event.preventDefault();
-              }
-            });
+          // document.addEventListener("DOMContentLoaded", (event) => {
 
-            const tableBodyBrand = document.querySelector("#brandsTbody");
+          //   const tableBodyCategory = document.querySelector("#categoriesTbody");
 
-            tableBodyBrand.addEventListener("click", (event) => {
-              if (event.target.classList.contains("editBrand")) {
-                const idOftheParticularBrand1 =
-                  event.target.getAttribute("data-brand-id");
+          //   tableBodyCategory.addEventListener("click", (event) => {
+          //     if (event.target.classList.contains("editCategory")) {
+          //       const idOftheParticularCategory1 =
+          //         event.target.getAttribute("data-category-id");
 
-                const tempBname = event.target.getAttribute("data-brand-name");
+          //       const tempCname = event.target.getAttribute("data-category-name");
 
-                document.getElementById("changeBName").value = tempBname;
+          //       const tempCDescription = event.target.getAttribute(
+          //         "data-category-description"
+          //       );
 
-                document
-                  .getElementById("saveChangesBrand")
-                  .setAttribute("data-brand-id", idOftheParticularBrand1);
-              }
-            });
+          //       document.getElementById("changeCName").value = tempCname;
 
-            const saveChangesBrand = document.getElementById("saveChangesBrand");
+          //       document.getElementById("changeCDescription").value =
+          //         tempCDescription;
 
-            saveChangesBrand.addEventListener("click", () => {
+          //       document
+          //         .getElementById("saveChangesCategory")
+          //         .setAttribute("data-category-id", idOftheParticularCategory1);
+          //     }
+          //   });
 
-              const idOftheParticularBrand2 =
-                saveChangesBrand.getAttribute("data-brand-id");
+          //   const saveChangesCategory = document.getElementById(
+          //     "saveChangesCategory"
+          //   );
 
-              const brandName = document.getElementById("changeBName").value;
+          //   saveChangesCategory.addEventListener("click", () => {
 
-              fetch(
-                `http://localhost:7000/admin/brandCategoryManagement/?brandId=${idOftheParticularBrand2}&brandName=${brandName}`,
-                {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              )
-                .then((response) => {
-                  if (response.status != 200) {
-                    throw new Error("Network response was not ok");
-                  }
+          //     const idOftheParticularCategory2 =
+          //       saveChangesCategory.getAttribute("data-category-id");
 
-                  return response.json();
-                })
-                .then((data) => {
-                  const brandNameElement = document.getElementById(
-                    `displayChangedBname${idOftheParticularBrand2}`
-                  );
+          //     const categoryName = document.getElementById("changeCName").value;
 
-                  brandNameElement.textContent = brandName;
-                })
-                .catch((error) => {
-                  console.log(`There is a problem with the fetch operation`, error);
-                });
-            });
+          //     const categoryDescription =
+
+          //       document.getElementById("changeCDescription").value;
+
+          //     fetch(
+          //       `http://localhost:7000/admin/brandCategoryManagement/?categoryId=${idOftheParticularCategory2}&categoryName=${categoryName}&categoryDescription=${categoryDescription}`,
+          //       {
+          //         method: "PUT",
+          //         headers: {
+          //           "Content-Type": "application/json",
+          //         },
+          //       }
+          //     )
+          //       .then((response) => {
+          //         if (response.status != 200) {
+          //           throw new Error("Network response was not ok");
+          //         }
+
+          //         return response.json();
+          //       })
+          //       .then((data) => {
+          //         const categoryNameElement = document.getElementById(
+          //           `displayChangedCname${idOftheParticularCategory2}`
+          //         );
+
+          //         categoryNameElement.textContent = categoryName;
+
+          //         const categoryDescriptionElement = document.getElementById(
+          //           `displayChangedCdescription${idOftheParticularCategory2}`
+          //         );
+
+          //         categoryDescriptionElement.textContent = categoryDescription;
+          //       })
+          //       .catch((error) => {
+          //         console.log(`There is a problem with the fetch operation`, error);
+          //       });
+          //   });
+
+
+
+
+
+          //   const tableBodyBrand = document.querySelector("#brandsTbody");
+
+          //   tableBodyBrand.addEventListener("click", (event) => {
+          //     if (event.target.classList.contains("editBrand")) {
+          //       const idOftheParticularBrand1 =
+          //         event.target.getAttribute("data-brand-id");
+
+          //       const tempBname = event.target.getAttribute("data-brand-name");
+
+          //       document.getElementById("changeBName").value = tempBname;
+
+          //       document
+          //         .getElementById("saveChangesBrand")
+          //         .setAttribute("data-brand-id", idOftheParticularBrand1);
+          //     }
+          //   });
+
+          //   const saveChangesBrand = document.getElementById("saveChangesBrand");
+
+          //   saveChangesBrand.addEventListener("click", () => {
+
+          //     const idOftheParticularBrand2 =
+          //       saveChangesBrand.getAttribute("data-brand-id");
+
+          //     const brandName = document.getElementById("changeBName").value;
+
+          //     fetch(
+          //       `http://localhost:7000/admin/brandCategoryManagement/?brandId=${idOftheParticularBrand2}&brandName=${brandName}`,
+          //       {
+          //         method: "PUT",
+          //         headers: {
+          //           "Content-Type": "application/json",
+          //         },
+          //       }
+          //     )
+          //       .then((response) => {
+          //         if (response.status != 200) {
+          //           throw new Error("Network response was not ok");
+          //         }
+
+          //         return response.json();
+          //       })
+          //       .then((data) => {
+          //         const brandNameElement = document.getElementById(
+          //           `displayChangedBname${idOftheParticularBrand2}`
+          //         );
+
+          //         brandNameElement.textContent = brandName;
+          //       })
+          //       .catch((error) => {
+          //         console.log(`There is a problem with the fetch operation`, error);
+          //       });
+          //   });
 
             
-          });
+          // });
 
 
         </script>

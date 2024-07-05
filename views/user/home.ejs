@@ -87,7 +87,7 @@
                                                         <div class="product-img product-img-zoom">
                                                             <a href="/productDetails?id=<%= productsArray[i]._id %>">
                                                                 <img class="default-img"
-                                                                    src="/productImages/<%= productsArray[i].images[0].filename %>"
+                                                                    src="/productImages/<%= productsArray[i]?.images[0]?.filename %>"
                                                                     alt="">
                                                             </a>
                                                         </div>
@@ -102,27 +102,27 @@
                                                                 <%= productsArray[i].brand.name %>
                                                             </a>
                                                         </div>
-                                                        <h6><a href="/productDetails?id=<%= productsArray[i]._id %>">
+                                                        <h5><a href="/productDetails?id=<%= productsArray[i]._id %>">
                                                                 <%= productsArray[i].name %>
-                                                            </a></h6>
+                                                            </a></h5>
                                                         <div class="rating-result" title="90%">
                                                             <span>
                                                                 <span>90%</span>
                                                             </span>
                                                         </div>
                                                         <div class="product-price">
+                                                            <%if(productsArray[i].isBlocked || productsArray[i].category?.isBlocked||productsArray?.isBlocked) { %>
+
+                                                                
+                                                                <span style="color: red;">Currently Unavailable</span>
+                                                                <%} else { %>
                                                             <span>₹ <%= productsArray[i].salesPrice %> </span>
                                                             <span class="old-price">
                                                                 <%= productsArray[i].regularPrice %>
                                                             </span>
+                                                            <% } %>
                                                         </div>
-                                                        <div class="product-action-1 show">
-
-                                                            
-                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="#"><i class="fi-rs-shopping-bag-add"></i></a>
-                                                            
-                                                            </a>
-                                                        </div>
+                                                       
                                                     </div>
 
                                                 </div>

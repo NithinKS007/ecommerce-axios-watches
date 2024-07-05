@@ -150,56 +150,36 @@ const loadCustomer = async (req, res) => {
 
 //blocking and unblocking the customers from the customers list 
 const blockUnblock = async (req,res) =>{
-
     const userId = req.query.userId
-
     try {
+        const user = await users.findById(userId)
 
-        const user = await users.findById({_id:userId})
-
+       
         if(!user){
-
             return res.status(404).send('user not found')
         }
-
-        if(user.is_blocked){
-
-           const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{is_blocked:false}})
-
-           console.log(`softdeleting happened for user from the backend isblocked to false`)
-
-           return res.status(200).json({
-
-            success:true,
-            message:"user successfully soft deleted",
-            userId:updatedUser
-
-           })
-
-        }else{
-            
-            const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{is_blocked:true}})
-
-            console.log(`soft delete happened for user from the backend isblocked to true`)
-
+        if(user.isBlocked){
+            const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{isBlocked:false}},{new:true})
+            console.log(`Unblocking happened for user from the backend isblocked to false`)
             return res.status(200).json({
-
                 success:true,
-                message:"undone user soft deletion",
+                message:"user successfully unblocked",
                 userId:updatedUser
             })
-
+        }else{
+            const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{isBlocked:true}},{new:true})
+            console.log(`Blocking happened for user from the backend isblocked to true`)
+            return res.status(200).json({
+                success:true,
+                message:"user successfully blocked",
+                userId:updatedUser
+            })
         }
-
-    
     } catch (error) {
-
         console.log(`error while blocking or unblocking the customer`,error.message);
-        
         return res.status(500).send("Internal server Error")
     }
 }
-
 //loading the category page 
 const loadCategoryBrand = async (req,res) =>{
 
@@ -280,8 +260,10 @@ const addCategoryBrand = async (req,res) =>{
 
 const editCategory = async (req,res) =>{
 
+
     const { categoryId, categoryName, categoryDescription } = req.body; 
 
+  
     if (!categoryId ||!categoryName ||!categoryDescription) {
 
         return res.status(400).json({ success: false, message: "Category ID, name, and description are required" })
@@ -467,9 +449,9 @@ const softDeleteCategory = async (req,res) =>{
             return res.status(404).json({ success: false, message: "Category not found" });
         }
         
-        if(category.isActive){
+        if(category.isBlocked){
 
-         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{isActive:false}})
+         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{isBlocked:false}},{new:true})
 
 
             console.log(`soft delete happened for category from the backend isactive to false `)
@@ -484,7 +466,7 @@ const softDeleteCategory = async (req,res) =>{
 
         }else{
 
-        const UpdatedCategory =  await categories.findByIdAndUpdate({_id:categoryId},{$set:{isActive:true}})
+        const UpdatedCategory =  await categories.findByIdAndUpdate({_id:categoryId},{$set:{isBlocked:true}},{new:true})
 
         console.log(`soft delete happened for category from the backend isactive to true `)
 
@@ -522,9 +504,9 @@ const softDeleteBrand = async (req,res) =>{
             return res.status(404).json({ success: false, message: "Brand not found" });
         }
 
-        if(brandData.isActive){
+        if(brandData.isBlocked){
 
-            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isActive:false}})
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isBlocked:false}},{new:true})
 
             console.log(`softdelete happened for brand from the backend isactive to false `)
 
@@ -536,7 +518,7 @@ const softDeleteBrand = async (req,res) =>{
             })
         }else{
 
-            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isActive:true}})
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isBlocked:true}},{new:true})
 
             
             console.log(`softdelete happened for brand from the backend isactive to true `)
@@ -575,9 +557,9 @@ const softDeleteProduct = async (req,res) =>{
 
         }
 
-        if(productData.isActive){
+        if(productData.isBlocked){
 
-            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isActive:false}})
+            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isBlocked:false}},{new:true})
 
             console.log(`softdelete happened for product from the backend isactive to false `)
 
@@ -589,7 +571,7 @@ const softDeleteProduct = async (req,res) =>{
             })
         }else{
 
-            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isActive:true}})
+            const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isBlocked:true}},{new:true})
 
             
             console.log(`softdelete happened for product from the backend isactive to true `)

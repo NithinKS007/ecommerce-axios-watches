@@ -1,13 +1,13 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
-        <div class="page-header breadcrumb-wrap">
-            <div class="container">
-                <div class="breadcrumb">
-                    <a href="/home" rel="nofollow">Home</a>
-                    <span></span><a href="" rel="nofollow"></a>
-                </div>
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/home" rel="nofollow">Home</a>  
+                <span></span><a href="/showcase?targetGroup=<%= productDetails.targetGroup %>"><%= productDetails.targetGroup %></a> <span></span> <a href="">Product Details</a>
             </div>
         </div>
+    </div>
         <!-- Quick view -->
         <div class="modal fade custom-modal" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel"
             aria-hidden="true">
@@ -29,8 +29,8 @@
                                                         { %>
                                                         <div
                                                             class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
-                                                            <img src="/productImages/<%= productDetails.images[i].filename %>"
-                                                                class="img-fluid" alt="product image">
+                                                            <img src="/productImages/<%= productDetails.images[i]?.filename %>"
+                                                                class="img-fluid"  alt="product image">
                                                         </div>
                                                         <% } %>
                                                 </div>
@@ -49,10 +49,8 @@
                                                     %>
                                                     <div
                                                         class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
-                                                        <img src="/productImages/<%= productDetails.images[i].filename %>"
-                                                            class="img-fluid" id="zoom_04"
-                                                            data-zoom-image="/productImages/<%= productDetails.images[i].filename %>"
-                                                            alt="product image">
+                                                        <img src="/productImages/<%= productDetails.images[i]?.filename %>"
+                                                            class="img-fluid" alt="product image">
                                                     </div>
                                                     <% } %>
                                             </div>
@@ -204,10 +202,8 @@
                                                         { %>
                                                         <div
                                                             class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
-                                                            <img src="/productImages/<%= productDetails.images[i].filename %>"
-                                                                class="img-fluid" id="zoom_04"
-                                                                data-zoom-image="/productImages/<%= productDetails.images[i].filename %>"
-                                                                alt="product image">
+                                                            <img src="/productImages/<%= productDetails.images[i]?.filename %>"
+                                                                class="img-fluid" alt="product image">
                                                         </div>
                                                         <% } %>
                                                 </div>
@@ -263,8 +259,15 @@
 
 
                                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                            <div class="detail-extralink">
+                                            <div class="detail-extralink" style="display: flex; justify-content: center ; align-items: center;">
 
+                                                <% if (productDetails?.isBlocked||productDetails.category?.isBlocked || productDetails.brand?.isBlocked) {%>
+                                                    <h4> <div class="product-unavailable" style="color: red;  ">
+
+                                                        Currently Unavailable
+
+                                                    </div> </h4> <% }else {%>
+                                                       
                                                 <div class="product-extra-link2">
                                                     <button type="submit" class="button button-add-to-cart">Go to
                                                         Cart</button>
@@ -272,14 +275,15 @@
 
                                                 </div>
                                                 <div class="product-extra-link2">
-                                                    <button type="submit" class="button button-add-to-cart">Buy
+                                                    <button type="submit" class="button button-add-to-cart" style="margin-left: 10px;">Buy
                                                         Now</button>
 
 
                                                 </div>
-                                                <div class="product-extra-link2">
+                                                <% } %>
+                                                <div class="product-extra-link2" style="margin-left: 10px;">
 
-                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up"
+                                                    <a aria-label="Add To Wishlist"
                                                         href="#"><i class="fi-rs-heart"></i></a>
 
                                                 </div>
@@ -287,14 +291,13 @@
                                             </div>
 
                                             <ul class="product-meta font-xs color-grey mt-50">
-                                                <!-- <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
-                                            <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li> -->
+                                          
                                                 <% if (productDetails.stock===0) { %>
 
                                                     <li>Availability: <span class="in-stock text-danger ml-5">Out of
                                                             stock</span></li>
 
-                                                    <% } else { %>
+                                                    <% } else if(!productDetails.isBlocked) { %>
 
                                                         <li>Availability: <span class="in-stock text-success ml-5">
                                                                 <%= productDetails.stock %> Items In Stock
@@ -584,10 +587,10 @@
                                                                     <a href="/productDetails?id=<%= relatedProducts[i]._id %>"
                                                                         tabindex="0">
                                                                         <img class="default-img"
-                                                                            src="/productImages/<%= relatedProducts[i].images[0].filename %>"
+                                                                            src="/productImages/<%= relatedProducts[i].images[0]?.filename %>"
                                                                             alt="">
                                                                         <img class="hover-img"
-                                                                            src="/productImages/<%= relatedProducts[i].images[0].filename %>"
+                                                                            src="/productImages/<%= relatedProducts[i].images[0]?.filename %>"
                                                                             alt="">
                                                                     </a>
                                                                 </div>
@@ -613,10 +616,15 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="product-price">
+                                                                   <%if(relatedProducts[i].isBlocked || relatedProducts[i].category?.isBlocked ||relatedProducts[i].brand?.isBlocked){%>
+
+                                                                    <span style="color: red; font-size: 15px;">Currently Unavailable</span>
+                                                                    <% } else { %>
                                                                     <span> ₹ <%= relatedProducts[i].salesPrice %></span>
                                                                     <span class="old-price">
                                                                         <%= relatedProducts[i].regularPrice %>
                                                                     </span>
+                                                                    <% } %>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -639,5 +647,8 @@
             </section>
         </main>
 
+        <script>
+
+        </script>
 
         <%- include('../layouts/userLayouts/footer') %>

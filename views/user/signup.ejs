@@ -50,7 +50,7 @@
                        
                       </div>
                       <span id="passwordError" class="error"></span>
-                    <input class="form-control" id="cPassword" name="cPassword" type="confirm password" placeholder="Confirm Password">
+                    <input class="form-control" id="cPassword" name="cPassword" type="password" placeholder="Confirm Password">
                     <span id="cPasswordError" class="error"></span>
     
                     <p class="small-text text-center text-muted mb-3">By signing up, you confirm that you've read and accepted our User Notice and Privacy Policy.</p>
@@ -68,34 +68,37 @@
 
 <script>
 
+
+document.addEventListener("DOMContentLoaded",()=>{
+
 //first name validation
-let isFirstNameValid = false;
+
 const fnameInput = document.getElementById('fname');
 const fnameError = document.getElementById('fnameError');
 
 const validateFirstName = () =>{
     if (fnameInput.value.trim() === '') {
         fnameError.textContent = '* First Name is required';
-        isFirstNameValid = false;
+        return false
     } else {
         fnameError.textContent = '';
-        isFirstNameValid = true;
+       return true
     }
 }
 fnameInput.addEventListener('input', validateFirstName);
 
 //last name validaton
-let isLastNameValid = false;
+
 const lnameInput = document.getElementById('lname');
 const lnameError = document.getElementById('lnameError');
 
 const validateLastName = () =>{
     if (lnameInput.value.trim() === '') {
         lnameError.textContent = '* Last Name is required';
-        isLastNameValid = false;
+        return false
     } else {
         lnameError.textContent = '';
-        isLastNameValid = true;
+        return true
     }
 }
 
@@ -103,7 +106,7 @@ lnameInput.addEventListener('input', validateLastName);
 
 
 //email validaton
-let isEmailValid = false;
+
 const emailInput = document.getElementById('email');
 const emailError = document.getElementById('emailError');
 
@@ -113,22 +116,22 @@ const validateEmail = () =>{
 
     if (emailInput.value.trim() === '') {
         emailError.textContent = '* Email is required';
-        isEmailValid = false;
+        return false
     }else if( !emailRegex.test(emailInput.value.trim()) ){
 
         emailError.textContent = '* Enter a valid email';
-        isEmailValid = false;
+       return false
 
     }else {
         emailError.textContent = '';
-        isEmailValid = true;
+       return true
     }
 }
 
 emailInput.addEventListener('input', validateEmail);
 
 //mobile validaton
-let isPhoneValid = false;
+
 const phoneInput = document.getElementById('phone');
 const phoneError = document.getElementById('phoneError');
 
@@ -138,15 +141,15 @@ const validatePhone = () =>{
 
     if (phoneInput.value.trim() === '') {
         phoneError.textContent = '* Phone Number is required';
-        isPhoneValid = false;
+      return false
     }else if( !phoneRegex.test(phoneInput.value.trim())){
 
         phoneError.textContent = '* Enter a valid Phone Number';
-        isPhoneValid = false;
+        return false
 
     }else {
         phoneError.textContent = '';
-        isPhoneValid = true;
+       return true
     }
 }
 
@@ -155,7 +158,7 @@ phoneInput.addEventListener('input', validatePhone);
 
 
 //password validaton
-let isPasswordValid = false;
+
 const passwordInput = document.getElementById('password');
 const passwordError = document.getElementById('passwordError');
 
@@ -163,15 +166,15 @@ const validatePassword = () =>{
 
     if (passwordInput.value.trim() === '') {
         passwordError.textContent = '* Password is required';
-        isPasswordValid = false;
+        return false
     }else if(passwordInput.value.trim().length < 4){
 
         passwordError.textContent = '* Password should be atleast 4 charactors';
-        isPasswordValid = false;
+        return false
 
     }else {
         passwordError.textContent = '';
-        isPasswordValid = true;
+       return true
     }
 }
 
@@ -180,7 +183,7 @@ passwordInput.addEventListener('input', validatePassword);
 
 
 //Confirm password validaton
-let isCPasswordValid = false;
+
 const cPasswordInput = document.getElementById('cPassword');
 const cPasswordError = document.getElementById('cPasswordError');
 
@@ -189,41 +192,39 @@ const validateConfirmPassword = () =>{
     if (
         cPasswordInput.value.trim() === '') {
         cPasswordError.textContent = '* Confirm Password is required';
-        isCPasswordValid = false;
+        return false
     }else if(cPasswordInput.value.trim().length < 4){
 
         cPasswordError.textContent = '* Confirm Password should be atleast 4 charactors';
-        isCPasswordValid = false;
+       return false
 
     }else {
         cPasswordError.textContent = '';
-        isCPasswordValid = true;
+        return true
     }
 }
 
 cPasswordInput.addEventListener('input', validateConfirmPassword);
 
+const form = document.getElementById('formData');
 
-document.addEventListener('DOMContentLoaded', () => {
+form.addEventListener('submit', (event) => {
 
-    const form = document.getElementById('formData');
+ 
+    if (!validateFirstName()||!validateLastName()||!validateEmail||!validatePhone()||!validatePassword||!validateConfirmPassword()) {
 
-    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        validateFirstName()
-        validateLastName()
-        validateEmail()
-        validatePhone()
-        validatePassword()
-        validateConfirmPassword()
-        
-        if (!isFirstNameValid&&!isLastNameValid&&!isEmailValid&&!isPhoneValid&&!isPasswordValid&&!isCPasswordValid) {
-
-            event.preventDefault();
-
-        }
-    });
+    }
 });
+
+
+
+})
+
+
+
+
 
 </script>
 
