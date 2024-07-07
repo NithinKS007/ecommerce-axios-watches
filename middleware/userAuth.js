@@ -69,10 +69,61 @@ passport.deserializeUser(async (id, done) => {
 
 
 
+//user login in middleware
+
+const isUserLogin = async(req,res,next) =>{
+
+  try {
+
+    if(!req.session.userId){
+  
+      console.log("access denied for user")
+
+      return res.redirect("/signin")
+
+    }
+    
+   next()
+
+  } catch (error) {
+    
+    console.log(`error from the user isUserLogin middleware`,error.message);
+
+    return res.status(500).send("Internal Server Error");
+
+  }
 
 
+
+}
+
+//user logout in middleware
+
+const isUserLogout = async (req,res,next) =>{
+
+  try {
+    
+    if(req.session.userId){
+
+      console.log("Access denied for user logout");
+
+      return res.redirect("/")
+    }
+
+    next()
+    
+  } catch (error) {
+    
+    console.log(`error from the user isUserLogout middleware`,error.message);
+
+    return res.status(500).send("Internal Server Error");
+
+  }
+}
 module.exports = {
 
-  passport
+  passport,
+  isUserLogin,
+  isUserLogout
 
 }

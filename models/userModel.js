@@ -49,10 +49,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         
     },
-    isAdmin:{
-        type:Boolean,
-        default:false
-    },
+    
     isBlocked:{
         type:Boolean,
         default:false

@@ -209,17 +209,12 @@ const verifySignin = async (req,res) => {
     try {
 
         const userData = await users.findOne({email:email,isBlocked:false})
-
+        
         if (!userData) {
 
-            return res.render('user/signin', { message: "No user found or you can't access" });
+            return res.status(401).render('user/signin', { message: "No user found or you can't access" });
         }
 
-        if(userData.isAdmin){
-
-            return res.render("user/signin",{message:"admins cannot use this page"})
-        }
-       
         const passwordMatch = await bcrypt.compare(password,userData.password)
         
         if(!passwordMatch){
@@ -227,8 +222,10 @@ const verifySignin = async (req,res) => {
             return res.render("user/signin",{message:"email or password is incorrect"})
         }
 
-
-        res.redirect("/home")
+    
+        req.session.userId = userData._id
+        
+       return res.status(200).redirect("/home")
 
     } catch (error) {
 
@@ -292,6 +289,57 @@ const loadProductDetails = async (req,res) =>{
 
     }
 }
+
+
+//loading the profile of user
+const loadUserProfile = async (req,res) =>{
+
+
+    try {
+
+        const userData = await users.findById({_id:req.session.userId })
+
+        if(!userData){
+
+            return res.status(404).send("user profile not found")
+        }
+        
+        return res.status(200).render("user/profile",{userData:userData})
+        
+    } catch (error) {
+        
+        console.log(`error while loading user profile`,error.message);
+    }
+
+}
+
+
+//loggingout for user
+
+const loadUserLogout = async (req,res) =>{
+
+    try {
+        
+        req.session.destroy(err =>{
+            if(err){
+
+                console.log(`failed to destroy session`,err.message);
+
+                return res.status(500).send('failed to logout')
+            }
+
+            res.redirect("/")
+
+        })
+
+
+    } catch (error) {
+        
+        console.log(`error while logging out`,error.message);
+    }
+
+}
+
 module.exports = {
 
     loadRegister,
@@ -303,6 +351,8 @@ module.exports = {
     loadHome,
     loadShowCase,
     loadProductDetails,
-    verifySignin
+    verifySignin,
+    loadUserLogout,
+    loadUserProfile
     
 }

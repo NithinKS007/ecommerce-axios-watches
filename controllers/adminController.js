@@ -79,23 +79,17 @@ const verifyAdmin = async (req,res) =>{
            return res.status(401).render("admin/signin",{message:"Admin does not exist"})
   
         }
-        if(!adminData.isAdmin){
 
-            return res.status(403).render("admin/signin",{message:"user cannot login here"})
-        }
         const passwordMatch = await bcrypt.compare(password,adminData.password)
 
         if(!passwordMatch){
 
-           return res.status(401).render("admin/signin",{message:"Email or password is incorrect"})
-
-        }
-
-                
-                req.session.admin_id = adminData._id;
-                req.session.isAdmin  = adminData.isAdmin 
-                                                                                    
-            
+            return res.status(401).render("admin/signin",{message:"Email or password is incorrect"})
+ 
+         }
+        
+                req.session.adminId = adminData._id;
+                              
          return res.status(200).redirect("/admin/dashboard")
 
     } catch (error) {
@@ -127,16 +121,24 @@ const loadDashboard = async (req,res) =>{
 
 //loading the list of customers in admins dashboard
 const loadCustomer = async (req, res) => {
+
+    const pageNumber = parseInt(req.query.page||1) 
+    const perPageData = 2
+    
+
     try {
-        const userData = await users.find({})
+        const totalUsers = await users.countDocuments(); // getting the total number of users
+        const userData = await users.find({}).skip((pageNumber-1)*perPageData).limit(perPageData).exec()
+        const totalPages = Math.ceil(totalUsers / perPageData);
+
        
         if (userData.length === 0) {
 
-           return res.status(200).render("admin/customerList")
+            return res.status(200).render("admin/customerList", {userData: [],totalPages: totalPages,currentPage: pageNumber});
 
-        } else {
+        }else {
 
-          return  res.status(200).render('admin/customerList', { userData: userData })
+          return  res.status(200).render('admin/customerList', {userData: userData,totalPages: totalPages,currentPage: pageNumber})
 
         }
     } catch (error) {
@@ -613,22 +615,7 @@ const isSignout = async (req,res) =>{
 
 }
 
-//filtering products on the product listing page of the admin
 
-// const filterProductsOnList = async (req,res) =>{
-
-//     try {
-        
-//         const {categoryValue,statusValue} = req.query
-
-//     } catch (error) {
-        
-//         console.log(`error while filtering the products`,error.message);
-//     }
-
-
-
-// }
 module.exports = {
 
     loadLogin,
