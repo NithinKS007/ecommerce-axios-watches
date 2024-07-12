@@ -1,0 +1,482 @@
+<%- include('../layouts/userLayouts/header') %>
+<%- include('../layouts/userLayouts/navbar1') %>
+<div class="container mt-5" id="mainContainer">
+  <div class="row">
+    <% if (cartDetails.length === 0 || cartDetails[0].items.length === 0) { %>
+      <div class="col-12 text-center" >
+       
+        <h2>Your cart is empty!</h2>
+        <p>Add items to it now.</p>
+        <a href="/home" class="btn btn-primary">Shop now</a>
+      </div>
+    <% } else { %>
+    <div class="col-md-8" id="sendCartItem">
+      <input class="form-check-input select-all-checkbox" type="checkbox" style="margin-left: 5px;" id="selectAll">
+      <label class="form-check-label" for="selectAll">Select All</label>
+        <% cartDetails.forEach(cartItem => { %>
+          <% cartItem.items.forEach(item => { %>
+            <div class="card mb-3" id="productContainer<%= item.product._id%>">
+              <input class="form-check-input" type="checkbox" style="margin-left: 5px;" value="<%= item.product._id%>" name="selectedCartItem">
+              <div class="row no-gutters">
+                <div class="col-md-4 d-flex align-items-center justify-content-center">
+                  <img src="/productImages/<%= item.product.images[0].filename %>" class="card-img" style="width: 150px; height: 150px; object-fit: cover;" alt="Product Image">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title"><%= item.product.name %></h5>
+                    <!-- <p class="card-text"><strong>Seller:</strong> GRAHGOODS RETAIL</p>
+                    <p class="card-text"><strong>Delivery by:</strong> Tue Jul 23 | ₹40 Free</p>
+                    <p class="card-text"> -->
+                      <strong>Price:</strong>
+                      <%= item.product.salesPrice %>
+                      <del> <%= item.product.regularPrice %></del>
+                      <!-- <span class="text-success">21% Off</span> -->
+                    </p>
+                    <!-- <p class="card-text"><strong>Secured Packaging Fee:</strong> ₹99</p> -->
+                    <!-- <p class="card-text">3 offers applied</p> -->
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="d-flex align-items-center">
+                        <div class="me-2">Qty:</div>
+                        <input class="form-select-cart quantity-input"
+                               value="<%= item.quantity %>"
+                               data-product-item-id="<%= item._id%>"
+                               style="height: 30px; width: 70px;"
+                               type="number"
+                               max="5"
+                               min="1">
+                      </div>
+
+                      <span class="text-secondary" onclick="removeFromCart('<%= item.product._id%>')" style="text-decoration: none; cursor: pointer;">Remove</span>
+                    
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% }); %>
+      
+       
+      </div>
+      
+    
+    <div class="col-md-4" style="margin-top: 150px">
+      <div class="card mb-3">
+        <!-- <h5 class="btn btn-primary">Checkout Details</h5> -->
+        
+        <div class="card-body">
+           
+          <h5 class="card-title">ORDER SUMMARY</h5>
+         
+          <p class="card-text d-flex justify-content-between">
+            <span>Price (2 items)</span>
+            <span>₹55,000</span>
+          </p>
+          <!-- <p class="card-text d-flex justify-content-between">
+            <span>Discount</span>
+            <span class="text-success">-₹12,001</span>
+          </p> -->
+          <p class="card-text d-flex justify-content-between">
+            <span>Delivery Charges</span>
+            <span class="text-success">₹40 Free</span>
+          </p>
+          <!-- <p class="card-text d-flex justify-content-between">
+            <span>Secured Packaging Fee</span>
+            <span>₹99</span>
+          </p> -->
+          <hr>
+          <p class="card-text d-flex justify-content-between">
+            <strong>Total Amount</strong>
+            <strong>₹43,098</strong>
+          </p>
+          <!-- <p class="card-text text-success">You will save ₹11,902 on this order</p> -->
+        </div>
+      </div>
+      <div class="d-flex justify-content-end ">
+        <button class="btn btn-primary ">Check Out</button>
+      </div>
+    </div>
+    
+  </div>
+ 
+</div>
+
+<% }; %>
+
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="text-center">
+                <h5 class="mb-5">Now Loading</h5>
+                <div class="loader">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2"></div>
+                    <div class="bar bar3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  //removing a product from the cart
+
+  const removeFromCart = (productId) =>{
+
+    console.log(`front`,productId)
+
+   const productContainer = document.getElementById(`productContainer${productId}`)
+   
+   const mainContainer = document.getElementById(`mainContainer`)
+
+   console.log(productContainer);
+
+    fetch(`http://localhost:7000/cart/`,{
+
+      method:"DELETE",
+      headers:{
+
+        "Content-Type":"application/json"
+
+      },
+
+      body:JSON.stringify({productId})
+
+    }).then((response)=>{
+
+      if(!response.ok){
+
+        throw new Error("Network response was not ok")
+        
+      }
+
+      return response.json()
+
+    }).then((data)=>{
+     
+     let productName = data.productName.name
+      
+    if(data.isEmpty){
+
+      mainContainer.remove()
+
+      const emptyCartMessage = document.createElement('div');
+            emptyCartMessage.className = 'col-12 text-center';
+            emptyCartMessage.innerHTML = `
+                <h2>Your cart is empty!</h2>
+                <p>Add items to it now.</p>
+                <a href="/home" class="btn btn-primary">Shop now</a>`;
+
+            document.body.appendChild(emptyCartMessage);
+      
+    }
+      
+       productContainer.remove()
+   
+      let alertContainer = document.createElement('div');
+          alertContainer.classList.add("message");
+          alertContainer.innerHTML = `
+            <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
+            <span style="font-size: 14px;">Successfully removed ${productName} from your cart</span>
+          `;
+          alertContainer.style.position = 'fixed';
+          alertContainer.style.bottom = '20px';
+          alertContainer.style.left = '50%';
+          alertContainer.style.transform = 'translateX(-50%)';
+          alertContainer.style.zIndex = '1000';
+          alertContainer.style.width = 'auto';
+          alertContainer.style.maxWidth = '90%';
+          alertContainer.style.padding = '15px 20px';
+          alertContainer.style.background = '#333';
+          alertContainer.style.color = '#fff';
+          alertContainer.style.fontWeight = '400';
+          alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+          alertContainer.style.display = 'flex';
+          alertContainer.style.alignItems = 'center';
+          alertContainer.style.borderRadius = '4px';
+          alertContainer.style.overflow = 'hidden';
+
+          let greenLine = document.createElement('div');
+          greenLine.style.position = 'absolute';
+          greenLine.style.bottom = '0';
+          greenLine.style.left = '0';
+          greenLine.style.height = '4px';
+          greenLine.style.background = '#4CAF50';
+          greenLine.style.animation = 'greenLine 3s linear forwards';
+
+          let styleSheet = document.createElement('style');
+          styleSheet.type = 'text/css';
+          styleSheet.innerText = `
+            @keyframes slideIn {
+              from { transform: translateX(-50%) translateY(100%); }
+              to { transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes greenLine {
+              from { width: 0; }
+              to { width: 100%; }
+            }
+          `;
+
+          alertContainer.appendChild(greenLine);
+          document.head.appendChild(styleSheet);
+          alertContainer.style.animation = 'slideIn 0.3s forwards';
+
+          document.body.appendChild(alertContainer);
+
+          setTimeout(() => {
+            alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+            setTimeout(() => alertContainer.remove(), 300);
+          }, 2700);
+
+    }).catch((error)=>{
+
+      console.log(`error while fetching the data`,error.message);
+
+
+  let errorAlertContainer = document.createElement('div');
+  errorAlertContainer.classList.add("message");
+  errorAlertContainer.innerHTML = `
+    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+    <span style="font-size: 14px;">An error occured </span>
+  `;
+  errorAlertContainer.style.position = 'fixed';
+  errorAlertContainer.style.bottom = '20px';
+  errorAlertContainer.style.left = '50%';
+  errorAlertContainer.style.transform = 'translateX(-50%)';
+  errorAlertContainer.style.zIndex = '1000';
+  errorAlertContainer.style.width = 'auto';
+  errorAlertContainer.style.maxWidth = '90%';
+  errorAlertContainer.style.padding = '15px 20px';
+  errorAlertContainer.style.background = '#333';
+  errorAlertContainer.style.color = '#fff';
+  errorAlertContainer.style.fontWeight = '400';
+  errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+  errorAlertContainer.style.display = 'flex';
+  errorAlertContainer.style.alignItems = 'center';
+  errorAlertContainer.style.borderRadius = '4px';
+  errorAlertContainer.style.overflow = 'hidden';
+
+  let redLine = document.createElement('div');
+  redLine.style.position = 'absolute';
+  redLine.style.bottom = '0';
+  redLine.style.left = '0';
+  redLine.style.height = '4px';
+  redLine.style.background = '#f44336';
+  redLine.style.animation = 'redLine 3s linear forwards';
+
+  let styleSheet = document.createElement('style');
+  styleSheet.type = 'text/css';
+  styleSheet.innerText = `
+    @keyframes slideIn {
+      from { transform: translateX(-50%) translateY(100%); }
+      to { transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes redLine {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+  `;
+
+  errorAlertContainer.appendChild(redLine);
+  document.head.appendChild(styleSheet);
+  errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+  document.body.appendChild(errorAlertContainer);
+
+  setTimeout(() => {
+    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+    setTimeout(() => errorAlertContainer.remove(), 300);
+  }, 2700);
+
+    })
+
+  }
+
+//increasing or decreasing the quantity of the product
+
+const quantityInput = document.querySelectorAll('.quantity-input')
+
+quantityInput.forEach(qInput=>{
+
+  qInput.addEventListener("change",()=>{
+
+    const itemId = qInput.getAttribute('data-product-item-id');
+    const quantity = qInput.value;
+
+    console.log(itemId);
+    console.log(quantity);
+
+    if(quantity>=1 && quantity<=5){
+
+      fetch(`http://localhost:7000/cart/`,{
+
+        method: 'PATCH',
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ itemId, quantity }),
+
+      }).then((response)=>{
+
+        if(!response.ok){
+
+          throw new Error("Network response was not ok");
+
+        }
+        return response.json();
+
+      }).then((data)=>{
+
+        console.log(data)
+
+
+      })
+    }else{
+
+      let errorAlertContainer = document.createElement('div');
+  errorAlertContainer.classList.add("message");
+  errorAlertContainer.innerHTML = `
+    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+    <span style="font-size: 14px;">Invalid input. Please enter a number between 1 and 5</span>
+  `;
+  errorAlertContainer.style.position = 'fixed';
+  errorAlertContainer.style.bottom = '20px';
+  errorAlertContainer.style.left = '50%';
+  errorAlertContainer.style.transform = 'translateX(-50%)';
+  errorAlertContainer.style.zIndex = '1000';
+  errorAlertContainer.style.width = 'auto';
+  errorAlertContainer.style.maxWidth = '90%';
+  errorAlertContainer.style.padding = '15px 20px';
+  errorAlertContainer.style.background = '#333';
+  errorAlertContainer.style.color = '#fff';
+  errorAlertContainer.style.fontWeight = '400';
+  errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+  errorAlertContainer.style.display = 'flex';
+  errorAlertContainer.style.alignItems = 'center';
+  errorAlertContainer.style.borderRadius = '4px';
+  errorAlertContainer.style.overflow = 'hidden';
+
+  let redLine = document.createElement('div');
+  redLine.style.position = 'absolute';
+  redLine.style.bottom = '0';
+  redLine.style.left = '0';
+  redLine.style.height = '4px';
+  redLine.style.background = '#f44336';
+  redLine.style.animation = 'redLine 3s linear forwards';
+
+  let styleSheet = document.createElement('style');
+  styleSheet.type = 'text/css';
+  styleSheet.innerText = `
+    @keyframes slideIn {
+      from { transform: translateX(-50%) translateY(100%); }
+      to { transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes redLine {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+  `;
+
+  errorAlertContainer.appendChild(redLine);
+  document.head.appendChild(styleSheet);
+  errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+  document.body.appendChild(errorAlertContainer);
+
+  setTimeout(() => {
+    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+    setTimeout(() => errorAlertContainer.remove(), 300);
+  }, 2700);
+
+    }
+    
+  })
+
+})
+
+
+
+let selectedProductIds = [];
+
+const updateSelectedProducts = () => {
+  const checkboxes = document.querySelectorAll('input[name="selectedCartItem"]');
+
+  selectedProductIds = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+
+  sendToBackend();
+  
+};
+
+
+document.querySelectorAll('input[name="selectedCartItem"]').forEach(checkbox => {
+
+  checkbox.addEventListener('change', updateSelectedProducts);
+
+});
+
+
+const sendToBackend = () => {
+
+  fetch('http://localhost:7000/cart/', {
+
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ selectedProductIds }),
+  })
+    .then(response => response.json())
+    .then(data => console.log('Success:', data))
+    .catch(error => console.error('Error:', error));
+};
+
+
+document.getElementById('selectAll').addEventListener('change', (event) => {
+
+  const isChecked = event.target.checked;
+
+  document.querySelectorAll('input[name="selectedCartItem"]').forEach(checkbox => {
+
+    checkbox.checked = isChecked;
+
+  });
+
+  updateSelectedProducts();
+  
+});
+
+
+
+
+</script>
+  <!-- Vendor JS -->
+  <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+  <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+  <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/plugins/slick.js"></script>
+  <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
+  <script src="assets/js/plugins/wow.js"></script>
+  <script src="assets/js/plugins/jquery-ui.js"></script>
+  <script src="assets/js/plugins/perfect-scrollbar.js"></script>
+  <script src="assets/js/plugins/magnific-popup.js"></script>
+  <script src="assets/js/plugins/select2.min.js"></script>
+  <script src="assets/js/plugins/waypoints.js"></script>
+  <script src="assets/js/plugins/counterup.js"></script>
+  <script src="assets/js/plugins/jquery.countdown.min.js"></script>
+  <script src="assets/js/plugins/images-loaded.js"></script>
+  <script src="assets/js/plugins/isotope.js"></script>
+  <script src="assets/js/plugins/scrollup.js"></script>
+  <script src="assets/js/plugins/jquery.vticker-min.js"></script>
+  <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
+  <!-- Template  JS -->
+  <script src="./assets/js/main.js?v=3.4"></script>
+  <script src="./assets/js/shop.js?v=3.4"></script> 
+
+    <!-- sweet alert js file from the installed npm install sweetalert2 library -->
+  <script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
+</body>
+
+</html>

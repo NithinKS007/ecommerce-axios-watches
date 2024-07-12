@@ -1,0 +1,132 @@
+<%- include('../layouts/userLayouts/header') %>
+<%- include('../layouts/userLayouts/navbar1') %>
+
+<main class="main">
+    <section class="pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
+                    <div class="row">
+                        <%- include('../layouts/userLayouts/sidebar') %>
+                        <div class="col-md-8">
+                            <div class="container mt-5">
+                                <h3>Manage Addresses</h3>
+
+                                <br>
+                                
+                                <div class="d-flex justify-content-start mb-3">
+                                    <a href="/addAddress" class="btn btn-outline-primary" style="text-decoration: none;">
+                                        Add a New Address
+                                    </a>
+                                </div>
+                                <div id="mainContainer">
+                                <% if (!addressDetails || addressDetails.length === 0) { %>
+                                    <p>No address available</p>
+                                <% } else { %>
+                                    <% addressDetails.forEach(address => { %>
+                                <div class="card" style="margin-bottom: 20px;" id="addressContainer<%=address._id%>">
+                                   
+                                    <div class="card-body">
+                                        
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="address-container">
+                                               
+                                                        <div class="address-card">
+                                                            <span class="badge bg-secondary mb-2"><%= address.addressType %></span>
+                                                            <h5 class="card-title mb-1"><%= address.name %></h5>
+                                                            <p class="card-text mb-1"><%= address.phone %></p>
+                                                            <p class="card-text">
+                                                                <%= address.address %>, <%= address.locality %>, <%= address.cityDistTown %>, <%= address.state %> - <%= address.pincode %>
+                                                            </p>
+                                                            <p class="card-text mb-1">Landmark: <%= address.landMark %></p>
+                                                            <p class="card-text mb-1">Alternate Phone: <%= address.altPhone %></p>
+                                                            <p class="card-text mb-1">Email: <%= address.email %></p>
+                                                        </div>
+                                                   
+                                            </div>
+                                            <div class="dropdown">
+                                                <a href="#" data-bs-toggle="dropdown">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <!-- SVG Path for the three dots icon -->
+                                                        <circle cx="12" cy="5" r="1"></circle>
+                                                        <circle cx="12" cy="12" r="1"></circle>
+                                                        <circle cx="12" cy="19" r="1"></circle>
+                                                    </svg>
+                                                </a>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">Edit info</a>
+                                                    <a  onclick="removeAddress('<%=address._id%>')" class="dropdown-item text-danger" >Delete</a>
+                                                </div>
+                                            </div>
+                                            <!-- dropdown //end -->
+                                            
+                                        </div>
+                                       
+                                    </div>
+                                   
+                                </div>
+                                <% }) %>
+                                <% } %>
+
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+
+   
+
+
+        const removeAddress = (addressId) =>{
+
+      
+
+            const addressContainer = document.getElementById(`addressContainer${addressId}`)
+
+            const mainContainer = document.getElementById(`mainContainer`)
+
+
+            fetch(`http://localhost:7000/address/`,{
+
+                method:"DELETE",
+                headers:{
+
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({addressId})
+            }).then((response)=>{
+
+                if(!response.ok){
+
+                    throw new Error("Network response was not ok")
+                }
+
+                return response.json()
+
+            }).then((data)=>{
+  
+                if(data.isAddressEmpty===0){
+
+                    mainContainer.innerHTML = '<p>No address available</p>';
+      
+                }
+
+            addressContainer.remove()
+
+            }).catch((error)=>{
+
+                console.log(`error while fetching the data`,error.message);
+
+            })
+        }
+
+
+
+  
+</script>
+<%- include('../layouts/userLayouts/footer') %>

@@ -10,7 +10,9 @@ const cacheController = require('../middleware/cacheControl')
 const userAuth = require('../middleware/userAuth')
 
 //requring passport for registering in google
-const passport = require('passport')
+const passport = require('passport');
+
+const handleReqBody = require('../middleware/handleReqBody')
 
 //loading the home page before registering
 userRoute.get("/",userController.loadHome)
@@ -58,13 +60,42 @@ userRoute.get("/showcase",userController.loadShowCase)
 //loading the product details page
 userRoute.get("/productDetails",userController.loadProductDetails)
 
+//product adding to the cart from the product details page
+userRoute.post("/productDetails",userController.addToCart)
+
+
+
+
+
 
 //user loggout route
 userRoute.get("/signout",userController.loadUserLogout)
 
 //loading user profile
 userRoute.get("/profile",userAuth.isUserLogin,userController.loadUserProfile)
-    
+
+//loading cart page
+userRoute.get("/cart",userAuth.isUserLogin,userController.loadCart)
+
+//deleting item from the cart
+userRoute.delete("/cart",userAuth.isUserLogin,userController.removeFromCart)
+
+//for handling cart page updating quantity or selected items both are patch requests
+
+userRoute.patch("/cart",userAuth.isUserLogin,handleReqBody.handleCartUpdate)
+
+//loading the address view page
+userRoute.get("/address",userAuth.isUserLogin,userController.loadAddress)
+
+//deleting the address from the view page
+userRoute.delete("/address",userAuth.isUserLogin,userController.removeAddress)
+
+//loading the address adding page
+userRoute.get("/addAddress",userAuth.isUserLogin,userController.loadAddAddress)
+
+//adding the address to the database
+userRoute.post("/addAddress",userAuth.isUserLogin,userController.addAddress)
+
 
 
 module.exports = userRoute  

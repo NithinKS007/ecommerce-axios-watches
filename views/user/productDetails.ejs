@@ -8,147 +8,6 @@
             </div>
         </div>
     </div>
-        <!-- Quick view -->
-        <div class="modal fade custom-modal" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6 col-sm-12 col-xs-12">
-                                <div class="detail-gallery">
-                                    <!-- MAIN SLIDES -->
-                                    <div class="product-image-slider">
-                                        <figure class="border-radius-10">
-
-                                            <% if (productDetails && productDetails.images &&
-                                                productDetails.images.length> 0) { %>
-                                                <div class="row justify-content-center">
-                                                    <% for (let i=0; i < Math.min(productDetails.images.length, 4); i++)
-                                                        { %>
-                                                        <div
-                                                            class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
-                                                            <img src="/productImages/<%= productDetails.images[i]?.filename %>"
-                                                                class="img-fluid"  alt="product image">
-                                                        </div>
-                                                        <% } %>
-                                                </div>
-                                                <% } else { %>
-                                                    <p>No images available.</p>
-                                                    <% } %>
-                                        </figure>
-                                    </div>
-                                    <!-- THUMBNAILS -->
-                                    <div class="slider-nav-thumbnails pl-15 pr-15">
-
-                                        <% if (productDetails && productDetails.images && productDetails.images.length>
-                                            0) { %>
-                                            <div class="row justify-content-center">
-                                                <% for (let i=0; i < Math.min(productDetails.images.length, 4); i++) {
-                                                    %>
-                                                    <div
-                                                        class="col-md-6 col-sm-6 col-6 mb-3 d-flex justify-content-center">
-                                                        <img src="/productImages/<%= productDetails.images[i]?.filename %>"
-                                                            class="img-fluid" alt="product image">
-                                                    </div>
-                                                    <% } %>
-                                            </div>
-                                            <% } else { %>
-                                                <p>No images available.</p>
-                                                <% } %>
-
-                                    </div>
-                                </div>
-
-                                <!-- End Gallery -->
-                                <div class="social-icons single-share">
-                                    <ul class="text-grey-5 d-inline-block">
-                                        <li><strong class="mr-10">Share this:</strong></li>
-                                        <li class="social-facebook"><a href="#"><img
-                                                    src="assets/imgs/theme/icons/icon-facebook.svg" alt=""></a></li>
-                                        <li class="social-twitter"> <a href="#"><img
-                                                    src="assets/imgs/theme/icons/icon-twitter.svg" alt=""></a></li>
-                                        <li class="social-instagram"><a href="#"><img
-                                                    src="assets/imgs/theme/icons/icon-instagram.svg" alt=""></a></li>
-                                        <li class="social-linkedin"><a href="#"><img
-                                                    src="assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-12 col-xs-12">
-                                <div class="detail-info">
-
-                                    <h3 class="title-detail mt-30">
-                                        <%= productDetails.name %>
-                                    </h3>
-                                    <div class="product-detail-rating">
-                                        <div class="pro-details-brand">
-                                            <span> Brands: <a href="#">
-                                                    <%= productDetails.brand.name %>
-                                                </a></span>
-                                        </div>
-                                        <div class="product-rate-cover text-end">
-                                            <div class="product-rate d-inline-block">
-                                                <div class="product-rating" style="width:90%">
-                                                </div>
-                                            </div>
-                                            <span class="font-small ml-5 text-muted"> (25 reviews)</span>
-                                        </div>
-                                    </div>
-                                    <div class="clearfix product-price-cover">
-                                        <div class="product-price primary-color float-left">
-                                            <ins><span class="text-brand">Rs <%= productDetails.salesPrice %>
-                                                        </span></ins>
-                                            <ins><span class="old-price font-md ml-15">
-                                                    <%= productDetails.regularPrice %>
-                                                </span></ins>
-                                            <span class="save-price  font-md color3 ml-15">25% Off</span>
-                                        </div>
-                                    </div>
-                                    <div class="bt-1 border-color-1 mt-15 mb-15"></div>
-                                    <div class="short-desc mb-30">
-                                        <p class="font-sm">
-                                            <%= productDetails.description %>
-                                        </p>
-                                    </div>
-                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                    <div class="detail-extralink">
-
-                                        <div class="product-extra-link2">
-                                            <button type="submit" class="button button-add-to-cart">Add to cart</button>
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i
-                                                    class="fi-rs-heart"></i></a>
-
-                                        </div>
-                                    </div>
-                                    <ul class="product-meta font-xs color-grey mt-50">
-
-                                        <!-- <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
-                                    <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>, <a href="#" rel="tag">Women</a>, <a href="#" rel="tag">Dress</a> </li> -->
-
-                                        <% if (productDetails.stock===0) { %>
-
-                                            <li>Availability: <span class="in-stock text-danger ml-5">Out of
-                                                    stock</span></li>
-
-                                            <% } else { %>
-
-                                                <li>Availability: <span class="in-stock text-success ml-5">
-                                                        <%= productDetails.stock %> Items In Stock
-                                                    </span></li>
-
-                                                <% } %>
-                                    </ul>
-                                </div>
-                                <!-- Detail Info -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="mobile-header-active mobile-header-wrapper-style">
             <div class="mobile-header-wrapper-inner">
                 <div class="mobile-header-top">
@@ -240,7 +99,7 @@
                                                     <ins><span class="old-price font-md ml-15">
                                                             <%= productDetails.regularPrice %>
                                                         </span></ins>
-                                                    <!-- <span class="save-price  font-md color3 ml-15">25% Off</span> -->
+                                                 
                                                 </div>
                                             </div>
                                             <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -249,37 +108,28 @@
                                                     <%= productDetails.description %>
                                                 </p>
                                             </div>
-                                            <!-- <div class="product_sort_info font-xs mb-30">
-                                            <ul>
-                                                <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year AL Jazeera Brand Warranty</li>
-                                                <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
-                                                <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
-                                            </ul>
-                                        </div> -->
-
+                                       
 
                                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                             <div class="detail-extralink" style="display: flex; justify-content: center ; align-items: center;">
 
-                                                <% if (productDetails?.isBlocked||productDetails.category?.isBlocked || productDetails.brand?.isBlocked) {%>
-                                                    <h4> <div class="product-unavailable" style="color: red;  ">
-
-                                                        Currently Unavailable
-
-                                                    </div> </h4> <% }else {%>
-                                                       
-                                                <div class="product-extra-link2">
-                                                    <button type="submit" class="button button-add-to-cart">Go to
-                                                        Cart</button>
-
-
-                                                </div>
-                                                <div class="product-extra-link2">
-                                                    <button type="submit" class="button button-add-to-cart" style="margin-left: 10px;">Buy
-                                                        Now</button>
-
-
-                                                </div>
+                                                <% if (productDetails?.isBlocked || productDetails.category?.isBlocked || productDetails.brand?.isBlocked) { %>
+                                                    <h4>
+                                                        <div class="product-unavailable" style="color: red;">
+                                                            Currently Unavailable
+                                                        </div>
+                                                    </h4>
+                                                <% } else { %>
+                                                    <div class="product-extra-link2">
+                                                        <% if (!existingCartItem) { %>
+                                                            <button type="submit" onclick="addToCart('<%=productDetails._id%>')" id="addToCart" class="button button-add-to-cart">Add to Cart</button>
+                                                        <% } else { %>
+                                                            <button type="submit" onclick="goToCart()" id="goToCart" class="button button-add-to-cart">Go to Cart</button>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="product-extra-link2">
+                                                        <button type="submit" class="button button-add-to-cart" id="buyNow" style="margin-left: 10px;">Buy Now</button>
+                                                    </div>
                                                 <% } %>
                                                 <div class="product-extra-link2" style="margin-left: 10px;">
 
@@ -291,6 +141,8 @@
                                             </div>
 
                                             <ul class="product-meta font-xs color-grey mt-50">
+
+                                               
                                           
                                                 <% if (productDetails.stock===0) { %>
 
@@ -595,10 +447,7 @@
                                                                     </a>
                                                                 </div>
                                                                 <div class="product-action-1">
-                                                                    <a aria-label="Quick view"
-                                                                        class="action-btn small hover-up"
-                                                                        data-bs-toggle="modal" data-bs-target="#quickViewModal
-"><i class="fi-rs-search"></i></a>
+                                                                    
                                                                     <a aria-label="Add To Wishlist"
                                                                         class="action-btn small hover-up" href="#"
                                                                         tabindex="0"><i class="fi-rs-heart"></i></a>
@@ -649,6 +498,55 @@
 
         <script>
 
+
+            
+             const addToCart = (productId) =>{
+
+                const addToCartButton = document.getElementById("addToCart")
+
+                fetch(`http://localhost:7000/productDetails/`,{
+
+                    method:"POST",
+                    headers:{
+
+                        "Content-Type":"application/json"
+                    },
+
+                    body:JSON.stringify({productId})
+
+                }).then((response)=>{
+
+                    if(!response.ok){
+
+                        throw new Error("Network response was not ok")
+                    }
+
+                    return response.json()
+
+                }).then((data)=>{
+
+                    console.log(data);
+
+
+                    addToCartButton.textContent = "Go to Cart"
+                    addToCartButton.removeAttribute("onclick")
+                    addToCartButton.addEventListener("click",()=>{
+
+                        window.location.href =  "http://localhost:7000/cart"
+                    })
+
+                }).catch((error)=>{
+
+                    console.log(`error while fetching the data`,error.message)
+                })
+                
+
+             }
+
+             const goToCart = () =>{
+
+                window.location.href =  "http://localhost:7000/cart"
+             }
         </script>
 
         <%- include('../layouts/userLayouts/footer') %>

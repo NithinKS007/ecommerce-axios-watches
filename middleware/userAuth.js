@@ -75,7 +75,7 @@ const isUserLogin = async(req,res,next) =>{
 
   try {
 
-    if(!req.session.userId){
+    if(!req.session.userId && (!req.isAuthenticated() || !req.user)){
   
       console.log("access denied for user")
 
@@ -103,7 +103,7 @@ const isUserLogout = async (req,res,next) =>{
 
   try {
     
-    if(req.session.userId){
+    if(!req.session.userId && (!req.isAuthenticated() || !req.user)){
 
       console.log("Access denied for user logout");
 
