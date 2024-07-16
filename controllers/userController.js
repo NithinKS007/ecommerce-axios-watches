@@ -7,6 +7,7 @@ const brands = require('../models/brandModel')
 const categories = require('../models/categoryModel')
 const cart = require('../models/cartModel')
 const userAddress = require('../models/addressModel')
+const orders = require('../models/orderModel')
 const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types;
 
@@ -395,7 +396,13 @@ const loadCart = async (req,res) =>{
 
             const cartDetails = await cart.find({user:userFromGidSessionOrSession}).populate("items.product").exec()
 
-            return  res.status(200).render("user/cart",{cartDetails:cartDetails})
+            const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product").exec()
+
+            const finalPrice =  await priceSummary(cartDetailsForPriceCalculation)
+
+            const selectedItemsCount = cartDetailsForPriceCalculation.items.filter(item => item.isSelected).length;
+
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice, selectedItemsCount })
 
         }
 
@@ -409,6 +416,24 @@ const loadCart = async (req,res) =>{
 
 }
 
+//calculating ORDER SUMMARY
+const priceSummary = async (cartData) =>{
+
+    try {
+
+       const totalPrice = cartData.items.filter((item)=>item.isSelected).reduce((total,item)=>total+item.price*item.quantity,0).toFixed(2)
+
+      
+
+      return totalPrice
+
+    } catch (error) {
+        
+        console.log(`error while calculating the price details`,error.message);
+    }
+
+
+}
 //product adding to cart from the product details page
 
 const addToCart = async (req,res) =>{
@@ -429,10 +454,11 @@ const addToCart = async (req,res) =>{
             userFromGidSessionOrSession = new ObjectId(req.user.id) 
 
         }
-  
+
         const findExistingCart = await cart.findOne({user:userFromGidSessionOrSession}).exec()
         
         const productSalesPrice = await products.findOne({_id:productId},{salesPrice:1,_id:0})
+        const productRegularPrice = await products.findOne({_id:productId},{regularPrice:1,_id:0})
 
         if(!findExistingCart){
 
@@ -443,7 +469,8 @@ const addToCart = async (req,res) =>{
                 items:[{
     
                     product:productId,
-                    price:productSalesPrice.salesPrice
+                    price:productSalesPrice.salesPrice,
+                    regularPrice:productRegularPrice.regularPrice
     
                 }]
     
@@ -472,7 +499,7 @@ const addToCart = async (req,res) =>{
      
         }else{
 
-            await cart.updateOne({user:userFromGidSessionOrSession},{$push:{items:{product:productId,price:productSalesPrice.salesPrice}}})
+            await cart.updateOne({user:userFromGidSessionOrSession},{$push:{items:{product:productId,price:productSalesPrice.salesPrice,regularPrice:productRegularPrice.regularPrice}}})
 
             return res.status(200).json({
         
@@ -560,11 +587,25 @@ const removeFromCart = async (req, res) => {
 
         }
     
-        const { itemId, quantity } = req.body
+        const { productId, quantity } = req.body
     
-        const cartItem = await cart.findOne({"items._id":itemId })
+        console.log(`this is item id `,productId)
 
-        if (!cartItem) {
+        const productItem = await products.find({_id:productId})
+      
+        const inventary = await products.findOne({_id:productId},{stock:1,_id:0})
+
+
+        let productStock 
+        productStock = inventary.stock
+       
+
+        if(Number(quantity)>productStock){
+
+            return res.status(200).json({ message: `Only ${productStock} is available`,quantity:false});
+        }
+
+        if (!productItem) {
 
           return res.status(404).json({ error: 'Cart not found for the user' });
 
@@ -574,9 +615,12 @@ const removeFromCart = async (req, res) => {
             return res.status(400).json({ message: `Quantity must be between 1 and ${quantity}` });
 
           }
-        const updatedItem = await cart.updateOne({user:userFromGidSessionOrSession,"items._id":itemId},{$set:{"items.$.quantity":quantity}})
-       
-        return res.status(200).json({ success: true, updatedItem })
+        const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true})
+
+
+        const finalPrice =  await priceSummary(updatedItem)
+
+        return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice})
 
       } catch (error) {
 
@@ -601,10 +645,9 @@ const removeFromCart = async (req, res) => {
           userFromGidSessionOrSession = new ObjectId(req.user.id)
 
         }
-        
-        const { selectedProductIds } = req.body;
 
-        console.log(selectedProductIds);
+    
+        const { selectedProductIds } = req.body;
 
         const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
 
@@ -614,7 +657,6 @@ const removeFromCart = async (req, res) => {
 
         }
 
-        console.log(cartDetails);
         cartDetails.items = cartDetails.items.map((item)=>{
 
             if(selectedProductIds.includes(item.product.toString())){
@@ -631,7 +673,9 @@ const removeFromCart = async (req, res) => {
 
         await cartDetails.save()
 
-        return  res.status(200).json({ message: 'Cart updated successfully'});
+        const finalPrice =  await priceSummary(cartDetails)
+
+        return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice,cartDetails:cartDetails});
         
 
     } catch (error) {
@@ -718,8 +762,19 @@ const addAddress = async (req,res) =>{
 
         if(addressData&&pushAddressIntoUser){
 
+            const sourcePage = req.body.sourcePage
+            if(sourcePage==="checkout"){
+
+                console.log(`if case is working`);
+                return res.redirect("/checkout")
+
+            }else{
+
+                console.log(`else case is working`);
+
+                return res.redirect('/address');
+            }
             
-            return res.redirect('/address');
         }
 
     } catch (error) {
@@ -734,8 +789,6 @@ const removeAddress = async (req,res) =>{
     try {
 
         const {addressId} = req.body
-        
-        console.log(`req.body`,addressId);
         
       let userFromGidSessionOrSession
   
@@ -774,6 +827,166 @@ const removeAddress = async (req,res) =>{
         console.log(`error while deleting the address`,error.message);
     }
 }
+//loading the checkout page
+const  loadCheckout = async (req,res) =>{
+
+    try {
+
+        let userFromGidSessionOrSession
+
+        if (req.session.userId) {
+
+          userFromGidSessionOrSession = new ObjectId(req.session.userId)
+
+        } else if (req.user) {
+
+          userFromGidSessionOrSession = new ObjectId(req.user.id)
+
+        }
+
+      
+        const cartData = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product")
+
+      
+        
+        const selectedItems = cartData.items.filter(item => item.isSelected)
+
+        
+        const address = await userAddress.find({userId:userFromGidSessionOrSession})
+
+
+        const finalPrice = await priceSummary(cartData)
+
+        
+        
+        return res.status(200).render("user/checkout", { selectedItems,address,finalPrice})
+        
+    } catch (error) {
+        
+        console.log(`error while loading the checkout page`,error.message);
+    }
+}
+
+//placing order
+const placeOrder = async (req,res) =>{
+
+    try {
+        let userFromGidSessionOrSession 
+
+        if(req.session.userId){
+
+            userFromGidSessionOrSession = req.session.userId
+
+        }else if(req.user){
+
+            //checking for google session id 
+            userFromGidSessionOrSession = req.user.id
+
+        }
+
+        const{paymentMethod,addressId} =req.body
+
+        const address =  new ObjectId(addressId) 
+
+        console.log(typeof address);
+        console.log(address);
+        const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
+        const addressData = await userAddress.findOne({_id:address})
+
+        console.log(addressData);
+       
+      
+
+        const isSelectedItemsOnly =  cartData.items.filter(item => { 
+
+          return item.isSelected
+
+       })
+
+       
+    
+
+       const orderItems = isSelectedItemsOnly.map(item =>({
+
+        product:item.product._id,
+        productName:item.product.name,
+        brand: item.product.brand._id,
+        brandName:item.product.brand.name,
+        category:item.product.category._id,
+        categoryName:item.product.category.name,
+        categoryDescription:item.product.category.description,
+        quantity:item.quantity,
+        price:item.price,
+        regularPrice:item.regularPrice,
+        description:item.product.description,
+        targetGroup:item.product.targetGroup,
+        displayType:item.product.displayType,
+        strapColor:item.product.strapColor,
+        strapMaterial:item.product.strapMaterial,
+        dialShape:item.product.dialShape,
+        Images:item.product.images,
+
+       }))
+
+      
+     
+        // const order = new orders({
+
+        //     items:orderItems,
+        //     user:cartData.user,
+        //     shippingAddress:{
+
+        //         name:,
+        //         phone:,
+        //         pincode:,
+        //         locality:,
+        //         address:,
+        //         cityDistTown:,
+        //         state:,
+        //         landMark,
+        //         altPhone:,
+        //         email:,
+        //         addressType:,
+
+
+        //     }
+
+
+
+
+
+        //     paymentMethod:paymentMethod,
+
+
+         
+
+        // })
+        
+
+    //   const orderData = await order.save()
+        
+
+   
+
+      console.log(`this is payment method`,paymentMethod);
+       
+        
+        
+    } catch (error) {
+        
+        console.log(`error while placing the order`,error.message)
+    }
+
+}
+
+const loadPlaceOrder = async (req, res) => {
+    try {
+        return res.render('user/placeOrder');
+    } catch (error) {
+        console.log(`Error while loading the place order page:`, error.message);
+        return res.status(500).send('An error occurred while loading the place order page.');
+    }
+};
 module.exports = {
 
     loadRegister,
@@ -796,7 +1009,10 @@ module.exports = {
     loadAddress,
     addAddress,
     loadAddAddress,
-    removeAddress
+    removeAddress,
+    loadCheckout,
+    placeOrder,
+    loadPlaceOrder
  
     
 }

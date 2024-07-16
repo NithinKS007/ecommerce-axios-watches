@@ -3,36 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Addresses</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <title>Checkout</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">PRICE DETAILS</h5>
-          <div class="row mb-2">
-            <div class="col">Price (1 item)</div>
-            <div class="col text-end">₹3,995</div>
-          </div>
-          <div class="row mb-2">
-            <div class="col">Discount</div>
-            <div class="col text-end text-success">- ₹2,796</div>
-          </div>
-          <div class="row mb-2">
-            <div class="col">Delivery Charges</div>
-            <div class="col text-end"><s>₹40</s> <span class="text-success">Free</span></div>
-          </div>
-          <hr>
-          <div class="row fw-bold">
-            <div class="col">Total Amount</div>
-            <div class="col text-end">₹1,199</div>
-          </div>
-          <div class="text-success mt-2">You will save ₹2,796 on this order</div>
-        </div>
-      </div>
+    <main class="container my-5">
+        <h1 class="h2 mb-4">Checkout</h1>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+        <form method="post" action="/checkout">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Shipping Address Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title h5 mb-3">Select Shipping Address</h3>
+                            <div class="row">
+                                <!-- Repeat this div for each address, replacing 'address.id', 'address.name', etc., with actual data -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="selected_address" id="address1" value="1" checked>
+                                                <label class="form-check-label" for="address1">
+                                                    John Doe<br>
+                                                    123 Main St<br>
+                                                    Anytown, NY 12345<br>
+                                                    Phone: 555-1234
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End repeat -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex align-items-center justify-content-center">
+                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newAddressModal">
+                                                <i class="bi bi-plus-lg"></i> Add New Address
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Order Summary Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title h5 mb-3">Order Summary</h3>
+                            <!-- Repeat this div for each item, replacing 'item.product.product_name', 'item.quantity', etc., with actual data -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="my-0">Product Name</h6>
+                                    <small class="text-muted">Quantity: 1</small>
+                                </div>
+                                <span class="text-muted">$10.00</span>
+                            </div>
+                            <!-- End repeat -->
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span>$20.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span class="text-success">Free</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="h5">Total</span>
+                                <span class="h5" id="cartTotal">$20.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title h5 mb-3">Payment Method</h3>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="credit_card" checked>
+                                <label class="form-check-label" for="creditCard">
+                                    Credit Card
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                                <label class="form-check-label" for="paypal">
+                                    PayPal
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cashOnDelivery" value="cash_on_delivery">
+                                <label class="form-check-label" for="cashOnDelivery">
+                                    Cash on Delivery
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Place Order</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <!-- New Address Modal -->
+    <div class="modal fade" id="newAddressModal" tabindex="-1" aria-labelledby="newAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newAddressModalLabel">Add New Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAddressForm">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="house_name" placeholder="House Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="street_name" placeholder="Street Name" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <input type="text" class="form-control" name="pin_number" placeholder="PIN Code" required>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" name="district" placeholder="District" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <input type="text" class="form-control" name="state" placeholder="State" required>
+                            </div>
+                            <div class="form-control" name="country" placeholder="Country" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveNewAddress">Save Address</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+    document.getElementById('saveNewAddress').addEventListener('click', function() {
+        // Here you would typically send an AJAX request to save the new address
+        // For this example, we'll just close the modal and refresh the page
+        $('#newAddressModal').modal('hide');
+        location.reload();
+    });
+    </script>
 </body>
 </html>

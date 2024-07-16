@@ -1,0 +1,381 @@
+<%- include('../layouts/userLayouts/header') %>
+    <%- include('../layouts/userLayouts/navbar1') %>
+
+        <%console.log(finalPrice)%>
+
+            <main class="container my-5">
+                <h1 class="h2 mb-4">Checkout</h1>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h4>Product Details</h4>
+                        <!-- Shipping Address Section -->
+                        <div class="card shadow-sm mb-4">
+                            
+                            <div class="accordion" id="productAccordion">
+                                <% selectedItems.forEach((item, index)=> { %>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="productHeading<%= index %>">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#productCollapse<%= index %>"
+                                                aria-expanded="false" aria-controls="productCollapse<%= index %>">
+                                                <%= item.product.name %>
+                                            </button>
+                                        </h2>
+                                        <div id="productCollapse<%= index %>" class="accordion-collapse collapse"
+                                            aria-labelledby="productHeading<%= index %>"
+                                            data-bs-parent="#productAccordion">
+                                            <div class="accordion-body">
+                                                <img src="/productImages/<%= item.product.images[0]?.filename %>"
+                                                    class="card-img"
+                                                    style="width: 50px; height: 50px; object-fit: cover; margin-bottom: 15px;"
+                                                    alt="Product Image">
+                                                <p>
+                                                    <%= item.product.name %>
+                                                </p>
+                                                <p>Rs <%= item.price %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="card-title h5 mb-3">Select Shipping Address</h3>
+
+
+
+                            <button id="showButton" class="btn btn-outline-primary" style=" margin-bottom: 10px;">
+                                <i class="bi bi-plus-lg"></i> Add New Address
+                            </button>
+
+                            <div id="addressForm" style="display: none;">
+
+                                <form id="newAddressForm" method="post" action="/addAddress">
+                                    <input type="hidden" name="sourcePage" value="checkout">
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="name" placeholder="Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="tel" class="form-control" name="phone"
+                                            placeholder="10-digit mobile number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="pincode" placeholder="Pincode"
+                                            required>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="locality"
+                                                placeholder="Locality" required>
+                                        </div>
+                                        <div class="col">
+                                            <textarea class="form-control" name="address" rows="3"
+                                                placeholder="Address (Area and Street)" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <input type="text" class="form-control" name="cityDistTown"
+                                                placeholder="City/District/Town" required>
+                                        </div>
+                                        <div class="col">
+                                            <select class="form-select" name="state" required>
+                                                <option selected disabled>--Select State--</option>
+                                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                                <option value="Assam">Assam</option>
+                                                <option value="Bihar">Bihar</option>
+                                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                                <option value="Goa">Goa</option>
+                                                <option value="Gujarat">Gujarat</option>
+                                                <option value="Haryana">Haryana</option>
+                                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                                <option value="Jharkhand">Jharkhand</option>
+                                                <option value="Karnataka">Karnataka</option>
+                                                <option value="Kerala">Kerala</option>
+                                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                                <option value="Maharashtra">Maharashtra</option>
+                                                <option value="Manipur">Manipur</option>
+                                                <option value="Meghalaya">Meghalaya</option>
+                                                <option value="Mizoram">Mizoram</option>
+                                                <option value="Nagaland">Nagaland</option>
+                                                <option value="Odisha">Odisha</option>
+                                                <option value="Punjab">Punjab</option>
+                                                <option value="Rajasthan">Rajasthan</option>
+                                                <option value="Sikkim">Sikkim</option>
+                                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                                <option value="Telangana">Telangana</option>
+                                                <option value="Tripura">Tripura</option>
+                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                <option value="Uttarakhand">Uttarakhand</option>
+                                                <option value="West Bengal">West Bengal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" name="landMark"
+                                            placeholder="Landmark (Optional)">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="tel" class="form-control" name="altPhone"
+                                            placeholder="Alternate Phone (Optional)">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" name="email" placeholder="Email"
+                                            required>
+                                    </div>
+                                    <label class="form-label">Address Type</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="home"
+                                                value="home" required>
+                                            <label class="form-check-label" for="home">Home</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="work"
+                                                value="work">
+                                            <label class="form-check-label" for="work">Work</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="other"
+                                                value="other">
+                                            <label class="form-check-label" for="other">Other</label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Address</button>
+                                    <a href="/chekout" style="display: inline-block; text-decoration: none;"></a>
+                                </form>
+                            </div>
+
+                            <br></br>
+                            <div class="row">
+                                <div class="col-lg-8">
+
+
+                                    <div class="card shadow-sm mb-4">
+                                        <div class="card-body">
+                                            
+                                            <div id="addressContainer" class="row">
+                                                <% address.forEach((address, index) => { %>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="addressSelection" value="<%= index %>" data-address-id="<%= address._id %>">
+                                                                    <label class="form-check-label" for="address_<%= index %>">
+                                                                        <%= address.name %><br>
+                                                                        <%= address.address %><br>
+                                                                        <%= address.cityDistTown %>, <%= address.state %> <%= address.pincode %><br>
+                                                                        Phone: <%= address.phone %>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Order Summary Section -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">ORDER SUMMARY</h5>
+                                <p class="card-text d-flex justify-content-between">
+                                    <span id="selection">Sub Total</span>
+                                    <span id="subTotalPrice">
+                                        <%=finalPrice%>
+                                    </span>
+                                </p>
+                                <p class="card-text d-flex justify-content-between">
+                                    <span>Delivery Charges</span>
+                                    <span id="deliveryCharge" class="text-success">₹40 Free</span>
+                                </p>
+                                <hr>
+                                <p class="card-text d-flex justify-content-between">
+                                    <strong>Total Amount</strong>
+                                    <strong><span id="totalPrice">
+                                            <%=finalPrice%>
+                                        </span></strong>
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <!-- Payment Method Section -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <h3 class="card-title h5 mb-3">Payment Method</h3>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="creditCard"
+                                        value="creditCard">
+                                    <label class="form-check-label" for="creditCard">
+                                        Credit Card
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="paypal"
+                                        value="paypal">
+                                    <label class="form-check-label" for="paypal">
+                                        PayPal
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_method"
+                                        id="cashOnDelivery" value="cashOnDelivery">
+                                    <label class="form-check-label" for="cashOnDelivery">
+                                        Cash on Delivery
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="placeOrder">Place Order</button>
+                    </div>
+                </div>
+
+            </main>
+
+
+            <!-- Preloader Start -->
+            <div id="preloader-active">
+                <div class="preloader d-flex align-items-center justify-content-center">
+                    <div class="preloader-inner position-relative">
+                        <div class="text-center">
+                            <h5 class="mb-5">Now Loading</h5>
+                            <div class="loader">
+                                <div class="bar bar1"></div>
+                                <div class="bar bar2"></div>
+                                <div class="bar bar3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            document.addEventListener('DOMContentLoaded', ()=> {
+
+                //for showing the add address button
+                document.getElementById('showButton').addEventListener('click', function () {
+                    var addressForm = document.getElementById('addressForm');
+                    if (addressForm.style.display === 'none') {
+                        addressForm.style.display = 'block';
+                    } else {
+                        addressForm.style.display = 'none';
+                    }
+                });
+
+                                    
+ 
+                    const creditCard = document.getElementById('creditCard');
+                    const paypal = document.getElementById('paypal');
+                    const cashOnDelivery = document.getElementById('cashOnDelivery');
+                    const placeOrderButton = document.getElementById('placeOrder');
+    
+
+                    placeOrderButton.addEventListener("click", () => {
+
+                        const selectedPaymentMethod = getSelectedPaymentMethod();
+                        const selectedAddressId = getSelectedAddressId()
+
+                        if(!selectedPaymentMethod){
+
+                            console.log(`please select a payment method`);
+                        }
+                        if(!selectedAddressId){
+
+                            !console.log(`please select a address id`);
+                        }
+                        
+                            fetch('http://localhost:7000/checkout', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ paymentMethod: selectedPaymentMethod ,addressId:selectedAddressId}),
+                            })
+                            .then(response => response.json())
+
+                            .then(data => {
+
+                                console.log('Success:', data)
+
+                            })
+                            .catch((error) => {
+                                console.error('Error:', error);
+                            });
+                        
+                    });
+
+                    function getSelectedPaymentMethod() {
+
+                        if (creditCard.checked) {
+                            return creditCard.value;
+                        } else if (cashOnDelivery.checked) {
+                            return cashOnDelivery.value;
+                        } else if (paypal.checked) {
+                            return paypal.value;
+                        }
+                        return null
+                    }
+                })
+
+                function getSelectedAddressId(){
+
+                    const addressRadios = document.getElementsByName('addressSelection')
+                    let selectedAddressId = null;
+                     addressRadios.forEach(radio => {
+                        if (radio.checked) {
+                            selectedAddressId = radio.getAttribute('data-address-id');
+                            console.log(`Selected Address ID: ${selectedAddressId}`);
+                        }
+                        
+                        });
+
+                        return selectedAddressId;
+    
+                }
+            </script>
+            <!-- Vendor JS -->
+            <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+            <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+            <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+            <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+            <script src="assets/js/plugins/slick.js"></script>
+            <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
+            <script src="assets/js/plugins/wow.js"></script>
+            <script src="assets/js/plugins/jquery-ui.js"></script>
+            <script src="assets/js/plugins/perfect-scrollbar.js"></script>
+            <script src="assets/js/plugins/magnific-popup.js"></script>
+            <script src="assets/js/plugins/select2.min.js"></script>
+            <script src="assets/js/plugins/waypoints.js"></script>
+            <script src="assets/js/plugins/counterup.js"></script>
+            <script src="assets/js/plugins/jquery.countdown.min.js"></script>
+            <script src="assets/js/plugins/images-loaded.js"></script>
+            <script src="assets/js/plugins/isotope.js"></script>
+            <script src="assets/js/plugins/scrollup.js"></script>
+            <script src="assets/js/plugins/jquery.vticker-min.js"></script>
+            <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
+            <!-- Template  JS -->
+            <script src="./assets/js/main.js?v=3.4"></script>
+            <script src="./assets/js/shop.js?v=3.4"></script>
+
+            <!-- sweet alert js file from the installed npm install sweetalert2 library -->
+            <script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
+
+            </body>
+
+            </html>

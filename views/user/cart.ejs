@@ -2,6 +2,7 @@
 <%- include('../layouts/userLayouts/navbar1') %>
 <div class="container mt-5" id="mainContainer">
   <div class="row">
+
     <% if (cartDetails.length === 0 || cartDetails[0].items.length === 0) { %>
       <div class="col-12 text-center" >
        
@@ -10,44 +11,49 @@
         <a href="/home" class="btn btn-primary">Shop now</a>
       </div>
     <% } else { %>
-    <div class="col-md-8" id="sendCartItem">
-      <input class="form-check-input select-all-checkbox" type="checkbox" style="margin-left: 5px;" id="selectAll">
-      <label class="form-check-label" for="selectAll">Select All</label>
+      <div class="col-md-8" id="sendCartItem">
         <% cartDetails.forEach(cartItem => { %>
           <% cartItem.items.forEach(item => { %>
-            <div class="card mb-3" id="productContainer<%= item.product._id%>">
-              <input class="form-check-input" type="checkbox" style="margin-left: 5px;" value="<%= item.product._id%>" name="selectedCartItem">
+            <div class="card mb-3" id="productContainer<%= item.product._id %>">
+              <input class="form-check-input" type="checkbox"
+                     style="margin-left: 5px;"
+                     value="<%= item.product._id %>"
+                     name="selectedCartItem"
+                     <% if (item.isSelected) { %> checked <% } %>>
               <div class="row no-gutters">
                 <div class="col-md-4 d-flex align-items-center justify-content-center">
-                  <img src="/productImages/<%= item.product.images[0].filename %>" class="card-img" style="width: 150px; height: 150px; object-fit: cover;" alt="Product Image">
+                  <img src="/productImages/<%= item.product.images[0]?.filename %>"
+                       class="card-img"
+                       style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 15px;"
+                       alt="Product Image">
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
                     <h5 class="card-title"><%= item.product.name %></h5>
-                    <!-- <p class="card-text"><strong>Seller:</strong> GRAHGOODS RETAIL</p>
-                    <p class="card-text"><strong>Delivery by:</strong> Tue Jul 23 | ₹40 Free</p>
-                    <p class="card-text"> -->
-                      <strong>Price:</strong>
-                      <%= item.product.salesPrice %>
-                      <del> <%= item.product.regularPrice %></del>
-                      <!-- <span class="text-success">21% Off</span> -->
-                    </p>
-                    <!-- <p class="card-text"><strong>Secured Packaging Fee:</strong> ₹99</p> -->
-                    <!-- <p class="card-text">3 offers applied</p> -->
+                    <strong>Price:</strong>
+                    <%= item.price %>
+                    <del><%= item.regularPrice %></del>
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center">
                         <div class="me-2">Qty:</div>
                         <input class="form-select-cart quantity-input"
                                value="<%= item.quantity %>"
-                               data-product-item-id="<%= item._id%>"
+                               data-product-item-id="<%= item.product._id %>"
                                style="height: 30px; width: 70px;"
                                type="number"
                                max="5"
                                min="1">
+                        <% if (item.product.stock > 0) { %>
+                          <% if (item.product.stock < 3) { %>
+                            <span class="product-stock" style="color: red; font-size: 14px; font-weight: 600; margin-left: 5px;">In Stock (<%= item.product.stock %> items)</span>
+                          <% } else { %>
+                            <span class="product-stock" style="color: green; font-size: 14px; font-weight: 600; margin-left: 5px;">In Stock (<%= item.product.stock %> items)</span>
+                          <% } %>
+                        <% } else { %>
+                          <span class="product-stock" style="color: red; font-size: 14px; font-weight: 600;">Out of Stock</span>
+                        <% } %>
                       </div>
-
-                      <span class="text-secondary" onclick="removeFromCart('<%= item.product._id%>')" style="text-decoration: none; cursor: pointer;">Remove</span>
-                    
+                      <span class="text-secondary" onclick="removeFromCart('<%= item.product._id %>')" style="text-decoration: none; cursor: pointer;">Remove</span>
                     </div>
                   </div>
                 </div>
@@ -55,8 +61,6 @@
             </div>
           <% }); %>
         <% }); %>
-      
-       
       </div>
       
     
@@ -69,16 +73,16 @@
           <h5 class="card-title">ORDER SUMMARY</h5>
          
           <p class="card-text d-flex justify-content-between">
-            <span>Price (2 items)</span>
-            <span>₹55,000</span>
+            <span id="selection"><%=selectedItemsCount%> items selected</span>
+            <span id="subTotalPrice"><%=finalPrice%></span>
           </p>
           <!-- <p class="card-text d-flex justify-content-between">
             <span>Discount</span>
-            <span class="text-success">-₹12,001</span>
+            <span id="discount" class="text-success">Rs 0.00</span>
           </p> -->
           <p class="card-text d-flex justify-content-between">
             <span>Delivery Charges</span>
-            <span class="text-success">₹40 Free</span>
+            <span id="deliveryCharge" class="text-success">₹40 Free</span>
           </p>
           <!-- <p class="card-text d-flex justify-content-between">
             <span>Secured Packaging Fee</span>
@@ -87,14 +91,16 @@
           <hr>
           <p class="card-text d-flex justify-content-between">
             <strong>Total Amount</strong>
-            <strong>₹43,098</strong>
+            <strong><span id="totalPrice"><%=finalPrice%></span > </strong>
           </p>
           <!-- <p class="card-text text-success">You will save ₹11,902 on this order</p> -->
         </div>
       </div>
-      <div class="d-flex justify-content-end ">
-        <button class="btn btn-primary ">Check Out</button>
-      </div>
+
+      <div class="d-flex justify-content-end" id="checkout">
+        <a  class="btn btn-primary">Check Out</a>
+    </div>
+    
     </div>
     
   </div>
@@ -300,13 +306,15 @@ quantityInput.forEach(qInput=>{
 
   qInput.addEventListener("change",()=>{
 
-    const itemId = qInput.getAttribute('data-product-item-id');
+    const productId = qInput.getAttribute('data-product-item-id');
     const quantity = qInput.value;
 
-    console.log(itemId);
-    console.log(quantity);
-
     if(quantity>=1 && quantity<=5){
+
+      const subTotalPrice = document.getElementById('subTotalPrice')
+      const discount = document.getElementById('discount')
+      const deliveryCharge = document.getElementById('deliveryCharge')
+      const totalPrice = document.getElementById('totalPrice')
 
       fetch(`http://localhost:7000/cart/`,{
 
@@ -314,7 +322,7 @@ quantityInput.forEach(qInput=>{
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ itemId, quantity }),
+            body: JSON.stringify({ productId, quantity }),
 
       }).then((response)=>{
 
@@ -327,17 +335,80 @@ quantityInput.forEach(qInput=>{
 
       }).then((data)=>{
 
-        console.log(data)
+       if(data.finalPrice){
+        console.log(`quantity`,data)
+
+       subTotalPrice.innerHTML = `Rs ${data.finalPrice?data.finalPrice: 0}`
+       totalPrice.innerHTML = `Rs ${data.finalPrice?data.finalPrice: 0}`
+
+      }else if(data.quantity === false){
+
+          let errorAlertContainer = document.createElement('div');
+          errorAlertContainer.classList.add("message");
+          errorAlertContainer.innerHTML = `
+            <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+            <span style="font-size: 14px;">Stock is insufficient</span>
+          `;
+          errorAlertContainer.style.position = 'fixed';
+          errorAlertContainer.style.bottom = '20px';
+          errorAlertContainer.style.left = '50%';
+          errorAlertContainer.style.transform = 'translateX(-50%)';
+          errorAlertContainer.style.zIndex = '1000';
+          errorAlertContainer.style.width = 'auto';
+          errorAlertContainer.style.maxWidth = '90%';
+          errorAlertContainer.style.padding = '15px 20px';
+          errorAlertContainer.style.background = '#333';
+          errorAlertContainer.style.color = '#fff';
+          errorAlertContainer.style.fontWeight = '400';
+          errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+          errorAlertContainer.style.display = 'flex';
+          errorAlertContainer.style.alignItems = 'center';
+          errorAlertContainer.style.borderRadius = '4px';
+          errorAlertContainer.style.overflow = 'hidden';
+
+          let redLine = document.createElement('div');
+          redLine.style.position = 'absolute';
+          redLine.style.bottom = '0';
+          redLine.style.left = '0';
+          redLine.style.height = '4px';
+          redLine.style.background = '#f44336';
+          redLine.style.animation = 'redLine 3s linear forwards';
+
+          let styleSheet = document.createElement('style');
+          styleSheet.type = 'text/css';
+          styleSheet.innerText = `
+            @keyframes slideIn {
+              from { transform: translateX(-50%) translateY(100%); }
+              to { transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes redLine {
+              from { width: 0; }
+              to { width: 100%; }
+            }
+          `;
+
+          errorAlertContainer.appendChild(redLine);
+          document.head.appendChild(styleSheet);
+          errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+          document.body.appendChild(errorAlertContainer);
+
+          setTimeout(() => {
+            errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+            setTimeout(() => errorAlertContainer.remove(), 300);
+          }, 2700);
+
+      }
 
 
       })
     }else{
 
-      let errorAlertContainer = document.createElement('div');
+  let errorAlertContainer = document.createElement('div');
   errorAlertContainer.classList.add("message");
   errorAlertContainer.innerHTML = `
     <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-    <span style="font-size: 14px;">Invalid input. Please enter a number between 1 and 5</span>
+    <span style="font-size: 14px;">Oops ! You can only select upto 5 items at a time</span>
   `;
   errorAlertContainer.style.position = 'fixed';
   errorAlertContainer.style.bottom = '20px';
@@ -395,7 +466,7 @@ quantityInput.forEach(qInput=>{
 })
 
 
-
+//selecting the checked box items and sending that data to backend
 let selectedProductIds = [];
 
 const updateSelectedProducts = () => {
@@ -404,8 +475,8 @@ const updateSelectedProducts = () => {
   selectedProductIds = Array.from(checkboxes)
     .filter(checkbox => checkbox.checked)
     .map(checkbox => checkbox.value);
-
-  sendToBackend();
+   
+    sendToBackend();
   
 };
 
@@ -413,11 +484,19 @@ const updateSelectedProducts = () => {
 document.querySelectorAll('input[name="selectedCartItem"]').forEach(checkbox => {
 
   checkbox.addEventListener('change', updateSelectedProducts);
-
+ 
+ 
 });
 
 
 const sendToBackend = () => {
+
+ const subTotalPrice = document.getElementById('subTotalPrice')
+ const discount = document.getElementById('discount')
+ const deliveryCharge = document.getElementById('deliveryCharge')
+ const totalPrice = document.getElementById('totalPrice')
+ const selection = document.getElementById('selection')
+ 
 
   fetch('http://localhost:7000/cart/', {
 
@@ -426,27 +505,138 @@ const sendToBackend = () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ selectedProductIds }),
-  })
-    .then(response => response.json())
-    .then(data => console.log('Success:', data))
-    .catch(error => console.error('Error:', error));
+
+  }).then((response)=>{
+
+      if(!response.ok){
+
+        throw new Error("Network response was not ok");
+
+      }
+      return response.json();
+    }).then((data)=>{
+     
+    
+      
+      if (data.finalPrice && data.cartDetails && data.cartDetails.items) {
+      subTotalPrice.innerHTML = `Rs ${data.finalPrice ? data.finalPrice : 0}`;
+      totalPrice.innerHTML = `Rs ${data.finalPrice ? data.finalPrice : 0}`;
+    
+      const selectedItemsCount = data.cartDetails.items.filter(item => item.isSelected).length;
+      selection.innerHTML = `${selectedItemsCount ? `${selectedItemsCount} items selected `: 'No items selected'}`;
+      
+       
+}
+       
+// console.log(`hello`,data);
+    }).catch((error)=>{
+
+      console.log(`error while fetching the data`,error.message)
+
+    })
 };
 
+document.addEventListener("DOMContentLoaded", function() {
+    const checkboxes = document.querySelectorAll('.form-check-input');
+    const checkoutButton = document.getElementById('checkout');
+    let values = [];
 
-document.getElementById('selectAll').addEventListener('change', (event) => {
+    checkboxes.forEach(function(checkbox) {
+        handleCheckboxChange(checkbox);
 
-  const isChecked = event.target.checked;
+        checkbox.addEventListener('change', function() {
+            handleCheckboxChange(this);
+        });
+    });
 
-  document.querySelectorAll('input[name="selectedCartItem"]').forEach(checkbox => {
+    function handleCheckboxChange(checkbox) {
+        const value = checkbox.value;
 
-    checkbox.checked = isChecked;
+        if (checkbox.checked) {
+            if (!values.includes(value)) {
+                values.push(value);
+            }
+        } else {
 
-  });
+            values = values.filter(v => v !== value);
+        }
 
-  updateSelectedProducts();
-  
+        console.log(values);
+
+     
+        checkoutButton.removeEventListener("click", handleCheckoutClick);
+        checkoutButton.removeEventListener("click", handleNoSelection);
+
+        if (values.length > 0) {
+            checkoutButton.addEventListener("click", handleCheckoutClick);
+        } else {
+            checkoutButton.addEventListener("click", handleNoSelection);
+        }
+    }
+
+    function handleCheckoutClick() {
+        window.location.href = "http://localhost:7000/checkout";
+    }
+
+    function handleNoSelection(event) {
+        event.preventDefault();
+                let errorAlertContainer = document.createElement('div');
+          errorAlertContainer.classList.add("message");
+          errorAlertContainer.innerHTML = `
+            <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+            <span style="font-size: 14px;">Oops ! Please select one item</span>
+          `;
+          errorAlertContainer.style.position = 'fixed';
+          errorAlertContainer.style.bottom = '20px';
+          errorAlertContainer.style.left = '50%';
+          errorAlertContainer.style.transform = 'translateX(-50%)';
+          errorAlertContainer.style.zIndex = '1000';
+          errorAlertContainer.style.width = 'auto';
+          errorAlertContainer.style.maxWidth = '90%';
+          errorAlertContainer.style.padding = '15px 20px';
+          errorAlertContainer.style.background = '#333';
+          errorAlertContainer.style.color = '#fff';
+          errorAlertContainer.style.fontWeight = '400';
+          errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+          errorAlertContainer.style.display = 'flex';
+          errorAlertContainer.style.alignItems = 'center';
+          errorAlertContainer.style.borderRadius = '4px';
+          errorAlertContainer.style.overflow = 'hidden';
+
+          let redLine = document.createElement('div');
+          redLine.style.position = 'absolute';
+          redLine.style.bottom = '0';
+          redLine.style.left = '0';
+          redLine.style.height = '4px';
+          redLine.style.background = '#f44336';
+          redLine.style.animation = 'redLine 3s linear forwards';
+
+          let styleSheet = document.createElement('style');
+          styleSheet.type = 'text/css';
+          styleSheet.innerText = `
+            @keyframes slideIn {
+              from { transform: translateX(-50%) translateY(100%); }
+              to { transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes redLine {
+              from { width: 0; }
+              to { width: 100%; }
+            }
+          `;
+
+          errorAlertContainer.appendChild(redLine);
+          document.head.appendChild(styleSheet);
+          errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+          document.body.appendChild(errorAlertContainer);
+
+          setTimeout(() => {
+            errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+            setTimeout(() => errorAlertContainer.remove(), 300);
+          }, 2700);
+
+    }
 });
-
 
 
 

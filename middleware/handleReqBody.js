@@ -2,7 +2,7 @@ const userController = require('../controllers/userController');
 
 const handleCartUpdate = (req, res, next) => {
 
-  if (req.body.itemId && req.body.quantity) {
+  if (req.body.productId && req.body.quantity) {
 
     console.log(`quantity updating middleware is working`);
 

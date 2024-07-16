@@ -4,7 +4,7 @@ const connectDB = require('./config/databaseConfig')
 const sessionConfig = require('./config/sessionConfig')
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
-
+const cacheControl = require('./middleware/cacheControl')
 
 
 
@@ -21,7 +21,6 @@ connectDB()
   
 //setting the viewengine
 app.set('view engine', 'ejs')
-
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.static('public/assets'));
