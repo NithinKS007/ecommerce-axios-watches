@@ -265,10 +265,11 @@ const addCategoryBrand = async (req,res) =>{
 const editCategory = async (req,res) =>{
 
 
-    const { categoryId, categoryName, categoryDescription } = req.body; 
+    const { categoryId, name, description} = req.body; 
 
-  
-    if (!categoryId ||!categoryName ||!categoryDescription) {
+  console.log(`data from the backend`,categoryId,name,description);
+
+    if (!categoryId ||!name ||!description) {
 
         return res.status(400).json({ success: false, message: "Category ID, name, and description are required" })
 
@@ -284,22 +285,22 @@ const editCategory = async (req,res) =>{
 
         }
 
-        if(category){
+         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:name,description:description}})
+   
+        if(UpdatedCategory){
 
-         const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:categoryName,description:categoryDescription}})
-   
-   
-               console.log(`category data edited function worked `)
-   
-               return res.status(200).json({
-   
-                   success:true,
-                   message:"category successfully edited",
-                   categoryDetails:UpdatedCategory
-   
-               })
-   
-           }
+            console.log(`category data edited function worked `)
+        
+            return res.status(200).json({
+
+                success:true,
+                message:"category successfully edited",
+                categoryDetails:UpdatedCategory
+
+            })
+
+        }
+       
 
 
     } catch (error) {
@@ -315,9 +316,11 @@ const editCategory = async (req,res) =>{
 
  const editBrand = async (req,res) =>{
 
-    const { brandId, brandName } = req.body; 
+    const { brandId, name} = req.body; 
 
-    if (!brandId ||!brandName) {
+    console.log(`data from the backend`,brandId,name);
+
+    if (!brandId ||!name) {
 
         return res.status(400).json({ success: false, message: "Brand ID and name are required" });
     }
@@ -331,19 +334,23 @@ const editCategory = async (req,res) =>{
             return res.status(404).json({ success: false, message: "Brand not found" });
         }
 
-        if(brand){
+       
 
-            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{name:brandName}})
+            const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{name:name}})
 
-            console.log(`brand data edited function worked`)
+            if(updatedBrand){
 
-            return res.status(200).json({
+                console.log(`brand data edited function worked`)
 
-                success:true,
-                message:"brand successfully edited",
-                brandDetails:updatedBrand
-            })
-        }
+                return res.status(200).json({
+    
+                    success:true,
+                    message:"brand successfully edited",
+                    brandDetails:updatedBrand
+                })
+            }
+           
+        
 
     } catch (error) {
         

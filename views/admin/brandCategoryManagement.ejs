@@ -31,7 +31,10 @@
               <div class="row">
                 <div class="col-md-3">
                   <form action="/admin/brandCategoryManagement" id="formDataCreateCategory" method="post">
+                      <!-- Hidden input field for category ID -->
+
                     <div class="mb-4">
+
                       <label for="categoryName" class="form-label">Name</label>
                       <input type="text" name="cName" placeholder="Type here" class="form-control" id="categoryName" />
                       <span id="categoryNameError" class="error"></span>
@@ -43,8 +46,11 @@
                       <span id="categoryDescriptionError" class="error"></span>
                     </div>
                     <div class="d-grid">
-                      <button type="submit" class="btn btn-primary">
+                      <button type="submit" id="createCategoryFormButton" class="btn btn-primary">
                         Create category
+                      </button>
+                      <button type="button" id="saveChangesCategoryFormButton" class="btn btn-primary" style="display: none;">
+                        Save Changes
                       </button>
                     </div>
                   </form>
@@ -63,7 +69,7 @@
                       </thead>
                       <tbody id="categoriesTbody">
                         <%if(categoriesData.length>0){ %> <% for(let i=0; i < categoriesData.length ; i++) {%>
-                            <tr id="<%= categoriesData[i]._id %>">
+                            <tr  id="categoryRow<%= categoriesData[i]._id %>">
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
@@ -71,18 +77,17 @@
                                 <%= categoriesData[i]._id %>
                               </td>
 
-                              <td id="displayChangedCname<%= categoriesData[i]._id %>">
+                              <td class="cName" >
                                 <%= categoriesData[i].name %>
                               </td>
-                              <td id="displayChangedCdescription<%= categoriesData[i]._id %>">
+                              <td class="cDes"  >
                                 <%= categoriesData[i].description %>
                               </td>
 
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-                                  <button id="editCategoryButton" type="button" data-category-name="<%= categoriesData[i].name %>"
-                                    data-category-description="<%= categoriesData[i].description %>"
-                                    data-category-id="<%= categoriesData[i]._id %>"
+                                  <button onclick="editCategory('<%= categoriesData[i]._id %>','<%= categoriesData[i].name %>','<%= categoriesData[i].description %>')"
+                                    id="editCategoryButton" type="button" 
                                     class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory">
                                     Edit info
                             </button>
@@ -140,13 +145,16 @@
                 <div class="col-md-3">
                   <form action="/admin/brandCategoryManagement" id="formDataCreateBrand" method="post">
                     <div class="mb-4">
-                      <label for="product_name" class="form-label">Name</label>
+                      <label for="brandName" class="form-label">Name</label>
                       <input type="text" name="bName" placeholder="Type here" class="form-control" id="brandName" />
                       <span id="brandNameError" class="error"></span>
                     </div>
                     <div class="d-grid">
-                      <button type="submit" class="btn btn-primary">
+                      <button type="submit" id="createBrandFormButton"  class="btn btn-primary">
                         Create brand
+                      </button>
+                      <button type="button" id="saveChangesBrandFormButton" class="btn btn-primary" style="display: none;">
+                        Save Changes
                       </button>
                     </div>
                   </form>
@@ -164,20 +172,20 @@
                       </thead>
                       <tbody id="brandsTbody">
                         <%if(brandsData.length>0){ %> <% for(let i=0; i < brandsData.length ; i++) {%>
-                            <tr id="<%= brandsData[i]._id %>">
+                            <tr id="brandRow<%= brandsData[i]._id %>">
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
                               <td>
                                 <%= brandsData[i]._id %>
                               </td>
-                              <td id="displayChangedBname<%= brandsData[i]._id %>">
+                              <td  class="bName">
                                 <%= brandsData[i].name %>
                               </td>
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-                                  <button type="button" data-brand-name="<%= brandsData[i].name %>"
-                                    data-brand-id="<%= brandsData[i]._id %>"
+                                  <button onclick="editBrand('<%= brandsData[i]._id %>','<%= brandsData[i].name %>')"
+                                    id="editBrandButton"  type="button" 
                                     class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand">
                                     Edit info
                             </button>
@@ -366,11 +374,145 @@
               }
             });
           };
-//edit brand
 
+          //function for editing category
+            const editCategory = (id,categoryName,categoryDescription) =>{
 
+              // console.log(id,categoryName,categoryDescription);
+
+              const categoryNameInput = document.getElementById('categoryName')
+              const catrgoryDescription = document.getElementById('categoryDescription')
+              const createCategoryFormButton = document.getElementById('createCategoryFormButton')
+              const saveChangesCategoryFormButton = document.getElementById('saveChangesCategoryFormButton')
+
+              categoryNameInput.value = categoryName
+
+              categoryDescriptionInput.value = categoryDescription
+
+              createCategoryFormButton.style.display = 'none';
+            saveChangesCategoryFormButton.style.display = 'block';
+
+              if(saveChangesCategoryFormButton.style.display == 'block'){
+
+                saveChangesCategoryFormButton.addEventListener("click",()=>{
+
+                  const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.');
+
+                  if (confirmUpdate) {
+                    const name =  categoryNameInput.value 
+                    const description = categoryDescriptionInput.value
+                    const categoryId = id
+                
+                    fetch(`http://localhost:7000/admin/brandCategoryManagement/`,{
+
+                      method:"PUT",
+                      headers:{
+
+                        'Content-Type': 'application/json',
+
+                      },
+                      body:JSON.stringify({name,description,categoryId})
+
+                    }).then((response)=>{
+
+                      if(!response.ok){
+
+                        throw new Error("Network response was not ok")
+                      }
+
+                      return response.json()
+                    }).then((data)=>{
+
+                      console.log(`data received`,data);
+
+                      const row = document.querySelector(`#categoryRow${categoryId}`);
+
+                      if(row){
+
+                        row.querySelector('.cName').innerHTML = name
+                        row.querySelector('.cDes').innerHTML = description
+
+                        categoryNameInput.value = '';
+                        categoryDescriptionInput.value = '';
+                        createCategoryFormButton.style.display = 'block';
+                        saveChangesCategoryFormButton.style.display = 'none';
+                      }
+
+                    })
+
+                  }
+                })
+              }
+
+            }
           
 
+            const editBrand = (id,brandName) =>{
+
+              const brandNameInput = document.getElementById('brandName')
+              const createBrandFormButton = document.getElementById('createBrandFormButton')
+              const saveChangesBrandFormButton = document.getElementById('saveChangesBrandFormButton')
+
+
+              brandNameInput.value = brandName
+
+              createBrandFormButton.style.display = 'none'
+
+              saveChangesBrandFormButton.style.display = 'block'
+
+              if(saveChangesBrandFormButton.style.display =='block' ){
+
+                saveChangesBrandFormButton.addEventListener("click",()=>{
+
+
+               const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.');
+
+               if(confirmUpdate){
+
+                const name = brandNameInput.value
+                const brandId = id
+
+                fetch(`http://localhost:7000/admin/brandCategoryManagement/`,{
+
+                  method:"PUT",
+                  headers:{
+
+                    'Content-Type': 'application/json',
+
+                  },
+                
+                  body:JSON.stringify({name,brandId})
+                }).then((response)=>{
+
+                  if(!response.ok){
+
+                    throw new Error("Network response was not ok")
+                  }
+                  return response.json()
+                  
+                }).then((data)=>{
+
+                  console.log(`data received`,data);
+
+                  const row = document.querySelector(`#brandRow${brandId}`)
+
+                  if(row){
+
+                        row.querySelector('.bName').innerHTML = name
+                    
+                        brandNameInput.value = '';
+                    
+                        createBrandFormButton.style.display = 'block';
+                        saveChangesBrandFormButton.style.display = 'none';
+
+                     }
+                  })
+
+                  }
+                })
+              }
+
+            }
 
             //category adding category done using backend
 

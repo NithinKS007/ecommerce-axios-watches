@@ -3,13 +3,13 @@ const adminController = require('../controllers/adminController')
 
 const handleEdit = (req,res,next) =>{
     
-        if(req.query.categoryId){
+        if(req.body.categoryId){
 
             return adminController.editCategory(req,res,next)
 
-        } else if (req.query.brandId){
+        } 
+        else if (req.body.brandId){
 
-            console.log(`brandId from the middleware`,req.query.brandId)
             
             return adminController.editBrand(req,res,next)
         }
