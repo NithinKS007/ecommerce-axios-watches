@@ -1,0 +1,91 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+    <%- include('../layouts/adminLayouts/searchbar') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Orders List</h2>
+                <p>Dashboard > Order list</p>
+            </div>
+        </div>
+        <% console.log(orderData) %>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control">
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Pending</option>
+                            <option>Shipped</option>
+                            <option>Delivered</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <!-- table content starts -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Shipping Address</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Date</th>
+                                <th scope="col" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orderData.forEach(order => { %>
+                            <tr>
+                                <td><%= order._id %></td>
+                                <td><b><%= order.user.fname %> <%= order.user.lname %></b></td>
+                                <td><%= order.user.email %></td>
+                                <td>
+                                    <%= order.shippingAddress.name %><br>
+                                    <%= order.shippingAddress.phone %><br>
+                                    <%= order.shippingAddress.locality %>, <%= order.shippingAddress.address %>, <%= order.shippingAddress.cityDistTown %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.pincode %><br>
+                                    <%= order.shippingAddress.landMark %>
+                                </td>
+                                <td>Rs <%= order.totalAmount %></td>
+                                <td><span class="badge rounded-pill alert-warning"><%= order.orderStatus %></span></td>
+                                <td><%= new Date(order.orderDate).toLocaleString() %></td>
+                                <td class="text-end">
+                                    <a class="btn btn-md rounded font-sm" onclick="getOrderDetails('<%= order.user._id %>')">Detail</a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section> <!-- content-main end// -->
+</main>
+<script>
+const getOrderDetails = (userId) => {
+
+    console.log(userId);
+
+    if (!userId) {
+        console.log('User not found');
+        return;
+    }else{
+
+          window.location.href = `http://localhost:7000/admin/orderDetailsPage/?userId=${userId}`
+    }
+
+  
+
+};
+</script>
+<%- include('../layouts/adminLayouts/footer') %>

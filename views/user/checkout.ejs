@@ -196,7 +196,7 @@
                                 <h5 class="card-title">ORDER SUMMARY</h5>
                                 <p class="card-text d-flex justify-content-between">
                                     <span id="selection">Sub Total</span>
-                                    <span id="subTotalPrice">
+                                    <span id="subTotalPrice">Rs
                                         <%=finalPrice%>
                                     </span>
                                 </p>
@@ -207,7 +207,7 @@
                                 <hr>
                                 <p class="card-text d-flex justify-content-between">
                                     <strong>Total Amount</strong>
-                                    <strong><span id="totalPrice">
+                                    <strong><span id="totalPrice">Rs
                                             <%=finalPrice%>
                                         </span></strong>
                                 </p>
@@ -293,13 +293,127 @@
 
                         if(!selectedPaymentMethod){
 
-                            console.log(`please select a payment method`);
-                        }
-                        if(!selectedAddressId){
+                        //   return  console.log(`please select a payment method`);
 
-                            !console.log(`please select a address id`);
-                        }
-                        
+                          let errorAlertContainer = document.createElement('div');
+                            errorAlertContainer.classList.add("message");
+                            errorAlertContainer.innerHTML = `
+                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+                                <span style="font-size: 14px;">An error occured or Please select any payment method </span>
+                            `;
+                            errorAlertContainer.style.position = 'fixed';
+                            errorAlertContainer.style.bottom = '20px';
+                            errorAlertContainer.style.left = '50%';
+                            errorAlertContainer.style.transform = 'translateX(-50%)';
+                            errorAlertContainer.style.zIndex = '1000';
+                            errorAlertContainer.style.width = 'auto';
+                            errorAlertContainer.style.maxWidth = '90%';
+                            errorAlertContainer.style.padding = '15px 20px';
+                            errorAlertContainer.style.background = '#333';
+                            errorAlertContainer.style.color = '#fff';
+                            errorAlertContainer.style.fontWeight = '400';
+                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                            errorAlertContainer.style.display = 'flex';
+                            errorAlertContainer.style.alignItems = 'center';
+                            errorAlertContainer.style.borderRadius = '4px';
+                            errorAlertContainer.style.overflow = 'hidden';
+
+                            let redLine = document.createElement('div');
+                            redLine.style.position = 'absolute';
+                            redLine.style.bottom = '0';
+                            redLine.style.left = '0';
+                            redLine.style.height = '4px';
+                            redLine.style.background = '#f44336';
+                            redLine.style.animation = 'redLine 3s linear forwards';
+
+                            let styleSheet = document.createElement('style');
+                            styleSheet.type = 'text/css';
+                            styleSheet.innerText = `
+                                @keyframes slideIn {
+                                from { transform: translateX(-50%) translateY(100%); }
+                                to { transform: translateX(-50%) translateY(0); }
+                                }
+                                @keyframes redLine {
+                                from { width: 0; }
+                                to { width: 100%; }
+                                }
+                            `;
+
+                            errorAlertContainer.appendChild(redLine);
+                            document.head.appendChild(styleSheet);
+                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                            document.body.appendChild(errorAlertContainer);
+
+                            setTimeout(() => {
+                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                                setTimeout(() => errorAlertContainer.remove(), 300);
+                            }, 2700);
+
+    
+
+ 
+                        }else if(!selectedAddressId){
+
+                        //   return !console.log(`please select a address id`);
+
+                          let errorAlertContainer = document.createElement('div');
+                            errorAlertContainer.classList.add("message");
+                            errorAlertContainer.innerHTML = `
+                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+                                <span style="font-size: 14px;">An error occured or Please select any address </span>
+                            `;
+                            errorAlertContainer.style.position = 'fixed';
+                            errorAlertContainer.style.bottom = '20px';
+                            errorAlertContainer.style.left = '50%';
+                            errorAlertContainer.style.transform = 'translateX(-50%)';
+                            errorAlertContainer.style.zIndex = '1000';
+                            errorAlertContainer.style.width = 'auto';
+                            errorAlertContainer.style.maxWidth = '90%';
+                            errorAlertContainer.style.padding = '15px 20px';
+                            errorAlertContainer.style.background = '#333';
+                            errorAlertContainer.style.color = '#fff';
+                            errorAlertContainer.style.fontWeight = '400';
+                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                            errorAlertContainer.style.display = 'flex';
+                            errorAlertContainer.style.alignItems = 'center';
+                            errorAlertContainer.style.borderRadius = '4px';
+                            errorAlertContainer.style.overflow = 'hidden';
+
+                            let redLine = document.createElement('div');
+                            redLine.style.position = 'absolute';
+                            redLine.style.bottom = '0';
+                            redLine.style.left = '0';
+                            redLine.style.height = '4px';
+                            redLine.style.background = '#f44336';
+                            redLine.style.animation = 'redLine 3s linear forwards';
+
+                            let styleSheet = document.createElement('style');
+                            styleSheet.type = 'text/css';
+                            styleSheet.innerText = `
+                                @keyframes slideIn {
+                                from { transform: translateX(-50%) translateY(100%); }
+                                to { transform: translateX(-50%) translateY(0); }
+                                }
+                                @keyframes redLine {
+                                from { width: 0; }
+                                to { width: 100%; }
+                                }
+                            `;
+
+                            errorAlertContainer.appendChild(redLine);
+                            document.head.appendChild(styleSheet);
+                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                            document.body.appendChild(errorAlertContainer);
+
+                            setTimeout(() => {
+                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                                setTimeout(() => errorAlertContainer.remove(), 300);
+                            }, 2700);
+
+                        }else{
+
                             fetch('http://localhost:7000/checkout', {
                                 method: 'POST',
                                 headers: {
@@ -312,11 +426,78 @@
                             .then(data => {
 
                                 console.log('Success:', data)
+                                if(data.success){
+
+                                    window.location.href = "http://localhost:7000/placeOrder"
+                                }
+
+
 
                             })
                             .catch((error) => {
-                                console.error('Error:', error);
+
+                                console.error(`error while fetching the data`,error.message)
+
+                                let errorAlertContainer = document.createElement('div');
+                                errorAlertContainer.classList.add("message");
+                                errorAlertContainer.innerHTML = `
+                                    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+                                    <span style="font-size: 14px;">An error occured </span>
+                                `;
+                                errorAlertContainer.style.position = 'fixed';
+                                errorAlertContainer.style.bottom = '20px';
+                                errorAlertContainer.style.left = '50%';
+                                errorAlertContainer.style.transform = 'translateX(-50%)';
+                                errorAlertContainer.style.zIndex = '1000';
+                                errorAlertContainer.style.width = 'auto';
+                                errorAlertContainer.style.maxWidth = '90%';
+                                errorAlertContainer.style.padding = '15px 20px';
+                                errorAlertContainer.style.background = '#333';
+                                errorAlertContainer.style.color = '#fff';
+                                errorAlertContainer.style.fontWeight = '400';
+                                errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                                errorAlertContainer.style.display = 'flex';
+                                errorAlertContainer.style.alignItems = 'center';
+                                errorAlertContainer.style.borderRadius = '4px';
+                                errorAlertContainer.style.overflow = 'hidden';
+
+                                let redLine = document.createElement('div');
+                                redLine.style.position = 'absolute';
+                                redLine.style.bottom = '0';
+                                redLine.style.left = '0';
+                                redLine.style.height = '4px';
+                                redLine.style.background = '#f44336';
+                                redLine.style.animation = 'redLine 3s linear forwards';
+
+                                let styleSheet = document.createElement('style');
+                                styleSheet.type = 'text/css';
+                                styleSheet.innerText = `
+                                    @keyframes slideIn {
+                                    from { transform: translateX(-50%) translateY(100%); }
+                                    to { transform: translateX(-50%) translateY(0); }
+                                    }
+                                    @keyframes redLine {
+                                    from { width: 0; }
+                                    to { width: 100%; }
+                                    }
+                                `;
+
+                                errorAlertContainer.appendChild(redLine);
+                                document.head.appendChild(styleSheet);
+                                errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                                document.body.appendChild(errorAlertContainer);
+
+                                setTimeout(() => {
+                                    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                                    setTimeout(() => errorAlertContainer.remove(), 300);
+                                }, 2700)
+
+
                             });
+                        }
+                        
+                           
                         
                     });
 
@@ -331,23 +512,26 @@
                         }
                         return null
                     }
-                })
 
-                function getSelectedAddressId(){
+                    function getSelectedAddressId(){
 
                     const addressRadios = document.getElementsByName('addressSelection')
                     let selectedAddressId = null;
-                     addressRadios.forEach(radio => {
+                    addressRadios.forEach(radio => {
                         if (radio.checked) {
+
                             selectedAddressId = radio.getAttribute('data-address-id');
-                            console.log(`Selected Address ID: ${selectedAddressId}`);
+                            
                         }
                         
                         });
 
                         return selectedAddressId;
-    
-                }
+
+                    }
+                })
+
+               
             </script>
             <!-- Vendor JS -->
             <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>

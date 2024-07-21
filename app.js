@@ -5,7 +5,7 @@ const sessionConfig = require('./config/sessionConfig')
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
 const cacheControl = require('./middleware/cacheControl')
-
+const morgan = require('morgan');
 
 
 const passport = require('passport')
@@ -24,7 +24,7 @@ app.set('view engine', 'ejs')
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.static('public/assets'));
-
+// app.use(morgan('dev'));
 // sweet alert js file from the installed npm install sweetalert2 library
 app.use('/modules', express.static('node_modules'))
 

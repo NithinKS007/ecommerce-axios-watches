@@ -14,75 +14,7 @@
             line-height: 1.2;
           }
         </style>
-        <!-- Modal starts for category -->
-        <div class="modal fade" id="exampleModalOne" tabindex="-1" aria-labelledby="exampleModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">
-                  Edit Category
-                </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body" id="editCategoryModal">
-                <div class="mb-3">
-                  <label for="categoryName" class="form-label">Change Name</label>
-                  <input type="text" class="form-control" id="changeCName" name="categoryName" placeholder=""
-                    required />
-                  <span id="categoryChangeNameError" class="error"></span>
-                </div>
-                <div class="mb-3">
-                  <label for="categoryDescription" class="form-label">Change Description</label>
-                  <textarea class="form-control" id="changeCDescription" name="categoryDescription" rows="3"
-                    placeholder="" required></textarea>
-                  <span id="categoryChangeDescriptionError" class="error"></span>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                  Close
-                </button>
-                <button type="button" id="saveChangesCategory" data-bs-dismiss="modal" class="btn btn-primary">
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Modal ends for category-->
-
-        <!-- Modal starts for brand-->
-        <div class="modal fade" id="exampleModalTwo" tabindex="-1" aria-labelledby="exampleModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5 w-100 text-center" id="exampleModalLabel">
-                  Edit Brand
-                </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body" id="editBrandModal">
-                <div class="mb-3">
-                  <label for="brandName" class="form-label">Change Name</label>
-                  <input type="text" class="form-control" id="changeBName" name=" brandName" placeholder="" required />
-                  <span id="brandChangeNameError" class="error"></span>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                  Close
-                </button>
-                <button type="button" id="saveChangesBrand" data-bs-dismiss="modal" class="btn btn-primary">
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Modal ends for brand-->
-
+      
         <section class="content-main">
           <div class="content-header">
             <div>
@@ -148,13 +80,12 @@
 
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-                                  <button type="button" data-category-name="<%= categoriesData[i].name %>"
+                                  <button id="editCategoryButton" type="button" data-category-name="<%= categoriesData[i].name %>"
                                     data-category-description="<%= categoriesData[i].description %>"
                                     data-category-id="<%= categoriesData[i]._id %>"
-                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModalOne">
+                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory">
                                     Edit info
-                                  </button>
+                            </button>
 
                                   <% if(categoriesData[i].isBlocked) { %>
 
@@ -247,10 +178,9 @@
                                 <div class="d-flex justify-content-end">
                                   <button type="button" data-brand-name="<%= brandsData[i].name %>"
                                     data-brand-id="<%= brandsData[i]._id %>"
-                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModalTwo">
+                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand">
                                     Edit info
-                                  </button>
+                            </button>
                                   <% if(brandsData[i].isBlocked) { %>
 
                                     <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
@@ -436,7 +366,7 @@
               }
             });
           };
-
+//edit brand
 
 
           

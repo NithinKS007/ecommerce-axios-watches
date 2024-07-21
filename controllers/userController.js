@@ -402,7 +402,7 @@ const loadCart = async (req,res) =>{
 
             const selectedItemsCount = cartDetailsForPriceCalculation.items.filter(item => item.isSelected).length;
 
-            return  res.status(200).render("user/cart",{cartDetails,finalPrice, selectedItemsCount })
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice:finalPrice?.finalPrice, selectedItemsCount })
 
         }
 
@@ -417,23 +417,32 @@ const loadCart = async (req,res) =>{
 }
 
 //calculating ORDER SUMMARY
-const priceSummary = async (cartData) =>{
-
+const priceSummary = async (cartData) => {
+  
     try {
-
-       const totalPrice = cartData.items.filter((item)=>item.isSelected).reduce((total,item)=>total+item.price*item.quantity,0).toFixed(2)
-
-      
-
-      return totalPrice
+        
+        if(cartData.items.length>0){
+            const selectedItems = cartData.items.filter((item) => item.isSelected);
+                
+                const finalPrice = selectedItems.reduce((total, item) => 
+                    total + item.price * item.quantity, 0
+                );
+        
+                const totalQuantity = selectedItems.reduce((total, item) => 
+                    total + item.quantity, 0
+                );
+        
+                return {
+                    finalPrice: parseFloat(finalPrice.toFixed(2)),
+                    totalQuantity
+                };
+           }
 
     } catch (error) {
-        
-        console.log(`error while calculating the price details`,error.message);
+        console.log(`error while calculating the price details`, error.message);
+       
     }
-
-
-}
+};
 //product adding to cart from the product details page
 
 const addToCart = async (req,res) =>{
@@ -589,7 +598,7 @@ const removeFromCart = async (req, res) => {
     
         const { productId, quantity } = req.body
     
-        console.log(`this is item id `,productId)
+       
 
         const productItem = await products.find({_id:productId})
       
@@ -620,7 +629,7 @@ const removeFromCart = async (req, res) => {
 
         const finalPrice =  await priceSummary(updatedItem)
 
-        return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice})
+        return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice?.finalPrice})
 
       } catch (error) {
 
@@ -675,7 +684,7 @@ const removeFromCart = async (req, res) => {
 
         const finalPrice =  await priceSummary(cartDetails)
 
-        return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice,cartDetails:cartDetails});
+        return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice?.finalPrice,cartDetails:cartDetails});
         
 
     } catch (error) {
@@ -859,7 +868,7 @@ const  loadCheckout = async (req,res) =>{
 
         
         
-        return res.status(200).render("user/checkout", { selectedItems,address,finalPrice})
+        return res.status(200).render("user/checkout", { selectedItems,address,finalPrice:finalPrice?.finalPrice})
         
     } catch (error) {
         
@@ -888,14 +897,14 @@ const placeOrder = async (req,res) =>{
 
         const address =  new ObjectId(addressId) 
 
-        console.log(typeof address);
-        console.log(address);
+        console.log(`this is address id from the front end`,address);
+        console.log(`this is the payment method from the front end`,paymentMethod)
+
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
         const addressData = await userAddress.findOne({_id:address})
 
-        console.log(addressData);
-       
-      
+        const {finalPrice,totalQuantity} = await priceSummary(cartData)
+
 
         const isSelectedItemsOnly =  cartData.items.filter(item => { 
 
@@ -903,9 +912,8 @@ const placeOrder = async (req,res) =>{
 
        })
 
-       
-    
-
+       console.log(`this is is selected items only`,isSelectedItemsOnly);
+   
        const orderItems = isSelectedItemsOnly.map(item =>({
 
         product:item.product._id,
@@ -924,54 +932,72 @@ const placeOrder = async (req,res) =>{
         strapColor:item.product.strapColor,
         strapMaterial:item.product.strapMaterial,
         dialShape:item.product.dialShape,
-        Images:item.product.images,
+        images: item.product.images.map(image => image.url || image.path),
+        subTotal:finalPrice,
 
        }))
 
-      
-     
-        // const order = new orders({
+        const order = new orders({
 
-        //     items:orderItems,
-        //     user:cartData.user,
-        //     shippingAddress:{
+            items:orderItems,
+            user:cartData.user,
+            shippingAddress:{
 
-        //         name:,
-        //         phone:,
-        //         pincode:,
-        //         locality:,
-        //         address:,
-        //         cityDistTown:,
-        //         state:,
-        //         landMark,
-        //         altPhone:,
-        //         email:,
-        //         addressType:,
+                name:addressData.name,
+                phone:addressData.phone,
+                pincode:addressData.pincode,
+                locality:addressData.locality,
+                address:addressData.address,
+                cityDistTown:addressData.cityDistTown,
+                state:addressData.state,
+                landMark:addressData.landMark,
+                altPhone:addressData.altPhone,
+                email:addressData.email,
+                addressType:addressData.addressType,
+            },
 
-
-        //     }
-
-
-
-
-
-        //     paymentMethod:paymentMethod,
-
-
-         
-
-        // })
+            totalItems:totalQuantity,
+            totalAmount:finalPrice,
+            paymentMethod:paymentMethod,
+        })
         
 
-    //   const orderData = await order.save()
+      const orderData = await order.save()
+
+      if (orderData) {
+
+        const productIds = orderData.items.map(item => item.product)
+
+        const quantityPurchased = orderData.items.map(item =>item.quantity)
         
+        console.log('Product IDs:', productIds);
+        console.log(`this is the quantity`,quantityPurchased);
 
-   
 
-      console.log(`this is payment method`,paymentMethod);
+        const bulkOps = orderData.items.map(item => ({
+            updateOne: {
+              filter: { _id: item.product },
+              update: { $inc: { stock: -item.quantity } }
+            }
+          }));
+          
+
+        const updateStockOfProducts = await products.bulkWrite(bulkOps)
+
+        const removingFromCart = await cart.findOneAndUpdate({user:userFromGidSessionOrSession},{$pull:{items:{product:{$in:productIds}}}})
+
+        return res.status(200).json({
+            success: true,
+            message: 'Order placed successfully',
+        });
+    } else {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to place order',
+        });
+    }
        
-        
-        
+          
     } catch (error) {
         
         console.log(`error while placing the order`,error.message)
@@ -981,12 +1007,46 @@ const placeOrder = async (req,res) =>{
 
 const loadPlaceOrder = async (req, res) => {
     try {
+
+        const orderData = await orders.findOne({})
         return res.render('user/placeOrder');
+
     } catch (error) {
+
         console.log(`Error while loading the place order page:`, error.message);
+
         return res.status(500).send('An error occurred while loading the place order page.');
     }
 };
+
+//loading orders page
+const loadOrders = async (req,res) =>{
+
+    try {
+
+        let userFromGidSessionOrSession 
+
+        if(req.session.userId){
+
+            userFromGidSessionOrSession = req.session.userId
+
+        }else if(req.user){
+
+            //checking for google session id 
+            userFromGidSessionOrSession = req.user.id
+
+        }
+
+        const orderData = await orders.find({user:userFromGidSessionOrSession})
+
+       console.log(orderData);
+        return res.status(200).render("user/orders",{orderData:orderData})
+        
+    } catch (error) {
+        
+        console.log(`error while loading the orders page`,error.message);
+    }
+}
 module.exports = {
 
     loadRegister,
@@ -1012,7 +1072,8 @@ module.exports = {
     removeAddress,
     loadCheckout,
     placeOrder,
-    loadPlaceOrder
+    loadPlaceOrder,
+    loadOrders
  
     
 }

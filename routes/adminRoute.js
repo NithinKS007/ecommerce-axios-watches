@@ -35,6 +35,20 @@ adminRoute.get("/products",adminAuth.isAdminLogin,adminController.loadProducts)
 adminRoute.patch("/products",adminAuth.isAdminLogin,adminController.softDeleteProduct)
 adminRoute.get("/addProducts",adminAuth.isAdminLogin,adminController.loadaddProduct)
 adminRoute.post("/addProducts",adminAuth.isAdminLogin,imageUpload.upload.array('productimages',4),adminController.addProduct)
+adminRoute.get("/editProduct",adminAuth.isAdminLogin,adminController.loadEditProduct )
+adminRoute.put("/editProduct",adminAuth.isAdminLogin,imageUpload.upload.array('productimages',4), adminController.editProduct)
+adminRoute.delete("/removeProductImage",adminAuth.isAdminLogin, adminController.editImage)
+
+//order list
+adminRoute.get("/orders",adminAuth.isAdminLogin,adminController.loadOrderList)
+
+
+//order details page
+adminRoute.get("/orderDetailsPage", adminAuth.isAdminLogin, adminController.loadOrderDetailsPage);
+adminRoute.post("/orderDetailsPage",adminAuth.isAdminLogin,adminController.changeOrderStatus)
+
+
+
 
 
 module.exports = adminRoute

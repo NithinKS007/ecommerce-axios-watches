@@ -1,0 +1,226 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+    <%- include('../layouts/adminLayouts/searchbar') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Order Details</h2>
+                <p>Dashboard > Order List > Order Details</p>
+            </div>
+        </div>
+       
+           
+        <div class="card mb-4">
+            <div class="card-body">
+                <div style="background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); border: 1px solid #ddd; border-radius: 8px; padding: 20px; font-family: Arial, sans-serif;">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+                        <div id="orderDetails" data-order-id="<%= UserOrderDataDetails[0]._id %>">
+                            <strong>Order Id: <%= UserOrderDataDetails[0]._id %></strong>
+                            <span style="background-color: #ffd700; padding: 2px 5px; border-radius: 3px; margin-left: 10px;">
+                                <%= UserOrderDataDetails[0].orderStatus.charAt(0).toUpperCase() + UserOrderDataDetails[0].orderStatus.slice(1) %>
+                            </span>
+                        </div>
+                        <div class="mt-3 mt-md-0">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="statusPending" name="orderStatus" value="pending" <%= UserOrderDataDetails[0].orderStatus === 'pending' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusPending">Pending</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="statusShipped" name="orderStatus" value="shipped" <%= UserOrderDataDetails[0].orderStatus === 'shipped' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusShipped">Shipped</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="statusDelivered" name="orderStatus" value="delivered" <%= UserOrderDataDetails[0].orderStatus === 'delivered' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusDelivered">Delivered</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="statusCancelled" name="orderStatus" value="cancelled" <%= UserOrderDataDetails[0].orderStatus === 'cancelled' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusCancelled">Cancelled</label>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="text-muted mb-3">
+                        <%= new Date(UserOrderDataDetails[0].orderDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) %> (India Standard Time)
+                    </div>
+        
+                    <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+                        <h2 style="margin-top: 0; font-size: 20px; color: #333;">Update Details</h2>
+        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Customer Name:</strong> <%= UserOrderDataDetails[0].shippingAddress.name %>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Mobile No:</strong> <%= UserOrderDataDetails[0].shippingAddress.phone %>
+                            </div>
+                        </div>
+        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Payment Method:</strong> <%= UserOrderDataDetails[0].paymentMethod %>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Delivery date:</strong> 
+                                <%= new Date(new Date(UserOrderDataDetails[0].orderDate).setDate(new Date(UserOrderDataDetails[0].orderDate).getDate() + 5)).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %> 
+                            </div>
+                        </div>
+        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Shipping Cost:</strong> ₹40 free
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Total Amount:</strong> ₹<%= finalPrice %>
+                            </div>
+                        </div>
+        
+                        <div class="mb-3">
+                            <strong>Shipping Address:</strong> <%= UserOrderDataDetails[0].shippingAddress.address %>, <%= UserOrderDataDetails[0].shippingAddress.locality %>, <%= UserOrderDataDetails[0].shippingAddress.cityDistTown %>, <%= UserOrderDataDetails[0].shippingAddress.state %><br>
+                            Pin: <%= UserOrderDataDetails[0].shippingAddress.pincode %>
+                        </div>
+        
+                        <button id="editButton" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="toggleAndUpdateStatus()">Edit Order Status</button>
+                        <button id="saveButton" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; display: none;" onclick="toggleAndUpdateStatus()">Save Order Status</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card mb-4">
+            <!-- table content starts -->
+            <div class="card-body">
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Brand</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%console.log(UserOrderDataDetails.items)%>
+                            <% 
+                         
+                            UserOrderDataDetails.forEach(order => {
+                                order.items.forEach(item => { 
+                                  
+                            %>
+                                    <tr>
+                                        <td><%= order._id %></td>
+                                        <td>
+                                            <% if (item.images && item.images.length > 0) { %>
+                                                <% 
+                                                // Extract the filename from the full path
+                                                const fullPath = item.images[0];
+                                                const filename = fullPath.split('\\').pop().split('/').pop();
+                                                %>
+                                                <img src="/productImages/<%= filename %>" alt="<%= item.productName %>" style="width: 50px; height: 50px;">
+                                            <% } else { %>
+                                                <span>No image available</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= item.productName %></td>
+                                        <td><%= item.brandName %></td>
+                                        <td><%= item.categoryName %></td>
+                                        <td><%= item.quantity %></td>
+                                        <td>Rs <%= item.price %></td>
+                                        <td>Rs <%= item.price * item.quantity %></td>
+                                        <td><span class="badge rounded-pill alert-warning"><%= order.orderStatus %></span></td>
+                                        <td><%= new Date(order.orderDate).toLocaleString() %></td>
+                                    </tr>
+                            <% 
+                                });
+                            });
+                           
+                            %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-6">
+                <div class="card">
+                    <div class="card-body" style="padding: 1rem;">
+                        <ul class="list-unstyled" style="margin-bottom: 0;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <strong style="flex: 1;">Subtotal:</strong>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= finalPrice %></span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <strong style="flex: 1;">Grand total:</strong>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= finalPrice %></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> <!-- content-main end// -->
+</main>
+<script>
+    const toggleAndUpdateStatus = () => {
+        const editButton = document.getElementById("editButton");
+        const saveButton = document.getElementById("saveButton");
+    
+        if (editButton.style.display === "none") {
+            console.log("Save action");
+    
+            const selectedStatus = getOrderStatus();
+            const orderId = document.getElementById('orderDetails').getAttribute('data-order-id');
+    
+            fetch('http://localhost:7000/admin/orderDetailsPage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selectedStatus:selectedStatus, orderId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert('Order status updated successfully!');
+
+                
+                
+            })
+            .catch(error => {
+                console.error('Error updating order status:', error);
+                alert('Failed to update order status.');
+            });
+    
+            editButton.style.display = "inline-block";
+            saveButton.style.display = "none";
+        } else {
+            console.log("Edit action");
+            editButton.style.display = "none";
+            saveButton.style.display = "inline-block";
+        }
+    };
+    
+    // Function to get selected order status
+    const getOrderStatus = () => {
+        const selectedStatus = document.querySelector('input[name="orderStatus"]:checked').value;
+        return selectedStatus;
+    };
+    </script>
+<%- include('../layouts/adminLayouts/footer') %>

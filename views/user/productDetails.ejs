@@ -113,7 +113,7 @@
                                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                             <div class="detail-extralink" style="display: flex; justify-content: center ; align-items: center;">
 
-                                                <% if (productDetails?.isBlocked || productDetails.category?.isBlocked || productDetails.brand?.isBlocked) { %>
+                                                <% if (productDetails?.isBlocked || productDetails.category?.isBlocked || productDetails.brand?.isBlocked||productDetails.stock<=0) { %>
                                                     <h4>
                                                         <div class="product-unavailable" style="color: red;">
                                                             Currently Unavailable

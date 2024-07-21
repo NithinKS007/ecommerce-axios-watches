@@ -4,7 +4,9 @@ const users = require('../models/userModel')
 const categories = require('../models/categoryModel')
 const products = require('../models/productModel')
 const brands = require('../models/brandModel')
-
+const orders = require('../models/orderModel')
+const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Types;
 //hashing the password of admin
 const securePassword = async(password) =>{
     try {
@@ -615,7 +617,205 @@ const isSignout = async (req,res) =>{
 
 }
 
+//order listing page
+const loadOrderList = async (req,res) =>{
 
+    try {
+
+        const orderData = await orders.find({}).populate("user")
+
+        if(orderData){
+
+            return res.render("admin/orderList",{orderData:orderData})
+        }
+
+    } catch (error) {
+        
+        console.log(`error while listing the order details`,error.message);
+    }
+}
+
+const priceSummary = async (cartData) => {
+   
+    try {
+        const selectedItems = cartData.items.filter((item) => item.isSelected);
+        
+        const finalPrice = selectedItems.reduce((total, item) => 
+            total + item.price * item.quantity, 0
+        );
+
+        const totalQuantity = selectedItems.reduce((total, item) => 
+            total + item.quantity, 0
+        );
+
+        return {
+            finalPrice: parseFloat(finalPrice.toFixed(2)),
+            totalQuantity
+        };
+    } catch (error) {
+        console.log(`error while calculating the price details`, error.message);
+       
+    }
+};
+const loadOrderDetailsPage = async (req, res) => {
+    try {
+
+        const { userId } = req.query;
+
+        console.log(userId);
+
+        const UserOrderDataDetails = await orders.find({ user: userId }).populate("user");
+        
+        const order = UserOrderDataDetails[0]
+
+        const { finalPrice } = await priceSummary(order);
+
+        console.log(finalPrice)
+
+        return res.render("admin/orderDetailsPage", { UserOrderDataDetails,finalPrice });
+
+    } catch (error) {
+
+        console.log(`Error while rendering the order details page`, error.message);
+
+        res.status(500).json({ message: "Internal Server Error" });
+
+    }
+};
+
+const changeOrderStatus = async (req,res) =>{
+
+    try {
+        
+        const { selectedStatus, orderId } = req.body
+
+        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
+
+        
+        if (!validStatuses.includes( selectedStatus)) {
+
+          return res.status(400).json({ error: 'Invalid order status' });
+
+        }
+        
+        const orderIdofTheItem = new ObjectId(orderId) 
+
+        const updatedStatus = await orders.updateOne({_id:orderIdofTheItem},{$set:{orderStatus:selectedStatus}},{new:true})
+
+        if(updatedStatus){
+
+            return res.status(200).json({
+
+                message:"successfully changed the order status",
+                success:true
+            })
+        }else {
+
+            return res.status(404).json({
+                message: "Order not found or status unchanged",
+                success: false
+            });
+
+        }
+    } catch (error) {
+        
+        console.log(`error while updating the order status`,error.message);
+    }
+}
+function getEnumValues(schema, path) {
+    const enumValues = schema.path(path).enumValues;
+    return enumValues;
+  }
+  
+//edit product
+const loadEditProduct = async (req,res) =>{
+
+    try {
+
+        const {productId} = req.query
+
+        const categoriesData = await categories.find({})
+
+        const brandsData = await brands.find({})
+
+        const productDataToEdit = await products.findOne({_id:productId}).populate('category').populate('brand')
+
+        return res.status(200).render("admin/editProduct",{categoriesData,brandsData,productDataToEdit})
+        
+    } catch (error) {
+        
+        console.log(`error while editing the product`,error.message);
+    }
+}
+
+const editProduct = async (req, res) => {
+    try {
+
+      
+        const { productId,name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup } = req.body;
+
+        const images = req.files
+
+        const existingProduct = await products.findById(productId);
+
+        if (!existingProduct) {
+
+            return res.status(404).json({ message: "Product not found", success: false });
+
+        }
+
+        const updatedData = { name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup};
+
+        const updatedProductDetails = await products.findByIdAndUpdate(productId,{ $set: updatedData },{ new: true });
+        
+        if (!updatedProductDetails) {
+
+            return res.status(404).json({ message: "Product cannot be updated" ,success:false});
+        }
+
+        
+        if(images&&images.length>0){
+
+           await products.findByIdAndUpdate(productId,{$push:{images:{$each:images}}},{new:true})
+        }
+
+        return res.status(200).json({ message: "Product updated successfully",success:true });
+
+    } catch (error) {
+
+        console.log(`Error while editing the product data:`, error.message);
+
+        return res.status(400).json({ message: "Failed to update product", success:true });
+    }
+}
+
+const editImage = async (req,res) =>{
+
+    try {
+
+        const { productId,imageName} = req.body;
+
+        console.log(typeof imageName);
+        console.log(`data from the front end`,productId,imageName);
+
+           if (productId&&imageName) {
+
+            await products.updateOne({ _id: productId },{ $pull: { images: { filename:imageName } } });
+
+            return res.status(200).json({ message: "Product Image successfully removed",success:true });
+
+        }
+
+
+          return res.status(400).json({ message: "Failed to remove product image",success:false });
+      
+
+        
+    } catch (error) {
+        
+        console.log(`error while removing the image`,error.message);
+    }
+}
 module.exports = {
 
     loadLogin,
@@ -634,6 +834,12 @@ module.exports = {
     softDeleteProduct,
     editCategory,
     editBrand,
-    isSignout
+    isSignout,
+    loadOrderList,
+    loadOrderDetailsPage,
+    changeOrderStatus,
+    loadEditProduct,
+    editProduct,
+    editImage
 
 }

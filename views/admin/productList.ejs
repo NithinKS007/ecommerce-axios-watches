@@ -70,7 +70,7 @@
                                                     </td>
                                                     <td>
                                                         <img class="img-sm img-thumbnail"
-                                                            src="/productImages/<%= productData[i]?.images[0].filename%>"
+                                                            src="/productImages/<%= productData[i]?.images[0]?.filename%>"
                                                             alt="">
                                                     </td>
                                                     <td>
@@ -98,7 +98,7 @@
                                                     <td>
                                                         <div class="d-flex justify-content-end">
                                                             <button onclick="editProduct('<%= productData[i]._id %>')"
-                                                                id=""
+                                                                
                                                                 class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit
                                                                 info</button>
 
@@ -230,6 +230,88 @@
                         })
 
                     }
+                                   
+
+//product editing
+const editProduct = (productId) =>{
+
+    if(!productId){
+
+        console.log(`Product id not found`);
+        return
+    }else{
+
+        window.location.href = `http://localhost:7000/admin/editProduct/?productId=${productId}`
+
+    }
+}
+
+//after editing the product detiails this message will display
+window.addEventListener('DOMContentLoaded', (event) => {
+    // Retrieve message from sessionStorage
+    let successMessage = sessionStorage.getItem('successMessage');
+
+    if (successMessage) {
+        // Create and display the alert container
+        let alertContainer = document.createElement('div');
+        alertContainer.classList.add("message");
+        alertContainer.innerHTML = `
+            <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
+            <span style="font-size: 14px;">${successMessage}</span>
+        `;
+        alertContainer.style.position = 'fixed';
+        alertContainer.style.bottom = '20px';
+        alertContainer.style.left = '50%';
+        alertContainer.style.transform = 'translateX(-50%)';
+        alertContainer.style.zIndex = '1000';
+        alertContainer.style.width = 'auto';
+        alertContainer.style.maxWidth = '90%';
+        alertContainer.style.padding = '15px 20px';
+        alertContainer.style.background = '#333';
+        alertContainer.style.color = '#fff';
+        alertContainer.style.fontWeight = '400';
+        alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+        alertContainer.style.display = 'flex';
+        alertContainer.style.alignItems = 'center';
+        alertContainer.style.borderRadius = '4px';
+        alertContainer.style.overflow = 'hidden';
+
+        let greenLine = document.createElement('div');
+        greenLine.style.position = 'absolute';
+        greenLine.style.bottom = '0';
+        greenLine.style.left = '0';
+        greenLine.style.height = '4px';
+        greenLine.style.background = '#4CAF50';
+        greenLine.style.animation = 'greenLine 3s linear forwards';
+
+        let styleSheet = document.createElement('style');
+        styleSheet.type = 'text/css';
+        styleSheet.innerText = `
+            @keyframes slideIn {
+                from { transform: translateX(-50%) translateY(100%); }
+                to { transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes greenLine {
+                from { width: 0; }
+                to { width: 100%; }
+            }
+        `;
+
+        alertContainer.appendChild(greenLine);
+        document.head.appendChild(styleSheet);
+        alertContainer.style.animation = 'slideIn 0.3s forwards';
+
+        document.body.appendChild(alertContainer);
+
+        setTimeout(() => {
+            alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+            setTimeout(() => alertContainer.remove(), 300);
+        }, 5000);  // Display for 5 seconds
+
+        // Clear the message from sessionStorage
+        sessionStorage.removeItem('successMessage');
+    }
+});
 
                 </script>
                 <%- include('../layouts/adminLayouts/footer') %>

@@ -65,9 +65,10 @@ userRoute.post("/checkout",userAuth.isUserLogin,userController.placeOrder)
 
 
 //place order route
-userRoute.get("/placeOrder",userController.loadPlaceOrder)
+userRoute.get("/placeOrder",userAuth.isUserLogin,userController.loadPlaceOrder)
 
-
+//order listing route
+userRoute.get("/orders",userAuth.isUserLogin,userController.loadOrders)
 
 
 module.exports = userRoute  

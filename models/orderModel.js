@@ -82,7 +82,10 @@ const orderItemSchema = new mongoose.Schema({
     required:true
   },
 
-  subtotal: { type: Number, required: true }
+  subTotal: { 
+    type: Number, 
+    required: true 
+  }
 
 }, { timestamps: true });
 

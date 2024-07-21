@@ -14,22 +14,22 @@
       <div class="col-md-8" id="sendCartItem">
         <% cartDetails.forEach(cartItem => { %>
           <% cartItem.items.forEach(item => { %>
-            <div class="card mb-3" id="productContainer<%= item.product._id %>">
+            <div class="card mb-3" id="productContainer<%= item.product?._id %>">
               <input class="form-check-input" type="checkbox"
                      style="margin-left: 5px;"
-                     value="<%= item.product._id %>"
+                     value="<%= item.product?._id %>"
                      name="selectedCartItem"
                      <% if (item.isSelected) { %> checked <% } %>>
               <div class="row no-gutters">
                 <div class="col-md-4 d-flex align-items-center justify-content-center">
-                  <img src="/productImages/<%= item.product.images[0]?.filename %>"
+                  <img src="/productImages/<%= item.product?.images[0]?.filename %>"
                        class="card-img"
                        style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 15px;"
                        alt="Product Image">
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
-                    <h5 class="card-title"><%= item.product.name %></h5>
+                    <h5 class="card-title"><%= item.product?.name %></h5>
                     <strong>Price:</strong>
                     <%= item.price %>
                     <del><%= item.regularPrice %></del>
@@ -38,12 +38,12 @@
                         <div class="me-2">Qty:</div>
                         <input class="form-select-cart quantity-input"
                                value="<%= item.quantity %>"
-                               data-product-item-id="<%= item.product._id %>"
+                               data-product-item-id="<%= item.product?._id %>"
                                style="height: 30px; width: 70px;"
                                type="number"
                                max="5"
                                min="1">
-                        <% if (item.product.stock > 0) { %>
+                        <% if (item.product?.stock > 0) { %>
                           <% if (item.product.stock < 3) { %>
                             <span class="product-stock" style="color: red; font-size: 14px; font-weight: 600; margin-left: 5px;">In Stock (<%= item.product.stock %> items)</span>
                           <% } else { %>
@@ -53,7 +53,7 @@
                           <span class="product-stock" style="color: red; font-size: 14px; font-weight: 600;">Out of Stock</span>
                         <% } %>
                       </div>
-                      <span class="text-secondary" onclick="removeFromCart('<%= item.product._id %>')" style="text-decoration: none; cursor: pointer;">Remove</span>
+                      <span class="text-secondary" onclick="removeFromCart('<%= item.product?._id %>')" style="text-decoration: none; cursor: pointer;">Remove</span>
                     </div>
                   </div>
                 </div>
@@ -74,7 +74,7 @@
          
           <p class="card-text d-flex justify-content-between">
             <span id="selection"><%=selectedItemsCount%> items selected</span>
-            <span id="subTotalPrice"><%=finalPrice%></span>
+            <span id="subTotalPrice">Rs <%=finalPrice%></span>
           </p>
           <!-- <p class="card-text d-flex justify-content-between">
             <span>Discount</span>
@@ -91,7 +91,7 @@
           <hr>
           <p class="card-text d-flex justify-content-between">
             <strong>Total Amount</strong>
-            <strong><span id="totalPrice"><%=finalPrice%></span > </strong>
+            <strong><span id="totalPrice">Rs <%=finalPrice%></span > </strong>
           </p>
           <!-- <p class="card-text text-success">You will save ₹11,902 on this order</p> -->
         </div>
