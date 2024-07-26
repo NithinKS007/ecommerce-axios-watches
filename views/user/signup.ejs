@@ -198,6 +198,11 @@ const validateConfirmPassword = () =>{
         cPasswordError.textContent = '* Confirm Password should be atleast 4 charactors';
        return false
 
+    }else if(cPasswordInput.value!==passwordInput.value){
+
+        cPasswordError.textContent = '* Confirm password must match password';
+        return false
+
     }else {
         cPasswordError.textContent = '';
         return true

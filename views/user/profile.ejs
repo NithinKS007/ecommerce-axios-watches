@@ -1,6 +1,16 @@
-<%- include('../layouts/userLayouts/header') %>
-    <%- include('../layouts/userLayouts/navbar1') %>
+<%- include('../layouts/userLayouts/header') %> <%- include('../layouts/userLayouts/navbar1') %>
 
+        <style>
+            .error {
+                font-size: 0.8em;
+                color: red;
+            }
+
+            .small-text {
+                font-size: 0.8em;
+                line-height: 1.2;
+            }
+        </style>
         <main class="main">
             <section class="pt-150 pb-150">
                 <div class="container">
@@ -9,36 +19,105 @@
                             <div class="row">
                                 <%- include('../layouts/userLayouts/sidebar') %>
                                     <div class="col-md-8">
-                                        <!-- Card container for user details -->
-                                        <div style="background-color: #fff; 
-                                        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 
-                                                    0 1px 2px rgba(0,0,0,0.24); 
-                                      
-                                        border: 1px solid #ddd; 
-                                        border-radius: 8px; 
-                                        padding: 20px; 
-                                        margin-bottom: 20px;">
-                                            <!-- Section title -->
-                                            <h1 style="font-size: 24px; 
-                                           font-weight: bold; 
-                                           color: #333; 
-                                           margin-bottom: 16px;">Your details</h1>
-                                            <!-- Personal information title -->
-                                            <h2 style="font-size: 20px; 
-                                           color: #555; 
-                                           margin-bottom: 20px;">Personal information</h2>
-                                            <!-- User information -->
-                                            <div style="font-size: 16px; color: #333;">
-                                                <p style="margin-bottom: 10px;">
+                                        <div style="
+                  background-color: #fff;
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+                    0 1px 2px rgba(0, 0, 0, 0.24);
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  padding: 20px;
+                  margin-bottom: 20px;
+                ">
+                                            <h1 style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 16px;
+                  ">
+                                                Your details
+                                            </h1>
+                                            <h2 style="font-size: 20px; color: #555; margin-bottom: 20px">
+                                                Personal information
+                                            </h2>
+                                            <div id="userInfoDisplay">
+                                                <p id="userName">
                                                     <strong>Name:</strong>
                                                     <%= userData.fname %>
                                                         <%= userData.lname %>
                                                 </p>
-                                                <p style="margin-bottom: 10px;">
+                                                <p id="userEmail">
                                                     <strong>Email:</strong>
                                                     <%= userData.email %>
                                                 </p>
+                                                <% if (userData.phone) { %>
+                                                    <p id="userPhone">
+                                                        <strong>Phone:</strong>
+                                                        <%= userData.phone %>
+                                                    </p>
+                                                    <% } %>
+
+                                                        <button type="button" class="btn btn-primary"
+                                                            onclick="editUserDetails('<%= userData._id %>','<%= userData.fname %>',' <%= userData.lname %>','<%= userData.phone %>')">
+                                                            Edit
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            onclick="editUserPassword('<%= userData._id %>')">
+                                                            Edit Password
+                                                        </button>
                                             </div>
+
+                                            <!-- edit user details start -->
+                                            <div id="editUserForm" style="display: none">
+                                                <form id="userDetailsForm">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <input type="text" id="fnameInput" class="form-control"
+                                                                name="fname" placeholder="First Name" required />
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <input type="text" id="lnameInput" class="form-control"
+                                                                name="lname" placeholder="Last Name" required />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <input type="tel" id="phoneInput" class="form-control"
+                                                            name="phone" placeholder="Phone Number" required />
+                                                    </div>
+                                                    <button type="submit" id="saveUserNewDetailsButton"
+                                                        class="btn btn-primary">
+                                                        Save Changes
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <!-- edit user details ends -->
+
+                                            <!-- edit user password starts -->
+                                            <div id="passwordEdit">
+                                                <form id="passwordEditForm" style="display: none">
+                                                    <div class="mb-3">
+                                                        <input type="password" id="existingPassword"
+                                                            class="form-control" name="existingPassword"
+                                                            placeholder="Current Password" />
+                                                        <span id="existingPasswordError" class="error"></span>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <input type="password" id="newPassword" class="form-control"
+                                                            name="newPassword" placeholder="New Password" />
+                                                        <span id="newPasswordError" class="error"></span>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <input type="password" id="confirmPassword" class="form-control"
+                                                            name="confirmPassword" placeholder="Confirm Password" />
+                                                        <span id="confirmPasswordError" class="error"></span>
+                                                    </div>
+                                                    <button type="submit" id="saveUserNewPasswordButton"
+                                                        class="btn btn-primary">
+                                                        Save Changes
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <!-- edit user password ends -->
                                         </div>
                                     </div>
                             </div>
@@ -49,3 +128,340 @@
         </main>
 
         <%- include('../layouts/userLayouts/footer') %>
+
+            <script>
+                //validation starts for resetting the password
+                const existingPasswordInput = document.getElementById("existingPassword");
+                const existingPasswordError = document.getElementById(
+                    "existingPasswordError"
+                );
+
+                const validateExistingPassword = () => {
+                    if (existingPasswordInput.value.trim() === "") {
+                        existingPasswordError.textContent = "* current password is required";
+                        return false;
+                    } else if (existingPasswordInput.value.trim().length < 4) {
+                        existingPasswordError.textContent =
+                            "* current password should be atleast 4 charactors";
+                        return false;
+                    } else {
+                        existingPasswordError.textContent = "";
+                        return true;
+                    }
+                };
+                existingPasswordInput.addEventListener("input", validateExistingPassword);
+
+                //validation for new password
+                const newPasswordInput = document.getElementById("newPassword");
+                const newPasswordError = document.getElementById("newPasswordError");
+
+                const validateNewPassword = () => {
+                    if (newPasswordInput.value.trim() === "") {
+                        newPasswordError.textContent = "*new password is required";
+                        return false;
+                    } else if (newPasswordInput.value.trim().length < 4) {
+                        newPasswordError.textContent =
+                            "* new password should be atleast 4 charactors";
+                        return false;
+                    } else {
+                        newPasswordError.textContent = "";
+                        return true;
+                    }
+                };
+
+                newPasswordInput.addEventListener("input", validateNewPassword);
+
+                //validation for confirm password field
+                const confirmPasswordInput = document.getElementById("confirmPassword");
+                const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+                const validateConfirmPassword = () => {
+                    if (confirmPasswordInput.value.trim() === "") {
+                        confirmPasswordError.textContent = "* confirm password is required";
+                        return false;
+                    } else if (confirmPasswordInput.value.trim().length < 4) {
+                        confirmPasswordError.textContent =
+                            "* confirm password should be atleast 4 charactors";
+                        return false;
+                    } else if (confirmPasswordInput.value !== newPasswordInput.value) {
+                        confirmPasswordError.textContent =
+                            "* Confirm password must match new password";
+                        return false;
+                    } else {
+                        confirmPasswordError.textContent = "";
+                        return true;
+                    }
+                };
+                confirmPasswordInput.addEventListener("input", validateConfirmPassword);
+
+                const isPasswordResettingValid = () => {
+                    return (
+                        validateExistingPassword() &&
+                        validateNewPassword() &&
+                        validateConfirmPassword()
+                    );
+                };
+
+                //validation ends for resetting the password
+
+                const editUserPassword = (id) => {
+                    console.log(`id to edit the password`, id);
+
+                    const userInfoDisplay = document.getElementById("userInfoDisplay");
+                    const editPasswordForm = document.getElementById("passwordEditForm");
+
+                    userInfoDisplay.style.display = "none";
+                    editPasswordForm.style.display = "block";
+
+                    const existingPasswordInput = document.getElementById("existingPassword");
+                    const newPasswordInput = document.getElementById("newPassword");
+                    const confirmPasswordInput = document.getElementById("confirmPassword");
+
+                    const saveUserNewPasswordButton = document.getElementById(
+                        "saveUserNewPasswordButton"
+                    );
+
+                    saveUserNewPasswordButton.addEventListener("click", () => {
+                        event.preventDefault();
+
+                        if (isPasswordResettingValid()) {
+                            const confirmUpdate = window.confirm(
+                                "Are you sure you want to save these changes? This action cannot be undone."
+                            );
+
+                            if (confirmUpdate) {
+                                const updatedPasswordDetails = {
+                                    id,
+                                    existingPassword: existingPasswordInput.value,
+                                    newPassword: newPasswordInput.value,
+                                    confirmPassword: confirmPasswordInput.value,
+                                };
+
+                                console.log(`front end password details`, updatedPasswordDetails);
+                                fetch(`http://localhost:7000/profile/`, {
+                                    method: "PATCH",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+
+                                    body: JSON.stringify({ updatedPasswordDetails }),
+                                })
+                                    .then((response) => {
+                                        if (response.status === 401) {
+                                            throw new Error("Incorrect existing password");
+                                        } else if (response.status === 404) {
+                                            throw new Error("User not found");
+                                        }
+
+                                        return response.json();
+                                    })
+                                    .then((data) => {
+                                        if (data.success && !data.incorrectPassword) {
+                                            console.log(`password edited successfully`);
+                                            displaySuccessMessage(data.message);
+                                            userInfoDisplay.style.display = "block";
+                                            editPasswordForm.style.display = "none";
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.log(`error received`, error.message);
+                                        displayErrorMessage(error.message);
+                                        userInfoDisplay.style.display = "block";
+                                        editPasswordForm.style.display = "none";
+                                    });
+                            }
+                        }
+                    });
+                };
+
+                const editUserDetails = (id, firstName, lastName, phone) => {
+                    console.log(id, firstName, lastName, phone);
+
+                    const userInfoDisplay = document.getElementById("userInfoDisplay");
+
+                    const editUserForm = document.getElementById("editUserForm");
+
+                    userInfoDisplay.style.display = "none";
+                    editUserForm.style.display = "block";
+
+                    const firstNameInput = document.getElementById("fnameInput");
+                    const lastNameInput = document.getElementById("lnameInput");
+                    const phoneInput = document.getElementById("phoneInput");
+
+                    firstNameInput.value = firstName;
+                    lastNameInput.value = lastName;
+                    phoneInput.value = phone;
+
+                    const saveUserNewDetailsButton = document.getElementById(
+                        "saveUserNewDetailsButton"
+                    );
+
+                    saveUserNewDetailsButton.addEventListener("click", () => {
+                        event.preventDefault();
+
+                        const confirmUpdate = window.confirm(
+                            "Are you sure you want to save these changes? This action cannot be undone."
+                        );
+
+                        if (confirmUpdate) {
+                            const updatedUserDetails = {
+                                id,
+                                firstName: firstNameInput.value,
+                                lastName: lastNameInput.value,
+                                phone: phoneInput.value,
+                            };
+
+                            fetch(`http://localhost:7000/profile/`, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+
+                                body: JSON.stringify({ updatedUserDetails, id }),
+                            })
+                                .then((response) => {
+                                    if (!response.ok) {
+                                        throw new Error("Network response was not ok");
+                                    }
+
+                                    return response.json();
+                                })
+                                .then((data) => {
+                                    console.log(`received edited data`, data);
+                                    if (data.success) {
+                                        document.getElementById(
+                                            "userName"
+                                        ).innerHTML = `<strong>Name:</strong> ${data.updatedData.fname} ${data.updatedData.lname}`;
+                                        document.getElementById(
+                                            "userPhone"
+                                        ).innerHTML = `<strong>Phone:</strong> ${data.updatedData.phone}`;
+                                        userInfoDisplay.style.display = "block";
+                                        editUserForm.style.display = "none";
+
+                                        displaySuccessMessage(data.message);
+                                    } else {
+                                        throw new Error(data.message);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(`error received editing the data`);
+
+                                    displayErrorMessage(error.message);
+                                });
+                        }
+                    });
+                };
+
+                const displayErrorMessage = (message) => {
+                    let errorAlertContainer = document.createElement("div");
+                    errorAlertContainer.classList.add("message");
+                    errorAlertContainer.innerHTML = `
+        <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+        <span style="font-size: 14px;">${message}</span>
+    `;
+                    errorAlertContainer.style.position = "fixed";
+                    errorAlertContainer.style.bottom = "20px";
+                    errorAlertContainer.style.left = "50%";
+                    errorAlertContainer.style.transform = "translateX(-50%)";
+                    errorAlertContainer.style.zIndex = "1000";
+                    errorAlertContainer.style.width = "auto";
+                    errorAlertContainer.style.maxWidth = "90%";
+                    errorAlertContainer.style.padding = "15px 20px";
+                    errorAlertContainer.style.background = "#333";
+                    errorAlertContainer.style.color = "#fff";
+                    errorAlertContainer.style.fontWeight = "400";
+                    errorAlertContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
+                    errorAlertContainer.style.display = "flex";
+                    errorAlertContainer.style.alignItems = "center";
+                    errorAlertContainer.style.borderRadius = "4px";
+                    errorAlertContainer.style.overflow = "hidden";
+
+                    let redLine = document.createElement("div");
+                    redLine.style.position = "absolute";
+                    redLine.style.bottom = "0";
+                    redLine.style.left = "0";
+                    redLine.style.height = "4px";
+                    redLine.style.background = "#f44336";
+                    redLine.style.animation = "redLine 3s linear forwards";
+
+                    let styleSheet = document.createElement("style");
+                    styleSheet.type = "text/css";
+                    styleSheet.innerText = `
+        @keyframes slideIn {
+            from { transform: translateX(-50%) translateY(100%); }
+            to { transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes redLine {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    `;
+
+                    errorAlertContainer.appendChild(redLine);
+                    document.head.appendChild(styleSheet);
+                    errorAlertContainer.style.animation = "slideIn 0.3s forwards";
+
+                    document.body.appendChild(errorAlertContainer);
+
+                    setTimeout(() => {
+                        errorAlertContainer.style.animation = "slideIn 0.3s reverse forwards";
+                        setTimeout(() => errorAlertContainer.remove(), 300);
+                    }, 2700);
+                };
+                const displaySuccessMessage = (message) => {
+                    let alertContainer = document.createElement("div");
+                    alertContainer.classList.add("message");
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
+                        <span style="font-size: 14px;">${message}</span>
+                    `;
+                    alertContainer.style.position = "fixed";
+                    alertContainer.style.bottom = "20px";
+                    alertContainer.style.left = "50%";
+                    alertContainer.style.transform = "translateX(-50%)";
+                    alertContainer.style.zIndex = "1000";
+                    alertContainer.style.width = "auto";
+                    alertContainer.style.maxWidth = "90%";
+                    alertContainer.style.padding = "15px 20px";
+                    alertContainer.style.background = "#333";
+                    alertContainer.style.color = "#fff";
+                    alertContainer.style.fontWeight = "400";
+                    alertContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
+                    alertContainer.style.display = "flex";
+                    alertContainer.style.alignItems = "center";
+                    alertContainer.style.borderRadius = "4px";
+                    alertContainer.style.overflow = "hidden";
+
+                    let greenLine = document.createElement("div");
+                    greenLine.style.position = "absolute";
+                    greenLine.style.bottom = "0";
+                    greenLine.style.left = "0";
+                    greenLine.style.height = "4px";
+                    greenLine.style.background = "#4CAF50";
+                    greenLine.style.animation = "greenLine 3s linear forwards";
+
+                    let styleSheet = document.createElement("style");
+                    styleSheet.type = "text/css";
+                    styleSheet.innerText = `
+                        @keyframes slideIn {
+                        from { transform: translateX(-50%) translateY(100%); }
+                        to { transform: translateX(-50%) translateY(0); }
+                        }
+                        @keyframes greenLine {
+                        from { width: 0; }
+                        to { width: 100%; }
+                        }
+                    `;
+
+                    alertContainer.appendChild(greenLine);
+                    document.head.appendChild(styleSheet);
+                    alertContainer.style.animation = "slideIn 0.3s forwards";
+
+                    document.body.appendChild(alertContainer);
+
+                    setTimeout(() => {
+                        alertContainer.style.animation = "slideIn 0.3s reverse forwards";
+                        setTimeout(() => alertContainer.remove(), 300);
+                    }, 2700);
+                };
+            </script>

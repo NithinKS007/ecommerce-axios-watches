@@ -1,6 +1,9 @@
-const users = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const utils = require('../utils/otpUtils')
+const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Types;
+
+const users = require('../models/userModel')
 const OTP = require('../models/otpModel')
 const products = require('../models/productModel')
 const brands = require('../models/brandModel')
@@ -8,10 +11,8 @@ const categories = require('../models/categoryModel')
 const cart = require('../models/cartModel')
 const userAddress = require('../models/addressModel')
 const orders = require('../models/orderModel')
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Types;
 
-// //hashing the password
+//hashing password
 const securePassword = async(password)=>{
     try {
        const passwordHash = await bcrypt.hash(password,10)  
@@ -26,7 +27,6 @@ const securePassword = async(password)=>{
 }
 
 //loading the home page 
-
 const loadHome = async (req,res) => {
     
     try {
@@ -220,7 +220,11 @@ const verifySignin = async (req,res) => {
             return res.status(401).render('user/signin', { message: "No user found or you can't access" });
         }
 
-        const passwordMatch = await bcrypt.compare(password,userData.password)
+        if(!userData?.password){
+
+            return res.status(401).render('user/signin', { message: "Try another login method" });
+        }
+        const passwordMatch = await bcrypt.compare(password,userData?.password)
         
         if(!passwordMatch){
 
@@ -250,10 +254,11 @@ const loadShowCase = async (req,res) =>{
     try {
 
         const categoriesArray = await categories.find({isBlocked:false})
+        const brandArray = await brands.find({isBlocked:false})
         const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category')
         const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10).populate('brand').populate('category')
         
-        return res.status(200).render("user/showCase",{categoriesArray,productsArray,latestProducts,targetGroup})
+        return res.status(200).render("user/showCase",{categoriesArray,brandArray,productsArray,latestProducts,targetGroup})
 
     } catch (error) {
         
@@ -345,6 +350,107 @@ const loadUserProfile = async (req,res) =>{
     }
 
 }
+
+const editProfile = async (req,res) =>{
+
+    try {
+
+        const { id,updatedUserDetails } = req.body
+
+        const userId = new ObjectId(id)
+
+        const userData = await users.findOne({ _id: userId})
+        
+        if (!userData) {
+
+            return res.status(404).json({ message: "User not found", success: false })
+        }
+
+        const {firstName,lastName,phone} =updatedUserDetails
+
+        const updatedData = { 
+            fname: firstName.trim(), 
+            lname: lastName.trim(), 
+            phone 
+        }
+      
+        const updatedUserData = await users.findByIdAndUpdate(userId,{$set:updatedData},{new:true})
+
+        return res.status(200).json({ message: "Your profile edited successfully", success: true , updatedData: {fname: updatedData.fname,lname: updatedData.lname,phone: updatedData.phone}})
+        
+    } catch (error) {
+
+        console.log(`Error while editing the user profile:`, error.message);
+
+        return res.status(400).json({ message: "An error occurred while editing your profile", success: false });
+       
+    }
+}
+
+
+const editPassword = async (req, res) => {
+   
+        const {updatedPasswordDetails } = req.body;
+
+        console.log(updatedPasswordDetails);
+
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+
+            userFromGidSessionOrSession = req.session.userId;
+
+        } else if (req.user) {
+
+            userFromGidSessionOrSession = req.user.id;
+
+        }
+
+        try {
+
+            const userData = await users.findOne({ _id: userFromGidSessionOrSession, isBlocked: false });
+
+
+            if(!userData){
+
+                console.log(`cannot found user data `);
+                return res.status(404).json({ message: "User not found", success: false });
+            }
+
+            console.log(`this is the existing password comig from the body`,updatedPasswordDetails.existingPassword);
+            console.log(`this is the password fromt he database`,userData.password);
+
+
+
+            const passwordMatch = await bcrypt.compare(updatedPasswordDetails.existingPassword,userData.password)
+
+            if(!passwordMatch){
+
+                console.log(`password does not match`);
+                return res.status(401).json({ message: "Incorrect Current Password", success: false, incorrectPassword: true });
+            }
+
+
+            const hashedNewPassword = await securePassword(updatedPasswordDetails.newPassword)
+
+            const updatedPassword = await users.updateOne({_id:userFromGidSessionOrSession},{$set:{password:hashedNewPassword}})
+
+            if(updatedPassword&&hashedNewPassword){
+
+                console.log(`password matched successfully`);
+
+                return res.status(200).json({ message: "Your password updated successfully", success: true, incorrectPassword: false });
+
+            }
+           
+
+        } catch (error) {
+
+            console.log(`Error while editing the password`, error.message);
+
+        }
+   
+};
 
 
 //loggingout for user
@@ -793,6 +899,42 @@ const addAddress = async (req,res) =>{
     }
 }
 
+const editAddress = async (req,res) =>{
+
+    const {id} = req.body
+    const {updatedAddress} = req.body
+
+    console.log(`data coming from the front end`,id,updatedAddress);
+    if(!updatedAddress||!id){
+
+        console.log(`nothing received from the front end`);
+
+        return res.status(400).json({success:false,message:"Address details are required"})
+
+    }
+    try {
+
+        const address = await userAddress.findById({_id:id})
+       
+        if(!address){
+
+            console.log(`address id cannot found in database`);
+
+            return res.status(404).json({success:false,message:"address not found"})
+        }
+
+        const updatedUserAddress = await userAddress.findByIdAndUpdate(id,{$set:updatedAddress},{new:true})
+
+        console.log(`this is the updated user addresss after....`,updatedUserAddress);
+
+        return res.status(200).json({message:"Address edited successfully",success:true, updatedUserAddress:updatedUserAddress})
+        
+    } catch (error) {
+        
+        console.log(`error while editing the address`,error.message);
+    }
+}
+
 const removeAddress = async (req,res) =>{
 
     try {
@@ -1007,8 +1149,20 @@ const placeOrder = async (req,res) =>{
 
 const loadPlaceOrder = async (req, res) => {
     try {
+        let userFromGidSessionOrSession 
 
-        const orderData = await orders.findOne({})
+        if(req.session.userId){
+
+            userFromGidSessionOrSession = req.session.userId
+
+        }else if(req.user){
+
+            //checking for google session id 
+            userFromGidSessionOrSession = req.user.id
+
+        }
+
+      
         return res.render('user/placeOrder');
 
     } catch (error) {
@@ -1039,7 +1193,7 @@ const loadOrders = async (req,res) =>{
 
         const orderData = await orders.find({user:userFromGidSessionOrSession})
 
-       console.log(orderData);
+    //    console.log(orderData);
         return res.status(200).render("user/orders",{orderData:orderData})
         
     } catch (error) {
@@ -1047,33 +1201,327 @@ const loadOrders = async (req,res) =>{
         console.log(`error while loading the orders page`,error.message);
     }
 }
+
+
+const cancelOrderProduct = async (req, res) => {
+
+    const { itemId, orderId,orderProductStatus } = req.body;
+
+    try {
+        console.log(`Canceling product ${itemId} in order ${orderId},${orderProductStatus}`);
+
+       const validStatuses = getEnumValues(orders.schema, 'items.orderProductStatus');
+
+       if (!validStatuses.includes(orderProductStatus)) {
+
+         return res.status(400).json({ error: 'Invalid order product status' });
+
+       }
+   
+
+       const orderIdOfTheItem = new ObjectId(itemId)
+       const orderIdOfTheCart = new ObjectId(orderId)
+
+       let updatedProductStatus
+
+       if(orderProductStatus==="pending"||orderProductStatus==="shipped"){
+
+         updatedProductStatus = await orders.updateOne({_id:orderIdOfTheCart,"items._id":orderIdOfTheItem},{$set:{"items.$.orderProductStatus":"cancelled"}})
+
+
+         if(updatedProductStatus.modifiedCount > 0){
+
+        const orderDataOfTheProduct = await orders.aggregate([
+            { $match: { _id: orderIdOfTheCart } },
+            { $unwind: "$items" },
+            { $match: { "items._id": orderIdOfTheItem } },
+            { $project: { _id: 0, quantity: "$items.quantity" ,productId:"$items.product"} }
+          ]);
+          
+          const {quantity,productId} =   orderDataOfTheProduct[0] || {};
+          
+          console.log(`sdklfdslfdlfsfd`, quantity,productId);
+
+
+          const updateStockQuantityAfterCancel = await products.findByIdAndUpdate(productId,{$inc:{stock:quantity}},{new:true})
+
+              if(updateStockQuantityAfterCancel){
+
+                 return res.status(200).json({message:"product status updated successfully",success:true,updatedProductStatus:updatedProductStatus,returnStatus:false})
+  
+              }
+           
+
+           }
+
+       }else if(orderProductStatus==="delivered"){
+
+        return res.status(200).json({message:"Product already delivered , return only",returnStatus:true})
+
+       }
+      
+    
+       return res.status(400).json({ error:"cannot change status",success:false });
+
+    } catch (error) {
+
+        console.log(`Error while canceling the product`, error.message);
+
+       return res.status(500).json({ error: error.message });
+    }
+};
+
+const cancelOrder = async (req, res) => {
+    
+    const { orderId,orderStatus } = req.body;
+
+    try {
+        console.log(`Canceling entire order ${orderId},${orderStatus}`);
+
+        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
+
+
+        if (!validStatuses.includes(orderStatus)) {
+
+            return res.status(400).json({ error: 'Invalid order status' });
+  
+          }
+
+
+
+       return res.status(200).json({ message: 'Order canceled successfully' });
+
+    } catch (error) {
+
+        console.log(`Error while canceling the order`, error.message);
+
+       return res.status(500).json({ error: error.message });
+    }
+};
+
+
+const getEnumValues = (schema, path) => {
+
+    const enumValues = schema.path(path).enumValues;
+
+    return enumValues;
+
+  };
+
+const advancedSearch = async (req, res) => {
+    console.log();
+    const { categories, brands, sortby, targetGroup } = req.query;
+
+    const categoriesArray = categories ? categories.split(',').map(id => new ObjectId(id)) : [];
+    const brandsArray = brands ? brands.split(',').map(id => new ObjectId(id)) : [];
+    const sortbyArray = sortby ? sortby.split(',') : [];
+
+    let arrayToAggregate = [];
+
+    const lookUpBrandsData = () =>{
+        arrayToAggregate.push({
+            $lookup: {
+              from: 'brands',
+              localField: 'brand',
+              foreignField: '_id',
+              as: 'brandData'
+            }
+          });
+        
+    }
+    if (categoriesArray.length > 0) {
+        arrayToAggregate.push({ $match: { category: { $in: categoriesArray } } });
+        lookUpBrandsData()
+      
+    }
+    if (brandsArray.length > 0) {
+        arrayToAggregate.push({ $match: { brand: { $in: brandsArray } } });
+        lookUpBrandsData()
+        
+    }
+    if (targetGroup) {
+        arrayToAggregate.push({ $match: { targetGroup: targetGroup } });
+        lookUpBrandsData()
+        
+    }
+
+    if (sortbyArray.includes('priceLowHigh')) {
+        arrayToAggregate.push({ $sort: { salesPrice: 1 } });
+        lookUpBrandsData()
+        
+    } else if (sortbyArray.includes('priceHighLow')) {
+        arrayToAggregate.push({ $sort: { salesPrice: -1 } });
+        lookUpBrandsData()
+      
+    } else if (sortbyArray.includes('newArrivals')) {
+        arrayToAggregate.push({ $sort: { createdAt: -1 } });
+        lookUpBrandsData()
+        
+    } else if (sortbyArray.includes('aToZ')) {
+        arrayToAggregate.push({ $sort: { name: 1 } });
+        lookUpBrandsData()
+        
+    } else if (sortbyArray.includes('zToA')) {
+        arrayToAggregate.push({ $sort: { name: -1 } });
+       
+        lookUpBrandsData()
+    } else if(sortbyArray.includes('OutOfStock')){
+
+        arrayToAggregate.push({$match:{stock:0}})
+    }
+
+
+
+    arrayToAggregate.push({ $match: { isBlocked: false } });
+
+    
+    try {
+        let filterResult;
+        if (arrayToAggregate.length > 0) {
+
+            filterResult = await products.aggregate(arrayToAggregate)
+
+        } else {
+
+            filterResult = await products.find({ isBlocked: false })
+
+        }
+
+        return res.status(200).json({
+            message: "Data received for filtering",
+            success: true,
+            data: filterResult
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error occurred during search",
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+const searchProducts = async (req, res) => {
+
+    const { searchProduct } = req.query;
+
+    try {
+      
+        console.log(`Search query: ${searchProduct}`);
+
+        const arrayToAggregate = [];
+
+        if (searchProduct) {
+            arrayToAggregate.push({
+                $match: {
+                    $or: [
+                        { name: { $regex: searchProduct, $options: 'i' } },
+                        { description: { $regex: searchProduct, $options: 'i' } },
+                        { dialShape: { $regex: searchProduct, $options: 'i' } },
+                        { displayType: { $regex: searchProduct, $options: 'i' } },
+                        { strapMaterial: { $regex: searchProduct, $options: 'i' } },
+                        { strapColor: { $regex: searchProduct, $options: 'i' } },
+                        { targetGroup: { $regex: searchProduct, $options: 'i' } }
+                    ]
+                }
+            });
+
+            arrayToAggregate.push({
+                $lookup: {
+                    from: 'brands',
+                    localField: 'brand',
+                    foreignField: '_id',
+                    as: 'brandData'
+                }
+            });
+            arrayToAggregate.push({
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'categoryData'
+                }
+            });
+        }
+
+        // console.log(`Aggregation : ${JSON.stringify(arrayToAggregate)}`);
+
+        const productsArray = await products.aggregate(arrayToAggregate);
+        const categoriesArray = await categories.find().exec();
+        const brandArray = await brands.find().exec();
+
+        console.log(`Products array:`, productsArray);
+
+        return res.status(200).render("user/showCaseSearch", { productsArray, categoriesArray ,brandArray});
+
+    } catch (error) {
+        console.log(`Error while searching the products`,error.message)
+
+        return res.status(500).send('Internal server error');
+    }
+};
+
+
 module.exports = {
+
+  // user authentication
 
     loadRegister,
     loadsignin,
+    verifySignin,
+    loadUserLogout,
+
+  // OTP verification
+
     generateOtp,
     resendOtp,
     verifyOtp,
     otpVPage,
+
+  // pages 
+
     loadHome,
     loadShowCase,
     loadProductDetails,
-    verifySignin,
-    loadUserLogout,
     loadUserProfile,
     loadCart,
+    loadAddress,
+    loadAddAddress,
+    loadCheckout,
+    loadPlaceOrder,
+    loadOrders,
+
+  // user profile management
+
+    editProfile,
+    editPassword,
+
+  // cart management
+
     addToCart,
     removeFromCart,
     updateQuantityFromCart,
     updatedSelectedItems,
-    loadAddress,
-    addAddress,
-    loadAddAddress,
-    removeAddress,
-    loadCheckout,
-    placeOrder,
-    loadPlaceOrder,
-    loadOrders
- 
     
+
+
+  // Address Management
+
+    addAddress,
+    removeAddress,
+    editAddress,
+
+
+  // order management
+
+    placeOrder,
+    cancelOrder,
+    cancelOrderProduct,
+   
+  //searching and filtering
+
+    advancedSearch,
+    searchProducts,
+   
+   
 }

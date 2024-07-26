@@ -1,22 +1,74 @@
-const multer = require('multer');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid'); // Import UUID
+const changeOrderStatus = async (req,res) =>{
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../public/productImages"));
-    },
-    filename: (req, file, cb) => {
-        // Generate a unique UUID
-        const uniqueId = uuidv4();
-        // Get the file extension
-        const fileExtension = path.extname(file.originalname);
-        // Create the filename with timestamp, UUID, and original extension
-        const filename = ${Date.now()}-${uniqueId}${fileExtension};
-        cb(null, filename);
+    try {
+        
+        const { selectedStatus, orderId } = req.body
+
+    
+        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
+
+        
+        if (!validStatuses.includes( selectedStatus)) {
+
+          return res.status(400).json({ error: 'Invalid order status' });
+
+        }
+        
+        const orderIdofTheCart = new ObjectId(orderId) 
+
+        const allItemsCancelled = order.items.every(item => item.orderProductStatus === "cancelled");
+
+        if(!allItemsCancelled){
+
+            const updatedStatus = await orders.updateOne({_id:orderIdofTheCart},{$set:{orderStatus:selectedStatus}},{new:true})
+
+        }
+
+        
+
+        const order = await orders.findOne({_id:orderIdofTheCart})
+
+        if(!order){
+
+            console.log(order cannot found);
+
+            return
+        }
+
+        order.items.forEach(item =>{
+
+            if(item.orderProductStatus !=="cancelled"){
+
+                Object.assign(item,{orderProductStatus:selectedStatus})
+            }
+        })
+
+        const updatedStatusPerItem = await order.save()
+
+
+        if(updatedStatus&&updatedStatusPerItem){
+
+            return res.status(200).json({
+
+                message:"successfully changed the order status",
+                success:true
+            })
+
+        }else if(allItemsCancelled){
+
+
+            return res.status(200).json({message:"user cancelled all products",adminCannotCancel:true})
+
+        }else {
+
+            return res.status(404).json({
+                message: "Order not found or status unchanged",
+                success: false
+            });
+
+        }
+    } catch (error) {
+        
+        console.log(error while updating the order status,error.message);
     }
-});
-
-const upload = multer({ storage: storage });
-
-module.exports = { upload };
+}

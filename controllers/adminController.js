@@ -1,13 +1,15 @@
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Types;
+
 const admin = require('../models/adminModel');
 const users = require('../models/userModel')
 const categories = require('../models/categoryModel')
-const products = require('../models/productModel')
 const brands = require('../models/brandModel')
+const products = require('../models/productModel')
 const orders = require('../models/orderModel')
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Types;
-//hashing the password of admin
+
+//hashing password
 const securePassword = async(password) =>{
     try {
 
@@ -21,7 +23,7 @@ const securePassword = async(password) =>{
     }
 }
 
-//loading the login page of admin 
+// renders the admin login page
 const loadLogin = (req,res) =>{
     try {
 
@@ -35,7 +37,7 @@ const loadLogin = (req,res) =>{
     }
 }
 
-//registering the admin
+// registers a new admin
 const registerAdmin = async (req,res) =>{
 
     const {fname,lname,email,password,phone} = req.body
@@ -67,7 +69,7 @@ const registerAdmin = async (req,res) =>{
     }
 }
 
-//checkig if a particular admin exists in the database
+// verifies admin
 const verifyAdmin = async (req,res) =>{
 
     try {
@@ -103,7 +105,25 @@ const verifyAdmin = async (req,res) =>{
 
 }
  
-//rendering the dashboard of the admin
+// logs out the admin
+const isSignout = async (req,res) =>{
+
+    try {
+
+        req.session.destroy()
+
+        res.redirect('/admin/signin')
+        
+    } catch (error) {
+        
+        console.log(`error while using the logging out function`,error.message);
+    }
+
+
+
+}
+
+//renders the admin dashboard
 const loadDashboard = async (req,res) =>{
 
     try {
@@ -121,7 +141,7 @@ const loadDashboard = async (req,res) =>{
    
 }
 
-//loading the list of customers in admins dashboard
+//loads the customer list with pagination
 const loadCustomer = async (req, res) => {
 
     const pageNumber = parseInt(req.query.page||1) 
@@ -152,7 +172,7 @@ const loadCustomer = async (req, res) => {
     }
 }
 
-//blocking and unblocking the customers from the customers list 
+//block or unblocks a customer 
 const blockUnblock = async (req,res) =>{
     const userId = req.query.userId
     try {
@@ -184,7 +204,8 @@ const blockUnblock = async (req,res) =>{
         return res.status(500).send("Internal server Error")
     }
 }
-//loading the category page 
+
+//loads the category and brand management page 
 const loadCategoryBrand = async (req,res) =>{
 
     try {
@@ -204,7 +225,7 @@ const loadCategoryBrand = async (req,res) =>{
     }
 }
 
-//adding category to the category page 
+//add a new category or brand
 const addCategoryBrand = async (req,res) =>{
 
     const {cName,cDescription} = req.body   
@@ -260,12 +281,11 @@ const addCategoryBrand = async (req,res) =>{
    
 }
 
-//editing the categories data
+//edits an existing category
 
 const editCategory = async (req,res) =>{
 
-
-    const { categoryId, name, description} = req.body; 
+  const { categoryId, name, description} = req.body; 
 
   console.log(`data from the backend`,categoryId,name,description);
 
@@ -300,8 +320,6 @@ const editCategory = async (req,res) =>{
             })
 
         }
-       
-
 
     } catch (error) {
 
@@ -312,8 +330,7 @@ const editCategory = async (req,res) =>{
     }
 }
 
-//for editing brand 
-
+//edits an existing brand
  const editBrand = async (req,res) =>{
 
     const { brandId, name} = req.body; 
@@ -334,8 +351,6 @@ const editCategory = async (req,res) =>{
             return res.status(404).json({ success: false, message: "Brand not found" });
         }
 
-       
-
             const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{name:name}})
 
             if(updatedBrand){
@@ -350,8 +365,6 @@ const editCategory = async (req,res) =>{
                 })
             }
            
-        
-
     } catch (error) {
         
         console.log(`error while editing the brand`,error.message);
@@ -360,92 +373,8 @@ const editCategory = async (req,res) =>{
     }
 
  }
-//loading the product page
-const loadProducts = async (req,res) =>{
 
-    try {
-        const productData = await products.find({}).populate('brand')
-
-        const categoriesData = await categories.find({})
-        
-       return res.status(200).render("admin/productList",{productData,categoriesData})
-
-    } catch (error) {
-        
-        console.log(`error while loading the products page`,error.message);
-          
-        return res.status(500).send("Internal server Error")
-    }
-}
-
-//loading  the product to a particular category
-const loadaddProduct = async (req,res) =>{
-
-    try {
-
-        const categoriesData = await categories.find({})
-        const brandsData = await brands.find()
-
-      return res.status(200).render("admin/addProduct",{categoriesData,brandsData})
-
-    } catch (error) {
-
-        console.log(`error while adding the product`,)
-        
-        return res.status(500).send("Internal server Error")
-    }
-}
-
-//adding the products to coming from the body
-
-const addProduct = async (req,res) =>{
-
- 
-
-    try {
-
-        const {name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup} = req.body
-
-        const brandFromcollection = await brands.find({name:brand})
-        
-        const categoryFromcollection = await categories.find({name:category})
-
-        const product = new products({
-    
-            name:name,
-            brand:brandFromcollection[0]._id,
-            category:categoryFromcollection[0]._id,
-            dialShape:dialShape,
-            displayType:displayType,
-            regularPrice:regularPrice,
-            salesPrice:salesPrice,
-            strapMaterial:strapMaterial,
-            strapColor:strapColor,
-            stock:stock,
-            description:description,
-            targetGroup:targetGroup,
-            images: req.files //converting it to array because its 3 images
-        })
-    
-        const productData = await product.save()
-    
-        if(productData){
-    
-            console.log(`successfull registration`,productData);
-        }
-
-      return  res.status(200).redirect("/admin/addProducts")
-        
-    } catch (error) {
-        
-        console.log(`cannot add the products `,error.message);
-          
-        return res.status(500).send("Internal server Error")
-    }
-}
-
-//soft deleting the category using fetch method in frontend
-
+ //soft deletes (blocks/unblocks) a category
 const softDeleteCategory = async (req,res) =>{
 
     const categoryId = req.query.categoryId
@@ -502,6 +431,7 @@ const softDeleteCategory = async (req,res) =>{
     }
 }
 
+// soft deletes (blocks/unblocks) a brand
 const softDeleteBrand = async (req,res) =>{
 
     const brandId = req.query.brandId 
@@ -552,8 +482,84 @@ const softDeleteBrand = async (req,res) =>{
 
 }
 
-//soft deleting products
+//loads the product list page
+const loadProducts = async (req,res) =>{
 
+    try {
+        const productData = await products.find({}).populate('brand')
+
+        const categoriesData = await categories.find({})
+        
+       return res.status(200).render("admin/productList",{productData,categoriesData})
+
+    } catch (error) {
+        
+        console.log(`error while loading the products page`,error.message);
+          
+        return res.status(500).send("Internal server Error")
+    }
+}
+
+//loads the add product page
+const loadaddProduct = async (req,res) =>{
+
+    try {
+
+        const categoriesData = await categories.find({})
+        const brandsData = await brands.find()
+
+      return res.status(200).render("admin/addProduct",{categoriesData,brandsData})
+
+    } catch (error) {
+
+        console.log(`error while adding the product`,)
+        
+        return res.status(500).send("Internal server Error")
+    }
+}
+
+//adds a new product
+const addProduct = async (req,res) =>{
+
+    try {
+
+        const {name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup} = req.body
+
+        const brandFromcollection = await brands.find({name:brand})
+        
+        const categoryFromcollection = await categories.find({name:category})
+
+        const product = new products({
+    
+            name:name,
+            brand:brandFromcollection[0]._id,
+            category:categoryFromcollection[0]._id,
+            dialShape:dialShape,
+            displayType:displayType,
+            regularPrice:regularPrice,
+            salesPrice:salesPrice,
+            strapMaterial:strapMaterial,
+            strapColor:strapColor,
+            stock:stock,
+            description:description,
+            targetGroup:targetGroup,
+            images: req.files //converting it to array because its 3 images
+        })
+    
+        const productData = await product.save()
+    
+      return  res.status(200).redirect("/admin/addProducts")
+        
+    } catch (error) {
+        
+        console.log(`cannot add the products `,error.message);
+          
+        return res.status(500).send("Internal server Error")
+    }
+}
+
+
+//soft deletes (blocks/unblocks) a product
 const softDeleteProduct = async (req,res) =>{
 
     const productId = req.query.productId 
@@ -605,136 +611,7 @@ const softDeleteProduct = async (req,res) =>{
 
 }
 
-//logout admin
-
-const isSignout = async (req,res) =>{
-
-    try {
-
-        req.session.destroy()
-
-        res.redirect('/admin/signin')
-        
-    } catch (error) {
-        
-        console.log(`error while using the logging out function`,error.message);
-    }
-
-
-
-}
-
-//order listing page
-const loadOrderList = async (req,res) =>{
-
-    try {
-
-        const orderData = await orders.find({}).populate("user")
-
-        if(orderData){
-
-            return res.render("admin/orderList",{orderData:orderData})
-        }
-
-    } catch (error) {
-        
-        console.log(`error while listing the order details`,error.message);
-    }
-}
-
-const priceSummary = async (cartData) => {
-   
-    try {
-        const selectedItems = cartData.items.filter((item) => item.isSelected);
-        
-        const finalPrice = selectedItems.reduce((total, item) => 
-            total + item.price * item.quantity, 0
-        );
-
-        const totalQuantity = selectedItems.reduce((total, item) => 
-            total + item.quantity, 0
-        );
-
-        return {
-            finalPrice: parseFloat(finalPrice.toFixed(2)),
-            totalQuantity
-        };
-    } catch (error) {
-        console.log(`error while calculating the price details`, error.message);
-       
-    }
-};
-const loadOrderDetailsPage = async (req, res) => {
-    try {
-
-        const { userId } = req.query;
-
-        console.log(userId);
-
-        const UserOrderDataDetails = await orders.find({ user: userId }).populate("user");
-        
-        const order = UserOrderDataDetails[0]
-
-        const { finalPrice } = await priceSummary(order);
-
-        console.log(finalPrice)
-
-        return res.render("admin/orderDetailsPage", { UserOrderDataDetails,finalPrice });
-
-    } catch (error) {
-
-        console.log(`Error while rendering the order details page`, error.message);
-
-        res.status(500).json({ message: "Internal Server Error" });
-
-    }
-};
-
-const changeOrderStatus = async (req,res) =>{
-
-    try {
-        
-        const { selectedStatus, orderId } = req.body
-
-        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
-
-        
-        if (!validStatuses.includes( selectedStatus)) {
-
-          return res.status(400).json({ error: 'Invalid order status' });
-
-        }
-        
-        const orderIdofTheItem = new ObjectId(orderId) 
-
-        const updatedStatus = await orders.updateOne({_id:orderIdofTheItem},{$set:{orderStatus:selectedStatus}},{new:true})
-
-        if(updatedStatus){
-
-            return res.status(200).json({
-
-                message:"successfully changed the order status",
-                success:true
-            })
-        }else {
-
-            return res.status(404).json({
-                message: "Order not found or status unchanged",
-                success: false
-            });
-
-        }
-    } catch (error) {
-        
-        console.log(`error while updating the order status`,error.message);
-    }
-}
-function getEnumValues(schema, path) {
-    const enumValues = schema.path(path).enumValues;
-    return enumValues;
-  }
-  
-//edit product
+//loads edit product page
 const loadEditProduct = async (req,res) =>{
 
     try {
@@ -755,6 +632,7 @@ const loadEditProduct = async (req,res) =>{
     }
 }
 
+//edit product
 const editProduct = async (req, res) => {
     try {
 
@@ -796,6 +674,7 @@ const editProduct = async (req, res) => {
     }
 }
 
+//edit product image
 const editImage = async (req,res) =>{
 
     try {
@@ -823,30 +702,170 @@ const editImage = async (req,res) =>{
         console.log(`error while removing the image`,error.message);
     }
 }
+//loads the order list page
+const loadOrderList = async (req,res) =>{
+
+    try {
+
+        const orderData = await orders.find({}).populate("user")
+
+        if(orderData){
+
+            return res.render("admin/orderList",{orderData:orderData})
+        }
+
+    } catch (error) {
+        
+        console.log(`error while listing the order details`,error.message);
+    }
+}
+
+//loads the order details page
+const loadOrderDetailsPage = async (req, res) => {
+    try {
+
+        const { orderId } = req.query;
+
+        console.log(`this is the order id coming from the front end`,orderId);
+
+        const userOrderDataDetails = await orders.findOne({ _id:orderId }).populate("user");
+        
+        console.log(`this is the order details of that particular order`,userOrderDataDetails);
+
+        return res.render("admin/orderDetailsPage", { userOrderDataDetails});
+
+    } catch (error) {
+
+        console.log(`Error while rendering the order details page`, error.message);
+
+       return res.status(500).json({ message: "Internal Server Error" });
+
+    }
+};
+
+//change the status of an order
+const changeOrderStatus = async (req,res) =>{
+
+    try {
+        
+        const { selectedStatus, orderId } = req.body
+
+    
+        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
+
+        
+        if (!validStatuses.includes( selectedStatus)) {
+
+          return res.status(400).json({ error: 'Invalid order status' });
+
+        }
+        
+        const orderIdofTheCart = new ObjectId(orderId) 
+
+        const order = await orders.findOne({_id:orderIdofTheCart})
+
+        if(!order){
+
+            console.log(`order cannot found`);
+
+            return
+        }
+
+        const allItemsCancelled = order.items.every(item => item.orderProductStatus === "cancelled");
+
+        if(!allItemsCancelled){
+
+
+            order.items.forEach(item =>{
+
+                if(item.orderProductStatus !=="cancelled"){
+    
+                    Object.assign(item,{orderProductStatus:selectedStatus})
+                }
+            })
+
+            const updatedStatusPerItem = await order.save()
+
+            if(updatedStatusPerItem){
+
+                const updatedStatus = await orders.updateOne({_id:orderIdofTheCart},{$set:{orderStatus:selectedStatus}},{new:true})
+
+                return res.status(200).json({message:"successfully changed the order status",success:true})
+
+            }
+        }else{
+
+            return res.status(200).json({ message: "User cancelled all products", adminCannotCancel: true });
+
+        }
+
+         return res.status(400).json({
+            message: "Order status unchanged",
+            success: false
+        });
+
+    
+    } catch (error) {
+        
+        console.log(`error while updating the order status`,error.message);
+
+        return res.status(500).send("Internal server error");
+    }
+}
+
+//checking the enum values in the data base
+const getEnumValues = (schema, path) => {
+
+    const enumValues = schema.path(path).enumValues;
+    return enumValues;
+
+  }
+  
+
 module.exports = {
+
+    //admin authentication
 
     loadLogin,
     registerAdmin,
     verifyAdmin,
+    isSignout,
+
+    // page loaders
+
     loadDashboard,
     loadCustomer,
-    blockUnblock, 
     loadCategoryBrand,
-    addCategoryBrand,
     loadProducts,
     loadaddProduct,
-    addProduct,
-    softDeleteCategory,
-    softDeleteBrand,
-    softDeleteProduct,
-    editCategory,
-    editBrand,
-    isSignout,
     loadOrderList,
     loadOrderDetailsPage,
-    changeOrderStatus,
     loadEditProduct,
+
+    // user management
+
+    blockUnblock, 
+   
+    // category and brand management
+
+    addCategoryBrand,
+    editCategory,
+    editBrand,
+    softDeleteCategory,
+    softDeleteBrand,
+
+    // product management
+
+    addProduct,
     editProduct,
-    editImage
+    editImage,
+    softDeleteProduct,
+    
+   // total order status management
+
+    changeOrderStatus,
+  
+    
+  
 
 }

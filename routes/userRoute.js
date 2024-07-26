@@ -6,6 +6,7 @@ const cacheController = require('../middleware/cacheControl')
 const userAuth = require('../middleware/userAuth')
 const passport = require('passport');
 const handleReqBody = require('../middleware/handleReqBody')
+const handleSearch = require('../middleware/handleSearch')
 
 // Home page before registering
 userRoute.get("/",userController.loadHome)
@@ -48,6 +49,8 @@ userRoute.patch("/cart",userAuth.isUserLogin,handleReqBody.handleCartUpdate)
 
 // User profile routes
 userRoute.get("/profile",userAuth.isUserLogin,userController.loadUserProfile)
+userRoute.put("/profile",userAuth.isUserLogin,userController.editProfile)
+userRoute.patch("/profile",userAuth.isUserLogin,userController.editPassword)
 userRoute.get("/signout",userController.loadUserLogout)
 
 
@@ -56,7 +59,7 @@ userRoute.get("/address",userAuth.isUserLogin,userController.loadAddress)
 userRoute.delete("/address",userAuth.isUserLogin,userController.removeAddress)
 userRoute.get("/addAddress",userAuth.isUserLogin,userController.loadAddAddress)
 userRoute.post("/addAddress",userAuth.isUserLogin,userController.addAddress)
-
+userRoute.put("/editAddress",userAuth.isUserLogin,userController.editAddress)
 
 // Checkout route
 userRoute.get("/checkout",userAuth.isUserLogin,userController.loadCheckout)
@@ -64,11 +67,16 @@ userRoute.post("/chekout/addAddress",userAuth.isUserLogin,userController.addAddr
 userRoute.post("/checkout",userAuth.isUserLogin,userController.placeOrder)
 
 
-//place order route
+//order route
 userRoute.get("/placeOrder",userAuth.isUserLogin,userController.loadPlaceOrder)
-
-//order listing route
 userRoute.get("/orders",userAuth.isUserLogin,userController.loadOrders)
+userRoute.patch("/orders",userAuth.isUserLogin,userController.cancelOrderProduct)
+userRoute.put("/orders",userAuth.isUserLogin,userController.cancelOrder)
+
+
+//advanced search filtering the product
+userRoute.get("/filter",handleSearch.handleSearch)
+
 
 
 module.exports = userRoute  

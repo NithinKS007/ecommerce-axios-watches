@@ -20,7 +20,111 @@
                                         Add a New Address
                                     </a>
                                 </div>
-                                <div id="mainContainer">
+
+
+
+
+
+
+
+
+
+
+                                <div id="editAddressForm" style="display: none;">
+                                    <form id="newAddressForm" >
+                                        <input type="hidden"  value="address">
+                                        <div class="mb-3">
+                                            <input type="text" id="addressNameInput" class="form-control" name="name" placeholder="Name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="tel" id="addressPhoneInput" class="form-control" name="phone" placeholder="10-digit mobile number" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="text" id="addressPincodeInput" class="form-control" name="pincode" placeholder="Pincode" required>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col">
+                                                <input type="text" id="addressLocalityInput" class="form-control" name="locality" placeholder="Locality" required>
+                                            </div>
+                                            <div class="col">
+                                                <textarea class="form-control" id="addressTextAreaInput" name="address" rows="3" placeholder="Address (Area and Street)" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col">
+                                                <input type="text" class="form-control" id="addressCityDistTownInput" name="cityDistTown" placeholder="City/District/Town" required>
+                                            </div>
+                                            <div class="col">
+                                                <select class="form-select" id="addressStateInput" name="state" required>
+                                                    <option selected disabled>--Select State--</option>
+                                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                                    <option value="Assam">Assam</option>
+                                                    <option value="Bihar">Bihar</option>
+                                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                                    <option value="Goa">Goa</option>
+                                                    <option value="Gujarat">Gujarat</option>
+                                                    <option value="Haryana">Haryana</option>
+                                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                                    <option value="Jharkhand">Jharkhand</option>
+                                                    <option value="Karnataka">Karnataka</option>
+                                                    <option value="Kerala">Kerala</option>
+                                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                                    <option value="Maharashtra">Maharashtra</option>
+                                                    <option value="Manipur">Manipur</option>
+                                                    <option value="Meghalaya">Meghalaya</option>
+                                                    <option value="Mizoram">Mizoram</option>
+                                                    <option value="Nagaland">Nagaland</option>
+                                                    <option value="Odisha">Odisha</option>
+                                                    <option value="Punjab">Punjab</option>
+                                                    <option value="Rajasthan">Rajasthan</option>
+                                                    <option value="Sikkim">Sikkim</option>
+                                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                                    <option value="Telangana">Telangana</option>
+                                                    <option value="Tripura">Tripura</option>
+                                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                    <option value="Uttarakhand">Uttarakhand</option>
+                                                    <option value="West Bengal">West Bengal</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="text" id="addressLandMarkInput" class="form-control" name="landMark" placeholder="Landmark (Optional)">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="tel" id="addressAltPhoneInput" class="form-control" name="altPhone" placeholder="Alternate Phone (Optional)">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="email" id="addressEmailInput" class="form-control" name="email" placeholder="Email" required>
+                                        </div>
+                                        <label class="form-label">Address Type</label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="addressType" id="home" value="home" required>
+                                                <label class="form-check-label" for="home">Home</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="addressType" id="work" value="work">
+                                                <label class="form-check-label" for="work">Work</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="addressType" id="other" value="other">
+                                                <label class="form-check-label" for="other">Other</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" id="saveChangesAddressFormButton" class="btn btn-primary">Save Address</button>
+                                    </form>
+                                </div>
+
+
+
+
+
+
+
+
+
+                                <div id="mainContainer" style="margin-top: 20px;">
                                 <% if (!addressDetails || addressDetails.length === 0) { %>
                                     <p>No address available</p>
                                 <% } else { %>
@@ -55,7 +159,7 @@
                                                     </svg>
                                                 </a>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">Edit info</a>
+                                                    <a onclick="editAddress('<%=address._id%>','<%= address.addressType %>','<%= address.name %>','<%= address.phone %>','<%= address.address %>','<%= address.locality %>','<%= address.cityDistTown %>','<%= address.state %>','<%= address.pincode %>','<%= address.landMark %>','<%= address.altPhone %>','<%= address.email %>')"  class="dropdown-item" >Edit info</a>
                                                     <a  onclick="removeAddress('<%=address._id%>')" class="dropdown-item text-danger" >Delete</a>
                                                 </div>
                                             </div>
@@ -80,8 +184,209 @@
 </main>
 <script>
 
-   
+ //for showing the add address button
+ const editAddress = (id,addressType,addressName,addressPhone,address,addressLocality,addressCityDistTown,addressState,addressPincode,addressLandMark,addressAltPhone,addressEmail) =>{
 
+    const addressNameInput = document.getElementById('addressNameInput');
+    const addressPhoneInput = document.getElementById('addressPhoneInput');
+    const addressPincodeInput = document.getElementById('addressPincodeInput');
+    const addressLocalityInput = document.getElementById('addressLocalityInput');
+    const addressTextAreaInput = document.getElementById('addressTextAreaInput');
+    const addressCityDistTownInput = document.getElementById('addressCityDistTownInput');
+    const addressStateInput = document.getElementById('addressStateInput');
+    const addressLandMarkInput = document.getElementById('addressLandMarkInput');
+    const addressAltPhoneInput = document.getElementById('addressAltPhoneInput');
+    const addressEmailInput = document.getElementById('addressEmailInput');
+    const addressTypeHome = document.getElementById('home');
+    const addressTypeWork = document.getElementById('work');
+    const addressTypeOther = document.getElementById('other');
+    const editAddressForm = document.getElementById('editAddressForm')
+                   
+    addressNameInput.value = addressName;
+    addressPhoneInput.value = addressPhone;
+    addressPincodeInput.value = addressPincode;
+    addressLocalityInput.value = addressLocality;
+    addressTextAreaInput.value = address;
+    addressCityDistTownInput.value = addressCityDistTown;
+    addressStateInput.value = addressState;
+    addressLandMarkInput.value = addressLandMark;
+    addressAltPhoneInput.value = addressAltPhone;
+    addressEmailInput.value = addressEmail;
+
+    if (addressType === 'home') {
+
+        addressTypeHome.checked = true;
+
+    } else if (addressType === 'work') {
+
+        addressTypeWork.checked = true;
+
+    } else {
+
+        addressTypeOther.checked = true;
+
+    }
+
+    if (editAddressForm.style.display === 'none') {
+
+        editAddressForm.style.display = 'block';
+
+       } else {
+        editAddressForm.style.display = 'none';
+
+        }
+
+    const saveChangesAddressFormButton = document.getElementById('saveChangesAddressFormButton');
+    
+    saveChangesAddressFormButton.addEventListener("click",(event)=>{
+
+        event.preventDefault()
+
+        const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.');
+
+        if(confirmUpdate){
+
+            const updatedAddress = {
+                id,
+                addressType:document.querySelector('input[name="addressType"]:checked').value,
+                name: addressNameInput.value,
+                phone: addressPhoneInput.value,
+                address: addressTextAreaInput.value,
+                locality: addressLocalityInput.value,
+                cityDistTown: addressCityDistTownInput.value,
+                state: addressStateInput.value,
+                pincode: addressPincodeInput.value,
+                landMark: addressLandMarkInput.value,
+                altPhone: addressAltPhoneInput.value,
+                email: addressEmailInput.value
+            }
+
+            fetch(`http://localhost:7000/editAddress/`,{
+
+                method:"PUT",
+                headers:{
+
+                    'Content-Type': 'application/json',
+
+                },
+                body:JSON.stringify({updatedAddress,id})
+
+            }).then(response => {
+    
+                if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                return response.json();
+            }).then((data)=>{
+
+                console.log(`edited address received`,data);
+
+
+               
+
+                if(data.success){
+
+                    updateNewAddress(id, data.updatedUserAddress);
+                     let alertContainer = document.createElement('div');
+                    alertContainer.classList.add("message");
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
+                        <span style="font-size: 14px;">${data.updatedUserAddress.addressType} address successfully updated</span>
+                    `;
+                    alertContainer.style.position = 'fixed';
+                    alertContainer.style.bottom = '20px';
+                    alertContainer.style.left = '50%';
+                    alertContainer.style.transform = 'translateX(-50%)';
+                    alertContainer.style.zIndex = '1000';
+                    alertContainer.style.width = 'auto';
+                    alertContainer.style.maxWidth = '90%';
+                    alertContainer.style.padding = '15px 20px';
+                    alertContainer.style.background = '#333';
+                    alertContainer.style.color = '#fff';
+                    alertContainer.style.fontWeight = '400';
+                    alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                    alertContainer.style.display = 'flex';
+                    alertContainer.style.alignItems = 'center';
+                    alertContainer.style.borderRadius = '4px';
+                    alertContainer.style.overflow = 'hidden';
+
+                    let greenLine = document.createElement('div');
+                    greenLine.style.position = 'absolute';
+                    greenLine.style.bottom = '0';
+                    greenLine.style.left = '0';
+                    greenLine.style.height = '4px';
+                    greenLine.style.background = '#4CAF50';
+                    greenLine.style.animation = 'greenLine 3s linear forwards';
+
+                    let styleSheet = document.createElement('style');
+                    styleSheet.type = 'text/css';
+                    styleSheet.innerText = `
+                        @keyframes slideIn {
+                        from { transform: translateX(-50%) translateY(100%); }
+                        to { transform: translateX(-50%) translateY(0); }
+                        }
+                        @keyframes greenLine {
+                        from { width: 0; }
+                        to { width: 100%; }
+                        }
+                    `;
+
+                    alertContainer.appendChild(greenLine);
+                    document.head.appendChild(styleSheet);
+                    alertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                    document.body.appendChild(alertContainer);
+
+                    setTimeout(() => {
+                        alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                        setTimeout(() => alertContainer.remove(), 300);
+                    }, 2700);
+
+                     }
+                // window.location.href = `http://localhost:7000/address`
+               
+                editAddressForm.style.display = 'none';
+
+
+            })
+        }
+
+    })
+                  
+ } 
+ const updateNewAddress = (id,updatedUserAddress) => {
+    document.getElementById(`addressContainer${id}`).innerHTML = `
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="address-container">
+                    <div class="address-card">
+                        <span class="badge bg-secondary mb-2">${updatedUserAddress.addressType}</span>
+                        <h5 class="card-title mb-1">${updatedUserAddress.name}</h5>
+                        <p class="card-text mb-1">${updatedUserAddress.phone}</p>
+                        <p class="card-text">${updatedUserAddress.address}, ${updatedUserAddress.locality}, ${updatedUserAddress.cityDistTown}, ${updatedUserAddress.state} - ${updatedUserAddress.pincode}</p>
+                        <p class="card-text mb-1">Landmark: ${updatedUserAddress.landMark}</p>
+                        <p class="card-text mb-1">Alternate Phone: ${updatedUserAddress.altPhone}</p>
+                        <p class="card-text mb-1">Email: ${updatedUserAddress.email}</p>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" data-bs-toggle="dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a onclick="editAddress('${updatedUserAddress._id}', '${updatedUserAddress.addressType}', '${updatedUserAddress.name}', '${updatedUserAddress.phone}', '${updatedUserAddress.address}', '${updatedUserAddress.locality}', '${updatedUserAddress.cityDistTown}', '${updatedUserAddress.state}', '${updatedUserAddress.pincode}', '${updatedUserAddress.landMark}', '${updatedUserAddress.altPhone}', '${updatedUserAddress.email}')" class="dropdown-item">Edit info</a>
+                        <a onclick="removeAddress('${updatedUserAddress._id}')" class="dropdown-item text-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+};      
 
         const removeAddress = (addressId) =>{
 

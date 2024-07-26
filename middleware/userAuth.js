@@ -18,8 +18,9 @@ passport.use(new GoogleStrategy({
     
     try {
       
-      let user = await users.findOne({ email: profile._json.email });
+      let user = await users.findOne({googleId: profile.id });
 
+      console.log(profile.id);
       if (!user) {
         user = new users({
           fname: profile.given_name,
@@ -31,6 +32,8 @@ passport.use(new GoogleStrategy({
         await user.save()
 
       }
+
+      console.log(user);
 
       return cb(null, user)
 

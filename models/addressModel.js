@@ -47,7 +47,7 @@ const addressSchema = new mongoose.Schema({
     },
     altPhone:{
 
-        type:String
+        type:Number
     },
      email:{
 

@@ -81,7 +81,12 @@ const orderItemSchema = new mongoose.Schema({
     type : Array,
     required:true
   },
-
+  orderProductStatus: {
+    type: String,
+    required: true,
+    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending'
+  },
   subTotal: { 
     type: Number, 
     required: true 

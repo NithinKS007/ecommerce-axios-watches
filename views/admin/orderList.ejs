@@ -60,7 +60,7 @@
                                 <td><span class="badge rounded-pill alert-warning"><%= order.orderStatus %></span></td>
                                 <td><%= new Date(order.orderDate).toLocaleString() %></td>
                                 <td class="text-end">
-                                    <a class="btn btn-md rounded font-sm" onclick="getOrderDetails('<%= order.user._id %>')">Detail</a>
+                                    <a class="btn btn-md rounded font-sm" onclick="getOrderDetails('<%= order._id %>')">Detail</a>
                                 </td>
                             </tr>
                             <% }); %>
@@ -72,16 +72,16 @@
     </section> <!-- content-main end// -->
 </main>
 <script>
-const getOrderDetails = (userId) => {
+const getOrderDetails = (orderId) => {
 
-    console.log(userId);
+    console.log(orderId);
 
-    if (!userId) {
+    if (!orderId) {
         console.log('User not found');
         return;
     }else{
 
-          window.location.href = `http://localhost:7000/admin/orderDetailsPage/?userId=${userId}`
+          window.location.href = `http://localhost:7000/admin/orderDetailsPage/?orderId=${orderId}`
     }
 
   

@@ -10,7 +10,7 @@
                         <h4>Product Details</h4>
                         <!-- Shipping Address Section -->
                         <div class="card shadow-sm mb-4">
-                            
+
                             <div class="accordion" id="productAccordion">
                                 <% selectedItems.forEach((item, index)=> { %>
                                     <div class="accordion-item">
@@ -49,6 +49,108 @@
                             <button id="showButton" class="btn btn-outline-primary" style=" margin-bottom: 10px;">
                                 <i class="bi bi-plus-lg"></i> Add New Address
                             </button>
+
+                            <!-- for editing address starts-->
+                            <div id="editAddressForm" style="display: none;">
+                                <form id="newAddressForm">
+                                    <input type="hidden" value="address">
+                                    <div class="mb-3">
+                                        <input type="text" id="addressNameInput" class="form-control" name="name"
+                                            placeholder="Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="tel" id="addressPhoneInput" class="form-control" name="phone"
+                                            placeholder="10-digit mobile number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" id="addressPincodeInput" class="form-control" name="pincode"
+                                            placeholder="Pincode" required>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <input type="text" id="addressLocalityInput" class="form-control"
+                                                name="locality" placeholder="Locality" required>
+                                        </div>
+                                        <div class="col">
+                                            <textarea class="form-control" id="addressTextAreaInput" name="address"
+                                                rows="3" placeholder="Address (Area and Street)" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="addressCityDistTownInput"
+                                                name="cityDistTown" placeholder="City/District/Town" required>
+                                        </div>
+                                        <div class="col">
+                                            <select class="form-select" id="addressStateInput" name="state" required>
+                                                <option selected disabled>--Select State--</option>
+                                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                                <option value="Assam">Assam</option>
+                                                <option value="Bihar">Bihar</option>
+                                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                                <option value="Goa">Goa</option>
+                                                <option value="Gujarat">Gujarat</option>
+                                                <option value="Haryana">Haryana</option>
+                                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                                <option value="Jharkhand">Jharkhand</option>
+                                                <option value="Karnataka">Karnataka</option>
+                                                <option value="Kerala">Kerala</option>
+                                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                                <option value="Maharashtra">Maharashtra</option>
+                                                <option value="Manipur">Manipur</option>
+                                                <option value="Meghalaya">Meghalaya</option>
+                                                <option value="Mizoram">Mizoram</option>
+                                                <option value="Nagaland">Nagaland</option>
+                                                <option value="Odisha">Odisha</option>
+                                                <option value="Punjab">Punjab</option>
+                                                <option value="Rajasthan">Rajasthan</option>
+                                                <option value="Sikkim">Sikkim</option>
+                                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                                <option value="Telangana">Telangana</option>
+                                                <option value="Tripura">Tripura</option>
+                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                <option value="Uttarakhand">Uttarakhand</option>
+                                                <option value="West Bengal">West Bengal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" id="addressLandMarkInput" class="form-control"
+                                            name="landMark" placeholder="Landmark (Optional)">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="tel" id="addressAltPhoneInput" class="form-control" name="altPhone"
+                                            placeholder="Alternate Phone (Optional)">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" id="addressEmailInput" class="form-control" name="email"
+                                            placeholder="Email" required>
+                                    </div>
+                                    <label class="form-label">Address Type</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="home"
+                                                value="home" required>
+                                            <label class="form-check-label" for="home">Home</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="work"
+                                                value="work">
+                                            <label class="form-check-label" for="work">Work</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="addressType" id="other"
+                                                value="other">
+                                            <label class="form-check-label" for="other">Other</label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="saveChangesAddressFormButton" class="btn btn-primary">Save
+                                        Address</button>
+                                </form>
+                            </div>
+
+                            <!-- for editing address ends-->
 
                             <div id="addressForm" style="display: none;">
 
@@ -153,33 +255,56 @@
                             <div class="row">
                                 <div class="col-lg-8">
 
-
                                     <div class="card shadow-sm mb-4">
                                         <div class="card-body">
-                                            
                                             <div id="addressContainer" class="row">
-                                                <% address.forEach((address, index) => { %>
-                                                    <div class="col-md-6 mb-3">
-                                                        <div class="card">
-                                                            <div class="card-body">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="radio" name="addressSelection" value="<%= index %>" data-address-id="<%= address._id %>">
-                                                                    <label class="form-check-label" for="address_<%= index %>">
+                                                <% address.forEach((address, index)=> { %>
+                                                    <div class="col-md-6 mb-3"  id="addressSubContainer<%=address._id%>">
+                                                        <div class="card-body">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-start">
+                                                                <div class="form-check flex-grow-1">
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="addressSelection" value="<%= index %>"
+                                                                        data-address-id="<%= address._id %>">
+                                                                    <label class="form-check-label"
+                                                                        for="address_<%= index %>">
                                                                         <%= address.name %><br>
-                                                                        <%= address.address %><br>
-                                                                        <%= address.cityDistTown %>, <%= address.state %> <%= address.pincode %><br>
-                                                                        Phone: <%= address.phone %>
+                                                                            <%= address.address %><br>
+                                                                                <%= address.cityDistTown %>, <%=
+                                                                                        address.state %>
+                                                                                        <%= address.pincode %><br>
+                                                                                            Phone: <%= address.phone %>
                                                                     </label>
+                                                                </div>
+                                                                <div class="dropdown  dropdown-menu-end">
+                                                                    <a href="#" data-bs-toggle="dropdown">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                            width="24" height="24" viewBox="0 0 24 24"
+                                                                            fill="none" stroke="currentColor"
+                                                                            stroke-width="2" stroke-linecap="round"
+                                                                            stroke-linejoin="round">
+                                                                            <!-- SVG Path for the three dots icon -->
+                                                                            <circle cx="12" cy="5" r="1"></circle>
+                                                                            <circle cx="12" cy="12" r="1"></circle>
+                                                                            <circle cx="12" cy="19" r="1"></circle>
+                                                                        </svg>
+                                                                    </a>
+                                                                    <div class="dropdown-menu">
+
+                                                                        <a onclick="editAddress('<%=address._id%>','<%= address.addressType %>','<%= address.name %>','<%= address.phone %>','<%= address.address %>','<%= address.locality %>','<%= address.cityDistTown %>','<%= address.state %>','<%= address.pincode %>','<%= address.landMark %>','<%= address.altPhone %>','<%= address.email %>')"
+                                                                            class="dropdown-item">Edit info</a>
+
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                <% }); %>
+                                                    <% }); %>
                                             </div>
-                                            
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
 
@@ -248,8 +373,6 @@
                 </div>
 
             </main>
-
-
             <!-- Preloader Start -->
             <div id="preloader-active">
                 <div class="preloader d-flex align-items-center justify-content-center">
@@ -266,40 +389,39 @@
                 </div>
             </div>
             <script>
-            document.addEventListener('DOMContentLoaded', ()=> {
+                document.addEventListener('DOMContentLoaded', () => {
 
-                //for showing the add address button
-                document.getElementById('showButton').addEventListener('click', function () {
-                    var addressForm = document.getElementById('addressForm');
-                    if (addressForm.style.display === 'none') {
-                        addressForm.style.display = 'block';
-                    } else {
-                        addressForm.style.display = 'none';
-                    }
-                });
+                    document.getElementById('showButton').addEventListener('click', function () {
+                        var addressForm = document.getElementById('addressForm');
+                        if (addressForm.style.display === 'none') {
+                            addressForm.style.display = 'block';
+                        } else {
+                            addressForm.style.display = 'none';
+                        }
+                    });
 
-                                    
- 
+
+
                     const creditCard = document.getElementById('creditCard');
                     const paypal = document.getElementById('paypal');
                     const cashOnDelivery = document.getElementById('cashOnDelivery');
                     const placeOrderButton = document.getElementById('placeOrder');
-    
+
 
                     placeOrderButton.addEventListener("click", () => {
 
                         const selectedPaymentMethod = getSelectedPaymentMethod();
                         const selectedAddressId = getSelectedAddressId()
 
-                        if(!selectedPaymentMethod){
+                        if (!selectedPaymentMethod && !selectedAddressId) {
 
-                        //   return  console.log(`please select a payment method`);
+                            //   return  console.log(`please select a payment method`);
 
-                          let errorAlertContainer = document.createElement('div');
+                            let errorAlertContainer = document.createElement('div');
                             errorAlertContainer.classList.add("message");
                             errorAlertContainer.innerHTML = `
                                 <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                <span style="font-size: 14px;">An error occured or Please select any payment method </span>
+                                <span style="font-size: 14px;">Please select any payment method and Address </span>
                             `;
                             errorAlertContainer.style.position = 'fixed';
                             errorAlertContainer.style.bottom = '20px';
@@ -350,18 +472,18 @@
                                 setTimeout(() => errorAlertContainer.remove(), 300);
                             }, 2700);
 
-    
 
- 
-                        }else if(!selectedAddressId){
 
-                        //   return !console.log(`please select a address id`);
 
-                          let errorAlertContainer = document.createElement('div');
+                        } else if (!selectedAddressId) {
+
+                            //   return !console.log(`please select a address id`);
+
+                            let errorAlertContainer = document.createElement('div');
                             errorAlertContainer.classList.add("message");
                             errorAlertContainer.innerHTML = `
                                 <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                <span style="font-size: 14px;">An error occured or Please select any address </span>
+                                <span style="font-size: 14px;">Please select any address </span>
                             `;
                             errorAlertContainer.style.position = 'fixed';
                             errorAlertContainer.style.bottom = '20px';
@@ -412,66 +534,125 @@
                                 setTimeout(() => errorAlertContainer.remove(), 300);
                             }, 2700);
 
-                        }else{
+                        } else if (!selectedPaymentMethod) {
+
+                            //   return !console.log(`please select a address id`);
+
+                            let errorAlertContainer = document.createElement('div');
+                            errorAlertContainer.classList.add("message");
+                            errorAlertContainer.innerHTML = `
+                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
+                                <span style="font-size: 14px;">Please select any Paymentmethod </span>
+                            `;
+                            errorAlertContainer.style.position = 'fixed';
+                            errorAlertContainer.style.bottom = '20px';
+                            errorAlertContainer.style.left = '50%';
+                            errorAlertContainer.style.transform = 'translateX(-50%)';
+                            errorAlertContainer.style.zIndex = '1000';
+                            errorAlertContainer.style.width = 'auto';
+                            errorAlertContainer.style.maxWidth = '90%';
+                            errorAlertContainer.style.padding = '15px 20px';
+                            errorAlertContainer.style.background = '#333';
+                            errorAlertContainer.style.color = '#fff';
+                            errorAlertContainer.style.fontWeight = '400';
+                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                            errorAlertContainer.style.display = 'flex';
+                            errorAlertContainer.style.alignItems = 'center';
+                            errorAlertContainer.style.borderRadius = '4px';
+                            errorAlertContainer.style.overflow = 'hidden';
+
+                            let redLine = document.createElement('div');
+                            redLine.style.position = 'absolute';
+                            redLine.style.bottom = '0';
+                            redLine.style.left = '0';
+                            redLine.style.height = '4px';
+                            redLine.style.background = '#f44336';
+                            redLine.style.animation = 'redLine 3s linear forwards';
+
+                            let styleSheet = document.createElement('style');
+                            styleSheet.type = 'text/css';
+                            styleSheet.innerText = `
+                                @keyframes slideIn {
+                                from { transform: translateX(-50%) translateY(100%); }
+                                to { transform: translateX(-50%) translateY(0); }
+                                }
+                                @keyframes redLine {
+                                from { width: 0; }
+                                to { width: 100%; }
+                                }
+                            `;
+
+                            errorAlertContainer.appendChild(redLine);
+                            document.head.appendChild(styleSheet);
+                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                            document.body.appendChild(errorAlertContainer);
+
+                            setTimeout(() => {
+                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                                setTimeout(() => errorAlertContainer.remove(), 300);
+                            }, 2700);
+
+                        } else {
 
                             fetch('http://localhost:7000/checkout', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ paymentMethod: selectedPaymentMethod ,addressId:selectedAddressId}),
+                                body: JSON.stringify({ paymentMethod: selectedPaymentMethod, addressId: selectedAddressId }),
                             })
-                            .then(response => response.json())
+                                .then(response => response.json())
 
-                            .then(data => {
+                                .then(data => {
 
-                                console.log('Success:', data)
-                                if(data.success){
+                                    console.log('Success:', data)
+                                    if (data.success) {
 
-                                    window.location.href = "http://localhost:7000/placeOrder"
-                                }
+                                        window.location.href = "http://localhost:7000/placeOrder"
+                                    }
 
 
 
-                            })
-                            .catch((error) => {
+                                })
+                                .catch((error) => {
 
-                                console.error(`error while fetching the data`,error.message)
+                                    console.error(`error while fetching the data`, error.message)
 
-                                let errorAlertContainer = document.createElement('div');
-                                errorAlertContainer.classList.add("message");
-                                errorAlertContainer.innerHTML = `
+                                    let errorAlertContainer = document.createElement('div');
+                                    errorAlertContainer.classList.add("message");
+                                    errorAlertContainer.innerHTML = `
                                     <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
                                     <span style="font-size: 14px;">An error occured </span>
                                 `;
-                                errorAlertContainer.style.position = 'fixed';
-                                errorAlertContainer.style.bottom = '20px';
-                                errorAlertContainer.style.left = '50%';
-                                errorAlertContainer.style.transform = 'translateX(-50%)';
-                                errorAlertContainer.style.zIndex = '1000';
-                                errorAlertContainer.style.width = 'auto';
-                                errorAlertContainer.style.maxWidth = '90%';
-                                errorAlertContainer.style.padding = '15px 20px';
-                                errorAlertContainer.style.background = '#333';
-                                errorAlertContainer.style.color = '#fff';
-                                errorAlertContainer.style.fontWeight = '400';
-                                errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                                errorAlertContainer.style.display = 'flex';
-                                errorAlertContainer.style.alignItems = 'center';
-                                errorAlertContainer.style.borderRadius = '4px';
-                                errorAlertContainer.style.overflow = 'hidden';
+                                    errorAlertContainer.style.position = 'fixed';
+                                    errorAlertContainer.style.bottom = '20px';
+                                    errorAlertContainer.style.left = '50%';
+                                    errorAlertContainer.style.transform = 'translateX(-50%)';
+                                    errorAlertContainer.style.zIndex = '1000';
+                                    errorAlertContainer.style.width = 'auto';
+                                    errorAlertContainer.style.maxWidth = '90%';
+                                    errorAlertContainer.style.padding = '15px 20px';
+                                    errorAlertContainer.style.background = '#333';
+                                    errorAlertContainer.style.color = '#fff';
+                                    errorAlertContainer.style.fontWeight = '400';
+                                    errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                                    errorAlertContainer.style.display = 'flex';
+                                    errorAlertContainer.style.alignItems = 'center';
+                                    errorAlertContainer.style.borderRadius = '4px';
+                                    errorAlertContainer.style.overflow = 'hidden';
 
-                                let redLine = document.createElement('div');
-                                redLine.style.position = 'absolute';
-                                redLine.style.bottom = '0';
-                                redLine.style.left = '0';
-                                redLine.style.height = '4px';
-                                redLine.style.background = '#f44336';
-                                redLine.style.animation = 'redLine 3s linear forwards';
+                                    let redLine = document.createElement('div');
+                                    redLine.style.position = 'absolute';
+                                    redLine.style.bottom = '0';
+                                    redLine.style.left = '0';
+                                    redLine.style.height = '4px';
+                                    redLine.style.background = '#f44336';
+                                    redLine.style.animation = 'redLine 3s linear forwards';
 
-                                let styleSheet = document.createElement('style');
-                                styleSheet.type = 'text/css';
-                                styleSheet.innerText = `
+                                    let styleSheet = document.createElement('style');
+                                    styleSheet.type = 'text/css';
+                                    styleSheet.innerText = `
                                     @keyframes slideIn {
                                     from { transform: translateX(-50%) translateY(100%); }
                                     to { transform: translateX(-50%) translateY(0); }
@@ -482,23 +663,23 @@
                                     }
                                 `;
 
-                                errorAlertContainer.appendChild(redLine);
-                                document.head.appendChild(styleSheet);
-                                errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
+                                    errorAlertContainer.appendChild(redLine);
+                                    document.head.appendChild(styleSheet);
+                                    errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
 
-                                document.body.appendChild(errorAlertContainer);
+                                    document.body.appendChild(errorAlertContainer);
 
-                                setTimeout(() => {
-                                    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                                    setTimeout(() => errorAlertContainer.remove(), 300);
-                                }, 2700)
+                                    setTimeout(() => {
+                                        errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                                        setTimeout(() => errorAlertContainer.remove(), 300);
+                                    }, 2700)
 
 
-                            });
+                                });
                         }
-                        
-                           
-                        
+
+
+
                     });
 
                     function getSelectedPaymentMethod() {
@@ -513,25 +694,242 @@
                         return null
                     }
 
-                    function getSelectedAddressId(){
+                    function getSelectedAddressId() {
 
-                    const addressRadios = document.getElementsByName('addressSelection')
-                    let selectedAddressId = null;
-                    addressRadios.forEach(radio => {
-                        if (radio.checked) {
+                        const addressRadios = document.getElementsByName('addressSelection')
+                        let selectedAddressId = null;
+                        addressRadios.forEach(radio => {
+                            if (radio.checked) {
 
-                            selectedAddressId = radio.getAttribute('data-address-id');
-                            
-                        }
-                        
+                                selectedAddressId = radio.getAttribute('data-address-id');
+
+                            }
+
                         });
 
                         return selectedAddressId;
 
                     }
+
+
                 })
 
-               
+
+
+                const editAddress = (id, addressType, addressName, addressPhone, address, addressLocality, addressCityDistTown, addressState, addressPincode, addressLandMark, addressAltPhone, addressEmail) => {
+
+
+                    console.log(id, addressType, addressName, addressPhone, address, addressLocality, addressCityDistTown, addressState, addressPincode, addressLandMark, addressAltPhone, addressEmail)
+
+
+                    const addressNameInput = document.getElementById('addressNameInput');
+                    const addressPhoneInput = document.getElementById('addressPhoneInput');
+                    const addressPincodeInput = document.getElementById('addressPincodeInput');
+                    const addressLocalityInput = document.getElementById('addressLocalityInput');
+                    const addressTextAreaInput = document.getElementById('addressTextAreaInput');
+                    const addressCityDistTownInput = document.getElementById('addressCityDistTownInput');
+                    const addressStateInput = document.getElementById('addressStateInput');
+                    const addressLandMarkInput = document.getElementById('addressLandMarkInput');
+                    const addressAltPhoneInput = document.getElementById('addressAltPhoneInput');
+                    const addressEmailInput = document.getElementById('addressEmailInput');
+                    const addressTypeHome = document.getElementById('home');
+                    const addressTypeWork = document.getElementById('work');
+                    const addressTypeOther = document.getElementById('other');
+                    const editAddressForm = document.getElementById('editAddressForm')
+
+                    addressNameInput.value = addressName;
+                    addressPhoneInput.value = addressPhone;
+                    addressPincodeInput.value = addressPincode;
+                    addressLocalityInput.value = addressLocality;
+                    addressTextAreaInput.value = address;
+                    addressCityDistTownInput.value = addressCityDistTown;
+                    addressStateInput.value = addressState;
+                    addressLandMarkInput.value = addressLandMark;
+                    addressAltPhoneInput.value = addressAltPhone;
+                    addressEmailInput.value = addressEmail;
+
+                    if (addressType === 'home') {
+
+                        addressTypeHome.checked = true;
+
+                    } else if (addressType === 'work') {
+
+                        addressTypeWork.checked = true;
+
+                    } else {
+
+                        addressTypeOther.checked = true;
+
+                    }
+
+                    if (editAddressForm.style.display === 'none') {
+
+                        editAddressForm.style.display = 'block';
+
+                    } else {
+                        editAddressForm.style.display = 'none';
+
+                    }
+
+                    const saveChangesAddressFormButton = document.getElementById('saveChangesAddressFormButton')
+
+                    saveChangesAddressFormButton.addEventListener("click",()=>{
+
+                        event.preventDefault()
+
+                        const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.')
+
+                        if(confirmUpdate){
+
+                            const updatedAddress = {
+
+                                id,
+                                addressType:document.querySelector('input[name="addressType"]:checked').value,
+                                name: addressNameInput.value,
+                                phone: addressPhoneInput.value,
+                                address: addressTextAreaInput.value,
+                                locality: addressLocalityInput.value,
+                                cityDistTown: addressCityDistTownInput.value,
+                                state: addressStateInput.value,
+                                pincode: addressPincodeInput.value,
+                                landMark: addressLandMarkInput.value,
+                                altPhone: addressAltPhoneInput.value,
+                                email: addressEmailInput.value
+
+                            }
+
+
+                            fetch(`http://localhost:7000/editAddress/`,{
+
+
+                                method:"PUT",
+                                headers:{
+
+                                    'Content-Type': 'application/json',
+
+                                },
+                                body:JSON.stringify({updatedAddress,id})
+                            }).then(response =>{
+
+                                if(!response.ok){
+
+                                    throw new Error(`Network response was not ok`)
+                                }
+
+                                return response.json()
+
+                            }).then((data)=>{
+
+
+                                console.log(`data received to checkout page after editing address`,data.updatedUserAddress);
+
+                                if(data.success){
+
+
+                                    updateNewAddress(id, data.updatedUserAddress);
+                                    let alertContainer = document.createElement('div');
+                    alertContainer.classList.add("message");
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
+                        <span style="font-size: 14px;">${data.updatedUserAddress.addressType} address successfully updated</span>
+                    `;
+                    alertContainer.style.position = 'fixed';
+                    alertContainer.style.bottom = '20px';
+                    alertContainer.style.left = '50%';
+                    alertContainer.style.transform = 'translateX(-50%)';
+                    alertContainer.style.zIndex = '1000';
+                    alertContainer.style.width = 'auto';
+                    alertContainer.style.maxWidth = '90%';
+                    alertContainer.style.padding = '15px 20px';
+                    alertContainer.style.background = '#333';
+                    alertContainer.style.color = '#fff';
+                    alertContainer.style.fontWeight = '400';
+                    alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                    alertContainer.style.display = 'flex';
+                    alertContainer.style.alignItems = 'center';
+                    alertContainer.style.borderRadius = '4px';
+                    alertContainer.style.overflow = 'hidden';
+
+                    let greenLine = document.createElement('div');
+                    greenLine.style.position = 'absolute';
+                    greenLine.style.bottom = '0';
+                    greenLine.style.left = '0';
+                    greenLine.style.height = '4px';
+                    greenLine.style.background = '#4CAF50';
+                    greenLine.style.animation = 'greenLine 3s linear forwards';
+
+                    let styleSheet = document.createElement('style');
+                    styleSheet.type = 'text/css';
+                    styleSheet.innerText = `
+                        @keyframes slideIn {
+                        from { transform: translateX(-50%) translateY(100%); }
+                        to { transform: translateX(-50%) translateY(0); }
+                        }
+                        @keyframes greenLine {
+                        from { width: 0; }
+                        to { width: 100%; }
+                        }
+                    `;
+
+                    alertContainer.appendChild(greenLine);
+                    document.head.appendChild(styleSheet);
+                    alertContainer.style.animation = 'slideIn 0.3s forwards';
+
+                    document.body.appendChild(alertContainer);
+
+                    setTimeout(() => {
+                        alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
+                        setTimeout(() => alertContainer.remove(), 300);
+                    }, 2700);
+
+
+                                }
+
+                                editAddressForm.style.display = 'none';
+
+                                
+                            })
+
+
+                        }
+
+
+
+
+                    })
+
+
+                }
+     const updateNewAddress = (id,updatedUserAddress) => {
+    document.getElementById(`addressSubContainer${id}`).innerHTML = `
+        <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="form-check flex-grow-1">
+            <input class="form-check-input" type="radio" name="addressSelection" value="${updatedUserAddress._id}" data-address-id="${updatedUserAddress._id}">
+            <label class="form-check-label" for="address_${updatedUserAddress._id}">
+                ${updatedUserAddress.name}<br>
+                ${updatedUserAddress.address}<br>
+                ${updatedUserAddress.cityDistTown}, ${updatedUserAddress.state} - ${updatedUserAddress.pincode}<br>
+                Phone: ${updatedUserAddress.phone}
+            </label>
+        </div>
+        <div class="dropdown dropdown-menu-end">
+            <a href="#" data-bs-toggle="dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+            </a>
+            <div class="dropdown-menu">
+                <a onclick="editAddress('${updatedUserAddress._id}', '${updatedUserAddress.addressType}', '${updatedUserAddress.name}', '${updatedUserAddress.phone}', '${updatedUserAddress.address}', '${updatedUserAddress.locality}', '${updatedUserAddress.cityDistTown}', '${updatedUserAddress.state}', '${updatedUserAddress.pincode}', '${updatedUserAddress.landMark}', '${updatedUserAddress.altPhone}', '${updatedUserAddress.email}')" class="dropdown-item">Edit info</a>
+                <a onclick="removeAddress('${updatedUserAddress._id}')" class="dropdown-item text-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>`;
+};      
+
             </script>
             <!-- Vendor JS -->
             <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>

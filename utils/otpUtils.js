@@ -1,14 +1,16 @@
 const otpGenerator = require('otp-generator');
 const nodemailer = require('nodemailer')
 const OTP = require('../models/otpModel')
+const crypto = require('crypto');
+require('dotenv').config();
 
 
 //transporting the otp to the email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'devmern2024@gmail.com',
-        pass: 'qdot vmev trni dyaj'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 })
 
@@ -40,8 +42,50 @@ const sendOtpEmail = async (email,otp) =>{
 
 
 
+
+const generateSecurityToken = () => {
+
+    return crypto.randomBytes(32).toString('hex');
+
+}
+
+const sendToken = async (email,token) =>{
+
+    const transporter = nodemailer.createTransport({
+        service:"gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    })
+
+
+
+    const mailOptions = {
+
+        from:process.env.EMAIL_USER,
+        to:email,
+        subject:'Your Security Token',
+        text:`Your security token is : ${token}`
+    }
+
+    try {
+
+         
+        await transporter.sendMail(mailOptions)
+        console.log('Security token sent successfully');
+        
+    } catch (error) {
+       
+        console.error('Error sending security token:', error);
+    }
+    
+}
+
 module.exports = {
 
     generateOtp,
-    sendOtpEmail
+    sendOtpEmail,
+    generateSecurityToken,
+    sendToken
 }
