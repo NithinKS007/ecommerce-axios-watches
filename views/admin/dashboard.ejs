@@ -513,4 +513,22 @@
                     </div>
                 </section> <!-- content-main end// -->
         </main>
+        <script>
+               document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve the success message from EJS variable
+            let successMessage = '<%= successMessage %>';
+
+            if (successMessage) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: successMessage,
+                    icon: 'success',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timer: 5000
+                });
+            }
+        });
+        </script>
         <%- include('../layouts/adminLayouts/footer') %>

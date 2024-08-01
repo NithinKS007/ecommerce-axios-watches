@@ -1,0 +1,89 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Coupons List</h2>
+        <p>Dashboard > Coupons</p>
+      </div>
+      <div>
+        <a href="/admin/addCoupon" class="btn btn-primary btn-sm rounded">Add Coupon</a>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <header class="card-header">
+        <div class="row align-items-center">
+          <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+            <select class="form-select" id="statusFilter" name="status">
+              <option selected>All Coupons</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Expired</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="couponTable">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Coupon Name</th>
+                <th scope="col">Code</th>
+                <th scope="col">Discount</th>
+                <th scope="col">Min Amount</th>
+                <th scope="col">Max Amount</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="couponTableBody">
+              <%if (couponsData.length === 0) { %>
+                <tr>
+                  <td colspan="8" class="text-center">No Coupons Available</td>
+
+                </tr>
+                <%} else { %>
+              <% couponsData.forEach((coupon, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= coupon.couponName %></td>
+                  <td><%= coupon.couponCode %></td>
+                  <td><%= coupon.couponDiscount %></td>
+                  <td><%= coupon.minAmount %></td>
+                  <td><%= coupon.maxAmount %></td>
+                  <td>
+                    <% if (coupon.couponStatus) { %>
+                      <span class="badge bg-success">Active</span>
+                    <% } else { %>
+                      <span class="badge bg-warning">Inactive</span>
+                    <% } %>
+                  </td>
+                  <td class="text-end">
+                    <button onclick="softDeleteCoupon('<%= coupon._id %>')" class="btn btn-sm btn-outline-danger">List</button>
+                  </td>
+                </tr>
+              <% }); %>
+              <%}%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+</main>
+
+<script>
+
+</script>
+
+<%- include('../layouts/adminLayouts/footer') %>

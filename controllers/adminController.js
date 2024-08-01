@@ -8,6 +8,7 @@ const categories = require('../models/categoryModel')
 const brands = require('../models/brandModel')
 const products = require('../models/productModel')
 const orders = require('../models/orderModel')
+const coupons = require('../models/couponModel')
 
 //hashing password
 const securePassword = async(password) =>{
@@ -93,6 +94,8 @@ const verifyAdmin = async (req,res) =>{
          }
         
                 req.session.adminId = adminData._id;
+
+                req.session.successMessage = "Login successful! Welcome back admin"
                               
          return res.status(200).redirect("/admin/dashboard")
 
@@ -128,7 +131,11 @@ const loadDashboard = async (req,res) =>{
 
     try {
 
-        return res.status(200).render('admin/dashboard');
+        const successMessage = req.session.successMessage
+
+        req.session.successMessage = null
+
+        return res.status(200).render('admin/dashboard',{successMessage});
 
     } catch (error) {
 
@@ -150,7 +157,7 @@ const loadCustomer = async (req, res) => {
 
     try {
         const totalUsers = await users.countDocuments(); // getting the total number of users
-        const userData = await users.find({}).skip((pageNumber-1)*perPageData).limit(perPageData).exec()
+        const userData = await users.find({}).skip((pageNumber-1)*perPageData).limit(perPageData).sort({createdAt:-1}).exec()
         const totalPages = Math.ceil(totalUsers / perPageData);
 
        
@@ -210,8 +217,8 @@ const loadCategoryBrand = async (req,res) =>{
 
     try {
  
-        const categoriesData = await categories.find({})
-        const brandsData = await brands.find({})
+        const categoriesData = await categories.find({}).sort({createdAt:-1})
+        const brandsData = await brands.find({}).sort({createdAt:-1})
 
        return res.status(200).render('admin/brandCategoryManagement',{categoriesData,brandsData})
 
@@ -482,13 +489,80 @@ const softDeleteBrand = async (req,res) =>{
 
 }
 
+const escapeRegExp = (string) => {
+
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  };
+  
+//check existing category
+const categoryExists = async (req, res) => {
+
+    const { encodedCName } = req.query;
+
+    const escapedCName = escapeRegExp(encodedCName);
+
+    console.log('Entered in existing category checking function:', escapedCName);
+
+    try {
+
+        const exist = await categories.findOne({ name: { $regex: new RegExp(`^${escapedCName}`, 'i') } });
+
+        if (exist) {
+
+            return res.status(200).json({ message: "Category already exists", exists: true });
+
+        }
+
+        return res.status(200).json({ message: "Category does not exist", exists: false });
+        
+    } catch (error) {
+
+        console.log('Error while checking the existing category:', error.message);
+
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
+
+    }
+}
+
+
+//check existing brand
+const brandExists = async(req,res) =>{
+
+    const {encodedBName} = req.query
+
+    const escapedBName = escapeRegExp(encodedBName);
+
+    console.log('Entered in existing brand checking function:', escapedBName);
+
+    try {
+
+        const exists = await brands.findOne({name:{$regex: new RegExp(`^${escapedBName}`,'i')}})
+
+        if(exists){
+
+            return res.status(200).json({message:"Brand already exists",exists:true})
+
+        }
+        
+        return res.status(200).json({message:"Brand does not exist",exists:false})
+
+    } catch (error) {
+        
+        console.log(`error while checking the existing brand`,error.message);
+
+        return res.status(500).json({message:'Internal server error',error:error.message})
+
+    }
+}
+
 //loads the product list page
 const loadProducts = async (req,res) =>{
 
     try {
-        const productData = await products.find({}).populate('brand')
+        const productData = await products.find({}).populate('brand').sort({createdAt:-1})
 
-        const categoriesData = await categories.find({})
+        const categoriesData = await categories.find({}).sort({createdAt:-1})
         
        return res.status(200).render("admin/productList",{productData,categoriesData})
 
@@ -505,8 +579,8 @@ const loadaddProduct = async (req,res) =>{
 
     try {
 
-        const categoriesData = await categories.find({})
-        const brandsData = await brands.find()
+        const categoriesData = await categories.find({isBlocked:false})
+        const brandsData = await brands.find({isBlocked:false})
 
       return res.status(200).render("admin/addProduct",{categoriesData,brandsData})
 
@@ -702,12 +776,40 @@ const editImage = async (req,res) =>{
         console.log(`error while removing the image`,error.message);
     }
 }
+
+// const ProductExists = async (req,res) =>{
+
+//     const {encodedPName} = req.query
+
+//     console.log(`Entered in existing product checking function:`,encodedPName);
+
+//     try {
+
+//         const exists = await products.findOne({name:encodedPName})
+
+//         if(exists){
+
+//             return res.status(200).json({message:"Product already exists",exists:true})
+
+//         }
+
+//         return res.status(200).json({message:"Product does not exist",exists:false})
+        
+//     } catch (error) {
+        
+//         console.log(`error while checking the existing product`,error.message);
+
+//         return res.status(500).json({message:"Internal server error",error:error.message})
+
+//     }
+    
+// }
 //loads the order list page
 const loadOrderList = async (req,res) =>{
 
     try {
 
-        const orderData = await orders.find({}).populate("user")
+        const orderData = await orders.find({}).populate("user").sort({createdAt:-1})
 
         if(orderData){
 
@@ -728,7 +830,7 @@ const loadOrderDetailsPage = async (req, res) => {
 
         console.log(`this is the order id coming from the front end`,orderId);
 
-        const userOrderDataDetails = await orders.findOne({ _id:orderId }).populate("user");
+        const userOrderDataDetails = await orders.findOne({ _id:orderId }).populate("user")
         
         console.log(`this is the order details of that particular order`,userOrderDataDetails);
 
@@ -821,6 +923,75 @@ const getEnumValues = (schema, path) => {
 
   }
   
+//coupon adding page loading
+const loadCoupon = async(req,res) =>{
+
+    try {
+
+        const couponsData = await coupons.find({})
+
+        if(couponsData){
+
+            console.log(`coupons data`,couponsData);
+
+            return res.status(200).render("admin/couponList",{couponsData})
+
+        }
+
+        return res.send("something went wrong")
+       
+        
+    } catch (error) {
+        
+        console.log(`error while adding coupon adding page`,error.message);
+    }
+}
+const loadAddCoupon = async(req,res) =>{
+
+    try {
+        
+        return res.status(200).render("admin/addCoupon")
+    } catch (error) {
+        
+        console.log(`error while adding the coupon`,error.message);
+    }
+}
+
+const addCoupon = async (req,res) =>{
+
+
+    try {
+        
+        const {couponName,couponDescription,couponCode,couponDiscount,maxAmount,minAmount,couponStatus} = req.body
+    
+        console.log(`this is the coupon details`,couponName,couponDescription,couponCode,couponDiscount,maxAmount,minAmount,couponStatus);
+    
+    
+        const coupon = new coupons({
+
+            couponName:couponName,
+            couponDescription:couponDescription,
+            couponCode:couponCode,
+            couponDiscount:couponDiscount,
+            maxAmount:maxAmount,
+            minAmount:minAmount,
+            couponStatus:couponStatus
+        })
+
+        const couponData = coupon.save()
+        if(couponData){
+
+            return res.status(200).redirect("/admin/addCoupon")
+        }
+
+        return res.send("something went wrong")
+
+    } catch (error) {
+        
+        console.log(`error while adding the coupon`,error.message);
+    }
+}
+
 
 module.exports = {
 
@@ -841,6 +1012,8 @@ module.exports = {
     loadOrderList,
     loadOrderDetailsPage,
     loadEditProduct,
+    loadCoupon,
+    loadAddCoupon,
 
     // user management
 
@@ -853,6 +1026,8 @@ module.exports = {
     editBrand,
     softDeleteCategory,
     softDeleteBrand,
+    categoryExists,
+    brandExists,
 
     // product management
 
@@ -860,11 +1035,14 @@ module.exports = {
     editProduct,
     editImage,
     softDeleteProduct,
+    // ProductExists,
     
    // total order status management
 
     changeOrderStatus,
   
+    //coupon management
+    addCoupon
     
   
 

@@ -1,137 +1,137 @@
-<header class="header-area header-style-5 shadow-sm  " >
-       
-    <div class="header-bottom sticky-bar sticky-white-bg  ">
-        <div class="container  ">
-            <div class="header-wrap header-space-between position-relative " style="padding-top: 20px; padding-bottom: 20px; " >
-                <div class="logo logo-width-1">
-                    <!-- <a href="/home"><img src="" alt="logo"></a> -->
-                </div>
-                <div class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">
-                    <nav>
-                        <ul>
-                       
-                            <li>
-                                <a href="/showcase?targetGroup=men">MEN</a>
-                            </li>
-                            <li>
-                                <a href="/showcase?targetGroup=women">WOMEN</a>
-                            </li>
-                            <li>
-                                <a href="/showcase?targetGroup=kids">KIDS</a>
-                            </li>
+const disableRadioButtonsBasedOnStatus = (status) => {
+  const radioButtons = document.querySelectorAll('input[name="orderStatus"]');
+  const editButton = document.getElementById('editButton');
+  const saveButton = document.getElementById('saveButton');
 
-                        </ul>
-                    </nav>
-                </div>
-                <div class="header-action-right">
-                    <div class="search-style-2 ">
-                        <form action="#"  style="border-radius: 100px;" >
+  let disableAll = false;
+  let disablePending = false;
 
-                            <input type="text" style="width: 400px;" class="stylish-input" placeholder="Search for items…">
+  if (status === 'delivered' || status === 'cancelled') {
+      disableAll = true;
+  } else if (status === 'shipped') {
+      disablePending = true;
+  }
 
+  radioButtons.forEach(radio => {
+      if (disableAll) {
+          radio.disabled = true;
+      } else if (disablePending && radio.value === 'pending') {
+          radio.disabled = true;
+      } else {
+          radio.disabled = false;
+      }
+  });
 
-                        </form>
-                    </div>
-                    <div class="header-action-2">
-
-                        <div class="header-action-icon-2">
-                            <a href="#">
-                                <img class="svgInject" alt="Evara" src="/assets/imgs/theme/icons/icon-heart.svg">
-                                <span class="pro-count blue" style="background-color: #e24a4a;" >4</span>
-                            </a>
-                        </div>
-
-                        <div class="header-action-icon-2">
-                            <a href="/cart">
-                                <img class="svgInject" alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
-                                <span class="pro-count blue" style="background-color: #e24a4a;" >3</span>
-                            </a>
-                        </div>
-
-                        <div class="header-action-icon-2 d-flex jusitfy-content-center align-items-center ">
-                            <a href="/profile">
-                                <img class="svgInject" alt="" src="/assets/imgs/theme/icons/icon-profile.svg">
-                                
-                            </a>
-                        </div>
-
-                        <div class="header-action-icon d-block d-lg-none">
-                            <div class="burger-icon">
-                                <span class="burger-icon-top"></span>
-                                <span class="burger-icon-mid"></span>
-                                <span class="burger-icon-bottom"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+  if (disableAll) {
+      editButton.disabled = true;
+      saveButton.disabled = true;
+      editButton.style.backgroundColor = '#d3d3d3'; 
+      saveButton.style.backgroundColor = '#d3d3d3'; 
+      editButton.style.cursor = 'not-allowed';
+      saveButton.style.cursor = 'not-allowed';
+  } else {
+      editButton.disabled = false;
+      saveButton.disabled = false;
+      editButton.style.backgroundColor = '#4CAF50';
+      saveButton.style.backgroundColor = '#f44336';
+      editButton.style.cursor = 'pointer';
+      saveButton.style.cursor = 'pointer';
+  }
 
 
+  const orderStatusDisplay = document.getElementById('orderStatusDisplay');
+  if (orderStatusDisplay) {
+      let statusColor = '';
 
+      if (status === 'pending') {
+          statusColor = '#ffd700'; 
+      } else if (status === 'shipped') {
+          statusColor = '#2196f3';
+      } else if (status === 'delivered') {
+          statusColor = '#4caf50'; 
+      } else if (status === 'cancelled') {
+          statusColor = '#f44336';
+      } else {
+          statusColor = '#ffffff'; 
+      }
 
-<div class="header-top header-top-ptb-1 ">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-xl-6 col-lg-6">
-          <div class="header-info">
-            <!-- <ul class="list-inline mb-0">
-              <li class="list-inline-item"><i class="fi-rs-shield-check"></i> <a href="/admin/signin">Admin </a></li>
-            </ul> -->
-          </div>
-        </div>
-        <div class="col-xl-6 col-lg-6 text-right">
-          <div class="header-info header-info-right">
-            <ul class="list-inline mb-0">
-             
-          
-              <!-- <li><i class="icon" style="color: black;">&#128100;</i><a href="">About Us</a></li>
-              <li><i class="icon" style="color: black;">&#9743;</i><a href="">Contact</a></li> -->
+      orderStatusDisplay.style.backgroundColor = statusColor;
+      orderStatusDisplay.style.color = 'white'; 
+      orderStatusDisplay.style.padding = '2px 5px'; 
+      orderStatusDisplay.style.borderRadius = '3px'; 
+      orderStatusDisplay.innerText = status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+};
+
+  const toggleAndUpdateStatus = () => {
+      const editButton = document.getElementById("editButton");
+      const saveButton = document.getElementById("saveButton");
+      const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.');
+
+if(confirmUpdate){
+  if (editButton.style.display === "none") {
+          console.log("Save action");
+  
+          const selectedStatus = getOrderStatus();
+          const orderId = document.getElementById('orderDetails').getAttribute('data-order-id');
+  
+          fetch('http://localhost:7000/admin/orderDetailsPage', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ selectedStatus:selectedStatus, orderId })
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json();
+          })
+          .then(data => {
+              console.log(data);
+              if(data.adminCannotCancel){
+
+                  return console.log(`sorry user has cancelled the all order already`);
+              }
+              alert('Order status updated successfully!');
+
+              editButton.style.display = "inline-block";
+              saveButton.style.display = "none";
+
+              disableRadioButtonsBasedOnStatus(selectedStatus);
               
-                          
-              <li><a href=""><i class="fi-rs-heart"></i></a></li>
-              <li><a href="/cart"><i class="fi-rs-shopping-cart"></i></a></li>
-              <li><a href="/profile"><i class="fi-rs-user"></i></a></li>
+          })
+          .catch(error => {
+              console.error('Error updating order status:', error);
+              alert('Failed to update order status.');
+          });
   
-              
+         
+      } else {
+          console.log("Edit action");
+          editButton.style.display = "none";
+          saveButton.style.display = "inline-block";
+      }
+}
+      
+  };
   
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- navbarstarts -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-      <!-- normal homepage -->
-      <a class="navbar-brand" href="/">Axios</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="/showcase?targetGroup=men">Mens</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/showcase?targetGroup=women">Womens</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/showcase?targetGroup=kids">Kids</a>
-          </li>
-        </ul>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
+  // Function to get selected order status
+  const getOrderStatus = () => {
+      const selectedStatus = document.querySelector('input[name="orderStatus"]:checked').value;
+      return selectedStatus;
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+  const initialStatus = '<%= userOrderDataDetails.orderStatus %>';
+  const items =  '<%= userOrderDataDetails.orderProductStatus%>'
+
+  console.log(items);
+
+  disableRadioButtonsBasedOnStatus(initialStatus);
   
-  <!-- navbarends -->
+
+});

@@ -11,7 +11,7 @@ const brandSchema = new mongoose.Schema({
         default:false
     }
       
-})
+},{ timestamps: true })
 
 const brands = mongoose.model('brand',brandSchema)
 

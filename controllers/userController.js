@@ -11,6 +11,7 @@ const categories = require('../models/categoryModel')
 const cart = require('../models/cartModel')
 const userAddress = require('../models/addressModel')
 const orders = require('../models/orderModel')
+const coupons = require('../models/couponModel')
 
 //hashing password
 const securePassword = async(password)=>{
@@ -31,9 +32,13 @@ const loadHome = async (req,res) => {
     
     try {
 
-        const productsArray =await products.find({}).populate('brand').populate('category')
+        const successMessage = req.session.successMessage;
+
+        req.session.successMessage = null;
+
+        const productsArray =await products.find({}).populate('brand').populate('category').sort({createdAt:-1})
        
-        return res.status(200).render("user/home",{productsArray:productsArray})
+        return res.status(200).render("user/home",{productsArray, successMessage})
 
     } catch (error) {
         
@@ -234,6 +239,9 @@ const verifySignin = async (req,res) => {
     
         req.session.userId = userData._id
         
+        req.session.successMessage = "Login successful! Welcome back!";
+        
+
        return res.status(200).redirect("/home")
 
     } catch (error) {
@@ -255,7 +263,7 @@ const loadShowCase = async (req,res) =>{
 
         const categoriesArray = await categories.find({isBlocked:false})
         const brandArray = await brands.find({isBlocked:false})
-        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category')
+        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category').sort({createdAt:-1})
         const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10).populate('brand').populate('category')
         
         return res.status(200).render("user/showCase",{categoriesArray,brandArray,productsArray,latestProducts,targetGroup})
@@ -502,18 +510,18 @@ const loadCart = async (req,res) =>{
 
             const cartDetails = await cart.find({user:userFromGidSessionOrSession}).populate("items.product").exec()
 
+            const couponDetails = await coupons.find({couponStatus:true})
+
             const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product").exec()
 
             const finalPrice =  await priceSummary(cartDetailsForPriceCalculation)
 
-            const selectedItemsCount = cartDetailsForPriceCalculation.items.filter(item => item.isSelected).length;
+            const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
 
-            return  res.status(200).render("user/cart",{cartDetails,finalPrice:finalPrice?.finalPrice, selectedItemsCount })
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice:finalPrice?.finalPrice, selectedItemsCount, couponDetails })
 
         }
 
-
-        
         
     } catch (error) {
      
@@ -523,32 +531,74 @@ const loadCart = async (req,res) =>{
 }
 
 //calculating ORDER SUMMARY
-const priceSummary = async (cartData) => {
-  
+const priceSummary = async (cartData, couponCode) => {
     try {
+      if (cartData?.items.length > 0) {
+        const selectedItems = cartData.items.filter((item) => item?.isSelected);
         
-        if(cartData.items.length>0){
-            const selectedItems = cartData.items.filter((item) => item.isSelected);
-                
-                const finalPrice = selectedItems.reduce((total, item) => 
-                    total + item.price * item.quantity, 0
-                );
-        
-                const totalQuantity = selectedItems.reduce((total, item) => 
-                    total + item.quantity, 0
-                );
-        
-                return {
-                    finalPrice: parseFloat(finalPrice.toFixed(2)),
-                    totalQuantity
-                };
-           }
+        let finalPrice = selectedItems.reduce((total, item) => 
+          total + item.price * item.quantity, 0
+        );
+  
+        const totalQuantity = selectedItems.reduce((total, item) => 
+          total + item.quantity, 0
+        );
+  
+        let discount = 0;
+  
+        if (couponCode) {
+          console.log(`Coupon code received: ${couponCode}`);
+          
+          const coupon = await coupons.findOne({ couponCode: couponCode });
+  
+          if (coupon && coupon.couponStatus) {
+            if (finalPrice >= coupon.minAmount) {
+              discount = (finalPrice * coupon.couponDiscount) / 100;
+  
+              if (discount > coupon.maxAmount) {
+                discount = coupon.maxAmount;
+              }
+  
+              finalPrice -= discount;
 
+            } else{
+
+                return {
+                    message: "Minimum amount for coupon is not met",
+                    finalPrice: parseFloat(finalPrice.toFixed(2)),
+                    totalQuantity,
+                    discount: 0
+                };
+
+            }
+
+          }else {
+                    return {
+                        message: "Invalid or inactive coupon code",
+                        finalPrice: parseFloat(finalPrice.toFixed(2)),
+                        totalQuantity,
+                        discount: 0
+                    };
+                }
+
+        }
+  
+        return {
+          finalPrice: parseFloat(finalPrice.toFixed(2)),
+          totalQuantity,
+          discount: parseFloat(discount.toFixed(2))
+        };
+      }
+  
+      return { finalPrice: 0, totalQuantity: 0, discount: 0 };
+  
     } catch (error) {
-        console.log(`error while calculating the price details`, error.message);
-       
+
+      console.log(`Error while calculating the price details: ${error.message}`);
+
+     
     }
-};
+  };
 //product adding to cart from the product details page
 
 const addToCart = async (req,res) =>{
@@ -702,9 +752,9 @@ const removeFromCart = async (req, res) => {
 
         }
     
-        const { productId, quantity } = req.body
+        const { productId, quantity,couponCode } = req.body
     
-       
+       console.log(`data form the quantity`,productId, quantity,couponCode);
 
         const productItem = await products.find({_id:productId})
       
@@ -733,7 +783,7 @@ const removeFromCart = async (req, res) => {
         const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true})
 
 
-        const finalPrice =  await priceSummary(updatedItem)
+        const finalPrice =  await priceSummary(updatedItem,couponCode)
 
         return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice?.finalPrice})
 
@@ -762,7 +812,9 @@ const removeFromCart = async (req, res) => {
         }
 
     
-        const { selectedProductIds } = req.body;
+        const { selectedProductIds,couponCode } = req.body;
+
+        console.log(`data form the selection`,selectedProductIds,couponCode);
 
         const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
 
@@ -788,7 +840,7 @@ const removeFromCart = async (req, res) => {
 
         await cartDetails.save()
 
-        const finalPrice =  await priceSummary(cartDetails)
+        const finalPrice =  await priceSummary(cartDetails,couponCode)
 
         return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice?.finalPrice,cartDetails:cartDetails});
         
@@ -813,7 +865,7 @@ const loadAddress = async (req,res) =>{
 
     }
 
-    const addressDetails = await userAddress.find({userId:userFromGidSessionOrSession})
+    const addressDetails = await userAddress.find({userId:userFromGidSessionOrSession}).sort({createdAt:-1})
 
 
     try {
@@ -1191,7 +1243,7 @@ const loadOrders = async (req,res) =>{
 
         }
 
-        const orderData = await orders.find({user:userFromGidSessionOrSession})
+        const orderData = await orders.find({user:userFromGidSessionOrSession}).sort({createdAt:-1})
 
     //    console.log(orderData);
         return res.status(200).render("user/orders",{orderData:orderData})
@@ -1287,9 +1339,44 @@ const cancelOrder = async (req, res) => {
   
           }
 
+          const orderIdOfTheOrder = new ObjectId(orderId)
+          const orderStatusOfOrder = orderStatus
+
+        //   let updatedOrderStatus 
+          
+          const order = await orders.findOne({_id:orderIdOfTheOrder})
+
+          
+        
+          const anyNotDelivered = order.items.some(item => item.orderProductStatus !== 'delivered');
+          const allCancelled = order.items.every(item => item.orderProductStatus === 'cancelled');
+
+            if (anyNotDelivered||!allCancelled) {
+        
+            const allOrderCancelled = await orders.updateOne({_id:orderIdOfTheOrder},{$set:{orderStatus:"cancelled"}})
+
+            for (let item of order.items) {
+                if (item.orderProductStatus !== "cancelled") {
+
+                    await orders.updateOne(
+                        { _id: orderIdOfTheOrder, "items._id": item._id },
+                        { $set: { "items.$.orderProductStatus": "cancelled" } }
+                    );
+
+                    await products.findByIdAndUpdate(item.product,{$inc:{stock:item.quantity}},{new:true})
 
 
-       return res.status(200).json({ message: 'Order canceled successfully' });
+                }
+            }
+            
+           
+             return res.status(200).json({message:"order cancelled successfully",orderNotDelivered:true})
+
+
+            }
+
+
+            return res.status(200).json({message:"Order status is delivered"})
 
     } catch (error) {
 
@@ -1442,11 +1529,13 @@ const searchProducts = async (req, res) => {
                     as: 'categoryData'
                 }
             });
+
+            
         }
 
         // console.log(`Aggregation : ${JSON.stringify(arrayToAggregate)}`);
 
-        const productsArray = await products.aggregate(arrayToAggregate);
+        const productsArray = await products.aggregate(arrayToAggregate)
         const categoriesArray = await categories.find().exec();
         const brandArray = await brands.find().exec();
 
@@ -1459,6 +1548,49 @@ const searchProducts = async (req, res) => {
 
         return res.status(500).send('Internal server error');
     }
+};
+
+const applyCoupon = async (req, res) => {
+    try {
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+        } else if (req.user) {
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+        }
+
+        const { couponCode } = req.body;
+        
+        console.log(`this is the add coupon function`, couponCode);
+
+        if (couponCode) {
+
+            const cartDetailsForPriceCalculation = await cart.findOne({ user: userFromGidSessionOrSession }).populate("items.product").exec();
+
+            const{ finalPrice,discount,message }  = await priceSummary(cartDetailsForPriceCalculation, couponCode);
+            
+            if (message) {
+
+                return res.status(400).json({ message, success: false, finalPrice, discount });
+                
+            }
+            return res.status(200).json({ message: "coupon successfully added", success: true, finalPrice,discount });
+
+        } else {
+
+            return res.status(400).json({ message: "Invalid coupon code", success: false });
+
+        }
+
+    } catch (error) {
+
+        console.log(`error while adding the coupon`, error.message);
+
+        return res.status(500).json({ message: "Internal Server error", success: false });
+
+    }
+
 };
 
 
@@ -1502,6 +1634,7 @@ module.exports = {
     removeFromCart,
     updateQuantityFromCart,
     updatedSelectedItems,
+    applyCoupon,
     
 
 
@@ -1522,6 +1655,5 @@ module.exports = {
 
     advancedSearch,
     searchProducts,
-   
    
 }

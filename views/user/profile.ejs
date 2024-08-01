@@ -9,7 +9,83 @@
             .small-text {
                 font-size: 0.8em;
                 line-height: 1.2;
-            }
+            } 
+            .custom-cancel-button {
+  background-color: #FFFFFF !important; 
+  color: #000000 !important; 
+  border: 1px solid #000000 !important; 
+  padding: 10px 24px !important; 
+}
+
+.custom-confirm-button {
+  background-color: #007bff !important; 
+  color: #FFFFFF !important; 
+  padding: 10px 24px !important; 
+}
+
+.swal2-popup {
+  width: 90% !important; 
+  max-width: 440px !important; 
+  padding: 20px !important; 
+}
+
+.swal2-title {
+  font-size: 17px !important; 
+  margin-bottom: 5px !important; 
+}
+
+.swal2-content {
+  font-size: 12px !important; 
+  margin-bottom: 20px !important; 
+}
+
+.swal2-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.swal2-actions .swal2-styled.swal2-confirm {
+  order: 1;
+  margin-right: 10px;
+  flex-grow: 1;
+}
+
+.swal2-actions .swal2-styled.swal2-cancel {
+  order: 2;
+  flex-grow: 1;
+}
+
+
+@media (max-width: 768px) {
+  .swal2-title {
+    font-size: 15px !important; 
+  }
+
+  .swal2-content {
+    font-size: 13px !important; 
+  }
+
+  .custom-cancel-button,
+  .custom-confirm-button {
+    padding: 8px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .swal2-title {
+    font-size: 14px !important; 
+  }
+
+  .swal2-content {
+    font-size: 12px !important; 
+  }
+
+  .custom-cancel-button,
+  .custom-confirm-button {
+    padding: 6px 16px !important; 
+  }
+}
         </style>
         <main class="main">
             <section class="pt-150 pb-150">
@@ -34,11 +110,9 @@
                     color: #333;
                     margin-bottom: 16px;
                   ">
-                                                Your details
+                                                PROFILE
                                             </h1>
-                                            <h2 style="font-size: 20px; color: #555; margin-bottom: 20px">
-                                                Personal information
-                                            </h2>
+                                           
                                             <div id="userInfoDisplay">
                                                 <p id="userName">
                                                     <strong>Name:</strong>
@@ -73,17 +147,23 @@
                                                         <div class="col-md-6">
                                                             <input type="text" id="fnameInput" class="form-control"
                                                                 name="fname" placeholder="First Name" required />
+                                                                <span id="fnameError" class="error"></span>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <input type="text" id="lnameInput" class="form-control"
                                                                 name="lname" placeholder="Last Name" required />
+                                                                <span id="lnameError" class="error"></span>
                                                         </div>
                                                     </div>
 
                                                     <div class="mb-3">
                                                         <input type="tel" id="phoneInput" class="form-control"
                                                             name="phone" placeholder="Phone Number" required />
+                                                            <span id="phoneError" class="error"></span>
                                                     </div>
+                                                  
+                                                    
+
                                                     <button type="submit" id="saveUserNewDetailsButton"
                                                         class="btn btn-primary">
                                                         Save Changes
@@ -111,6 +191,7 @@
                                                             name="confirmPassword" placeholder="Confirm Password" />
                                                         <span id="confirmPasswordError" class="error"></span>
                                                     </div>
+           
                                                     <button type="submit" id="saveUserNewPasswordButton"
                                                         class="btn btn-primary">
                                                         Save Changes
@@ -140,9 +221,9 @@
                     if (existingPasswordInput.value.trim() === "") {
                         existingPasswordError.textContent = "* current password is required";
                         return false;
-                    } else if (existingPasswordInput.value.trim().length < 4) {
+                    } else if (existingPasswordInput.value.trim().length < 5) {
                         existingPasswordError.textContent =
-                            "* current password should be atleast 4 charactors";
+                            "* current password should be atleast 5 charactors";
                         return false;
                     } else {
                         existingPasswordError.textContent = "";
@@ -159,9 +240,9 @@
                     if (newPasswordInput.value.trim() === "") {
                         newPasswordError.textContent = "*new password is required";
                         return false;
-                    } else if (newPasswordInput.value.trim().length < 4) {
+                    } else if (newPasswordInput.value.trim().length < 5) {
                         newPasswordError.textContent =
-                            "* new password should be atleast 4 charactors";
+                            "* new password should be atleast 5 charactors";
                         return false;
                     } else {
                         newPasswordError.textContent = "";
@@ -175,13 +256,15 @@
                 const confirmPasswordInput = document.getElementById("confirmPassword");
                 const confirmPasswordError = document.getElementById("confirmPasswordError");
 
+
+
                 const validateConfirmPassword = () => {
                     if (confirmPasswordInput.value.trim() === "") {
                         confirmPasswordError.textContent = "* confirm password is required";
                         return false;
-                    } else if (confirmPasswordInput.value.trim().length < 4) {
+                    } else if (confirmPasswordInput.value.trim().length < 5) {
                         confirmPasswordError.textContent =
-                            "* confirm password should be atleast 4 charactors";
+                            "* confirm password should be atleast 5 charactors";
                         return false;
                     } else if (confirmPasswordInput.value !== newPasswordInput.value) {
                         confirmPasswordError.textContent =
@@ -225,11 +308,21 @@
                         event.preventDefault();
 
                         if (isPasswordResettingValid()) {
-                            const confirmUpdate = window.confirm(
-                                "Are you sure you want to save these changes? This action cannot be undone."
-                            );
+                            Swal.fire({
+                                title: 'Edit Password',
+                            text: 'Are you sure you want to edit your passoword?',
+                            showCancelButton: true,
+                            confirmButtonColor: '#007bff',
+                            cancelButtonColor: '#FFFFFF',
+                            confirmButtonText: 'SAVE',
+                            cancelButtonText: 'CANCEL',
+                            customClass: {
+                            cancelButton: 'custom-cancel-button',
+                            confirmButton: 'custom-confirm-button'
+                            }
+                        }).then((result)=>{
 
-                            if (confirmUpdate) {
+                            if (result.isConfirmed) {
                                 const updatedPasswordDetails = {
                                     id,
                                     existingPassword: existingPasswordInput.value,
@@ -270,11 +363,67 @@
                                         editPasswordForm.style.display = "none";
                                     });
                             }
+
+                        })
+
+                            
                         }
                     });
                 };
 
+                const fnameInput = document.getElementById("fnameInput");
+                const lnameInput = document.getElementById("lnameInput");
+                const phoneInput = document.getElementById("phoneInput");
+
+                const fnameError = document.getElementById("fnameError");
+                const lnameError = document.getElementById("lnameError");
+                const phoneError = document.getElementById("phoneError");
+
+
+                const validateFirstName = () => {
+                if (fnameInput.value.trim() === "") {
+                    fnameError.textContent = "* First name is required";
+                    return false;
+                } else {
+                    fnameError.textContent = "";
+                    return true;
+                }
+              };
+                const validateLastName = () => {
+                    if (lnameInput.value.trim() === "") {
+                        lnameError.textContent = "* Last name is required";
+                        return false;
+                    } else {
+                        lnameError.textContent = "";
+                        return true;
+                    }
+                };
+
+                const validatePhone = () => {
+                if (phoneInput.value.trim() === "") {
+                    phoneError.textContent = "* Phone number is required";
+                    return false;
+                } else if (!/^\d{10}$/.test(phoneInput.value.trim())) {
+                    phoneError.textContent = "* Phone number should be 10 digits";
+                    return false;
+                } else {
+                    phoneError.textContent = "";
+                    return true;
+                }
+            };
+
+            fnameInput.addEventListener("input", validateFirstName);
+            lnameInput.addEventListener("input", validateLastName);
+            phoneInput.addEventListener("input", validatePhone);
+
+            const isUserDetailsValid = () => {
+                return validateFirstName() && validateLastName() && validatePhone();
+            };
+
+
+
                 const editUserDetails = (id, firstName, lastName, phone) => {
+
                     console.log(id, firstName, lastName, phone);
 
                     const userInfoDisplay = document.getElementById("userInfoDisplay");
@@ -299,11 +448,22 @@
                     saveUserNewDetailsButton.addEventListener("click", () => {
                         event.preventDefault();
 
-                        const confirmUpdate = window.confirm(
-                            "Are you sure you want to save these changes? This action cannot be undone."
-                        );
+                        if(isUserDetailsValid()){
+                            Swal.fire({
+                                title: 'Edit profile',
+                            text: 'Are you sure you want to edit the profile?',
+                            showCancelButton: true,
+                            confirmButtonColor: '#007bff',
+                            cancelButtonColor: '#FFFFFF',
+                            confirmButtonText: 'SAVE',
+                            cancelButtonText: 'CANCEL',
+                            customClass: {
+                            cancelButton: 'custom-cancel-button',
+                            confirmButton: 'custom-confirm-button'
+                            }
+                        }).then((result)=>{
 
-                        if (confirmUpdate) {
+                            if (result.isConfirmed) {
                             const updatedUserDetails = {
                                 id,
                                 firstName: firstNameInput.value,
@@ -348,120 +508,45 @@
 
                                     displayErrorMessage(error.message);
                                 });
+                            }
+                        })
+
                         }
+                       
                     });
                 };
 
                 const displayErrorMessage = (message) => {
-                    let errorAlertContainer = document.createElement("div");
-                    errorAlertContainer.classList.add("message");
-                    errorAlertContainer.innerHTML = `
-        <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-        <span style="font-size: 14px;">${message}</span>
-    `;
-                    errorAlertContainer.style.position = "fixed";
-                    errorAlertContainer.style.bottom = "20px";
-                    errorAlertContainer.style.left = "50%";
-                    errorAlertContainer.style.transform = "translateX(-50%)";
-                    errorAlertContainer.style.zIndex = "1000";
-                    errorAlertContainer.style.width = "auto";
-                    errorAlertContainer.style.maxWidth = "90%";
-                    errorAlertContainer.style.padding = "15px 20px";
-                    errorAlertContainer.style.background = "#333";
-                    errorAlertContainer.style.color = "#fff";
-                    errorAlertContainer.style.fontWeight = "400";
-                    errorAlertContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
-                    errorAlertContainer.style.display = "flex";
-                    errorAlertContainer.style.alignItems = "center";
-                    errorAlertContainer.style.borderRadius = "4px";
-                    errorAlertContainer.style.overflow = "hidden";
-
-                    let redLine = document.createElement("div");
-                    redLine.style.position = "absolute";
-                    redLine.style.bottom = "0";
-                    redLine.style.left = "0";
-                    redLine.style.height = "4px";
-                    redLine.style.background = "#f44336";
-                    redLine.style.animation = "redLine 3s linear forwards";
-
-                    let styleSheet = document.createElement("style");
-                    styleSheet.type = "text/css";
-                    styleSheet.innerText = `
-        @keyframes slideIn {
-            from { transform: translateX(-50%) translateY(100%); }
-            to { transform: translateX(-50%) translateY(0); }
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message,
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
-        @keyframes redLine {
-            from { width: 0; }
-            to { width: 100%; }
+    });
+};
+
+const displaySuccessMessage = (message) => {
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: message,
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
-    `;
-
-                    errorAlertContainer.appendChild(redLine);
-                    document.head.appendChild(styleSheet);
-                    errorAlertContainer.style.animation = "slideIn 0.3s forwards";
-
-                    document.body.appendChild(errorAlertContainer);
-
-                    setTimeout(() => {
-                        errorAlertContainer.style.animation = "slideIn 0.3s reverse forwards";
-                        setTimeout(() => errorAlertContainer.remove(), 300);
-                    }, 2700);
-                };
-                const displaySuccessMessage = (message) => {
-                    let alertContainer = document.createElement("div");
-                    alertContainer.classList.add("message");
-                    alertContainer.innerHTML = `
-                        <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
-                        <span style="font-size: 14px;">${message}</span>
-                    `;
-                    alertContainer.style.position = "fixed";
-                    alertContainer.style.bottom = "20px";
-                    alertContainer.style.left = "50%";
-                    alertContainer.style.transform = "translateX(-50%)";
-                    alertContainer.style.zIndex = "1000";
-                    alertContainer.style.width = "auto";
-                    alertContainer.style.maxWidth = "90%";
-                    alertContainer.style.padding = "15px 20px";
-                    alertContainer.style.background = "#333";
-                    alertContainer.style.color = "#fff";
-                    alertContainer.style.fontWeight = "400";
-                    alertContainer.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
-                    alertContainer.style.display = "flex";
-                    alertContainer.style.alignItems = "center";
-                    alertContainer.style.borderRadius = "4px";
-                    alertContainer.style.overflow = "hidden";
-
-                    let greenLine = document.createElement("div");
-                    greenLine.style.position = "absolute";
-                    greenLine.style.bottom = "0";
-                    greenLine.style.left = "0";
-                    greenLine.style.height = "4px";
-                    greenLine.style.background = "#4CAF50";
-                    greenLine.style.animation = "greenLine 3s linear forwards";
-
-                    let styleSheet = document.createElement("style");
-                    styleSheet.type = "text/css";
-                    styleSheet.innerText = `
-                        @keyframes slideIn {
-                        from { transform: translateX(-50%) translateY(100%); }
-                        to { transform: translateX(-50%) translateY(0); }
-                        }
-                        @keyframes greenLine {
-                        from { width: 0; }
-                        to { width: 100%; }
-                        }
-                    `;
-
-                    alertContainer.appendChild(greenLine);
-                    document.head.appendChild(styleSheet);
-                    alertContainer.style.animation = "slideIn 0.3s forwards";
-
-                    document.body.appendChild(alertContainer);
-
-                    setTimeout(() => {
-                        alertContainer.style.animation = "slideIn 0.3s reverse forwards";
-                        setTimeout(() => alertContainer.remove(), 300);
-                    }, 2700);
-                };
+    });
+};
             </script>

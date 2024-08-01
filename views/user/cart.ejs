@@ -1,5 +1,84 @@
 <%- include('../layouts/userLayouts/header') %>
 <%- include('../layouts/userLayouts/navbar1') %>
+<style>
+  .custom-cancel-button {
+  background-color: #FFFFFF !important; 
+  color: #000000 !important; 
+  border: 1px solid #000000 !important; 
+  padding: 10px 24px !important; 
+}
+
+.custom-confirm-button {
+  background-color: #007bff !important; 
+  color: #FFFFFF !important; 
+  padding: 10px 24px !important; 
+}
+
+.swal2-popup {
+  width: 90% !important; 
+  max-width: 440px !important; 
+  padding: 20px !important; 
+}
+
+.swal2-title {
+  font-size: 17px !important; 
+  margin-bottom: 5px !important; 
+}
+
+.swal2-content {
+  font-size: 12px !important; 
+  margin-bottom: 20px !important; 
+}
+
+.swal2-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.swal2-actions .swal2-styled.swal2-confirm {
+  order: 1;
+  margin-right: 10px;
+  flex-grow: 1;
+}
+
+.swal2-actions .swal2-styled.swal2-cancel {
+  order: 2;
+  flex-grow: 1;
+}
+
+
+@media (max-width: 768px) {
+  .swal2-title {
+    font-size: 15px !important; 
+  }
+
+  .swal2-content {
+    font-size: 13px !important; 
+  }
+
+  .custom-cancel-button,
+  .custom-confirm-button {
+    padding: 8px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .swal2-title {
+    font-size: 14px !important; 
+  }
+
+  .swal2-content {
+    font-size: 12px !important; 
+  }
+
+  .custom-cancel-button,
+  .custom-confirm-button {
+    padding: 6px 16px !important; 
+  }
+}
+
+</style>
 <div class="container mt-5" id="mainContainer">
   <div class="row">
 
@@ -36,13 +115,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center">
                         <div class="me-2">Qty:</div>
-                        <input class="form-select-cart quantity-input"
-                               value="<%= item.quantity %>"
-                               data-product-item-id="<%= item.product?._id %>"
-                               style="height: 30px; width: 70px;"
-                               type="number"
-                               max="5"
-                               min="1">
+                        <button class="btn btn-sm btn-secondary decrease-quantity" data-product-item-id="<%= item.product?._id %>">-</button>
+                        <span class="quantity-display mx-2"><%= item.quantity %></span>
+                        <button class="btn btn-sm btn-secondary increase-quantity" data-product-item-id="<%= item.product?._id %>">+</button>
                         <% if (item.product?.stock > 0) { %>
                           <% if (item.product.stock < 3) { %>
                             <span class="product-stock" style="color: red; font-size: 14px; font-weight: 600; margin-left: 5px;">In Stock (<%= item.product.stock %> items)</span>
@@ -66,7 +141,7 @@
     
     <div class="col-md-4" style="margin-top: 150px">
       <div class="card mb-3">
-        <!-- <h5 class="btn btn-primary">Checkout Details</h5> -->
+
         
         <div class="card-body">
            
@@ -74,32 +149,51 @@
          
           <p class="card-text d-flex justify-content-between">
             <span id="selection"><%=selectedItemsCount%> items selected</span>
-            <span id="subTotalPrice">Rs <%=finalPrice%></span>
+            <span id="subTotalPrice">Rs <%= finalPrice > 0 ? finalPrice.toFixed(2) : '0.00' %></span>
           </p>
-          <!-- <p class="card-text d-flex justify-content-between">
-            <span>Discount</span>
-            <span id="discount" class="text-success">Rs 0.00</span>
-          </p> -->
+          
           <p class="card-text d-flex justify-content-between">
             <span>Delivery Charges</span>
             <span id="deliveryCharge" class="text-success">₹40 Free</span>
           </p>
-          <!-- <p class="card-text d-flex justify-content-between">
-            <span>Secured Packaging Fee</span>
-            <span>₹99</span>
-          </p> -->
+          <p class="card-text d-flex justify-content-between">
+            <span>Coupon Discount</span>
+            <span id="couponDiscount" class="text-success">Rs 0.00</span>
+          </p>
           <hr>
           <p class="card-text d-flex justify-content-between">
             <strong>Total Amount</strong>
-            <strong><span id="totalPrice">Rs <%=finalPrice%></span > </strong>
+
+            <strong><span id="totalPrice">Rs <%= finalPrice > 0 ? finalPrice.toFixed(2) : '0.00' %></span></strong>
+
           </p>
-          <!-- <p class="card-text text-success">You will save ₹11,902 on this order</p> -->
+
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Apply Coupon Code</h5>
+          <input type="text" id="couponCode" class="form-control" placeholder="Enter Coupon Code">
+          <button type="button" id="selectCouponButton" class="btn btn-primary btn-md w-100 mt-2" onclick="openCouponModal()">Select Coupon</button>
+          <div id="couponButtons" style="display: none; margin-top: 10px;">
+            <div class="row">
+             
+              <div class="col">
+               
+                <button type="button" class="btn btn-primary btn-md w-100" onclick="removeCoupon()">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+        <div class="col" id="checkout">
+          <button type="button" class="btn custom-button btn-lg w-100" >Check Out</button>
+
+         </div>
         </div>
       </div>
+        
+      </div>
 
-      <div class="d-flex justify-content-end" id="checkout">
-        <a  class="btn btn-primary">Check Out</a>
-    </div>
+    
     
     </div>
     
@@ -107,31 +201,166 @@
  
 </div>
 
-<% }; %>
+<% } %>
+
+<div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <% couponDetails.forEach(coupon => { %>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h6 class="m-0"><%= coupon.couponName %></h6>
+              <p class="m-0">Discount: <%= coupon.couponDiscount %> %</p>
+              <p class="m-0">Min amt: <%= coupon.minAmount %> Rs</p>
+              <p class="m-0">Max Disc amt: <%= coupon.maxAmount %> Rs</p>
+              <p class="m-0">Code: <%= coupon.couponCode %></p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="selectCoupon('<%= coupon.couponCode %>','<%= coupon.couponDiscount %>')">Select</button>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="preloader-active">
-    <div class="preloader d-flex align-items-center justify-content-center">
-        <div class="preloader-inner position-relative">
-            <div class="text-center">
-                <h5 class="mb-5">Now Loading</h5>
-                <div class="loader">
-                    <div class="bar bar1"></div>
-                    <div class="bar bar2"></div>
-                    <div class="bar bar3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="preloader d-flex align-items-center justify-content-center">
+      <div class="preloader-inner position-relative">
+          <div class="text-center">
+              <h5 class="mb-5">Now Loading</h5>
+              <div class="loader">
+                  <div class="bar bar1"></div>
+                  <div class="bar bar2"></div>
+                  <div class="bar bar3"></div>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
 
 <script>
-  //removing a product from the cart
+
+const openCouponModal = () => {
+
+ const selectedItemsCount = document.querySelectorAll('input[name="selectedCartItem"]:checked').length;
+
+if (selectedItemsCount === 0) {
+  // Display a toast message if no items are selected
+  Swal.fire({
+    icon: 'warning',
+    title: 'No Items Selected',
+    text: 'Oops! Please select at least one item to select a coupon.',
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000
+  });
+  return; // Exit the function early if no items are selected
+}
+    const couponModal = new bootstrap.Modal(document.getElementById('couponModal'));
+    couponModal.show();
+  };
+
+  // Function to select a coupon
+  const selectCoupon = async(couponCode) => {
+  
+    document.getElementById('couponCode').value = couponCode ;
+    document.getElementById('selectCouponButton').style.display = 'none';
+    document.getElementById('couponButtons').style.display = 'block';
+
+    // Close the modal after selecting a coupon
+    const couponModal = bootstrap.Modal.getInstance(document.getElementById('couponModal'));
+    couponModal.hide();
+    await applyCoupon();
+  };
+
+  // Function to remove the selected coupon
+  const removeCoupon = () => {
+
+    document.getElementById('couponCode').value = '';
+
+    document.getElementById('selectCouponButton').style.display = 'block';
+    document.getElementById('couponButtons').style.display = 'none';
+  };
+
+
+  //for adding the coupon amount
+const applyCoupon= async () =>{
+
+  const couponCode = document.getElementById('couponCode').value.trim();
+
+    try {
+        const response = await fetch(`http://localhost:7000/cart/applyCoupon`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponCode })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('subTotalPrice').innerText = `Rs ${data.finalPrice.toFixed(2)}`;
+            document.getElementById('totalPrice').innerText = `Rs ${data.finalPrice.toFixed(2)}`;
+            document.getElementById('couponDiscount').innerText = `Rs ${data.discount.toFixed(2)}`
+
+            document.getElementById('couponButtons').style.display = 'block';
+            Swal.fire({
+              icon: 'success',
+              title: 'Coupon Applied',
+              text: 'Coupon applied successfully.',
+              timer: 3000,
+              timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Coupon Error',
+                text: data.message,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
+    } catch (error) {
+
+        console.error('Error applying coupon:', error);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while applying the coupon.',
+          timer: 3000,
+          timerProgressBar: true
+        });
+
+    }
+}
 
   const removeFromCart = (productId) =>{
 
-    console.log(`front`,productId)
+    Swal.fire({
+      title: 'Remove Item',
+        text: 'Are you sure you want to remove this item?',
+        showCancelButton: true,
+        confirmButtonColor: '#007bff',
+        cancelButtonColor: '#FFFFFF',
+        confirmButtonText: 'REMOVE',
+        cancelButtonText: 'CANCEL',
+        customClass: {
+          cancelButton: 'custom-cancel-button',
+          confirmButton: 'custom-confirm-button'
+        }
+    }).then((result)=>{
 
-   const productContainer = document.getElementById(`productContainer${productId}`)
+      if(result.isConfirmed){
+
+        console.log(`front`, productId);
+        const productContainer = document.getElementById(`productContainer${productId}`)
    
    const mainContainer = document.getElementById(`mainContainer`)
 
@@ -175,295 +404,152 @@
 
             document.body.appendChild(emptyCartMessage);
       
-    }
-      
-       productContainer.remove()
-   
-      let alertContainer = document.createElement('div');
-          alertContainer.classList.add("message");
-          alertContainer.innerHTML = `
-            <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
-            <span style="font-size: 14px;">Successfully removed ${productName} from your cart</span>
-          `;
-          alertContainer.style.position = 'fixed';
-          alertContainer.style.bottom = '20px';
-          alertContainer.style.left = '50%';
-          alertContainer.style.transform = 'translateX(-50%)';
-          alertContainer.style.zIndex = '1000';
-          alertContainer.style.width = 'auto';
-          alertContainer.style.maxWidth = '90%';
-          alertContainer.style.padding = '15px 20px';
-          alertContainer.style.background = '#333';
-          alertContainer.style.color = '#fff';
-          alertContainer.style.fontWeight = '400';
-          alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-          alertContainer.style.display = 'flex';
-          alertContainer.style.alignItems = 'center';
-          alertContainer.style.borderRadius = '4px';
-          alertContainer.style.overflow = 'hidden';
+    }else{
 
-          let greenLine = document.createElement('div');
-          greenLine.style.position = 'absolute';
-          greenLine.style.bottom = '0';
-          greenLine.style.left = '0';
-          greenLine.style.height = '4px';
-          greenLine.style.background = '#4CAF50';
-          greenLine.style.animation = 'greenLine 3s linear forwards';
 
-          let styleSheet = document.createElement('style');
-          styleSheet.type = 'text/css';
-          styleSheet.innerText = `
-            @keyframes slideIn {
-              from { transform: translateX(-50%) translateY(100%); }
-              to { transform: translateX(-50%) translateY(0); }
-            }
-            @keyframes greenLine {
-              from { width: 0; }
-              to { width: 100%; }
-            }
-          `;
+      productContainer.remove()
+       Swal.fire({
+              icon: 'success',
+              title: 'Removed from Cart',
+              text: `Successfully removed ${productName} from your cart`,
+              timer: 3000,
+              timerProgressBar: true
+            });
 
-          alertContainer.appendChild(greenLine);
-          document.head.appendChild(styleSheet);
-          alertContainer.style.animation = 'slideIn 0.3s forwards';
-
-          document.body.appendChild(alertContainer);
-
-          setTimeout(() => {
-            alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-            setTimeout(() => alertContainer.remove(), 300);
-          }, 2700);
+        }
 
     }).catch((error)=>{
 
       console.log(`error while fetching the data`,error.message);
+      Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while removing the item',
+            timer: 3000,
+            timerProgressBar: true
 
+          });
 
-  let errorAlertContainer = document.createElement('div');
-  errorAlertContainer.classList.add("message");
-  errorAlertContainer.innerHTML = `
-    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-    <span style="font-size: 14px;">An error occured </span>
-  `;
-  errorAlertContainer.style.position = 'fixed';
-  errorAlertContainer.style.bottom = '20px';
-  errorAlertContainer.style.left = '50%';
-  errorAlertContainer.style.transform = 'translateX(-50%)';
-  errorAlertContainer.style.zIndex = '1000';
-  errorAlertContainer.style.width = 'auto';
-  errorAlertContainer.style.maxWidth = '90%';
-  errorAlertContainer.style.padding = '15px 20px';
-  errorAlertContainer.style.background = '#333';
-  errorAlertContainer.style.color = '#fff';
-  errorAlertContainer.style.fontWeight = '400';
-  errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-  errorAlertContainer.style.display = 'flex';
-  errorAlertContainer.style.alignItems = 'center';
-  errorAlertContainer.style.borderRadius = '4px';
-  errorAlertContainer.style.overflow = 'hidden';
-
-  let redLine = document.createElement('div');
-  redLine.style.position = 'absolute';
-  redLine.style.bottom = '0';
-  redLine.style.left = '0';
-  redLine.style.height = '4px';
-  redLine.style.background = '#f44336';
-  redLine.style.animation = 'redLine 3s linear forwards';
-
-  let styleSheet = document.createElement('style');
-  styleSheet.type = 'text/css';
-  styleSheet.innerText = `
-    @keyframes slideIn {
-      from { transform: translateX(-50%) translateY(100%); }
-      to { transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes redLine {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-  `;
-
-  errorAlertContainer.appendChild(redLine);
-  document.head.appendChild(styleSheet);
-  errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-  document.body.appendChild(errorAlertContainer);
-
-  setTimeout(() => {
-    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-    setTimeout(() => errorAlertContainer.remove(), 300);
-  }, 2700);
-
-    })
-
-  }
-
-//increasing or decreasing the quantity of the product
-
-const quantityInput = document.querySelectorAll('.quantity-input')
-
-quantityInput.forEach(qInput=>{
-
-  qInput.addEventListener("change",()=>{
-
-    const productId = qInput.getAttribute('data-product-item-id');
-    const quantity = qInput.value;
-
-    if(quantity>=1 && quantity<=5){
-
-      const subTotalPrice = document.getElementById('subTotalPrice')
-      const discount = document.getElementById('discount')
-      const deliveryCharge = document.getElementById('deliveryCharge')
-      const totalPrice = document.getElementById('totalPrice')
-
-      fetch(`http://localhost:7000/cart/`,{
-
-        method: 'PATCH',
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ productId, quantity }),
-
-      }).then((response)=>{
-
-        if(!response.ok){
-
-          throw new Error("Network response was not ok");
-
-        }
-        return response.json();
-
-      }).then((data)=>{
-
-       if(data.finalPrice){
-        console.log(`quantity`,data)
-
-       subTotalPrice.innerHTML = `Rs ${data.finalPrice?data.finalPrice: 0}`
-       totalPrice.innerHTML = `Rs ${data.finalPrice?data.finalPrice: 0}`
-
-      }else if(data.quantity === false){
-
-          let errorAlertContainer = document.createElement('div');
-          errorAlertContainer.classList.add("message");
-          errorAlertContainer.innerHTML = `
-            <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-            <span style="font-size: 14px;">Stock is insufficient</span>
-          `;
-          errorAlertContainer.style.position = 'fixed';
-          errorAlertContainer.style.bottom = '20px';
-          errorAlertContainer.style.left = '50%';
-          errorAlertContainer.style.transform = 'translateX(-50%)';
-          errorAlertContainer.style.zIndex = '1000';
-          errorAlertContainer.style.width = 'auto';
-          errorAlertContainer.style.maxWidth = '90%';
-          errorAlertContainer.style.padding = '15px 20px';
-          errorAlertContainer.style.background = '#333';
-          errorAlertContainer.style.color = '#fff';
-          errorAlertContainer.style.fontWeight = '400';
-          errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-          errorAlertContainer.style.display = 'flex';
-          errorAlertContainer.style.alignItems = 'center';
-          errorAlertContainer.style.borderRadius = '4px';
-          errorAlertContainer.style.overflow = 'hidden';
-
-          let redLine = document.createElement('div');
-          redLine.style.position = 'absolute';
-          redLine.style.bottom = '0';
-          redLine.style.left = '0';
-          redLine.style.height = '4px';
-          redLine.style.background = '#f44336';
-          redLine.style.animation = 'redLine 3s linear forwards';
-
-          let styleSheet = document.createElement('style');
-          styleSheet.type = 'text/css';
-          styleSheet.innerText = `
-            @keyframes slideIn {
-              from { transform: translateX(-50%) translateY(100%); }
-              to { transform: translateX(-50%) translateY(0); }
-            }
-            @keyframes redLine {
-              from { width: 0; }
-              to { width: 100%; }
-            }
-          `;
-
-          errorAlertContainer.appendChild(redLine);
-          document.head.appendChild(styleSheet);
-          errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-          document.body.appendChild(errorAlertContainer);
-
-          setTimeout(() => {
-            errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-            setTimeout(() => errorAlertContainer.remove(), 300);
-          }, 2700);
+       })
 
       }
 
+    })
 
-      })
-    }else{
-
-  let errorAlertContainer = document.createElement('div');
-  errorAlertContainer.classList.add("message");
-  errorAlertContainer.innerHTML = `
-    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-    <span style="font-size: 14px;">Oops ! You can only select upto 5 items at a time</span>
-  `;
-  errorAlertContainer.style.position = 'fixed';
-  errorAlertContainer.style.bottom = '20px';
-  errorAlertContainer.style.left = '50%';
-  errorAlertContainer.style.transform = 'translateX(-50%)';
-  errorAlertContainer.style.zIndex = '1000';
-  errorAlertContainer.style.width = 'auto';
-  errorAlertContainer.style.maxWidth = '90%';
-  errorAlertContainer.style.padding = '15px 20px';
-  errorAlertContainer.style.background = '#333';
-  errorAlertContainer.style.color = '#fff';
-  errorAlertContainer.style.fontWeight = '400';
-  errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-  errorAlertContainer.style.display = 'flex';
-  errorAlertContainer.style.alignItems = 'center';
-  errorAlertContainer.style.borderRadius = '4px';
-  errorAlertContainer.style.overflow = 'hidden';
-
-  let redLine = document.createElement('div');
-  redLine.style.position = 'absolute';
-  redLine.style.bottom = '0';
-  redLine.style.left = '0';
-  redLine.style.height = '4px';
-  redLine.style.background = '#f44336';
-  redLine.style.animation = 'redLine 3s linear forwards';
-
-  let styleSheet = document.createElement('style');
-  styleSheet.type = 'text/css';
-  styleSheet.innerText = `
-    @keyframes slideIn {
-      from { transform: translateX(-50%) translateY(100%); }
-      to { transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes redLine {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-  `;
-
-  errorAlertContainer.appendChild(redLine);
-  document.head.appendChild(styleSheet);
-  errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-  document.body.appendChild(errorAlertContainer);
-
-  setTimeout(() => {
-    errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-    setTimeout(() => errorAlertContainer.remove(), 300);
-  }, 2700);
-
-    }
+   
     
-  })
+  }
 
-})
+const decreaseButtons = document.querySelectorAll('.decrease-quantity');
+const increaseButtons = document.querySelectorAll('.increase-quantity');
+
+function updateQuantity(productId, newQuantity) {
+
+  const checkbox = document.querySelector(`input[value="${productId}"]`);
+  if (!checkbox.checked) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Warning',
+      text: 'You can only update the quantity of selected products',
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 3000
+    });
+    return;
+  }
+  if (newQuantity >= 1 && newQuantity <= 5) {
+
+    const  couponCode =  document.getElementById('couponCode').value 
+    const subTotalPrice = document.getElementById('subTotalPrice');
+    const totalPrice = document.getElementById('totalPrice');
+
+    const checkbox = document.querySelector(`input[value="${productId}"]`);
+
+    fetch(`http://localhost:7000/cart/`, {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId, quantity: newQuantity,couponCode }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }).then((data) => {
+      if (data.finalPrice) {
+        subTotalPrice.innerHTML = `Rs ${data.finalPrice ? data.finalPrice : 0}`;
+        totalPrice.innerHTML = `Rs ${data.finalPrice ? data.finalPrice : 0}`;
+
+        // Update the quantity display
+        const quantityDisplay = document.querySelector(`[data-product-item-id="${productId}"]`).nextElementSibling;
+        quantityDisplay.textContent = newQuantity;
+    
+      } else if (data.quantity === false) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Stock is insufficient',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timer: 3000
+        });
+      }
+    }).catch(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `An error occurred: ${error.message}`,
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000
+      });
+    });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Oops! You can only select up to 5 items at a time',
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+}
+
+function handleQuantityChange(action, button) {
+  const productId = button.getAttribute('data-product-item-id');
+  
+  const quantityDisplay = action === 'decrease' ? button.nextElementSibling : button.previousElementSibling;
+  const currentQuantity = parseInt(quantityDisplay.textContent);
+  const newQuantity = action === 'decrease' ? currentQuantity - 1 : currentQuantity + 1;
+
+  if (newQuantity >= 1 && newQuantity <= 5) {
+    updateQuantity(productId, newQuantity);
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Quantity must be between 1 and 5',
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+}
+
+decreaseButtons.forEach(button => {
+  button.addEventListener("click", () => handleQuantityChange('decrease', button));
+});
+
+increaseButtons.forEach(button => {
+  button.addEventListener("click", () => handleQuantityChange('increase', button));
+});
 
 
 //selecting the checked box items and sending that data to backend
@@ -477,6 +563,11 @@ const updateSelectedProducts = () => {
     .map(checkbox => checkbox.value);
    
     sendToBackend();
+    if (selectedProductIds.length === 0) {
+    subTotalPrice.innerHTML = "Rs 0.00";
+    totalPrice.innerHTML = "Rs 0.00";
+    selection.innerHTML = `0 items selected`;
+  }
   
 };
 
@@ -496,7 +587,7 @@ const sendToBackend = () => {
  const deliveryCharge = document.getElementById('deliveryCharge')
  const totalPrice = document.getElementById('totalPrice')
  const selection = document.getElementById('selection')
- 
+ const  couponCode =  document.getElementById('couponCode').value 
 
   fetch('http://localhost:7000/cart/', {
 
@@ -504,7 +595,7 @@ const sendToBackend = () => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ selectedProductIds }),
+    body: JSON.stringify({ selectedProductIds,couponCode }),
 
   }).then((response)=>{
 
@@ -527,11 +618,17 @@ const sendToBackend = () => {
       
        
 }
-       
-// console.log(`hello`,data);
     }).catch((error)=>{
 
-      console.log(`error while fetching the data`,error.message)
+      Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: `An error occurred: ${error.message}`,
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 3000
+    });
 
     })
 };
@@ -575,66 +672,22 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function handleCheckoutClick() {
+
         window.location.href = "http://localhost:7000/checkout";
+
     }
 
     function handleNoSelection(event) {
         event.preventDefault();
-                let errorAlertContainer = document.createElement('div');
-          errorAlertContainer.classList.add("message");
-          errorAlertContainer.innerHTML = `
-            <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-            <span style="font-size: 14px;">Oops ! Please select one item</span>
-          `;
-          errorAlertContainer.style.position = 'fixed';
-          errorAlertContainer.style.bottom = '20px';
-          errorAlertContainer.style.left = '50%';
-          errorAlertContainer.style.transform = 'translateX(-50%)';
-          errorAlertContainer.style.zIndex = '1000';
-          errorAlertContainer.style.width = 'auto';
-          errorAlertContainer.style.maxWidth = '90%';
-          errorAlertContainer.style.padding = '15px 20px';
-          errorAlertContainer.style.background = '#333';
-          errorAlertContainer.style.color = '#fff';
-          errorAlertContainer.style.fontWeight = '400';
-          errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-          errorAlertContainer.style.display = 'flex';
-          errorAlertContainer.style.alignItems = 'center';
-          errorAlertContainer.style.borderRadius = '4px';
-          errorAlertContainer.style.overflow = 'hidden';
-
-          let redLine = document.createElement('div');
-          redLine.style.position = 'absolute';
-          redLine.style.bottom = '0';
-          redLine.style.left = '0';
-          redLine.style.height = '4px';
-          redLine.style.background = '#f44336';
-          redLine.style.animation = 'redLine 3s linear forwards';
-
-          let styleSheet = document.createElement('style');
-          styleSheet.type = 'text/css';
-          styleSheet.innerText = `
-            @keyframes slideIn {
-              from { transform: translateX(-50%) translateY(100%); }
-              to { transform: translateX(-50%) translateY(0); }
-            }
-            @keyframes redLine {
-              from { width: 0; }
-              to { width: 100%; }
-            }
-          `;
-
-          errorAlertContainer.appendChild(redLine);
-          document.head.appendChild(styleSheet);
-          errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-          document.body.appendChild(errorAlertContainer);
-
-          setTimeout(() => {
-            errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-            setTimeout(() => errorAlertContainer.remove(), 300);
-          }, 2700);
-
+        Swal.fire({
+        icon: 'warning',
+        title: 'No Items Selected',
+        text: 'Oops! Please select at least one item before proceeding.',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000
+      }); 
     }
 });
 

@@ -6,6 +6,7 @@ const adminController = require('../controllers/adminController')
 const imageUpload = require('../utils/imageUpload')
 const softdeleteHandle = require('../middleware/softDeletehandle')
 const editHandle = require('../middleware/handleEdit')
+const handleCategoryBrandExists = require('../middleware/handleExistCategoryBrand')
 const adminAuth = require('../middleware/adminAuth')
 
 
@@ -28,7 +29,7 @@ adminRoute.get("/brandCategoryManagement",adminAuth.isAdminLogin,adminController
 adminRoute.patch("/brandCategoryManagement",adminAuth.isAdminLogin,softdeleteHandle.handleSoftDelete)
 adminRoute.put("/brandCategoryManagement",adminAuth.isAdminLogin,editHandle.handleEdit)
 adminRoute.post("/brandCategoryManagement",adminAuth.isAdminLogin,adminController.addCategoryBrand)
-
+adminRoute.get("/brandCategoryExists",adminAuth.isAdminLogin,handleCategoryBrandExists.handleCategoryBrandExists)
 
 // Product management
 adminRoute.get("/products",adminAuth.isAdminLogin,adminController.loadProducts)
@@ -38,6 +39,7 @@ adminRoute.post("/addProducts",adminAuth.isAdminLogin,imageUpload.upload.array('
 adminRoute.get("/editProduct",adminAuth.isAdminLogin,adminController.loadEditProduct )
 adminRoute.put("/editProduct",adminAuth.isAdminLogin,imageUpload.upload.array('productimages',4), adminController.editProduct)
 adminRoute.delete("/removeProductImage",adminAuth.isAdminLogin, adminController.editImage)
+// adminRoute.get("/productExists",adminAuth.isAdminLogin,adminController.ProductExists)
 
 //order list
 adminRoute.get("/orders",adminAuth.isAdminLogin,adminController.loadOrderList)
@@ -48,7 +50,10 @@ adminRoute.get("/orderDetailsPage", adminAuth.isAdminLogin, adminController.load
 adminRoute.post("/orderDetailsPage",adminAuth.isAdminLogin,adminController.changeOrderStatus)
 
 
-
+//coupon management
+adminRoute.get("/couponManagement",adminAuth.isAdminLogin,adminController.loadCoupon)
+adminRoute.get("/addCoupon",adminAuth.isAdminLogin,adminController.loadAddCoupon)
+adminRoute.post("/addCoupon",adminAuth.isAdminLogin,adminController.addCoupon)
 
 
 module.exports = adminRoute

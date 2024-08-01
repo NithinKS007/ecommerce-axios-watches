@@ -15,6 +15,12 @@
                         </div>
                     </div>
                     <div class="card mb-4">
+                        <form style="margin-top: 20px; padding-left: 20px ;padding-right: 20px;">
+                            <div class="input-group w-100">
+                                <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                            </div>
+                        </form>
                         <form id="filterForm">
                             <header class="card-header">
                                 <div class="row align-items-center">
@@ -190,10 +196,14 @@
                                         deleteButton.classList.add('btn-success');
                                         deleteButton.textContent = 'List'
                                         Swal.fire({
-                                    title: "Unlist!",
-                                    text: "This product is not available from now",
-                                    icon: "success"
-                                })
+                                        title: 'Unlisted!',
+                                        text: 'This product is no longer available.',
+                                        icon: 'success',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
 
                                     } else {
 
@@ -201,11 +211,15 @@
                                         deleteButton.classList.add('btn-danger');
                                         deleteButton.textContent = 'Unlist'
 
-                                        Swal.fire({
-                                    title: "List!",
-                                    text:  "This product is available from now",
-                                    icon: "success"
-                                })
+                                     Swal.fire({
+                                        title: 'Listed!',
+                                        text: 'This product is now available.',
+                                        icon: 'success',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
 
 
 
@@ -215,12 +229,14 @@
 
                                     console.log(`There is a problem with the fetch operation`, error)
                                     Swal.fire({
-
-                                        title: "Error!",
-                                        text: "There was a problem deleting the product.",
-                                        icon: "error"
-
-                                    })
+                                        title: 'Error!',
+                                        text: 'There was a problem updating the product.',
+                                        icon: 'error',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
 
 
                                 })
@@ -252,62 +268,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let successMessage = sessionStorage.getItem('successMessage');
 
     if (successMessage) {
-        // Create and display the alert container
-        let alertContainer = document.createElement('div');
-        alertContainer.classList.add("message");
-        alertContainer.innerHTML = `
-            <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
-            <span style="font-size: 14px;">${successMessage}</span>
-        `;
-        alertContainer.style.position = 'fixed';
-        alertContainer.style.bottom = '20px';
-        alertContainer.style.left = '50%';
-        alertContainer.style.transform = 'translateX(-50%)';
-        alertContainer.style.zIndex = '1000';
-        alertContainer.style.width = 'auto';
-        alertContainer.style.maxWidth = '90%';
-        alertContainer.style.padding = '15px 20px';
-        alertContainer.style.background = '#333';
-        alertContainer.style.color = '#fff';
-        alertContainer.style.fontWeight = '400';
-        alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-        alertContainer.style.display = 'flex';
-        alertContainer.style.alignItems = 'center';
-        alertContainer.style.borderRadius = '4px';
-        alertContainer.style.overflow = 'hidden';
-
-        let greenLine = document.createElement('div');
-        greenLine.style.position = 'absolute';
-        greenLine.style.bottom = '0';
-        greenLine.style.left = '0';
-        greenLine.style.height = '4px';
-        greenLine.style.background = '#4CAF50';
-        greenLine.style.animation = 'greenLine 3s linear forwards';
-
-        let styleSheet = document.createElement('style');
-        styleSheet.type = 'text/css';
-        styleSheet.innerText = `
-            @keyframes slideIn {
-                from { transform: translateX(-50%) translateY(100%); }
-                to { transform: translateX(-50%) translateY(0); }
-            }
-            @keyframes greenLine {
-                from { width: 0; }
-                to { width: 100%; }
-            }
-        `;
-
-        alertContainer.appendChild(greenLine);
-        document.head.appendChild(styleSheet);
-        alertContainer.style.animation = 'slideIn 0.3s forwards';
-
-        document.body.appendChild(alertContainer);
-
-        setTimeout(() => {
-            alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-            setTimeout(() => alertContainer.remove(), 300);
-        }, 5000);  // Display for 5 seconds
-
+        Swal.fire({
+                title: 'Success!',
+                text: successMessage,
+                icon: 'success',
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timer: 5000
+            });
         // Clear the message from sessionStorage
         sessionStorage.removeItem('successMessage');
     }

@@ -20,7 +20,7 @@
                                                         <p class="mb-1"><strong>Order Number:</strong> #<%= order._id %></p>
                                                         <p class="mb-1"><strong>Total:</strong> ₹ <%= order.totalAmount %></p>
                                                     </div>
-                                                    <div class=" text-warning">
+                                                    <div id="orderStatus<%= order._id %>" class="text-warning">
                                                         <strong><%= order.orderStatus.toUpperCase() %></strong>
                                                     </div>
                                                 </div>
@@ -29,6 +29,8 @@
                                                     <div class="mb-3">
                                                         <p class="mb-1">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %></p>
                                                         <p class="mb-1">Ship To: <%= order.shippingAddress.name %></p>
+                                                        <p class="mb-1" style="margin-left: 55px;"><%= order.shippingAddress.address %></p>
+                                                        
                                                     </div>
                                                     <% order.items.forEach(item => { %>
                                                         <div class="d-flex mb-3">
@@ -46,15 +48,18 @@
                                                             <div class="flex-grow-1" >
                                                                 <p class="mb-1"><strong>Name:</strong> <%= item.productName %></p>
                                                                 <p class="mb-0"><strong>Price:</strong> ₹ <%= item.price %> inc GST</p>
-                                                                <p class="mb-0  text-warning"><strong>Status: <%= item.orderProductStatus.toUpperCase() %></strong></p>
+                                                                <p id="orderProductStatus<%= item._id %>" class="order-product-status mb-0 text-warning">
+                                                                    <strong>Status: <%= item.orderProductStatus.toUpperCase() %></strong>
+                                                                </p>
                                                             </div>
                                                             
                                                             <div>
                                                                 
                                                             
                                                                 <% if (item.orderProductStatus !== 'delivered') { %>
-                                                                    <button id="cancelProductButton<%= item._id %>" class="btn btn-sm" 
+                                                                    <button id="cancelProductButton<%= item._id %>" class="btn btn-sm individualCancel" 
                                                                         onclick="cancelProduct('<%= item._id %>', '<%= order._id %>', '<%= item.orderProductStatus %>')"
+                                                                        
                                                                         <%= item.orderProductStatus === 'cancelled' ? 'disabled' : '' %> >
                                                                         <%= item.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel' %>
                                                                     </button>
@@ -68,12 +73,19 @@
                                                             </div>
                                                         </div>
                                                     <% }); %>
-                                                    <!-- <div class="text-end">
-                                                        <% if (order.orderStatus!=='delivered') { %>
+                                                    <div class="text-end">
+                                                        <% if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
                                                             <button class="btn btn-secondary btn-sm">Invoice</button>
-                                                            <button class="btn btn-danger btn-sm" onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')">Cancel Order</button>
+                                                            <button class="btn btn-sm" id="cancelOrderButton<%=order._id%>" onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')">Cancel Order</button>
+                                                        <% } else { %>
+                                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                                <%= order.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel Order' %>
+                                                            </button>
                                                         <% } %>
-                                                         </div> -->
+                                                    </div>
+                                                    
+                                                    
+                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -99,53 +111,96 @@
    
     console.log(`Cancel product ${itemId} in order ${orderId},${orderProductStatus}`);
 
-    const confirmUpdate = window.confirm("Are you sure you want to cancel the product")
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to cancel this product.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result)=>{
 
-    if(confirmUpdate){
+                if(result.isConfirmed){
 
-        fetch(`http://localhost:7000/orders`,{
+                    fetch(`http://localhost:7000/orders`,{
 
-            method:"PATCH",
-            headers:{
+                    method:"PATCH",
+                    headers:{
 
-                "Content-Type":"application/json"
-            },
+                        "Content-Type":"application/json"
+                    },
 
-            body:JSON.stringify({itemId, orderId,orderProductStatus})
+                    body:JSON.stringify({itemId, orderId,orderProductStatus})
 
-            }).then((response)=>{
+                    }).then((response)=>{
 
-                if (!response.ok) {
+                        if (!response.ok) {
 
-                return response.json().then(errorData => {
+                        return response.json().then(errorData => {
 
-                    throw new Error(errorData.error || "Network response was not ok");
+                            throw new Error(errorData.error || "Network response was not ok");
 
-                });
-            }
+                        });
+                    }
 
-                return response.json()
-
-            }).then((data)=>{
-
-                console.log(data);
-                if(data.success){
-
-                const button = document.getElementById(`cancelProductButton${itemId}`);
-                button.disabled = true;
-                button.textContent = 'Cancelled';
-              }
+                        return response.json()
 
 
+                    }).then((data)=>{
 
-            }).catch((error)=>{
+                        console.log(data);
 
-                console.log(`you have already cancelled the product`);
-                alert(`Error: ${error.message}`);
+                        if(data.success){
 
+                            Swal.fire({
+                                        icon: 'success',
+                                        title: 'Cancelled',
+                                        text: 'The product has been cancelled successfully.',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
 
+                        const button = document.getElementById(`cancelProductButton${itemId}`);
+                        button.disabled = true;
+                        button.textContent = 'Cancelled';
+
+                        const orderProductStatusElement = document.getElementById(`orderProductStatus${itemId}`);
+
+                        if (orderProductStatusElement) {
+
+                            orderProductStatusElement.innerHTML = '<strong>Status: CANCELLED</strong>';
+
+                        }
+
+                        }
+                 }).catch((error)=>{
+
+                        console.log(`you have already cancelled the product,Error while cancelling product`, error.message);
+
+                        Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `Error: ${error.message}`,
+                                    toast: true,
+                                    position: 'top-right',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+
+                        })
+
+                                                
+
+                  }
             })
-    }
+
+    
+
+     
+  
     
 };
 
@@ -153,32 +208,105 @@ const cancelOrder = (orderId,orderStatus) => {
     
     console.log(`Cancel order ${orderId},${orderStatus}`);
 
-    fetch(`http://localhost:7000/orders`,{
+  
+    Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to cancel this order.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result)=>{
 
-        method:"PUT",
-        headers:{
+                if(result.isConfirmed){
 
-             "Content-Type":"application/json"
 
-        },
-        body:JSON.stringify({orderId,orderStatus})
+                    fetch(`http://localhost:7000/orders`,{
 
-     }).then((response)=>{
+                        method:"PUT",
+                        headers:{
 
-        if(!response.ok){
+                            "Content-Type":"application/json"
 
-            throw new Error("Network response was not ok")
-        }
+                        },
+                        body:JSON.stringify({orderId,orderStatus})
 
-        return response.json()
+                        }).then((response)=>{
 
-     }).then((data)=>{
+                        if(!response.ok){
 
-        console.log(`data received`,data);
+                            throw new Error("Network response was not ok")
+                        }
 
-        
-     })
+                        return response.json()
 
+                    }).then((data)=>{
+
+                    console.log(`data received`,data)
+                    if(data.orderNotDelivered){
+
+                        Swal.fire({
+                                        icon: 'success',
+                                        title: 'Order Cancelled',
+                                        text: 'The order has been cancelled successfully.',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+
+
+
+                        const cancelOrderButton = document.getElementById(`cancelOrderButton${orderId}`)
+
+                        if(cancelOrderButton){
+
+                        cancelOrderButton.disabled = true
+                        cancelOrderButton.textContent = "cancelled"
+
+                        }
+                        const orderStatusElement = document.getElementById(`orderStatus${orderId}`);
+                        if (orderStatusElement) {
+                            orderStatusElement.innerHTML = '<strong>CANCELLED</strong>';
+                        }
+
+                        // Update the status of all products in the order
+                        const orderProductStatusElements = document.querySelectorAll('.order-product-status');
+                        orderProductStatusElements.forEach(element => {
+                            element.innerHTML = '<strong>Status: CANCELLED</strong>';
+                        });
+                    const individualCancelButtons = document.querySelectorAll(".individualCancel") 
+
+                    individualCancelButtons.forEach(button =>{
+
+                        button.disabled = true
+                        button.textContent = "cancelled"
+
+                    })
+
+                    
+                    }
+
+
+                    }).catch((error)=>{
+
+                        console.log(`error while canceling all order at a time`,error.message);
+
+                        Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `Error: ${error.message}`,
+                                    toast: true,
+                                    position: 'top-right',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+
+                    })
+                }
+            })
+   
 };
 
 

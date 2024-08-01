@@ -43,7 +43,7 @@ userRoute.post("/productDetails",userAuth.isUserLogin,userController.addToCart)
 userRoute.get("/cart",userAuth.isUserLogin,userController.loadCart)
 userRoute.delete("/cart",userAuth.isUserLogin,userController.removeFromCart)
 userRoute.patch("/cart",userAuth.isUserLogin,handleReqBody.handleCartUpdate)
-
+userRoute.post("/cart/applyCoupon",userAuth.isUserLogin,userController.applyCoupon)
 
 
 

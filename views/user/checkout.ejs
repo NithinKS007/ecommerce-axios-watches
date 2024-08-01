@@ -4,10 +4,18 @@
         <%console.log(finalPrice)%>
 
             <main class="container my-5">
-                <h1 class="h2 mb-4">Checkout</h1>
+                <h1 style=" font-size: 24px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 16px;
+              " class="h2 mb-4">CHECKOUT</h1>
                 <div class="row">
                     <div class="col-lg-8">
-                        <h4>Product Details</h4>
+                        <h4 style=" font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 16px;
+                      ">PRODUCT DETAILS</h4>
                         <!-- Shipping Address Section -->
                         <div class="card shadow-sm mb-4">
 
@@ -42,7 +50,11 @@
                         </div>
 
                         <div class="card-body">
-                            <h3 class="card-title h5 mb-3">Select Shipping Address</h3>
+                            <h3 class="card-title h5 mb-3" style=" font-size: 24px;
+                            font-weight: bold;
+                            color: #333;
+                            margin-bottom: 16px;
+                          ">SELECT SHIPPING ADDRESS</h3>
 
 
 
@@ -259,7 +271,7 @@
                                         <div class="card-body">
                                             <div id="addressContainer" class="row">
                                                 <% address.forEach((address, index)=> { %>
-                                                    <div class="col-md-6 mb-3"  id="addressSubContainer<%=address._id%>">
+                                                    <div class="col-md-6 mb-3" id="addressSubContainer<%=address._id%>">
                                                         <div class="card-body">
                                                             <div
                                                                 class="d-flex justify-content-between align-items-start">
@@ -415,183 +427,39 @@
 
                         if (!selectedPaymentMethod && !selectedAddressId) {
 
-                            //   return  console.log(`please select a payment method`);
-
-                            let errorAlertContainer = document.createElement('div');
-                            errorAlertContainer.classList.add("message");
-                            errorAlertContainer.innerHTML = `
-                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                <span style="font-size: 14px;">Please select any payment method and Address </span>
-                            `;
-                            errorAlertContainer.style.position = 'fixed';
-                            errorAlertContainer.style.bottom = '20px';
-                            errorAlertContainer.style.left = '50%';
-                            errorAlertContainer.style.transform = 'translateX(-50%)';
-                            errorAlertContainer.style.zIndex = '1000';
-                            errorAlertContainer.style.width = 'auto';
-                            errorAlertContainer.style.maxWidth = '90%';
-                            errorAlertContainer.style.padding = '15px 20px';
-                            errorAlertContainer.style.background = '#333';
-                            errorAlertContainer.style.color = '#fff';
-                            errorAlertContainer.style.fontWeight = '400';
-                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                            errorAlertContainer.style.display = 'flex';
-                            errorAlertContainer.style.alignItems = 'center';
-                            errorAlertContainer.style.borderRadius = '4px';
-                            errorAlertContainer.style.overflow = 'hidden';
-
-                            let redLine = document.createElement('div');
-                            redLine.style.position = 'absolute';
-                            redLine.style.bottom = '0';
-                            redLine.style.left = '0';
-                            redLine.style.height = '4px';
-                            redLine.style.background = '#f44336';
-                            redLine.style.animation = 'redLine 3s linear forwards';
-
-                            let styleSheet = document.createElement('style');
-                            styleSheet.type = 'text/css';
-                            styleSheet.innerText = `
-                                @keyframes slideIn {
-                                from { transform: translateX(-50%) translateY(100%); }
-                                to { transform: translateX(-50%) translateY(0); }
-                                }
-                                @keyframes redLine {
-                                from { width: 0; }
-                                to { width: 100%; }
-                                }
-                            `;
-
-                            errorAlertContainer.appendChild(redLine);
-                            document.head.appendChild(styleSheet);
-                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-                            document.body.appendChild(errorAlertContainer);
-
-                            setTimeout(() => {
-                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                                setTimeout(() => errorAlertContainer.remove(), 300);
-                            }, 2700);
-
-
-
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Please select a payment method and address.',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
 
                         } else if (!selectedAddressId) {
 
-                            //   return !console.log(`please select a address id`);
-
-                            let errorAlertContainer = document.createElement('div');
-                            errorAlertContainer.classList.add("message");
-                            errorAlertContainer.innerHTML = `
-                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                <span style="font-size: 14px;">Please select any address </span>
-                            `;
-                            errorAlertContainer.style.position = 'fixed';
-                            errorAlertContainer.style.bottom = '20px';
-                            errorAlertContainer.style.left = '50%';
-                            errorAlertContainer.style.transform = 'translateX(-50%)';
-                            errorAlertContainer.style.zIndex = '1000';
-                            errorAlertContainer.style.width = 'auto';
-                            errorAlertContainer.style.maxWidth = '90%';
-                            errorAlertContainer.style.padding = '15px 20px';
-                            errorAlertContainer.style.background = '#333';
-                            errorAlertContainer.style.color = '#fff';
-                            errorAlertContainer.style.fontWeight = '400';
-                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                            errorAlertContainer.style.display = 'flex';
-                            errorAlertContainer.style.alignItems = 'center';
-                            errorAlertContainer.style.borderRadius = '4px';
-                            errorAlertContainer.style.overflow = 'hidden';
-
-                            let redLine = document.createElement('div');
-                            redLine.style.position = 'absolute';
-                            redLine.style.bottom = '0';
-                            redLine.style.left = '0';
-                            redLine.style.height = '4px';
-                            redLine.style.background = '#f44336';
-                            redLine.style.animation = 'redLine 3s linear forwards';
-
-                            let styleSheet = document.createElement('style');
-                            styleSheet.type = 'text/css';
-                            styleSheet.innerText = `
-                                @keyframes slideIn {
-                                from { transform: translateX(-50%) translateY(100%); }
-                                to { transform: translateX(-50%) translateY(0); }
-                                }
-                                @keyframes redLine {
-                                from { width: 0; }
-                                to { width: 100%; }
-                                }
-                            `;
-
-                            errorAlertContainer.appendChild(redLine);
-                            document.head.appendChild(styleSheet);
-                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-                            document.body.appendChild(errorAlertContainer);
-
-                            setTimeout(() => {
-                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                                setTimeout(() => errorAlertContainer.remove(), 300);
-                            }, 2700);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Please select an address.',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
 
                         } else if (!selectedPaymentMethod) {
 
-                            //   return !console.log(`please select a address id`);
-
-                            let errorAlertContainer = document.createElement('div');
-                            errorAlertContainer.classList.add("message");
-                            errorAlertContainer.innerHTML = `
-                                <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                <span style="font-size: 14px;">Please select any Paymentmethod </span>
-                            `;
-                            errorAlertContainer.style.position = 'fixed';
-                            errorAlertContainer.style.bottom = '20px';
-                            errorAlertContainer.style.left = '50%';
-                            errorAlertContainer.style.transform = 'translateX(-50%)';
-                            errorAlertContainer.style.zIndex = '1000';
-                            errorAlertContainer.style.width = 'auto';
-                            errorAlertContainer.style.maxWidth = '90%';
-                            errorAlertContainer.style.padding = '15px 20px';
-                            errorAlertContainer.style.background = '#333';
-                            errorAlertContainer.style.color = '#fff';
-                            errorAlertContainer.style.fontWeight = '400';
-                            errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                            errorAlertContainer.style.display = 'flex';
-                            errorAlertContainer.style.alignItems = 'center';
-                            errorAlertContainer.style.borderRadius = '4px';
-                            errorAlertContainer.style.overflow = 'hidden';
-
-                            let redLine = document.createElement('div');
-                            redLine.style.position = 'absolute';
-                            redLine.style.bottom = '0';
-                            redLine.style.left = '0';
-                            redLine.style.height = '4px';
-                            redLine.style.background = '#f44336';
-                            redLine.style.animation = 'redLine 3s linear forwards';
-
-                            let styleSheet = document.createElement('style');
-                            styleSheet.type = 'text/css';
-                            styleSheet.innerText = `
-                                @keyframes slideIn {
-                                from { transform: translateX(-50%) translateY(100%); }
-                                to { transform: translateX(-50%) translateY(0); }
-                                }
-                                @keyframes redLine {
-                                from { width: 0; }
-                                to { width: 100%; }
-                                }
-                            `;
-
-                            errorAlertContainer.appendChild(redLine);
-                            document.head.appendChild(styleSheet);
-                            errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-                            document.body.appendChild(errorAlertContainer);
-
-                            setTimeout(() => {
-                                errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                                setTimeout(() => errorAlertContainer.remove(), 300);
-                            }, 2700);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Please select a payment method.',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
 
                         } else {
 
@@ -609,71 +477,34 @@
                                     console.log('Success:', data)
                                     if (data.success) {
 
-                                        window.location.href = "http://localhost:7000/placeOrder"
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: 'Order placed successfully!',
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        }).then(() => {
+
+                                            window.location.href = "http://localhost:7000/placeOrder";
+
+                                        });
                                     }
 
 
 
                                 })
                                 .catch((error) => {
-
-                                    console.error(`error while fetching the data`, error.message)
-
-                                    let errorAlertContainer = document.createElement('div');
-                                    errorAlertContainer.classList.add("message");
-                                    errorAlertContainer.innerHTML = `
-                                    <i class="fa-solid fa-circle-exclamation" style="color: #f44336; margin-right: 15px; font-size: 24px;"></i>
-                                    <span style="font-size: 14px;">An error occured </span>
-                                `;
-                                    errorAlertContainer.style.position = 'fixed';
-                                    errorAlertContainer.style.bottom = '20px';
-                                    errorAlertContainer.style.left = '50%';
-                                    errorAlertContainer.style.transform = 'translateX(-50%)';
-                                    errorAlertContainer.style.zIndex = '1000';
-                                    errorAlertContainer.style.width = 'auto';
-                                    errorAlertContainer.style.maxWidth = '90%';
-                                    errorAlertContainer.style.padding = '15px 20px';
-                                    errorAlertContainer.style.background = '#333';
-                                    errorAlertContainer.style.color = '#fff';
-                                    errorAlertContainer.style.fontWeight = '400';
-                                    errorAlertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                                    errorAlertContainer.style.display = 'flex';
-                                    errorAlertContainer.style.alignItems = 'center';
-                                    errorAlertContainer.style.borderRadius = '4px';
-                                    errorAlertContainer.style.overflow = 'hidden';
-
-                                    let redLine = document.createElement('div');
-                                    redLine.style.position = 'absolute';
-                                    redLine.style.bottom = '0';
-                                    redLine.style.left = '0';
-                                    redLine.style.height = '4px';
-                                    redLine.style.background = '#f44336';
-                                    redLine.style.animation = 'redLine 3s linear forwards';
-
-                                    let styleSheet = document.createElement('style');
-                                    styleSheet.type = 'text/css';
-                                    styleSheet.innerText = `
-                                    @keyframes slideIn {
-                                    from { transform: translateX(-50%) translateY(100%); }
-                                    to { transform: translateX(-50%) translateY(0); }
-                                    }
-                                    @keyframes redLine {
-                                    from { width: 0; }
-                                    to { width: 100%; }
-                                    }
-                                `;
-
-                                    errorAlertContainer.appendChild(redLine);
-                                    document.head.appendChild(styleSheet);
-                                    errorAlertContainer.style.animation = 'slideIn 0.3s forwards';
-
-                                    document.body.appendChild(errorAlertContainer);
-
-                                    setTimeout(() => {
-                                        errorAlertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                                        setTimeout(() => errorAlertContainer.remove(), 300);
-                                    }, 2700)
-
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `An error occurred: ${error.message}`,
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
 
                                 });
                         }
@@ -773,135 +604,106 @@
 
                     const saveChangesAddressFormButton = document.getElementById('saveChangesAddressFormButton')
 
-                    saveChangesAddressFormButton.addEventListener("click",()=>{
+                    saveChangesAddressFormButton.addEventListener("click", (event) => {
 
                         event.preventDefault()
 
-                        const confirmUpdate = window.confirm('Are you sure you want to save these changes? This action cannot be undone.')
+                        Swal.fire({
+                            title: 'Confirm Update',
+                            text: 'Are you sure you want to save these changes? This action cannot be undone.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, save changes',
+                            cancelButtonText: 'No, cancel',
+                            reverseButtons: true
+                        }).then((result) => {
 
-                        if(confirmUpdate){
+                            if (result.isConfirmed) {
 
-                            const updatedAddress = {
+                                const updatedAddress = {
 
-                                id,
-                                addressType:document.querySelector('input[name="addressType"]:checked').value,
-                                name: addressNameInput.value,
-                                phone: addressPhoneInput.value,
-                                address: addressTextAreaInput.value,
-                                locality: addressLocalityInput.value,
-                                cityDistTown: addressCityDistTownInput.value,
-                                state: addressStateInput.value,
-                                pincode: addressPincodeInput.value,
-                                landMark: addressLandMarkInput.value,
-                                altPhone: addressAltPhoneInput.value,
-                                email: addressEmailInput.value
+                                    id,
+                                    addressType: document.querySelector('input[name="addressType"]:checked').value,
+                                    name: addressNameInput.value,
+                                    phone: addressPhoneInput.value,
+                                    address: addressTextAreaInput.value,
+                                    locality: addressLocalityInput.value,
+                                    cityDistTown: addressCityDistTownInput.value,
+                                    state: addressStateInput.value,
+                                    pincode: addressPincodeInput.value,
+                                    landMark: addressLandMarkInput.value,
+                                    altPhone: addressAltPhoneInput.value,
+                                    email: addressEmailInput.value
+
+                                }
+
+
+                                fetch(`http://localhost:7000/editAddress/`, {
+
+
+                                    method: "PUT",
+                                    headers: {
+
+                                        'Content-Type': 'application/json',
+
+                                    },
+                                    body: JSON.stringify({ updatedAddress, id })
+                                }).then(response => {
+
+                                    if (!response.ok) {
+
+                                        throw new Error(`Network response was not ok`)
+                                    }
+
+                                    return response.json()
+
+
+                                }).then((data) => {
+
+
+                                    console.log(`data received to checkout page after editing address`, data.updatedUserAddress);
+
+                                    if (data.success) {
+
+
+                                        updateNewAddress(id, data.updatedUserAddress);
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success',
+                                            text: `${data.updatedUserAddress.addressType} address successfully updated.`,
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        });
+                                    }
+
+                                    editAddressForm.style.display = 'none';
+
+
+                                }).catch(error => {
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `An error occurred: ${error.message}`,
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+
+                                })
 
                             }
-
-
-                            fetch(`http://localhost:7000/editAddress/`,{
-
-
-                                method:"PUT",
-                                headers:{
-
-                                    'Content-Type': 'application/json',
-
-                                },
-                                body:JSON.stringify({updatedAddress,id})
-                            }).then(response =>{
-
-                                if(!response.ok){
-
-                                    throw new Error(`Network response was not ok`)
-                                }
-
-                                return response.json()
-
-                            }).then((data)=>{
-
-
-                                console.log(`data received to checkout page after editing address`,data.updatedUserAddress);
-
-                                if(data.success){
-
-
-                                    updateNewAddress(id, data.updatedUserAddress);
-                                    let alertContainer = document.createElement('div');
-                    alertContainer.classList.add("message");
-                    alertContainer.innerHTML = `
-                        <i class="fa-solid fa-circle-check" style="color: #4CAF50; margin-right: 15px; font-size: 24px;"></i>
-                        <span style="font-size: 14px;">${data.updatedUserAddress.addressType} address successfully updated</span>
-                    `;
-                    alertContainer.style.position = 'fixed';
-                    alertContainer.style.bottom = '20px';
-                    alertContainer.style.left = '50%';
-                    alertContainer.style.transform = 'translateX(-50%)';
-                    alertContainer.style.zIndex = '1000';
-                    alertContainer.style.width = 'auto';
-                    alertContainer.style.maxWidth = '90%';
-                    alertContainer.style.padding = '15px 20px';
-                    alertContainer.style.background = '#333';
-                    alertContainer.style.color = '#fff';
-                    alertContainer.style.fontWeight = '400';
-                    alertContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-                    alertContainer.style.display = 'flex';
-                    alertContainer.style.alignItems = 'center';
-                    alertContainer.style.borderRadius = '4px';
-                    alertContainer.style.overflow = 'hidden';
-
-                    let greenLine = document.createElement('div');
-                    greenLine.style.position = 'absolute';
-                    greenLine.style.bottom = '0';
-                    greenLine.style.left = '0';
-                    greenLine.style.height = '4px';
-                    greenLine.style.background = '#4CAF50';
-                    greenLine.style.animation = 'greenLine 3s linear forwards';
-
-                    let styleSheet = document.createElement('style');
-                    styleSheet.type = 'text/css';
-                    styleSheet.innerText = `
-                        @keyframes slideIn {
-                        from { transform: translateX(-50%) translateY(100%); }
-                        to { transform: translateX(-50%) translateY(0); }
-                        }
-                        @keyframes greenLine {
-                        from { width: 0; }
-                        to { width: 100%; }
-                        }
-                    `;
-
-                    alertContainer.appendChild(greenLine);
-                    document.head.appendChild(styleSheet);
-                    alertContainer.style.animation = 'slideIn 0.3s forwards';
-
-                    document.body.appendChild(alertContainer);
-
-                    setTimeout(() => {
-                        alertContainer.style.animation = 'slideIn 0.3s reverse forwards';
-                        setTimeout(() => alertContainer.remove(), 300);
-                    }, 2700);
-
-
-                                }
-
-                                editAddressForm.style.display = 'none';
-
-                                
-                            })
-
-
-                        }
-
-
-
+                        })
 
                     })
 
-
                 }
-     const updateNewAddress = (id,updatedUserAddress) => {
-    document.getElementById(`addressSubContainer${id}`).innerHTML = `
+                const updateNewAddress = (id, updatedUserAddress) => {
+                    document.getElementById(`addressSubContainer${id}`).innerHTML = `
         <div class="card-body">
     <div class="d-flex justify-content-between align-items-start">
         <div class="form-check flex-grow-1">
@@ -928,7 +730,7 @@
         </div>
     </div>
 </div>`;
-};      
+                };
 
             </script>
             <!-- Vendor JS -->

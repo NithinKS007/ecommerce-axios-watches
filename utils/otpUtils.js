@@ -40,52 +40,9 @@ const sendOtpEmail = async (email,otp) =>{
 }
 
 
-
-
-
-const generateSecurityToken = () => {
-
-    return crypto.randomBytes(32).toString('hex');
-
-}
-
-const sendToken = async (email,token) =>{
-
-    const transporter = nodemailer.createTransport({
-        service:"gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    })
-
-
-
-    const mailOptions = {
-
-        from:process.env.EMAIL_USER,
-        to:email,
-        subject:'Your Security Token',
-        text:`Your security token is : ${token}`
-    }
-
-    try {
-
-         
-        await transporter.sendMail(mailOptions)
-        console.log('Security token sent successfully');
-        
-    } catch (error) {
-       
-        console.error('Error sending security token:', error);
-    }
-    
-}
-
 module.exports = {
 
     generateOtp,
     sendOtpEmail,
-    generateSecurityToken,
-    sendToken
+   
 }
