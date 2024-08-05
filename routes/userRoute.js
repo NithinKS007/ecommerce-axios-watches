@@ -44,6 +44,7 @@ userRoute.get("/cart",userAuth.isUserLogin,userController.loadCart)
 userRoute.delete("/cart",userAuth.isUserLogin,userController.removeFromCart)
 userRoute.patch("/cart",userAuth.isUserLogin,handleReqBody.handleCartUpdate)
 userRoute.post("/cart/applyCoupon",userAuth.isUserLogin,userController.applyCoupon)
+userRoute.delete("/cart/removeCoupon",userAuth.isUserLogin,userController.removeCoupon)
 
 
 
@@ -78,5 +79,15 @@ userRoute.put("/orders",userAuth.isUserLogin,userController.cancelOrder)
 userRoute.get("/filter",handleSearch.handleSearch)
 
 
+//wishlist route
+userRoute.get("/wishList",userAuth.isUserLogin,userController.loadWishList)
+userRoute.post("/wishList",userAuth.isUserLogin,userController.addToWishList)
+userRoute.delete("/wishList",userAuth.isUserLogin,userController.removeFromWishList)
+
+//online payment verify route
+userRoute.post("/verifyOnlinePayment",userAuth.isUserLogin,userController.verifyOnlinePayment)
+
+//wallet route
+userRoute.get("/wallet",userAuth.isUserLogin,userController.loadWallet)
 
 module.exports = userRoute  

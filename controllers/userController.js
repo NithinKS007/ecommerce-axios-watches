@@ -12,6 +12,17 @@ const cart = require('../models/cartModel')
 const userAddress = require('../models/addressModel')
 const orders = require('../models/orderModel')
 const coupons = require('../models/couponModel')
+const wishList = require('../models/wishList')
+
+const transaction = require('../models/onlineTransactionModel')
+
+const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils');
+const wallet = require('../models/walletModel');
+
+require('dotenv').config();
+
+const RAZORPAY_SECRECT_KEY = process.env.RAZORPAY_SECRECT_KEY
+const RAZORPAY_ID_KEY  = process.env.RAZORPAY_ID_KEY 
 
 //hashing password
 const securePassword = async(password)=>{
@@ -307,6 +318,14 @@ const loadProductDetails = async (req,res) =>{
 
         const productDetails = await products.findById({_id:productId}).populate('category').populate('brand')
 
+        const productInWishList = await wishList.findOne({
+
+            userId: userFromGidSessionOrSession,
+            
+            productIds: { $in: [productId] }
+
+        }).exec();
+
         const relatedProducts = await products.find({category:productDetails.category,targetGroup:productDetails.targetGroup}).populate('category').populate('brand')
 
         if(!productDetails){
@@ -314,7 +333,7 @@ const loadProductDetails = async (req,res) =>{
             return res.status(404).send("product not found")
         }
 
-       return res.status(200).render("user/productDetails",{productDetails,relatedProducts,existingCartItem})
+       return res.status(200).render("user/productDetails",{productDetails,relatedProducts,existingCartItem,productInWishList})
         
     } catch (error) {
         
@@ -512,13 +531,19 @@ const loadCart = async (req,res) =>{
 
             const couponDetails = await coupons.find({couponStatus:true})
 
+            const isAlreadyUsedCoupons = await coupons.find({ userBy: userFromGidSessionOrSession });
+
+            const usedCoupons = isAlreadyUsedCoupons.map(coupon => coupon.couponCode)
+
+            const availableCoupons  = couponDetails.filter(coupon => !usedCoupons.includes(coupon.couponCode))
+
             const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product").exec()
 
-            const finalPrice =  await priceSummary(cartDetailsForPriceCalculation)
-
+            const { finalPrice,subTotal } =  await priceSummary(cartDetailsForPriceCalculation)
+            
             const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
 
-            return  res.status(200).render("user/cart",{cartDetails,finalPrice:finalPrice?.finalPrice, selectedItemsCount, couponDetails })
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons })
 
         }
 
@@ -532,73 +557,69 @@ const loadCart = async (req,res) =>{
 
 //calculating ORDER SUMMARY
 const priceSummary = async (cartData, couponCode) => {
+
+
     try {
+
       if (cartData?.items.length > 0) {
+
         const selectedItems = cartData.items.filter((item) => item?.isSelected);
         
-        let finalPrice = selectedItems.reduce((total, item) => 
-          total + item.price * item.quantity, 0
-        );
+        const subTotal = selectedItems.reduce((total, item) => total + item.price * item.quantity, 0);
   
-        const totalQuantity = selectedItems.reduce((total, item) => 
-          total + item.quantity, 0
-        );
+        let finalPrice = subTotal;
+
+        const totalQuantity = selectedItems.reduce((total, item) => total + item.quantity, 0);
   
         let discount = 0;
   
         if (couponCode) {
+
           console.log(`Coupon code received: ${couponCode}`);
           
           const coupon = await coupons.findOne({ couponCode: couponCode });
   
           if (coupon && coupon.couponStatus) {
+
             if (finalPrice >= coupon.minAmount) {
+
               discount = (finalPrice * coupon.couponDiscount) / 100;
   
               if (discount > coupon.maxAmount) {
+
                 discount = coupon.maxAmount;
+                
               }
   
               finalPrice -= discount;
 
             } else{
 
-                return {
-                    message: "Minimum amount for coupon is not met",
-                    finalPrice: parseFloat(finalPrice.toFixed(2)),
-                    totalQuantity,
-                    discount: 0
-                };
+                return { message: "Minimum amount for coupon is not met", subTotal: parseFloat(subTotal.toFixed(2)), finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: 0 };
 
             }
 
           }else {
-                    return {
-                        message: "Invalid or inactive coupon code",
-                        finalPrice: parseFloat(finalPrice.toFixed(2)),
-                        totalQuantity,
-                        discount: 0
-                    };
+                    return { message: "Invalid or inactive coupon code",subTotal: parseFloat(subTotal.toFixed(2)),finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: 0};
                 }
 
         }
   
-        return {
-          finalPrice: parseFloat(finalPrice.toFixed(2)),
-          totalQuantity,
-          discount: parseFloat(discount.toFixed(2))
-        };
+        return { subTotal: parseFloat(subTotal.toFixed(2)),finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: parseFloat(discount.toFixed(2)) };
+
       }
   
-      return { finalPrice: 0, totalQuantity: 0, discount: 0 };
+      return {  subTotal: 0,finalPrice: 0, totalQuantity: 0, discount: 0 };
   
     } catch (error) {
 
       console.log(`Error while calculating the price details: ${error.message}`);
-
      
     }
+
+    
   };
+
 //product adding to cart from the product details page
 
 const addToCart = async (req,res) =>{
@@ -687,7 +708,7 @@ const removeFromCart = async (req, res) => {
 
     try {
 
-      const { productId } = req.body
+      const { productId,couponCode } = req.body
   
       let userFromGidSessionOrSession
   
@@ -705,7 +726,10 @@ const removeFromCart = async (req, res) => {
      const deletedProductFromCart =  await cart.updateOne({user: userFromGidSessionOrSession},{$pull:{items:{product: productId}}})
 
      const productName = await products.findById(productId);
-     
+
+     const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
+
+     const {finalPrice,subTotal,discount} =  await priceSummary(cartDetails,couponCode)
 
      const isCartEmpty = await cart.findOne({user:userFromGidSessionOrSession})
 
@@ -717,7 +741,11 @@ const removeFromCart = async (req, res) => {
                 success: true,
                 message: "Item deleted from the cart successfully",
                 isEmpty:isEmpty,
-                productName:productName
+                productName:productName,
+                subTotal:subTotal,
+                finalPrice:finalPrice,
+                discount:discount,
+                cartDetails
             });
             } else {
             return res.status(500).json({
@@ -783,9 +811,9 @@ const removeFromCart = async (req, res) => {
         const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true})
 
 
-        const finalPrice =  await priceSummary(updatedItem,couponCode)
+        const { finalPrice,subTotal,discount } =  await priceSummary(updatedItem,couponCode)
 
-        return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice?.finalPrice})
+        return res.status(200).json({ success: true, updatedItem,finalPrice:finalPrice,subTotal:subTotal,discount:discount})
 
       } catch (error) {
 
@@ -840,9 +868,9 @@ const removeFromCart = async (req, res) => {
 
         await cartDetails.save()
 
-        const finalPrice =  await priceSummary(cartDetails,couponCode)
+        const { finalPrice,subTotal,discount } =  await priceSummary(cartDetails,couponCode)
 
-        return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice?.finalPrice,cartDetails:cartDetails});
+        return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice,cartDetails:cartDetails,subTotal:subTotal,discount:discount});
         
 
     } catch (error) {
@@ -1047,22 +1075,20 @@ const  loadCheckout = async (req,res) =>{
 
         }
 
-      
+        const {couponCode} = req.query
+
         const cartData = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product")
 
       
         
         const selectedItems = cartData.items.filter(item => item.isSelected)
 
-        
         const address = await userAddress.find({userId:userFromGidSessionOrSession})
 
 
-        const finalPrice = await priceSummary(cartData)
+        const {finalPrice,subTotal,discount}= await priceSummary(cartData,couponCode)
 
-        
-        
-        return res.status(200).render("user/checkout", { selectedItems,address,finalPrice:finalPrice?.finalPrice})
+        return res.status(200).render("user/checkout", { selectedItems,address,finalPrice,subTotal,discount,couponCode})
         
     } catch (error) {
         
@@ -1074,38 +1100,60 @@ const  loadCheckout = async (req,res) =>{
 const placeOrder = async (req,res) =>{
 
     try {
-        let userFromGidSessionOrSession 
+        
+        let userFromGidSessionOrSession
 
-        if(req.session.userId){
+        if (req.session.userId) {
 
-            userFromGidSessionOrSession = req.session.userId
+          userFromGidSessionOrSession = new ObjectId(req.session.userId)
 
-        }else if(req.user){
+        } else if (req.user) {
 
-            //checking for google session id 
-            userFromGidSessionOrSession = req.user.id
+          userFromGidSessionOrSession = new ObjectId(req.user.id)
 
         }
+        if (!userFromGidSessionOrSession) {
+            return res.status(400).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
 
-        const{paymentMethod,addressId} =req.body
+        const{paymentMethod,addressId,couponCode } = req.body
 
+          if (!addressId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Address ID is required'
+            });
+        }
         const address =  new ObjectId(addressId) 
 
         console.log(`this is address id from the front end`,address);
         console.log(`this is the payment method from the front end`,paymentMethod)
+        console.log(`this is the coupon code from the front end`,couponCode)
 
+        
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
         const addressData = await userAddress.findOne({_id:address})
 
-        const {finalPrice,totalQuantity} = await priceSummary(cartData)
+        const {finalPrice,totalQuantity,subTotal,discount} = await priceSummary(cartData,couponCode)
 
+        if(discount>0&&couponCode){
 
+            await coupons.findOneAndUpdate({ couponCode }, { $addToSet: { userBy: userFromGidSessionOrSession } })
+        }
         const isSelectedItemsOnly =  cartData.items.filter(item => { 
 
           return item.isSelected
 
        })
-
+       if (isSelectedItemsOnly.length === 0 || finalPrice === 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'No items selected or final price is zero',
+        });
+    }
        console.log(`this is is selected items only`,isSelectedItemsOnly);
    
        const orderItems = isSelectedItemsOnly.map(item =>({
@@ -1127,12 +1175,12 @@ const placeOrder = async (req,res) =>{
         strapMaterial:item.product.strapMaterial,
         dialShape:item.product.dialShape,
         images: item.product.images.map(image => image.url || image.path),
-        subTotal:finalPrice,
 
        }))
 
         const order = new orders({
 
+            onlinePaymentOrderId:null,
             items:orderItems,
             user:cartData.user,
             shippingAddress:{
@@ -1151,12 +1199,48 @@ const placeOrder = async (req,res) =>{
             },
 
             totalItems:totalQuantity,
+            subTotalAmount:subTotal,
+            discountAmount:discount,
             totalAmount:finalPrice,
             paymentMethod:paymentMethod,
         })
-        
+
+       let razorPayOrder
+
+       if(paymentMethod === "razorPay"){
+
+         razorPayOrder = await createRazorPayOrder(finalPrice)
+
+        if (!razorPayOrder||!razorPayOrder.id) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to create Razorpay order',
+            });
+        }
+
+        order.onlinePaymentOrderId = razorPayOrder.id
+
+       }
 
       const orderData = await order.save()
+
+      // creating transactions
+
+      if(paymentMethod === "razorPay"){
+
+        const newTransaction = new transaction ({
+
+            userId:userFromGidSessionOrSession,
+            orderId:orderData._id,
+            paymentProvider:paymentMethod,
+            onlinePaymentOrderId: razorPayOrder ? razorPayOrder.id : null,
+            amount:finalPrice,
+    
+        })
+    
+        const transactionsData = await newTransaction.save()
+      }
+      
 
       if (orderData) {
 
@@ -1180,6 +1264,19 @@ const placeOrder = async (req,res) =>{
 
         const removingFromCart = await cart.findOneAndUpdate({user:userFromGidSessionOrSession},{$pull:{items:{product:{$in:productIds}}}})
 
+        //razor pay section start
+        if(paymentMethod === "razorPay") {
+
+            return res.status(200).json({
+
+                success:true,
+                message:"Razor pay order created",
+                RAZORPAY_ID_KEY:RAZORPAY_ID_KEY,
+                amount:finalPrice,
+                razorPayOrderPaymentId:orderData.onlinePaymentOrderId
+            })
+        }
+        //razor pay section end
         return res.status(200).json({
             success: true,
             message: 'Order placed successfully',
@@ -1324,6 +1421,20 @@ const cancelOrderProduct = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
+
+    let userFromGidSessionOrSession 
+
+    if(req.session.userId){
+
+        userFromGidSessionOrSession = req.session.userId
+
+    }else if(req.user){
+
+        //checking for google session id 
+        userFromGidSessionOrSession = req.user.id
+
+    }
+
     
     const { orderId,orderStatus } = req.body;
 
@@ -1345,15 +1456,22 @@ const cancelOrder = async (req, res) => {
         //   let updatedOrderStatus 
           
           const order = await orders.findOne({_id:orderIdOfTheOrder})
-
           
-        
+          //Calculating the refund amount for the user's wallet by subtracting the discount from the total order value after canceling the entire order
+
+          const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+
+          const { discountOfTotalOrder } = await orders.findOne({_id:orderIdOfTheOrder},{_id:0,discountAmount:1})
+
+          console.log(`this is the discount of the total order : ${discountOfTotalOrder}`);
+          
           const anyNotDelivered = order.items.some(item => item.orderProductStatus !== 'delivered');
           const allCancelled = order.items.every(item => item.orderProductStatus === 'cancelled');
 
             if (anyNotDelivered||!allCancelled) {
         
             const allOrderCancelled = await orders.updateOne({_id:orderIdOfTheOrder},{$set:{orderStatus:"cancelled"}})
+            
 
             for (let item of order.items) {
                 if (item.orderProductStatus !== "cancelled") {
@@ -1568,14 +1686,14 @@ const applyCoupon = async (req, res) => {
 
             const cartDetailsForPriceCalculation = await cart.findOne({ user: userFromGidSessionOrSession }).populate("items.product").exec();
 
-            const{ finalPrice,discount,message }  = await priceSummary(cartDetailsForPriceCalculation, couponCode);
+            const{ finalPrice,discount,message,subTotal }  = await priceSummary(cartDetailsForPriceCalculation, couponCode);
             
             if (message) {
 
-                return res.status(400).json({ message, success: false, finalPrice, discount });
+                return res.status(400).json({ message, success: false, finalPrice, discount ,subTotal});
                 
             }
-            return res.status(200).json({ message: "coupon successfully added", success: true, finalPrice,discount });
+            return res.status(200).json({ message: "coupon successfully added", success: true, finalPrice,discount,subTotal});
 
         } else {
 
@@ -1593,7 +1711,265 @@ const applyCoupon = async (req, res) => {
 
 };
 
+const removeCoupon = async (req, res) => {
+    try {
+        let userFromGidSessionOrSession;
 
+        if (req.session.userId) {
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+        } else if (req.user) {
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+        }
+
+        const cartDetails = await cart.findOne({ user: userFromGidSessionOrSession })
+
+        if (cartDetails) {
+            // Recalculate the final price without any coupon
+            const { finalPrice, discount,subTotal} = await priceSummary(cartDetails);
+
+            return res.status(200).json({ message: "coupon successfully removed", success: true, finalPrice, discount,subTotal});
+
+        } else {
+
+            return res.status(400).json({ message: "No cart found", success: false });
+        }
+
+    } catch (error) {
+
+        console.log(`error while removing the coupon`, error.message);
+
+        return res.status(500).json({ message: "Internal Server error", success: false });
+
+    }
+};
+//loading user wishlist page
+const loadWishList = async (req,res) =>{
+
+    try {
+
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+
+        } else if (req.user) {
+
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+
+        }
+
+        const wishListOfUser = await wishList.findOne({userId:userFromGidSessionOrSession})
+
+        if(!wishListOfUser){
+
+            return res.send("No user found")
+        }
+
+        const productIds = wishListOfUser.productIds
+
+        const productData = await products.find({_id:{$in:productIds}})
+
+        return res.status(200).render("user/wishList",{productData})
+
+        
+    } catch (error) {
+        
+        console.log(`error while loading the wishlist`);
+    }
+}
+
+//product adding to wishlist
+const addToWishList = async (req, res) => {
+    try {
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+        } else if (req.user) {
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+        }
+
+        const { productId } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({ message: 'Product ID is required' });
+        }
+
+        const productObjectId = new ObjectId(productId);
+
+        // Find the wishlist for the user
+        const findExistingWishListForUser = await wishList.findOne({ userId: userFromGidSessionOrSession }).exec();
+
+        if (!findExistingWishListForUser) {
+            // If the wishlist does not exist, create it
+            const wishListProducts = new wishList({
+                userId: userFromGidSessionOrSession,
+                productIds: [productObjectId] 
+            });
+
+            const wishListData = await wishListProducts.save();
+
+            if (!wishListData) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Cannot add product to wishlist, something went wrong"
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Product added to the wishlist successfully",
+            });
+        } else {
+            // Check if the product is already in the wishlist
+            const productInWishList = await wishList.findOne({
+                userId: userFromGidSessionOrSession,
+                productIds: { $in: [productObjectId] }
+            }).exec();
+
+            if (productInWishList) {
+                return res.status(200).json({
+                    success: true,
+                    message: "Product is already in the wishlist"
+                });
+            }
+
+            // Push the product ID into the existing wishlist
+            await wishList.updateOne(
+                { userId: userFromGidSessionOrSession },
+                { $push: { productIds: productObjectId } }
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: "Product added to the existing user's wishlist",
+            });
+        }
+
+    } catch (error) {
+        console.log(`Error while adding product to wishlist: ${error.message}`);
+
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const removeFromWishList = async (req,res) =>{
+
+    try {
+
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+
+        } else if (req.user) {
+
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+
+        }
+
+        const { productId } = req.body;
+
+        if (!productId) {
+
+            return res.status(400).json({ message: 'Product ID is required' });
+
+        }
+
+        const productObjectId = new ObjectId(productId);
+
+        const findExistingWishListForUser = await wishList.findOne({ userId: userFromGidSessionOrSession }).exec();
+
+        if(!findExistingWishListForUser){
+
+            return res.status(400).json({ message: 'This users wish list is not found' });
+
+        }else{
+
+            await wishList.updateOne(
+
+                {userId:userFromGidSessionOrSession},
+                {$pull:{productIds:productObjectId}}
+
+            )
+
+            return res.status(200).json({
+
+                success:true,
+                message:"Product removed from the existing user's wishlist "
+            })
+
+        }
+        
+    } catch (error) {
+        
+        console.log(`error while removing the product from the wishlist`,error.message);
+
+        res.status(500).json({ message: 'Internal server error' });
+
+    }
+}
+
+const verifyOnlinePayment = async (req,res) =>{
+
+    try {
+        
+        const {paymentId, orderId, signature} = req.body
+
+        console.log("Request Body:", req.body);
+
+        const isValidPayment = verifyRazorPaySignature(paymentId,orderId,signature)
+
+        if (isValidPayment) {
+
+            await transaction.findOneAndUpdate({onlinePaymentOrderId:orderId},
+            {$set:{paymentStatus:"paid"}}
+            )
+          return  res.json({ success: true ,message:"Online payment verifyed for razorpay" });
+
+        } else {
+
+          return  res.status(400).json({ success: false,message:"Cannot verify online payment for razorpay" });
+
+        }
+        
+    } catch (error) {
+        
+        console.log(`error while verifiying the online payment for razorpay`,error.message);
+        
+    }
+}
+
+const loadWallet = async (req,res) =>{
+
+    try {
+
+        let userFromGidSessionOrSession;
+
+        if (req.session.userId) {
+
+            userFromGidSessionOrSession = new ObjectId(req.session.userId);
+
+        } else if (req.user) {
+
+            userFromGidSessionOrSession = new ObjectId(req.user.id);
+
+        }
+
+        const walletData = await wallet.findOne({userId:userFromGidSessionOrSession}) 
+
+        
+        return res.status(200).render("user/wallet",{walletData:walletData})
+
+
+    } catch (error) {
+
+        console.log(`error while loading the wallet page`,error.message);
+    
+    }
+}
 module.exports = {
 
   // user authentication
@@ -1622,6 +1998,8 @@ module.exports = {
     loadCheckout,
     loadPlaceOrder,
     loadOrders,
+    loadWishList,
+    loadWallet,
 
   // user profile management
 
@@ -1635,6 +2013,7 @@ module.exports = {
     updateQuantityFromCart,
     updatedSelectedItems,
     applyCoupon,
+    removeCoupon,
     
 
 
@@ -1656,4 +2035,10 @@ module.exports = {
     advancedSearch,
     searchProducts,
    
+    //wishlist manage
+    addToWishList,
+    removeFromWishList,
+
+    //verify online payment route
+    verifyOnlinePayment
 }

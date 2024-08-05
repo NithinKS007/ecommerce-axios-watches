@@ -1,0 +1,166 @@
+<%- include('../layouts/userLayouts/header') %>
+    <%- include('../layouts/userLayouts/navbar1') %>
+
+        <div class="container mt-5" id="mainContainer" style="height: auto;">
+            <div class="row">
+                <% if (productData.length===0) { %>
+                    <div class="col-12 text-center wishlistEmptyMessage" >
+                        <h2>Your wishlist is empty!</h2>
+                        <p>Add items to it now.</p>
+                        <a href="/home" class="btn btn-primary">Shop now</a>
+                    </div>
+                    <% } else { %>
+                        <div class="col-md-8" id="sendWishListItem">
+                           
+                            <% productData.forEach(product=> { %>
+                               
+                                <div class="card mb-3" id="productContainer<%= product._id %>">
+                                 
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                            <img src="/productImages/<%= product.images[0]?.filename %>"
+                                                class="card-img"
+                                                style="width: 100px; height: 100px; object-fit: cover; margin: 15px;"
+                                                alt="Product Image">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <%= product.name %>
+                                                </h5>
+                                                <strong>Price:</strong>
+                                               
+                                                        <%= product.regularPrice %>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="d-flex align-items-center">
+                                                        </div>
+                                                        <span class="text-secondary"
+                                                            onclick="removeFromWishList('<%= product._id %>')"
+                                                            style="text-decoration: none; cursor: pointer;margin-bottom: 50px;">Remove</span>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+        <div id="preloader-active">
+            <div class="preloader d-flex align-items-center justify-content-center">
+                <div class="preloader-inner position-relative">
+                    <div class="text-center">
+                        <h5 class="mb-5">Now Loading</h5>
+                        <div class="loader">
+                            <div class="bar bar1"></div>
+                            <div class="bar bar2"></div>
+                            <div class="bar bar3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          
+<script>
+     const removeFromWishList = async (productId) => {
+                try {
+                    const response = await fetch(`http://localhost:7000/wishList`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId })
+                    });
+
+                    if (!response.ok) {
+
+                        throw new Error(`Failed to remove product from wishlist: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    console.log('Product removed from wishlist:', result);
+
+                    const productCard = document.getElementById(`productContainer${productId}`);
+                        if (productCard) {
+
+                            productCard.remove();
+                            Swal.fire({
+                            icon: 'success',
+                            text: 'Product removed from wishlist successfully',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+                        }
+                       
+            const mainContainer = document.getElementById('mainContainer');
+            const productCards = mainContainer.querySelectorAll('.card');
+            
+            if (productCards.length === 0) {
+                // Remove existing empty message if present
+                const existingMessage = document.querySelector('.wishlistEmptyMessage');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+
+                // Create and append new empty wishlist message
+                const emptyWishlistMessage = document.createElement('div');
+                emptyWishlistMessage.className = 'col-12 text-center wishlistEmptyMessage';
+                emptyWishlistMessage.innerHTML = `
+                    <h2>Your wishlist is empty!</h2>
+                    <p>Add items to it now.</p>
+                    <a href="/home" class="btn btn-primary">Shop now</a>`;
+                mainContainer.querySelector('.row').appendChild(emptyWishlistMessage);
+            }
+                        
+                } catch (error) {
+                    console.log('Error removing product from wishlist:', error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Error removing product from wishlist',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            };
+
+</script>
+
+  <!-- Vendor JS -->
+  <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+  <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+  <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/plugins/slick.js"></script>
+  <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
+  <script src="assets/js/plugins/wow.js"></script>
+  <script src="assets/js/plugins/jquery-ui.js"></script>
+  <script src="assets/js/plugins/perfect-scrollbar.js"></script>
+  <script src="assets/js/plugins/magnific-popup.js"></script>
+  <script src="assets/js/plugins/select2.min.js"></script>
+  <script src="assets/js/plugins/waypoints.js"></script>
+  <script src="assets/js/plugins/counterup.js"></script>
+  <script src="assets/js/plugins/jquery.countdown.min.js"></script>
+  <script src="assets/js/plugins/images-loaded.js"></script>
+  <script src="assets/js/plugins/isotope.js"></script>
+  <script src="assets/js/plugins/scrollup.js"></script>
+  <script src="assets/js/plugins/jquery.vticker-min.js"></script>
+  <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
+  <!-- Template  JS -->
+  <script src="./assets/js/main.js?v=3.4"></script>
+  <script src="./assets/js/shop.js?v=3.4"></script> 
+
+    <!-- sweet alert js file from the installed npm install sweetalert2 library -->
+  <script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
+</body>
+
+</html>

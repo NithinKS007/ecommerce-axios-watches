@@ -1,13 +1,15 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/home" rel="nofollow">Home</a>  
-                <span></span><a href="/showcase?targetGroup=<%= productDetails.targetGroup %>"><%= productDetails.targetGroup %></a> <span></span> <a href="">Product Details</a>
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/home" rel="nofollow">Home</a>
+                    <span></span><a href="/showcase?targetGroup=<%= productDetails.targetGroup %>">
+                        <%= productDetails.targetGroup %>
+                    </a> <span></span> <a href="">Product Details</a>
+                </div>
             </div>
         </div>
-    </div>
         <div class="mobile-header-active mobile-header-wrapper-style">
             <div class="mobile-header-wrapper-inner">
                 <div class="mobile-header-top">
@@ -95,11 +97,11 @@
                                             <div class="clearfix product-price-cover">
                                                 <div class="product-price primary-color float-left">
                                                     <ins><span class="text-brand">₹ <%= productDetails.salesPrice %>
-                                                                </span></ins>
+                                                        </span></ins>
                                                     <ins><span class="old-price font-md ml-15">
                                                             <%= productDetails.regularPrice %>
                                                         </span></ins>
-                                                 
+
                                                 </div>
                                             </div>
                                             <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -108,42 +110,58 @@
                                                     <%= productDetails.description %>
                                                 </p>
                                             </div>
-                                       
+
 
                                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                            <div class="detail-extralink" style="display: flex; justify-content: center ; align-items: center;">
+                                            <div class="detail-extralink"
+                                                style="display: flex; justify-content: center ; align-items: center;">
 
-                                                <% if (productDetails?.isBlocked || productDetails.category?.isBlocked || productDetails.brand?.isBlocked||productDetails.stock<=0) { %>
+                                                <% if (productDetails?.isBlocked || productDetails.category?.isBlocked
+                                                    || productDetails.brand?.isBlocked||productDetails.stock<=0) { %>
                                                     <h4>
                                                         <div class="product-unavailable" style="color: red;">
                                                             Currently Unavailable
                                                         </div>
                                                     </h4>
-                                                <% } else { %>
-                                                    <div class="product-extra-link2">
-                                                        <% if (!existingCartItem) { %>
-                                                            <button type="submit" onclick="addToCart('<%=productDetails._id%>')" id="addToCart" class="button button-add-to-cart">Add to Cart</button>
-                                                        <% } else { %>
-                                                            <button type="submit" onclick="goToCart()" id="goToCart" class="button button-add-to-cart">Go to Cart</button>
+                                                    <% } else { %>
+                                                        <div class="product-extra-link2">
+                                                            <% if (!existingCartItem) { %>
+                                                                <button type="submit"
+                                                                    onclick="addToCart('<%=productDetails._id%>')"
+                                                                    id="addToCart" class="button button-add-to-cart">Add
+                                                                    to Cart</button>
+                                                                <% } else { %>
+                                                                    <button type="submit" onclick="goToCart()"
+                                                                        id="goToCart"
+                                                                        class="button button-add-to-cart">Go to
+                                                                        Cart</button>
+                                                                    <% } %>
+                                                        </div>
+                                                        <div class="product-extra-link2">
+                                                            <button type="submit" class="button button-add-to-cart"
+                                                                id="buyNow" style="margin-left: 10px;">Buy Now</button>
+                                                        </div>
                                                         <% } %>
-                                                    </div>
-                                                    <div class="product-extra-link2">
-                                                        <button type="submit" class="button button-add-to-cart" id="buyNow" style="margin-left: 10px;">Buy Now</button>
-                                                    </div>
-                                                <% } %>
-                                                <div class="product-extra-link2" style="margin-left: 10px;">
-
-                                                    <a aria-label="Add To Wishlist"
-                                                        href="#"><i class="fi-rs-heart"></i></a>
-
-                                                </div>
-
+                                                        <% if (productInWishList) { %>
+                                                            <div class="product-extra-link2" style="margin-left: 10px;">
+                                                                <a aria-label="Remove From Wishlist" class="wishlist-link" data-product-id="<%= productDetails._id %>">
+                                                                    <i class="fi-rs-heart" style="color: #f00;" onclick="removeFromWishList('<%= productDetails._id %>')"></i>
+                                                                </a>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div class="product-extra-link2" style="margin-left: 10px;">
+                                                                <a aria-label="Add To Wishlist" class="wishlist-link" data-product-id="<%= productDetails._id %>">
+                                                                    <i class="fi-rs-heart" onclick="addToWishList('<%= productDetails._id %>')"></i>
+                                                                </a>
+                                                            </div>
+                                                        <% } %>
+                                                    
                                             </div>
 
                                             <ul class="product-meta font-xs color-grey mt-50">
 
-                                               
-                                          
+
+
                                                 <% if (productDetails.stock===0) { %>
 
                                                     <li>Availability: <span class="in-stock text-danger ml-5">Out of
@@ -447,7 +465,7 @@
                                                                     </a>
                                                                 </div>
                                                                 <div class="product-action-1">
-                                                                    
+
                                                                     <a aria-label="Add To Wishlist"
                                                                         class="action-btn small hover-up" href="#"
                                                                         tabindex="0"><i class="fi-rs-heart"></i></a>
@@ -465,15 +483,20 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="product-price">
-                                                                   <%if(relatedProducts[i].isBlocked || relatedProducts[i].category?.isBlocked ||relatedProducts[i].brand?.isBlocked){%>
+                                                                    <%if(relatedProducts[i].isBlocked ||
+                                                                        relatedProducts[i].category?.isBlocked
+                                                                        ||relatedProducts[i].brand?.isBlocked){%>
 
-                                                                    <span style="color: red; font-size: 15px;">Currently Unavailable</span>
-                                                                    <% } else { %>
-                                                                    <span> ₹ <%= relatedProducts[i].salesPrice %></span>
-                                                                    <span class="old-price">
-                                                                        <%= relatedProducts[i].regularPrice %>
-                                                                    </span>
-                                                                    <% } %>
+                                                                        <span
+                                                                            style="color: red; font-size: 15px;">Currently
+                                                                            Unavailable</span>
+                                                                        <% } else { %>
+                                                                            <span> ₹ <%= relatedProducts[i].salesPrice
+                                                                                    %></span>
+                                                                            <span class="old-price">
+                                                                                <%= relatedProducts[i].regularPrice %>
+                                                                            </span>
+                                                                            <% } %>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -498,55 +521,179 @@
 
         <script>
 
+                //add to wishlist
+                const addToWishList = async (productId) => {
+                    try {
 
-            
-             const addToCart = (productId) =>{
+                        const response = await fetch(`http://localhost:7000/wishList`, {
+
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ productId })
+                        });
+
+                        if (!response.ok) {
+
+                            throw new Error(`Failed to add product to wishlist: ${response.statusText}`);
+                        }
+
+                        const result = await response.json();
+
+                        console.log('Product added to wishlist:', result);
+
+                        const icon = document.querySelector(`[data-product-id="${productId}"]`);
+                        if (icon) {
+                            icon.style.backgroundColor = '#fff';
+                            icon.querySelector('i').style.color = '#f00';
+                            icon.onclick = () => removeFromWishList(productId);
+
+                        }
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Product Added to wishlist successfully',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+
+                    } catch (error) {
+
+                        console.log('Error adding product to wishlist:', error);
+
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Error adding product to wishlist:',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+
+                    }
+
+                };
+            //removing product from wishlist
+            const removeFromWishList = async (productId) => {
+                try {
+                    const response = await fetch(`http://localhost:7000/wishList`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId })
+                    });
+
+                    if (!response.ok) {
+
+                        throw new Error(`Failed to remove product from wishlist: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    console.log('Product removed from wishlist:', result);
+
+                    const icon = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (icon) {
+                        icon.style.backgroundColor = '';
+                        icon.querySelector('i').style.color = '';
+                        icon.onclick = () => addToWishList(productId);
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Product removed from wishlist successfully',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+
+                } catch (error) {
+                    console.log('Error removing product from wishlist:', error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Error removing product from wishlist',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            };
+
+            const addToCart = (productId) => {
 
                 const addToCartButton = document.getElementById("addToCart")
 
-                fetch(`http://localhost:7000/productDetails/`,{
+                fetch(`http://localhost:7000/productDetails/`, {
 
-                    method:"POST",
-                    headers:{
+                    method: "POST",
+                    headers: {
 
-                        "Content-Type":"application/json"
+                        "Content-Type": "application/json"
                     },
 
-                    body:JSON.stringify({productId})
+                    body: JSON.stringify({ productId })
 
-                }).then((response)=>{
+                }).then((response) => {
 
-                    if(!response.ok){
+                    if (!response.ok) {
 
                         throw new Error("Network response was not ok")
                     }
 
                     return response.json()
 
-                }).then((data)=>{
+                }).then((data) => {
 
                     console.log(data);
-
+                                        Swal.fire({
+                        icon: 'success',
+                        text: 'The product has been added to your cart successfully.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
 
                     addToCartButton.textContent = "Go to Cart"
                     addToCartButton.removeAttribute("onclick")
-                    addToCartButton.addEventListener("click",()=>{
+                    addToCartButton.addEventListener("click", () => {
 
-                        window.location.href =  "http://localhost:7000/cart"
+                        window.location.href = "http://localhost:7000/cart"
                     })
 
-                }).catch((error)=>{
+                }).catch((error) => {
 
-                    console.log(`error while fetching the data`,error.message)
+                    console.log(`error while fetching the data`, error.message)
+                    Swal.fire({
+                    icon: 'success',
+                    text: 'The product has been added to your cart successfully.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+
                 })
-                
 
-             }
 
-             const goToCart = () =>{
+            }
 
-                window.location.href =  "http://localhost:7000/cart"
-             }
+            const goToCart = () => {
+
+                window.location.href = "http://localhost:7000/cart"
+            }
         </script>
 
         <%- include('../layouts/userLayouts/footer') %>

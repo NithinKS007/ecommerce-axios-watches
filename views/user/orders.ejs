@@ -19,6 +19,8 @@
                                                     <div>
                                                         <p class="mb-1"><strong>Order Number:</strong> #<%= order._id %></p>
                                                         <p class="mb-1"><strong>Total:</strong> ₹ <%= order.totalAmount %></p>
+                                                        <p class="mb-1"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
+                                                        <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                                     </div>
                                                     <div id="orderStatus<%= order._id %>" class="text-warning">
                                                         <strong><%= order.orderStatus.toUpperCase() %></strong>
@@ -30,6 +32,8 @@
                                                         <p class="mb-1">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %></p>
                                                         <p class="mb-1">Ship To: <%= order.shippingAddress.name %></p>
                                                         <p class="mb-1" style="margin-left: 55px;"><%= order.shippingAddress.address %></p>
+                                                        <p class="mb-1" style="margin-left: 55px;"><%= order.shippingAddress.cityDistTown %>, <%= order.shippingAddress.state %></p>
+                                                        <p class="mb-1" style="margin-left: 55px;">Pincode: <%= order.shippingAddress.pincode %></p>
                                                         
                                                     </div>
                                                     <% order.items.forEach(item => { %>
@@ -47,6 +51,7 @@
                                                             </div>
                                                             <div class="flex-grow-1" >
                                                                 <p class="mb-1"><strong>Name:</strong> <%= item.productName %></p>
+                                                                <p class="mb-1"><strong>Brand:</strong> <%= item.brandName %></p>
                                                                 <p class="mb-0"><strong>Price:</strong> ₹ <%= item.price %> inc GST</p>
                                                                 <p id="orderProductStatus<%= item._id %>" class="order-product-status mb-0 text-warning">
                                                                     <strong>Status: <%= item.orderProductStatus.toUpperCase() %></strong>
@@ -73,6 +78,12 @@
                                                             </div>
                                                         </div>
                                                     <% }); %>
+                                                    <div class="mb-3">
+                                                        <p class="mb-1"><strong>Subtotal:</strong> ₹ <%= order.subTotalAmount %></p>
+                                                        <p class="mb-1"><strong>Discount:</strong> ₹ <%= order.discountAmount %></p>
+                                                        <p class="mb-1"><strong>Total:</strong> ₹ <%= order.totalAmount %></p>
+                                                        <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                                    </div>
                                                     <div class="text-end">
                                                         <% if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
                                                             <button class="btn btn-secondary btn-sm">Invoice</button>
@@ -155,11 +166,11 @@
 
                             Swal.fire({
                                         icon: 'success',
-                                        title: 'Cancelled',
                                         text: 'The product has been cancelled successfully.',
                                         toast: true,
                                         position: 'top-right',
                                         showConfirmButton: false,
+                                        timerProgressBar: true,
                                         timer: 3000
                                     });
 
@@ -182,11 +193,11 @@
 
                         Swal.fire({
                                     icon: 'error',
-                                    title: 'Error',
                                     text: `Error: ${error.message}`,
                                     toast: true,
                                     position: 'top-right',
                                     showConfirmButton: false,
+                                    timerProgressBar: true,
                                     timer: 3000
                                 });
 

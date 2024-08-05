@@ -1,7 +1,6 @@
 const otpGenerator = require('otp-generator');
 const nodemailer = require('nodemailer')
 const OTP = require('../models/otpModel')
-const crypto = require('crypto');
 require('dotenv').config();
 
 

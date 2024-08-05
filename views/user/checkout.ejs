@@ -1,8 +1,5 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
-
-        <%console.log(finalPrice)%>
-
             <main class="container my-5">
                 <h1 style=" font-size: 24px;
                 font-weight: bold;
@@ -332,9 +329,16 @@
                             <div class="card-body">
                                 <h5 class="card-title">ORDER SUMMARY</h5>
                                 <p class="card-text d-flex justify-content-between">
-                                    <span id="selection">Sub Total</span>
+                                    <span id="selection">SubTotal Amount</span>
                                     <span id="subTotalPrice">Rs
-                                        <%=finalPrice%>
+                                        <%=subTotal%>
+                                    </span>
+                                </p>
+                                <input type="hidden" id="couponCode" name="couponCode" value="<%= couponCode %>">
+                                <p class="card-text d-flex justify-content-between">
+                                    <span id="selection">Coupon Discount</span>
+                                    <span id="discount">Rs
+                                        <%=discount%>
                                     </span>
                                 </p>
                                 <p class="card-text d-flex justify-content-between">
@@ -357,17 +361,10 @@
                             <div class="card-body">
                                 <h3 class="card-title h5 mb-3">Payment Method</h3>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="creditCard"
-                                        value="creditCard">
-                                    <label class="form-check-label" for="creditCard">
-                                        Credit Card
-                                    </label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="paypal"
-                                        value="paypal">
-                                    <label class="form-check-label" for="paypal">
-                                        PayPal
+                                    <input class="form-check-input" type="radio" name="payment_method" id="razorPay"
+                                        value="razorPay">
+                                    <label class="form-check-label" for="razorPay">
+                                       Razor Pay
                                     </label>
                                 </div>
                                 <div class="form-check">
@@ -413,9 +410,7 @@
                     });
 
 
-
-                    const creditCard = document.getElementById('creditCard');
-                    const paypal = document.getElementById('paypal');
+                    const razorPay = document.getElementById('razorPay');
                     const cashOnDelivery = document.getElementById('cashOnDelivery');
                     const placeOrderButton = document.getElementById('placeOrder');
 
@@ -424,16 +419,17 @@
 
                         const selectedPaymentMethod = getSelectedPaymentMethod();
                         const selectedAddressId = getSelectedAddressId()
+                        const couponCode = document.getElementById('couponCode').value;
 
                         if (!selectedPaymentMethod && !selectedAddressId) {
 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
                                 text: 'Please select a payment method and address.',
                                 toast: true,
                                 position: 'top-right',
                                 showConfirmButton: false,
+                                timerProgressBar: true,
                                 timer: 3000
                             });
 
@@ -441,11 +437,11 @@
 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
                                 text: 'Please select an address.',
                                 toast: true,
                                 position: 'top-right',
                                 showConfirmButton: false,
+                                timerProgressBar: true,
                                 timer: 3000
                             });
 
@@ -453,11 +449,11 @@
 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
                                 text: 'Please select a payment method.',
                                 toast: true,
                                 position: 'top-right',
                                 showConfirmButton: false,
+                                timerProgressBar: true,
                                 timer: 3000
                             });
 
@@ -468,7 +464,7 @@
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ paymentMethod: selectedPaymentMethod, addressId: selectedAddressId }),
+                                body: JSON.stringify({ paymentMethod: selectedPaymentMethod, addressId: selectedAddressId,couponCode: couponCode }),
                             })
                                 .then(response => response.json())
 
@@ -477,19 +473,44 @@
                                     console.log('Success:', data)
                                     if (data.success) {
 
-                                        Swal.fire({
+                                        if(selectedPaymentMethod === "razorPay"){
+
+                                            const options = {
+
+                                                "key":data.RAZORPAY_ID_KEY,
+                                                "amount":data.amount * 100,
+                                                "currency":"INR",
+                                                "name":"axios watches",
+                                                "order_id":data.razorPayOrderPaymentId,
+                                                "handler":(response)=>{
+
+                                                    console.log("this is the response from the verify fun",response)
+
+                                                    verifyOnlinePayment(response.razorpay_payment_id,response.razorpay_order_id,response.razorpay_signature,response.amount)
+                                                },
+                                               
+                                            }
+                                            const rzp = new Razorpay(options)
+                                            rzp.open()
+
+                                        }else{
+
+
+                                            Swal.fire({
                                             icon: 'success',
-                                            title: 'Success',
                                             text: 'Order placed successfully!',
                                             toast: true,
                                             position: 'top-right',
                                             showConfirmButton: false,
+                                            timerProgressBar: true,
                                             timer: 3000
                                         }).then(() => {
 
                                             window.location.href = "http://localhost:7000/placeOrder";
 
                                         });
+                                        }
+                                        
                                     }
 
 
@@ -498,11 +519,11 @@
                                 .catch((error) => {
                                     Swal.fire({
                                         icon: 'error',
-                                        title: 'Error',
                                         text: `An error occurred: ${error.message}`,
                                         toast: true,
                                         position: 'top-right',
                                         showConfirmButton: false,
+                                        timerProgressBar: true,
                                         timer: 3000
                                     });
 
@@ -513,14 +534,65 @@
 
                     });
 
+            
+
+            const verifyOnlinePayment = (paymentId, orderId, signature,amount) =>{
+
+                console.log(`klkjsdlfasdh`,paymentId, orderId, signature);
+                
+            fetch('http://localhost:7000/verifyOnlinePayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ paymentId, orderId, signature ,amount }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Payment successful!',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    }).then(() => {
+                          window.location.href = "http://localhost:7000/placeOrder";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Payment verification failed. Please contact support.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    text: 'An error occurred during payment verification.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            });
+        }
+
                     function getSelectedPaymentMethod() {
 
-                        if (creditCard.checked) {
-                            return creditCard.value;
-                        } else if (cashOnDelivery.checked) {
+                         if (cashOnDelivery.checked) {
                             return cashOnDelivery.value;
-                        } else if (paypal.checked) {
-                            return paypal.value;
+                        } else if (razorPay.checked) {
+                            return razorPay.value;
                         }
                         return null
                     }
@@ -670,11 +742,11 @@
 
                                         Swal.fire({
                                             icon: 'success',
-                                            title: 'Success',
                                             text: `${data.updatedUserAddress.addressType} address successfully updated.`,
                                             toast: true,
                                             position: 'top-right',
                                             showConfirmButton: false,
+                                            timerProgressBar: true,
                                             timer: 3000
                                         });
                                     }
@@ -686,11 +758,11 @@
 
                                     Swal.fire({
                                         icon: 'error',
-                                        title: 'Error',
                                         text: `An error occurred: ${error.message}`,
                                         toast: true,
                                         position: 'top-right',
                                         showConfirmButton: false,
+                                        timerProgressBar: true,
                                         timer: 3000
                                     });
 

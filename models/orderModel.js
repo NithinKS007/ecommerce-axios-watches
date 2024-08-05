@@ -87,15 +87,21 @@ const orderItemSchema = new mongoose.Schema({
     enum: ['pending', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  subTotal: { 
-    type: Number, 
-    required: true 
-  }
+  productDiscountAmount:{
+    type : Number,
+    required : true,
+    default : 0
+   },
 
 }, { timestamps: true });
 
 const orderSchema = new mongoose.Schema({
 
+  onlinePaymentOrderId:{
+
+    type:String
+    
+  },
   items: [orderItemSchema],
 
   user: {
@@ -107,6 +113,16 @@ const orderSchema = new mongoose.Schema({
     type : Number,
     required : true,
     default : 1
+   },
+   subTotalAmount:{
+    type : Number,
+    required : true,
+    default : 0
+   },
+   discountAmount:{
+    type : Number,
+    required : true,
+    default : 0
    },
    totalAmount : {
     type : Number,

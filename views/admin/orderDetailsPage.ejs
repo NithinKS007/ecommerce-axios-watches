@@ -61,6 +61,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <strong>Payment Method:</strong> <%= userOrderDataDetails.paymentMethod %>
+                                <p><strong>Online Payment Order ID:</strong> <%= userOrderDataDetails.onlinePaymentOrderId || 'N/A' %></p>
                             </div>
                             <div class="col-md-6">
                                 <strong>Delivery date:</strong> 
@@ -105,7 +106,8 @@
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
                                 <th scope="col">Quantity</th>
-                                <th scope="col">Price</th>
+                                <th scope="col">Sales Price</th>
+                                <th scope="col">Regular Price</th>
                                 <th scope="col">Total</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Date</th>
@@ -135,8 +137,9 @@
                                         <td><%= item.brandName %></td>
                                         <td><%= item.categoryName %></td>
                                         <td><%= item.quantity %></td>
-                                        <td>Rs <%= item.price %></td>
-                                        <td>Rs <%= item.price * item.quantity %></td>
+                                        <td>Rs<%= item.price %></td>
+                                        <td>Rs<%= item.regularPrice %></td>
+                                        <td>Rs<%= item.price * item.quantity %></td>
                                         <td><span class="badge rounded-pill alert-warning" data-productOrder-status="<%= item.orderProductStatus %>"><%= item.orderProductStatus %></span></td>
                                         <td><%= new Date(item.createdAt).toLocaleString() %></td>
                                     </tr>
@@ -155,7 +158,20 @@
                         <ul class="list-unstyled" style="margin-bottom: 0;">
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
                                 <strong style="flex: 1;">Subtotal:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.totalAmount %></span>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.subTotalAmount %></span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <strong style="flex: 1;">Discount:</strong>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.discountAmount%></span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <strong style="flex: 1;">Total Items:</strong>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.totalItems %></span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                
+                                <strong style="flex: 1;">Shipping:</strong>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Free</span>
                             </li>
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
                                 <strong style="flex: 1;">Grand total:</strong>
@@ -273,12 +289,12 @@ const toggleAndUpdateStatus = () => {
                 .then(data => {
                     if (data.adminCannotCancel) {
                         Swal.fire({
-                            title: 'Error!',
                             text: 'Sorry, the user has already canceled the order.',
                             icon: 'error',
                             toast: true,
                             position: 'top-right',
                             showConfirmButton: false,
+                            timerProgressBar: true,
                             timer: 3000,
                         });
                        
@@ -287,12 +303,12 @@ const toggleAndUpdateStatus = () => {
                         return;
                     }
                     Swal.fire({
-                        title: 'Saved!',
                         text: 'Order status has been updated.',
                         icon: 'success',
                         toast: true,
                         position: 'top-right',
                         showConfirmButton: false,
+                        timerProgressBar: true,
                         timer: 3000,
                     });
                     editButton.style.display = "inline-block";
@@ -302,12 +318,12 @@ const toggleAndUpdateStatus = () => {
                 .catch(error => {
                     console.error('Error updating order status:', error);
                     Swal.fire({
-                        title: 'Error!',
                         text: 'Failed to update order status.',
                         icon: 'error',
                         toast: true,
                         position: 'top-right',
                         showConfirmButton: false,
+                        timerProgressBar: true,
                         timer: 3000,
                     });
                 });

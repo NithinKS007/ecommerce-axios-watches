@@ -91,10 +91,16 @@
                                                                     alt="">
                                                             </a>
                                                         </div>
+                                                
                                                         <div class="product-action-1">
-                                                            <a aria-label="Add To Wishlist" class="action-btn hover-up"
-                                                                href="#"><i class="fi-rs-heart"></i></a>
+
+                                                            <a aria-label="Add To Wishlist"
+                                                                class="action-btn hover-up" href="#"><i
+                                                                    class="fi-rs-heart"></i></a>
                                                         </div>
+                                                        
+                                                     
+                       
                                                     </div>
                                                     <div class="product-content-wrap">
                                                         <div class="product-category">
@@ -150,16 +156,17 @@
 
             if (successMessage) {
                 Swal.fire({
-                    title: 'Success!',
                     text: successMessage,
                     icon: 'success',
                     toast: true,
                     position: 'top-right',
                     showConfirmButton: false,
+                    timerProgressBar: true,
                     timer: 5000
                 });
             }
         });
+       
 
         </script>
         <%- include('../layouts/userLayouts/footer') %>

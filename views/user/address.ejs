@@ -301,11 +301,11 @@
                     updateNewAddress(id, data.updatedUserAddress);
                     Swal.fire({
                             icon: 'success',
-                            title: 'Updated!',
                             text: `${data.updatedUserAddress.addressType} address successfully updated.`,
                             toast: true,
                             position: 'top-right',
                             showConfirmButton: false,
+                            timerProgressBar: true,
                             timer: 3000
                         });
                     }
@@ -320,11 +320,11 @@
 
                 Swal.fire({
                         icon: 'error',
-                        title: 'Error',
                         text: `An error occurred: ${error.message}`,
                         toast: true,
                         position: 'top-right',
                         showConfirmButton: false,
+                        timerProgressBar: true,
                         timer: 3000
                     });
                 })
@@ -409,11 +409,11 @@
 
                 Swal.fire({
                     icon: 'success',
-                    title: 'Deleted!',
                     text: 'Your address has been deleted.',
                     toast: true,
                     position: 'top-right',
                     showConfirmButton: false,
+                    timerProgressBar: true,
                     timer: 3000
                 });
                 }).catch((error)=>{
@@ -422,11 +422,11 @@
 
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
                     text: `An error occurred: ${error.message}`,
                     toast: true,
                     position: 'top-right',
                     showConfirmButton: false,
+                    timerProgressBar: true,
                     timer: 3000
                 });
 
