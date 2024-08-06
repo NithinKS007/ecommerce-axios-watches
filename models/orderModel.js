@@ -87,11 +87,6 @@ const orderItemSchema = new mongoose.Schema({
     enum: ['pending', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  productDiscountAmount:{
-    type : Number,
-    required : true,
-    default : 0
-   },
 
 }, { timestamps: true });
 

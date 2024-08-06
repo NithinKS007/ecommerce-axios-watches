@@ -90,4 +90,5 @@ userRoute.post("/verifyOnlinePayment",userAuth.isUserLogin,userController.verify
 //wallet route
 userRoute.get("/wallet",userAuth.isUserLogin,userController.loadWallet)
 
+
 module.exports = userRoute  

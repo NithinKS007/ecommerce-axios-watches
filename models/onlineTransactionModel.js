@@ -15,7 +15,7 @@ const transactionSchema = new mongoose.Schema({
   },
   paymentProvider:{
     type: String,
-    required:true
+    required:false
   },
   onlinePaymentOrderId:{
     type:String,
@@ -32,7 +32,7 @@ const transactionSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['created', 'paid', 'failed', 'refunded'],
+    enum: ['created', 'paid', 'failed'],
     default: 'created'
 }
 }, { timestamps: true });

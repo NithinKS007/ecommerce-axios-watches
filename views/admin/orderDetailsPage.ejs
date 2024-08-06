@@ -166,7 +166,7 @@
                             </li>
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
                                 <strong style="flex: 1;">Total Items:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.totalItems %></span>
+                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;"> <%= userOrderDataDetails.totalItems %></span>
                             </li>
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
                                 
@@ -302,6 +302,7 @@ const toggleAndUpdateStatus = () => {
                         saveButton.style.display = "none";
                         return;
                     }
+                    console.log(`this is datas`,data);
                     Swal.fire({
                         text: 'Order status has been updated.',
                         icon: 'success',

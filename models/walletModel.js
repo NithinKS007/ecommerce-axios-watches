@@ -2,10 +2,32 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
+const walletTransactions = new mongoose.Schema({
+
+    orderId: {
+        type: ObjectId,
+        ref: 'order', 
+        required: true
+    },
+    amount: {
+        type: Number,
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    },
+    walletTransactionStatus:{
+        type:String,
+        enum: ["refunded","pending", "paid"],
+         default: "pending"
+    }
+}, { timestamps: true });
+
 const walletSchema = new mongoose.Schema({
     userId: {
         type: ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true,
         unique: true 
     },
@@ -14,10 +36,9 @@ const walletSchema = new mongoose.Schema({
         required: true,
         default: 0 
     },
-    transactions: [{ 
-        type: ObjectId,
-        ref: 'transaction' 
-    }]
+
+   transactions:[walletTransactions]
+
 }, { timestamps: true });
 
 

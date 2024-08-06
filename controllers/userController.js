@@ -1157,7 +1157,6 @@ const placeOrder = async (req,res) =>{
        console.log(`this is is selected items only`,isSelectedItemsOnly);
    
        const orderItems = isSelectedItemsOnly.map(item =>({
-
         product:item.product._id,
         productName:item.product.name,
         brand: item.product.brand._id,
@@ -1354,6 +1353,24 @@ const loadOrders = async (req,res) =>{
 
 const cancelOrderProduct = async (req, res) => {
 
+    let userFromGidSessionOrSession
+
+    if (req.session.userId) {
+
+      userFromGidSessionOrSession = new ObjectId(req.session.userId)
+
+    } else if (req.user) {
+
+      userFromGidSessionOrSession = new ObjectId(req.user.id)
+
+    }
+    if (!userFromGidSessionOrSession) {
+        return res.status(400).json({
+            success: false,
+            message: 'User not found'
+        });
+    }
+
     const { itemId, orderId,orderProductStatus } = req.body;
 
     try {
@@ -1380,28 +1397,84 @@ const cancelOrderProduct = async (req, res) => {
 
          if(updatedProductStatus.modifiedCount > 0){
 
+            //Finding the data for adding money to the wallet when canceling each individual product
+
+            const orderData = await orders.findById(orderIdOfTheCart)
+            const {subTotalAmount,discountAmount,items} = orderData
+            const canceledItem = items.find(item => item._id.equals(orderIdOfTheItem));
+            
+            if (!canceledItem) {
+
+                return res.status(404).json({ error: 'Item not found in the order' });
+            }
+            
+            const itemTotalAmount = canceledItem.price*canceledItem.quantity
+            const itemProportion = itemTotalAmount/subTotalAmount
+            const itemDiscount = itemProportion*discountAmount
+            const priceAfterEverything = itemTotalAmount-itemDiscount.toFixed(3);
+            
+            
+            const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+
+            if (!walletData) {
+
+                return res.status(404).json({ error: 'Wallet not found' });
+            }
+       
+            if (orderData.paymentMethod === "razorPay") {
+                const newWalletTransaction = {
+                    orderId: orderIdOfTheCart, 
+                    amount: priceAfterEverything,
+                    type: "credit",
+                    walletTransactionStatus: "refunded" 
+                };
+            
+                await wallet.findOneAndUpdate(
+                    { userId: userFromGidSessionOrSession },
+                    { 
+                        $inc: { balance: priceAfterEverything },
+                        $push: { transactions: newWalletTransaction }
+                    },
+                    { new: true }
+                );
+            }
+            
+            
+
+             // Update stock quantity after canceling
         const orderDataOfTheProduct = await orders.aggregate([
             { $match: { _id: orderIdOfTheCart } },
             { $unwind: "$items" },
             { $match: { "items._id": orderIdOfTheItem } },
             { $project: { _id: 0, quantity: "$items.quantity" ,productId:"$items.product"} }
           ]);
-          
+
+          const anyNotDelivered = orderData.items.some(item => item.orderProductStatus !== 'delivered');
+          const allCancelled = orderData.items.every(item => item.orderProductStatus === 'cancelled');
+
+          let  allOrderCancelled
+
+          if(anyNotDelivered&&allCancelled){
+
+             allOrderCancelled = await orders.updateOne({_id:orderIdOfTheCart},{$set:{orderStatus:"cancelled"}})
+            
+          }
+
+
           const {quantity,productId} =   orderDataOfTheProduct[0] || {};
-          
-          console.log(`sdklfdslfdlfsfd`, quantity,productId);
-
-
+        
           const updateStockQuantityAfterCancel = await products.findByIdAndUpdate(productId,{$inc:{stock:quantity}},{new:true})
+
 
               if(updateStockQuantityAfterCancel){
 
-                 return res.status(200).json({message:"product status updated successfully",success:true,updatedProductStatus:updatedProductStatus,returnStatus:false})
+                 return res.status(200).json({message:"product status updated successfully",success:true,updatedProductStatus:updatedProductStatus,returnStatus:false,allOrderCancelled:allOrderCancelled})
   
               }
            
 
-           }
+           
+        }
 
        }else if(orderProductStatus==="delivered"){
 
@@ -1426,12 +1499,12 @@ const cancelOrder = async (req, res) => {
 
     if(req.session.userId){
 
-        userFromGidSessionOrSession = req.session.userId
+        userFromGidSessionOrSession = new ObjectId(req.session.userId);
 
     }else if(req.user){
 
         //checking for google session id 
-        userFromGidSessionOrSession = req.user.id
+        userFromGidSessionOrSession =  new ObjectId(req.user.id);
 
     }
 
@@ -1461,10 +1534,8 @@ const cancelOrder = async (req, res) => {
 
           const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
 
-          const { discountOfTotalOrder } = await orders.findOne({_id:orderIdOfTheOrder},{_id:0,discountAmount:1})
-
-          console.log(`this is the discount of the total order : ${discountOfTotalOrder}`);
-          
+          const { totalAmount } = await orders.findOne({_id:orderIdOfTheOrder},{_id:0,totalAmount:1})
+         
           const anyNotDelivered = order.items.some(item => item.orderProductStatus !== 'delivered');
           const allCancelled = order.items.every(item => item.orderProductStatus === 'cancelled');
 
@@ -1472,6 +1543,21 @@ const cancelOrder = async (req, res) => {
         
             const allOrderCancelled = await orders.updateOne({_id:orderIdOfTheOrder},{$set:{orderStatus:"cancelled"}})
             
+
+            if(order.paymentMethod==="razorPay"){
+
+                const newWalletTransaction = {
+
+                    orderId:orderIdOfTheOrder,
+                    amount:totalAmount,
+                    type:"credit",
+                    walletTransactionStatus:"refunded"
+
+                }
+
+               await wallet.findOneAndUpdate({userId:userFromGidSessionOrSession},{$inc:{balance:totalAmount},$push:{transactions:newWalletTransaction}},{new:true})
+               
+              }
 
             for (let item of order.items) {
                 if (item.orderProductStatus !== "cancelled") {
@@ -1942,34 +2028,53 @@ const verifyOnlinePayment = async (req,res) =>{
     }
 }
 
-const loadWallet = async (req,res) =>{
+const loadWallet = async (req, res) => {
 
     try {
-
         let userFromGidSessionOrSession;
 
         if (req.session.userId) {
-
             userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
         } else if (req.user) {
-
             userFromGidSessionOrSession = new ObjectId(req.user.id);
-
         }
 
-        const walletData = await wallet.findOne({userId:userFromGidSessionOrSession}) 
+        let walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
 
-        
-        return res.status(200).render("user/wallet",{walletData:walletData})
+        if (!walletData) {
 
+            const newWalletData = new wallet({
+
+                userId: userFromGidSessionOrSession
+
+            });
+
+            walletData = await newWalletData.save();
+        }
+
+        return res.status(200).render("user/wallet", { walletData,transactionsData:walletData.transactions});
 
     } catch (error) {
 
-        console.log(`error while loading the wallet page`,error.message);
-    
+        console.log(`Error while loading the wallet page:`, error.message);
+
+        return res.status(500).send("Internal Server Error");
     }
 }
+
+// const returnProduct = async (req,res) =>{
+
+//     try {
+
+
+        
+//     } catch (error) {
+        
+//         console.log(`error while returning the product`,error.message);
+        
+//     }
+// }
+
 module.exports = {
 
   // user authentication

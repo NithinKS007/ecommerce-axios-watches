@@ -185,6 +185,32 @@
                             orderProductStatusElement.innerHTML = '<strong>Status: CANCELLED</strong>';
 
                         }
+                         // Check if all items are cancelled and update the order status
+                if (data.allOrderCancelled) {
+                    const cancelOrderButton = document.getElementById(`cancelOrderButton${orderId}`);
+                    if (cancelOrderButton) {
+                        cancelOrderButton.disabled = true;
+                        cancelOrderButton.textContent = "Cancel Order";
+                    }
+
+                    const orderStatusElement = document.getElementById(`orderStatus${orderId}`);
+                    if (orderStatusElement) {
+                        orderStatusElement.innerHTML = '<strong>CANCELLED</strong>';
+                    }
+
+                    // Update the status of all products in the order
+                    const orderProductStatusElements = document.querySelectorAll('.order-product-status');
+                    orderProductStatusElements.forEach(element => {
+                        element.innerHTML = '<strong>Status: CANCELLED</strong>';
+                    });
+
+                    const individualCancelButtons = document.querySelectorAll(".individualCancel");
+                    individualCancelButtons.forEach(button => {
+                        button.disabled = true;
+                        button.textContent = "Cancelled";
+                    });
+                }
+                        
 
                         }
                  }).catch((error)=>{

@@ -892,7 +892,7 @@ const changeOrderStatus = async (req,res) =>{
 
                 const updatedStatus = await orders.updateOne({_id:orderIdofTheCart},{$set:{orderStatus:selectedStatus}},{new:true})
 
-                return res.status(200).json({message:"successfully changed the order status",success:true})
+                return res.status(200).json({message:"successfully changed the order status",success:true,updatedStatus:updatedStatus})
 
             }
         }else{
