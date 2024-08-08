@@ -74,7 +74,6 @@ userRoute.get("/orders",userAuth.isUserLogin,userController.loadOrders)
 userRoute.patch("/orders",userAuth.isUserLogin,userController.cancelOrderProduct)
 userRoute.put("/orders",userAuth.isUserLogin,userController.cancelOrder)
 
-
 //advanced search filtering the product
 userRoute.get("/filter",handleSearch.handleSearch)
 
@@ -89,6 +88,10 @@ userRoute.post("/verifyOnlinePayment",userAuth.isUserLogin,userController.verify
 
 //wallet route
 userRoute.get("/wallet",userAuth.isUserLogin,userController.loadWallet)
+
+//return
+userRoute.patch("/return",userAuth.isUserLogin,userController.returnProductOrder)
+userRoute.put("/return",userAuth.isUserLogin,userController.returnOrder)
 
 
 module.exports = userRoute  

@@ -141,19 +141,7 @@
 <script>
  document.addEventListener("DOMContentLoaded",()=>{
 
-    const showToast = (title, text, icon) => {
-        Swal.fire({
-            toast: true,
-            position: 'top-right',
-            icon: icon,
-            title: title,
-            text: text,
-            showConfirmButton: false,
-             timerProgressBar: true,
-            timer: 3000
-
-        });
-    };
+   
 
 //first name validation
 
@@ -164,7 +152,12 @@ const validateName = () =>{
     if (nameInput.value.trim() === '') {
         nameError.textContent = '* Name is required';
         return false
-    } else {
+    }else if(nameInput.value.trim().length < 2){
+
+        nameError.textContent = '* Name must be at least 2 characters long'
+        return false
+    }
+     else {
         nameError.textContent = '';
        return true
     }
@@ -316,36 +309,41 @@ const validateEmail = () =>{
 emailInput.addEventListener('input', validateEmail);
 
 //address type validation
-const homeRadio = document.getElementById("home");
-const workRadio = document.getElementById("work");
-const otherRadio = document.getElementById("other");
-const addressTypeError = document.getElementById("addressTypeError");
+const addressTypeInputs = document.querySelectorAll('input[name="addressType"]');
+    const addressTypeError = document.getElementById('addressTypeError');
 
-const validateAddressType = () => {
-    if (homeRadio.checked || workRadio.checked || otherRadio.checked) {
-        addressTypeError.textContent = '';
-        return true;
-    } else {
-        addressTypeError.textContent = '* Please select an address type';
-        return false;
-    }
-}
+    const validateAddressType = () => {
+        const isChecked = Array.from(addressTypeInputs).some(input => input.checked);
+        if (!isChecked) {
+            addressTypeError.textContent = '* Address Type is required';
+            return false;
+        } else {
+            addressTypeError.textContent = '';
+            return true;
+        }
+    };
+    addressTypeInputs.forEach(input => input.addEventListener('change', validateAddressType));
 
-homeRadio.addEventListener('change', validateAddressType);
-workRadio.addEventListener('change', validateAddressType);
-otherRadio.addEventListener('change', validateAddressType);
 
 
 const form = document.getElementById('formData');
 
 form.addEventListener('submit', (event) => {
 
-    if (!validateName() || !validatePhone() || !validateEmail() || !validateAddress() || !validateLocality() || !validatePincode() ||!validateCityDistTown()  ||  !validateState() || !validateAddressType()) {
+    const isNameValid = validateName();
+        const isPhoneValid = validatePhone();
+        const isPincodeValid = validatePincode();
+        const isLocalityValid = validateLocality();
+        const isAddressValid = validateAddress();
+        const isCityDistTownValid = validateCityDistTown();
+        const isStateValid = validateState();
+        const isEmailValid = validateEmail();
+        const isAddressTypeValid = validateAddressType();
 
-        event.preventDefault();
-
-        showToast('Error', 'Please fill all appropriate fields before submitting.', 'error');
-    }
+        if (!(isNameValid && isPhoneValid && isPincodeValid && isLocalityValid && isAddressValid && isCityDistTownValid && isStateValid && isEmailValid && isAddressTypeValid)) {
+            event.preventDefault(); 
+          
+        }
 });
 
 

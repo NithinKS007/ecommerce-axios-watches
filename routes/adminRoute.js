@@ -8,6 +8,7 @@ const softdeleteHandle = require('../middleware/softDeletehandle')
 const editHandle = require('../middleware/handleEdit')
 const handleCategoryBrandExists = require('../middleware/handleExistCategoryBrand')
 const adminAuth = require('../middleware/adminAuth')
+const  handleReturnStatus  = require('../middleware/handleReturnStatus')
 
 
 // Admin registration and authentication
@@ -55,5 +56,8 @@ adminRoute.get("/couponManagement",adminAuth.isAdminLogin,adminController.loadCo
 adminRoute.get("/addCoupon",adminAuth.isAdminLogin,adminController.loadAddCoupon)
 adminRoute.post("/addCoupon",adminAuth.isAdminLogin,adminController.addCoupon)
 
+//product return
+adminRoute.get("/updateReturnStatus",adminAuth.isAdminLogin,adminController.loadReturnedOrder)
+adminRoute.patch("/updateReturnStatus",adminAuth.isAdminLogin,handleReturnStatus.handleReturnStatus)
 
 module.exports = adminRoute

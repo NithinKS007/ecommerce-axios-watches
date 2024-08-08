@@ -84,7 +84,7 @@ const orderItemSchema = new mongoose.Schema({
   orderProductStatus: {
     type: String,
     required: true,
-    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'shipped', 'delivered', 'cancelled' ,'returnInitiated','returnApproved','returnRejected'],
     default: 'pending'
   },
 
@@ -132,7 +132,7 @@ const orderSchema = new mongoose.Schema({
   orderStatus: {
     type: String,
     required: true,
-    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'shipped', 'delivered', 'cancelled','returnInitiated','returnApproved','returnRejected'],
     default: 'pending'
   },
   paymentMethod: {
@@ -154,6 +154,6 @@ const orderSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-const Order = mongoose.model('order', orderSchema);
+const order = mongoose.model('order', orderSchema);
 
-module.exports = Order;
+module.exports = order;

@@ -8,7 +8,9 @@ const categories = require('../models/categoryModel')
 const brands = require('../models/brandModel')
 const products = require('../models/productModel')
 const orders = require('../models/orderModel')
-const coupons = require('../models/couponModel')
+const coupons = require('../models/couponModel');
+
+const returnUserOrder = require('../models/returnOrderModel')
 
 //hashing password
 const securePassword = async(password) =>{
@@ -993,6 +995,61 @@ const addCoupon = async (req,res) =>{
 }
 
 
+
+const loadReturnedOrder = async (req,res) =>{
+
+    try {
+
+        const returnedOrderData = await returnUserOrder.find({}).populate("userId")
+
+        console.log(`this is returned order data`,returnedOrderData);
+        
+        
+        return res.status(200).render("admin/returnedOrder",{returnedOrderData})
+
+        
+    } catch (error) {
+
+        console.log(`error while loading the returned products `,error.message);
+        
+        
+    }
+}
+
+const approveReturn = async (req,res) =>{
+
+    try {
+
+        const {returnProductId,status} = req.body
+        
+        console.log(`this is the id and status from approved fn`,returnProductId,status);
+
+        
+        
+        return res.status(200).json({message:"approved",success:true})
+
+    } catch (error) {
+        
+
+    }
+} 
+const rejectReturn = async (req,res) =>{
+
+    try {
+        
+        const {returnProductId,status} = req.body
+
+        console.log(`this is the id and status from reject fn`,returnProductId,status);
+
+        return res.status(200).json({message:"rejected",success:true})
+        
+        
+    } catch (error) {
+        
+
+    }
+
+}
 module.exports = {
 
     //admin authentication
@@ -1042,8 +1099,12 @@ module.exports = {
     changeOrderStatus,
   
     //coupon management
-    addCoupon
-    
+    addCoupon,
+
+   
+    loadReturnedOrder,
+    approveReturn,
+    rejectReturn
   
 
 }

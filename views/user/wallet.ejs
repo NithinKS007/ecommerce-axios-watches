@@ -15,9 +15,9 @@
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h5 class="card-title">Wallet Balance</h5>
-                                                        <h2 class="card-text text-primary">₹<%= walletData.balance%></h2>
-                                                        <hr>
-                                                        <button type="button" class="btn btn-primary btn-lg mt-3" onclick="addMoney()">Add Money</button>
+                                                        <h2 class="card-text text-primary">₹ <%= walletData.balance%></h2>
+                                                        <!-- <hr> -->
+                                                        <!-- <button type="button" class="btn btn-primary btn-lg mt-3" onclick="addMoney()">Add Money</button> -->
                                                     </div>
                                                 </div>
                                 
@@ -36,7 +36,7 @@
                                                             <% transactionsData.forEach(transaction => { %>
                                                                 <tr>
                                                                     <td><%= transaction._id %></td>
-                                                                    <td>₹<%= transaction.amount %></td>
+                                                                    <td>₹<%= transaction.amount.toFixed(3) %></td>
                                                                     <td><%= transaction.createdAt.toISOString().split('T')[0] %></td>
                                                                     <td><%= transaction.type %></td>
                                                                     <td><%= transaction.walletTransactionStatus %></td>

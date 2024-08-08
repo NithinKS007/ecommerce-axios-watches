@@ -61,20 +61,27 @@
                                                             <div>
                                                                 
                                                             
-                                                                <% if (item.orderProductStatus !== 'delivered') { %>
+                                                                <%   if (item.orderProductStatus === 'returnInitiated' || item.orderProductStatus === 'returnApproved' || item.orderProductStatus === 'returnRejected') { %>
+                                                                    <button id="returnOrderButton<%= order._id %>" class="btn btn-primary btn-sm"
+                                                                        onclick="returnProduct('<%= item._id %>','<%= item.product %>', '<%= order._id %>','<%= item.orderProductStatus %>')"
+                                                                        disabled>
+                                                                        cannot Return product
+                                                                    </button>
+                                                                <% }  else if (item.orderProductStatus !== 'delivered') { %>
                                                                     <button id="cancelProductButton<%= item._id %>" class="btn btn-sm individualCancel" 
                                                                         onclick="cancelProduct('<%= item._id %>', '<%= order._id %>', '<%= item.orderProductStatus %>')"
                                                                         
                                                                         <%= item.orderProductStatus === 'cancelled' ? 'disabled' : '' %> >
                                                                         <%= item.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel' %>
                                                                     </button>
-                                                                <% } else { %>
+                                                                   
+                                                                <% }else { %>
                                                                     <button id="returnProductButton<%= item._id %>" class="btn btn-primary btn-sm" 
-                                                                        onclick="returnProduct('<%= item._id %>', '<%= order._id %>')">
+                                                                        onclick="returnProduct('<%= item._id %>','<%= item.product %>', '<%= order._id %>','<%= item.orderProductStatus %>')">
                                                                         Return
                                                                     </button>
                                                                 <% } %>
-                                                                
+                                                              
                                                             </div>
                                                         </div>
                                                     <% }); %>
@@ -85,15 +92,34 @@
                                                         <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                                     </div>
                                                     <div class="text-end">
-                                                        <% if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
+                                                        <% if (order.orderStatus === 'delivered' && order.orderStatus !== 'cancelled') { %>
+                                                            <button id="returnOrderButton<%= order._id %>" class="btn btn-primary btn-sm" 
+                                                                onclick="returnOrder('<%= order._id %>', '<%= order.orderStatus %>')">
+                                                                Return Order
+                                                            </button>
+                                                           
+                                                        <% } else if (order.orderStatus === 'returnInitiated' || order.orderStatus === 'returnApproved' || order.orderStatus === 'returnRejected') { %>
+                                                            <button id="returnOrderButton<%= order._id %>" class="btn btn-primary btn-sm"
+                                                                onclick="returnOrder('<%= order._id %>', '<%= order.orderStatus %>')"
+                                                                disabled>
+                                                                cannot Return Order
+                                                            </button>
+                                                           
+                                                        <% } else if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
                                                             <button class="btn btn-secondary btn-sm">Invoice</button>
-                                                            <button class="btn btn-sm" id="cancelOrderButton<%=order._id%>" onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')">Cancel Order</button>
-                                                        <% } else { %>
-                                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                            <button class="btn btn-sm" id="cancelOrderButton<%= order._id %>" onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')"
+                                                                <%= order.orderProductStatus === 'cancelled' ? 'disabled' : '' %> >
                                                                 <%= order.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel Order' %>
+                                                            </button>
+                                                            
+                                                        <% } else { %>
+                                                            <button class="btn btn-sm" id="cancelOrderButton<%= order._id %>" onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')"
+                                                                <%= order.orderProductStatus !== 'cancelled' ? 'disabled' : '' %>> 
+                                                                <%= order.orderProductStatus !== 'cancelled' ? 'Cancelled' : 'Cancel Order' %>
                                                             </button>
                                                         <% } %>
                                                     </div>
+                                                    
                                                     
                                                     
                                                     
@@ -112,12 +138,219 @@
         </div>
     </section>
 </main>
+<style>
+    /* Custom styling for SweetAlert2 buttons */
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 400px; /* Set the same width for both buttons */
+        margin: 5px 10px; /* Space between buttons */
+    }/* Adjust button styles for different screen sizes */
+@media (max-width: 768px) {
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 100%; /* Full width on small screens */
+        margin: 5px 0; /* Margin adjustment for small screens */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 150px; /* Adjust width for medium screens */
+    }
+}
+    
+</style>
 
 <%- include('../layouts/userLayouts/footer') %>
 
 
 
 <script>
+
+const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
+    console.log(`Return product ${itemId} in order ${orderId}, ${orderProductStatus}`);
+
+    try {
+        // Confirm return action with SweetAlert2
+        const result = await Swal.fire({
+            title: 'Return Product',
+            html: `
+                 <select id="returnReason" class="swal2-input" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; height: 40px;">
+                    <option value="" disabled selected>Select a reason</option>
+                    <option value="Defective Product">Defective Product</option>
+                    <option value="Product not as described">Product not as described</option>
+                    <option value="Wrong item">Wrong item</option>
+                    <option value="other">Other</option>
+                </select>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Return Product',
+            cancelButtonText: 'Cancel',
+            // Custom CSS for buttons
+            customClass: {
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            preConfirm: () => {
+                const reason = document.getElementById('returnReason').value;
+                if (!reason) {
+                    Swal.showValidationMessage('Please select a reason');
+                }
+                return { reason };
+            }
+        });
+
+        if (result.isConfirmed) {
+            const { reason } = result.value;
+            // Make a PATCH request to the server
+            const response = await fetch(`http://localhost:7000/return`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ itemId,productId,orderId, orderProductStatus,reason})
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Network response was not ok");
+            }
+
+            const data = await response.json();
+
+           console.log(`data received in return product fn`,data);
+           
+        }
+    } catch (error) {
+        console.log(`Error while returning the product`, error.message);
+
+        await Swal.fire({
+            icon: 'error',
+            text: `Error: ${error.message}`,
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000
+        });
+    }
+};
+const returnOrder = async (orderId, orderStatus) => {
+    console.log(`Return product ${orderId} , ${orderStatus}`);
+
+    try {
+        // Confirm return action with SweetAlert2
+        const result = await Swal.fire({
+            title: 'Return Order',
+            html: `
+                 <select id="returnReason" class="swal2-input" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; height: 40px;">
+                    <option value="" disabled selected>Select a reason</option>
+                    <option value="Defective items in the order">Defective items in the order</option>
+                    <option value="Ordered items not as described">Ordered items not as described</option>
+                    <option value="Wrong order">Wrong order</option>
+                    <option value="other">Other</option>
+                </select>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Return Order',
+            cancelButtonText: 'Cancel',
+            // Custom CSS for buttons
+            customClass: {
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            preConfirm: () => {
+                const reason = document.getElementById('returnReason').value;
+                if (!reason) {
+                    Swal.showValidationMessage('Please select a reason');
+                }
+                return { reason };
+            }
+        });
+
+        if (result.isConfirmed) {
+            const { reason } = result.value;
+            // Make a PATCH request to the server
+            const response = await fetch(`http://localhost:7000/return`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({orderId, orderStatus ,reason})
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Network response was not ok");
+            }
+
+            const data = await response.json();
+
+            console.log(`data received in return order fn`,data);
+
+           
+        }
+    } catch (error) {
+        console.log(`Error while returning the product`, error.message);
+
+        await Swal.fire({
+            icon: 'error',
+            text: `Error: ${error.message}`,
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000
+        });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const cancelProduct = (itemId, orderId,orderProductStatus) => {
    
     console.log(`Cancel product ${itemId} in order ${orderId},${orderProductStatus}`);
@@ -190,7 +423,7 @@
                     const cancelOrderButton = document.getElementById(`cancelOrderButton${orderId}`);
                     if (cancelOrderButton) {
                         cancelOrderButton.disabled = true;
-                        cancelOrderButton.textContent = "Cancel Order";
+                        cancelOrderButton.textContent = "Cancelled";
                     }
 
                     const orderStatusElement = document.getElementById(`orderStatus${orderId}`);

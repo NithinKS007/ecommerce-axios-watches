@@ -1,0 +1,194 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+    <%- include('../layouts/adminLayouts/searchbar') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Returned Product</h2>
+                <p>Dashboard > Returned Product</p>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control">
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Initiated</option>
+                            <option>Approved</option>
+                            <option>Rejected</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <!-- table content starts -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <% if (returnedOrderData.length > 0) { %>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Email</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col">Order & Product IDs</th>
+                                <th scope="col">Order Refund Amount</th>
+                                <th scope="col">Product Refund Amount</th>
+                                <th scope="col">Order Return Reason</th>
+                                <th scope="col">Product Return Reason</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Date</th>
+                                <th scope="col" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% returnedOrderData.forEach(returnedOrder => { %>
+                                <% 
+                                    // Concatenate the order ID and product IDs into a single string
+                                    let orderAndProductIds = `Order ID:\n ${returnedOrder.orderId}\nProduct IDs: ${returnedOrder.items.map(item => `${item.product}`).join('\n')}`;
+                                    
+                            
+                                    // Concatenate product refund amounts into a single string
+                                    let productRefundAmounts = returnedOrder.items.map(item => item.productRefundAmount ? `Rs ${item.productRefundAmount}` : 'N/A');
+                                    let filteredRefunds = productRefundAmounts.filter(amount => amount !== 'N/A');
+                                    let productRefundDisplay = filteredRefunds.length > 0 ? filteredRefunds.join(', ') : 'N/A';
+                              
+                                
+                                    
+                                    // Concatenate product return reasons into a single string
+                                  
+                                    let productReturnReasons = returnedOrder.items.map(item => item.productReturnReason || 'N/A');
+                                    let filteredReasons = productReturnReasons.filter(reason => reason !== 'N/A');
+                                    let productReturnDisplay = filteredReasons.length > 0 ? filteredReasons.join(', ') : 'N/A';
+                               
+                                
+                                %>
+                                <tr>
+                                    <td><%= returnedOrder.userId.email %></td>
+                                    <td><b><%= returnedOrder.userId.fname %> <%= returnedOrder.userId.lname %></b></td>
+                                    <td><%= orderAndProductIds %></td>
+                                    <td><%= returnedOrder.orderRefundAmount ? `Rs ${returnedOrder.orderRefundAmount}` : 'N/A' %></td>
+                                    <td><%= productRefundDisplay %></td>
+                                    <td><%= returnedOrder.returnOrderReason || 'N/A' %></td>
+                                    <td><%= productReturnDisplay %></td>
+                                    <td><span class="badge rounded-pill alert-warning"><%= returnedOrder.returnOrderStatus %></span></td>
+                                    <td><%= new Date(returnedOrder.returnOrderDate).toLocaleString() %></td>
+                                    <td>
+                                        <div style="display: inline-flex; gap: 20px; width: 100%;">
+                                            <a class="btn btn-md rounded font-sm btn-success" 
+                                               style="background-color: #28a745; border-color: #28a745; flex: 1; text-align: center; width: 120px;" 
+                                               onclick="approved('<%= returnedOrder._id %>')">
+                                               Approve
+                                            </a>
+                                            <a class="btn btn-md rounded font-sm btn-danger" 
+                                               style="background-color: #dc3545; border-color: #dc3545; flex: 1; text-align: center; width: 120px;" 
+                                               onclick="rejected('<%= returnedOrder._id %>')">
+                                               Reject
+                                            </a>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                        <p class="text-center">No returned products to show</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section> <!-- content-main end// -->
+</main>
+
+
+
+
+
+
+<script>
+const changeReturnStatus = (returnProductId, status ,) => {
+    console.log(`Changing return status for product ID ${returnProductId} to ${status}`);
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to change the return status of this product.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, change it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('http://localhost:7000/admin/updateReturnStatus', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ returnProductId, status }),
+            }).then((response) => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || "Network response was not ok");
+                    });
+                }
+                return response.json();
+            }).then((data) => {
+                console.log(data);
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'The return status has been updated successfully.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+
+                    // Update UI elements here if needed
+                    // For example:
+                    // const statusElement = document.getElementById(`returnStatus${returnProductId}`);
+                    // if (statusElement) {
+                    //     statusElement.innerHTML = `<strong>Status: ${status}</strong>`;
+                    // }
+                }
+            }).catch((error) => {
+                console.log(`Error while updating return status:`, error.message);
+                Swal.fire({
+                    icon: 'error',
+                    text: `Error: ${error.message}`,
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000
+                });
+            });
+        }
+    });
+};
+
+const approved = async (returnProductId) => {
+
+    console.log(`this is product id for approval`,returnProductId);
+    
+    await changeReturnStatus(returnProductId, "approved");
+
+};
+
+const rejected = async (returnProductId) => {
+
+    console.log(`this is the product is for rejection`,returnProductId);
+    
+    await changeReturnStatus(returnProductId, "rejected");
+
+};
+
+</script>
+<%- include('../layouts/adminLayouts/footer') %>
