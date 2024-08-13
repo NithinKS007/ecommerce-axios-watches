@@ -57,7 +57,27 @@
                                     <%= order.shippingAddress.landMark %>
                                 </td>
                                 <td>Rs <%= order.totalAmount %></td>
-                                <td><span class="badge rounded-pill alert-warning"><%= order.orderStatus %></span></td>
+                                <td>
+                                    <span class="badge rounded-pill 
+                                        <% if (order.orderStatus === 'pending') { %>
+                                            alert-warning
+                                        <% } else if (order.orderStatus === 'shipped') { %>
+                                            alert-info
+                                        <% } else if (order.orderStatus === 'delivered') { %>
+                                            alert-success
+                                        <% } else if (order.orderStatus === 'cancelled') { %>
+                                            alert-danger
+                                        <% } else { %>
+                                            alert-secondary
+                                        <% } %>
+                                    ">
+                                    <%= order.orderStatus.replace(/([a-z])([A-Z])/g, '$1 $2')
+                                    .split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                                    .join(' ') %>
+                                    </span>
+                                </td>
+                                
                                 <td><%= new Date(order.orderDate).toLocaleString() %></td>
                                 <td class="text-end">
                                     <a class="btn btn-md rounded font-sm" onclick="getOrderDetails('<%= order._id %>')">Detail</a>
@@ -69,6 +89,53 @@
                 </div>
             </div>
         </div>
+
+        <div class="pagination-area mt-30 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>">
+                                <strong>&lt;</strong>
+                            </a>
+                        </li>
+                    <% } %>
+                    
+                    <% 
+                    let startPage = Math.max(1, currentPage - 2);
+                    let endPage = Math.min(totalPages, startPage + 4);
+                    if (endPage - startPage < 4) {
+                        startPage = Math.max(1, endPage - 4);
+                    }
+                    %>
+                    
+                    <% for (let i = startPage; i <= endPage; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="/admin/orders?page=<%= i %>"><strong><%= i %></strong></a>
+                        </li>
+                    <% } %>
+                    
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>">
+                                <strong>&gt;</strong>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+        
+
+
+
+
+
+
+
+
+
+
     </section> <!-- content-main end// -->
 </main>
 <script>

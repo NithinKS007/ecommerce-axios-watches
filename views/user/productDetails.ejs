@@ -655,7 +655,9 @@
                 }).then((data) => {
 
                     console.log(data);
-                                        Swal.fire({
+                    if(data.success){
+
+                        Swal.fire({
                         icon: 'success',
                         text: 'The product has been added to your cart successfully.',
                         toast: true,
@@ -672,18 +674,22 @@
                         window.location.href = "http://localhost:7000/cart"
                     })
 
+                    }
+                                        
+
                 }).catch((error) => {
 
                     console.log(`error while fetching the data`, error.message)
-                    Swal.fire({
-                    icon: 'success',
-                    text: 'The product has been added to your cart successfully.',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
+                 Swal.fire({
+                icon: 'error',
+                text: 'Please log in first.',
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 2000
+            });
+
 
                 })
 

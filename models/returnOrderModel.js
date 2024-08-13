@@ -2,9 +2,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId;
 
-const returnItemSchema = new mongoose.Schema({
- 
-    product:{
+const returnProductSchema = new mongoose.Schema({
+    orderId:{
+        type:ObjectId,
+        required:true,
+        ref:"order"
+    },
+    userId: {
+        type: ObjectId,
+        required: true,
+        ref:"user"
+    },
+    productId:{
         type:ObjectId,
         required:true,
         ref:"product"
@@ -12,11 +21,14 @@ const returnItemSchema = new mongoose.Schema({
     returnProductStatus: {
         type: String,
         enum: ["initiated","approved","rejected"],
-        default: "initiated"
+        default: "initiated",
+        required:true
       },
     productRefundAmount:{
         type:Number,
         min: 0,
+        default:0,
+        required:true
     },
     productReturnDate:{
         type:Date,
@@ -25,45 +37,12 @@ const returnItemSchema = new mongoose.Schema({
     },
     productReturnReason:{
         type:String,
+        required:true
     },
    
 }, { timestamps: true });
 
-const returnOrderSchema = new mongoose.Schema({
 
-    items:[returnItemSchema],
-    userId: {
-        type: ObjectId,
-        required: true,
-        ref:"user"
-    },
-    
-    orderId:{
-        type:ObjectId,
-        required:true,
-        ref:"order"
-    },
-    orderRefundAmount:{
-        type:Number,
-        min: 0 
-    },
-    returnOrderStatus:{
-        type:String,
-        enum:["initiated","approved","rejected"],
-        default:"initiated",
-        required:true
-    },
-    returnOrderDate:{
-        type:Date,
-        default: Date.now,
-        required:true
-    },
-    returnOrderReason:{
-        type:String,
+const returnProduct = mongoose.model('returnProduct', returnProductSchema);
 
-    }
-}, { timestamps: true })
-
-const returnOrder = mongoose.model('returnOrder', returnOrderSchema);
-
-module.exports = returnOrder
+module.exports = returnProduct

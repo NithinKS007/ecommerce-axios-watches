@@ -4,9 +4,9 @@ const isAdminLogin = async (req, res, next) => {
   try {
     if (!req.session.adminId) {
 
-        console.log("access denied for admin");
+      console.log("Access denied for admin. Admin ID not found.");
 
-        return res.status(403).send("Access Denied");
+     return res.status(403).send("Access Denied");
 
     } 
     next()
@@ -27,7 +27,7 @@ const isAdminLogout = async (req, res, next) => {
 
     if (req.session.adminId) {
 
-      console.log("Access denied for admin logout");
+      console.log("Access denied for admin logout. Admin is still logged in.")
 
       return res.status(403).send("Access Denied");
 

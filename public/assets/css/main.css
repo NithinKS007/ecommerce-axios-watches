@@ -3390,7 +3390,7 @@ table .product-thumbnail img {
   position: relative;
   background-color: #fff;
   border: 1px solid #cce7d0;
-  border-radius: 25px;
+  border-radius: 15px;
   overflow: hidden;
   transition: .2s;
   -moz-transition: .2s;
@@ -3414,7 +3414,7 @@ table .product-thumbnail img {
 .product-cart-wrap .product-img-action-wrap .product-img {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 15px;
 }
 
 .product-cart-wrap .product-img-action-wrap .product-img a {

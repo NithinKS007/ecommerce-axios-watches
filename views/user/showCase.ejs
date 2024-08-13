@@ -132,7 +132,9 @@
                                                                     <%= productsArray[i].brand.name %>
                                                                 </a>
                                                             </div>
-                                                            <h5 ><a
+                                                            <h5 style="  overflow: hidden;
+                                                            text-overflow: ellipsis;
+                                                            white-space: nowrap;" ><a
                                                                     href="/productDetails?id=<%= productsArray[i]._id %>">
                                                                     <%= productsArray[i].name %>
                                                                 </a></h5>
@@ -202,7 +204,9 @@
                                             </div>
                                         </div>
                                         <div class="product-content-wrap">
-                                            <h6><a href="/productDetails?id=<%= latestProducts[i]._id %>">
+                                            <h6 style="  overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            white-space: nowrap;"><a href="/productDetails?id=<%= latestProducts[i]._id %>">
                                                     <%= latestProducts[i].name %>
                                                 </a></h6>
                                             <div class="rating-result" title="90%">
@@ -312,7 +316,9 @@ const updateProductDisplay = (data) =>{
                             <div class="product-category">
                                 <a href="#">${product.brandData[0].name}</a>
                             </div>
-                            <h5><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
+                            <h5 style="  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;"><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
                             <div class="rating-result" title="90%">
                                 <span>
                                     <span>90%</span>

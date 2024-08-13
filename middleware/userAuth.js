@@ -80,7 +80,7 @@ const isUserLogin = async(req,res,next) =>{
 
     if(!req.session.userId && (!req.isAuthenticated() || !req.user)){
   
-      console.log("access denied for user")
+      console.log("Access denied for user. Redirecting to signin.")
 
       return res.redirect("/signin")
 
@@ -106,14 +106,17 @@ const isUserLogout = async (req,res,next) =>{
 
   try {
     
-    if(!req.session.userId && (!req.isAuthenticated() || !req.user)){
+    if(req.session.userId && (req.isAuthenticated() || !req.user)){
 
-      console.log("Access denied for user logout");
+      next();
 
-      return res.redirect("/")
+    } else {
+
+      console.log("Access denied for user logout. Redirecting to home.");
+
+      return res.redirect("/");
+      
     }
-
-    next()
     
   } catch (error) {
     

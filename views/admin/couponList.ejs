@@ -79,9 +79,60 @@
       </div>
       
     </div>
-  </section>
-</main>
 
+
+
+
+
+
+
+
+
+
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+              <% if (currentPage > 1) { %>
+                  <li class="page-item">
+                      <a class="page-link" href="/admin/couponManagement?page=<%= currentPage - 1 %>">
+                          <strong>&lt;</strong>
+                      </a>
+                  </li>
+              <% } %>
+              
+              <% 
+              let startPage = Math.max(1, currentPage - 2);
+              let endPage = Math.min(totalPages, startPage + 4);
+              if (endPage - startPage < 4) {
+                  startPage = Math.max(1, endPage - 4);
+              }
+              %>
+              
+              <% for (let i = startPage; i <= endPage; i++) { %>
+                  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <a class="page-link" href="/admin/couponManagement?page=<%= i %>"><strong><%= i %></strong></a>
+                  </li>
+              <% } %>
+              
+              <% if (currentPage < totalPages) { %>
+                  <li class="page-item">
+                      <a class="page-link" href="/admin/couponManagement?page=<%= currentPage + 1 %>">
+                          <strong>&gt;</strong>
+                      </a>
+                  </li>
+              <% } %>
+          </ul>
+      </nav>
+    </div>
+    
+
+
+
+
+
+  </section>
+  
+</main>
 <script>
 
 </script>

@@ -8,6 +8,7 @@ const passport = require('passport');
 const handleReqBody = require('../middleware/handleReqBody')
 const handleSearch = require('../middleware/handleSearch')
 
+const noCacheMid = require('../middleware/cacheClearMiddleWare')
 // Home page before registering
 userRoute.get("/",userController.loadHome)
 
@@ -91,7 +92,6 @@ userRoute.get("/wallet",userAuth.isUserLogin,userController.loadWallet)
 
 //return
 userRoute.patch("/return",userAuth.isUserLogin,userController.returnProductOrder)
-userRoute.put("/return",userAuth.isUserLogin,userController.returnOrder)
 
 
 module.exports = userRoute  

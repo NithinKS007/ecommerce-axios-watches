@@ -358,15 +358,15 @@
                     const lastNameInput = document.getElementById("lnameInput");
                     const phoneInput = document.getElementById("phoneInput");
 
-                    firstNameInput.value = firstName;
-                    lastNameInput.value = lastName;
-                    phoneInput.value = phone;
+                    firstNameInput.value = firstName ||""
+                    lastNameInput.value = lastName ||""
+                    phoneInput.value = phone ||""
 
                     const saveUserNewDetailsButton = document.getElementById(
                         "saveUserNewDetailsButton"
                     );
 
-                    saveUserNewDetailsButton.addEventListener("click", () => {
+                    saveUserNewDetailsButton.addEventListener("click", (event) => {
                         event.preventDefault();
 
                         if(isUserDetailsValid()){

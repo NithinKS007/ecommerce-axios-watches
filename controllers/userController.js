@@ -1324,33 +1324,55 @@ const loadPlaceOrder = async (req, res) => {
 };
 
 //loading orders page
-const loadOrders = async (req,res) =>{
+const loadOrders = async (req, res) => {
+
+    let userFromGidSessionOrSession;
+
+    let pageNumber = parseInt(req.query.page) || 1;
+    
+    const perPageData = 5; 
+
+    if (req.session.userId) {
+
+        userFromGidSessionOrSession = req.session.userId;
+
+    } else if (req.user) {
+
+        // Checking for Google session ID
+        userFromGidSessionOrSession = req.user.id;
+
+    }
 
     try {
+      
+        const totalOrders = await orders.countDocuments({ user: userFromGidSessionOrSession });
 
-        let userFromGidSessionOrSession 
+        const totalPages = Math.max(1, Math.ceil(totalOrders / perPageData));
 
-        if(req.session.userId){
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+      
+        const skip = (pageNumber - 1) * perPageData;
 
-            userFromGidSessionOrSession = req.session.userId
+        const orderData = await orders.find({ user: userFromGidSessionOrSession })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(perPageData)
+            .exec();
 
-        }else if(req.user){
+        return res.status(200).render("user/orders", {
+            orderData: orderData,
+            totalPages: totalPages,
+            currentPage: pageNumber
+        });
 
-            //checking for google session id 
-            userFromGidSessionOrSession = req.user.id
-
-        }
-
-        const orderData = await orders.find({user:userFromGidSessionOrSession}).sort({createdAt:-1})
-
-    //    console.log(orderData);
-        return res.status(200).render("user/orders",{orderData:orderData})
-        
     } catch (error) {
-        
-        console.log(`error while loading the orders page`,error.message);
+        console.log("Error while loading the orders page:", error.message);
+
+        return res.status(500).send("Internal Server Error");
+
     }
 }
+
 
 
 const cancelOrderProduct = async (req, res) => {
@@ -1371,6 +1393,19 @@ const cancelOrderProduct = async (req, res) => {
             success: false,
             message: 'User not found'
         });
+    }
+
+    const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+
+    if (!walletData) {
+
+        const newWalletData = new wallet({
+
+            userId: userFromGidSessionOrSession
+            
+        });
+
+        walletData = await newWalletData.save();
     }
 
     const { itemId, orderId,orderProductStatus } = req.body;
@@ -1508,6 +1543,18 @@ const cancelOrder = async (req, res) => {
         //checking for google session id 
         userFromGidSessionOrSession =  new ObjectId(req.user.id);
 
+    }
+    const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+
+    if (!walletData) {
+
+        const newWalletData = new wallet({
+
+            userId: userFromGidSessionOrSession
+            
+        });
+
+        walletData = await newWalletData.save();
     }
 
     
@@ -2065,108 +2112,7 @@ const loadWallet = async (req, res) => {
 }
 
 
-const returnOrder = async (req,res) =>{
 
-    let userFromGidSessionOrSession 
-
-    if(req.session.userId){
-
-        userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-    }else if(req.user){
-
-        //checking for google session id 
-        userFromGidSessionOrSession =  new ObjectId(req.user.id);
-
-    }
-
-    try {
-
-        const {orderId, orderStatus ,reason} = req.body
-
-        console.log(`data received in the return order fn backend`,orderId, orderStatus ,reason);
-
-        const validStatuses = getEnumValues(orders.schema, 'orderStatus');
-
-        if (!validStatuses.includes(orderStatus)) {
-
-            return res.status(400).json({ error: 'Invalid order status' });
-  
-          }
-
-          const orderIdOfTheOrder = new ObjectId(orderId)
-        //   const orderStatusOfOrder = orderStatus
-
-          const order = await orders.findOne({_id:orderIdOfTheOrder})
-
-          const { totalAmount } = await orders.findOne({_id:orderIdOfTheOrder},{_id:0,totalAmount:1})
-            
-          const  allReturnInitiated = order.items.every(item => item.orderProductStatus==="returnInitiated")
-          const  anyDelivered = order.items.some( item => item.orderProductStatus==="delivered")
-          const  allCancelled = order.items.every( item => item.orderProductStatus==="cancelled")
-          const  allPending = order.items.every( item => item.orderProductStatus==="pending")
-          const  allShipped = order.items.every( item => item.orderProductStatus==="shipped")
-          const  allReturnApproved = order.items.every( item => item.orderProductStatus==="returnApproved")
-          const  allReturnRejected = order.items.every( item => item.orderProductStatus==="returnRejected")
-
-          if(anyDelivered||!allCancelled||!allPending||!allShipped||!allReturnInitiated||!allReturnApproved||!allReturnRejected){
-
-            console.log(`entering into this 3`);
-
-              const allOrderReturnInitiated = await orders.updateOne({_id:orderIdOfTheOrder},{$set:{orderStatus:"returnInitiated"}})
-          }
-
-          //for pushing into the array
-          const returnItems = [];
-
-          for(let item of order.items){
-
-            if(item.orderProductStatus==="delivered"){
-                
-                await orders.updateOne(
-                    {_id:orderIdOfTheOrder,"items._id":item._id},
-                    {$set:{"items.$.orderProductStatus":"returnInitiated"}}
-                )
-            
-                returnItems.push({
-
-                    product:item.product,
-
-                })
-            
-              
-            }
-
-          }
-            //create a new return order 
-            if(returnItems.length > 0){
-
-
-                const returnOrderData = new returnUserOrder({
-                    items: returnItems,
-                    userId:userFromGidSessionOrSession,
-                    orderId:orderIdOfTheOrder,
-                    orderRefundAmount:totalAmount,
-                    returnOrderReason:reason
-    
-               })
-    
-               await returnOrderData.save();
-
-            }
-           
-
-          return res.status(200).json({message:"order returned status initiated",success:true})
-        
-    } catch (error) {
-
-        console.log(`error while returning the product order`,error.message);
-
-        return res.status(500).json({ message: 'Internal Server Error' });
-    }
-        
-    
-}
 
 const returnProductOrder = async (req,res) =>{
 
@@ -2190,10 +2136,23 @@ const returnProductOrder = async (req,res) =>{
     }
 
     try {
-        
+
+        const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+
+        if (!walletData) {
+
+            const newWalletData = new wallet({
+
+                userId: userFromGidSessionOrSession
+
+            });
+
+            walletData = await newWalletData.save();
+        }
+
         const {itemId,productId, orderId, orderProductStatus,reason} = req.body
 
-        console.log(`data received in the return single product order fn backend`,itemId, orderId, orderProductStatus,reason);
+        console.log(`data received in the return single product order fn backend`,itemId, productId,orderId, orderProductStatus,reason);
 
         const validStatuses = getEnumValues(orders.schema, 'items.orderProductStatus');
 
@@ -2204,23 +2163,26 @@ const returnProductOrder = async (req,res) =>{
           }
 
           
-       const orderIdOfTheItem = new ObjectId(itemId)
-       const orderIdOfTheOrder = new ObjectId(orderId)
-
+       const orderDocIdOfTheItem = new ObjectId(itemId)
+       const orderDocIdOfTheOrder = new ObjectId(orderId)
+       const productIdOftheItem = new ObjectId(productId)
+       
        let updatedProductStatus
-
+       let allDeliveredItemsReturned
        if(orderProductStatus==="delivered"||!orderProductStatus==="cancelled"||!orderProductStatus==="pending"||!orderProductStatus==="shipped"||!orderProductStatus==="returnInitiated"||!orderProductStatus==="returnApproved"||!orderProductStatus==="returnRejected"){
 
 
-        updatedProductStatus = await orders.updateOne({_id:orderIdOfTheOrder,"items._id":orderIdOfTheItem},{$set:{"items.$.orderProductStatus":"returnInitiated"}})
+        updatedProductStatus = await orders.updateOne({_id:orderDocIdOfTheOrder,"items._id":orderDocIdOfTheItem},{$set:{"items.$.orderProductStatus":"returnInitiated"}})
 
 
        }
 
        if(updatedProductStatus.modifiedCount > 0){
 
+        console.log(`entering in the if condition`);
+        
        
-        const orderData = await orders.findOne({ _id: orderIdOfTheOrder});
+        const orderData = await orders.findOne({ _id: orderDocIdOfTheOrder});
 
         const {subTotalAmount,discountAmount,items} = orderData
 
@@ -2232,46 +2194,39 @@ const returnProductOrder = async (req,res) =>{
             const priceAfterEverything = itemTotalAmount-itemDiscount.toFixed(3);
 
            // Check if all delivered items are returned
-           const allDeliveredItemsReturned = !orderData.items.some(item =>
+          
+            allDeliveredItemsReturned = !orderData.items.some(item =>
             item.orderProductStatus === 'delivered'
         );
 
         // Update the order status to "returnInitiated" only if all delivered items have been returned
         if (allDeliveredItemsReturned) {
             await orders.updateOne(
-                { _id: orderIdOfTheOrder },
+                { _id: orderDocIdOfTheOrder },
                 { $set: { orderStatus: "returnInitiated" } }
             );
         }
-
-
-        const returnItems = []
-
-        returnItems.push({
-
-            product:productId,
-            productRefundAmount:priceAfterEverything,
-            productReturnReason:reason
-
-        })
-
-        if(returnItems.length > 0){
+        console.log(`enterind here`)
+      
 
             const returnProductOrderData = new returnUserOrder({
 
-                items:returnItems,
+                orderId:orderDocIdOfTheOrder,
                 userId:userFromGidSessionOrSession,
-                orderId:orderIdOfTheOrder,
+                productId:productIdOftheItem,
+                productRefundAmount:priceAfterEverything,
+                productReturnReason:reason
+
 
             })
 
-            await returnProductOrderData.save()
-        }
-
-
+            console.log(returnProductOrderData,`This is before saving`);
+         
+           await returnProductOrderData.save()
+        
        }
 
-       return res.status(200).json({message:"individual order status updated successfully",success:true})
+       return res.status(200).json({message:"individual order status updated successfully",success:true,allDeliveredItemsReturned:allDeliveredItemsReturned})
         
     } catch (error) {
 
@@ -2341,7 +2296,6 @@ module.exports = {
     placeOrder,
     cancelOrder,
     cancelOrderProduct,
-    returnOrder,
     returnProductOrder,
 
    

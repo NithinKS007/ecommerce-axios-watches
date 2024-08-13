@@ -60,4 +60,7 @@ adminRoute.post("/addCoupon",adminAuth.isAdminLogin,adminController.addCoupon)
 adminRoute.get("/updateReturnStatus",adminAuth.isAdminLogin,adminController.loadReturnedOrder)
 adminRoute.patch("/updateReturnStatus",adminAuth.isAdminLogin,handleReturnStatus.handleReturnStatus)
 
+//sales report calculate
+adminRoute.get("/salesReport",adminAuth.isAdminLogin,adminController.getSalesDataJson)
+
 module.exports = adminRoute

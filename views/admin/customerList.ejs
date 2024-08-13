@@ -102,26 +102,43 @@
 
                     <!-- pagination starts -->
 
-                    <div class="pagination-area mt-30 mb-50">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-start">
-                                <% for (let i = 1; i <= totalPages; i++) { %>
-                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                        <a class="page-link" href="/admin/customerlist?page=<%= i %>"><%= i %></a>
-                                    </li>
-                                <% } %>
-                                <% if (currentPage < totalPages) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="/admin/customerlist?page=<%= currentPage + 1 %>">
-                                            <i class="material-icons md-chevron_right"></i>
-                                        </a>
-                                    </li>
-                                <% } %>
-                            </ul>
-                        </nav>
-                    </div>
-                    
-             <!-- pagination end -->
+            <div class="pagination-area mt-30 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/customerlist?page=<%= currentPage - 1 %>">
+                                    <strong>&lt;</strong>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% 
+                        let startPage = Math.max(1, currentPage - 2);
+                        let endPage = Math.min(totalPages, startPage + 4);
+                        if (endPage - startPage < 4) {
+                            startPage = Math.max(1, endPage - 4);
+                        }
+                        %>
+                        
+                        <% for (let i = startPage; i <= endPage; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="/admin/customerlist?page=<%= i %>"><strong><%= i %></strong></a>
+                            </li>
+                        <% } %>
+                        
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/customerlist?page=<%= currentPage + 1 %>">
+                                    <strong>&gt;</strong>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+            <!-- pagination end -->
+
                 </section> <!-- content-main end// -->
         </main>
         <script>
