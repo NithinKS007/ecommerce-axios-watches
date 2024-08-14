@@ -10,7 +10,15 @@
                 font-size: 0.8em;
                 line-height: 1.2;
             } 
-          
+    
+
+
+            #userInfoDisplay .dropdown {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+                                                        
         </style>
         <main class="main">
             <section class="pt-150 pb-150">
@@ -38,11 +46,10 @@
                                                 PROFILE
                                             </h1>
                                            
-                                            <div id="userInfoDisplay">
+                                            <div id="userInfoDisplay" data-user-id="<%= userData._id %>" data-fname="<%= userData.fname %>" data-lname="<%= userData.lname %>" data-email="<%= userData.email %>" data-phone="<%= userData.phone %>"  style="position: relative; padding-top: 0px;">
                                                 <p id="userName">
                                                     <strong>Name:</strong>
-                                                    <%= userData.fname %>
-                                                        <%= userData.lname %>
+                                                    <%= userData.fname %> <%= userData.lname %>
                                                 </p>
                                                 <p id="userEmail">
                                                     <strong>Email:</strong>
@@ -53,18 +60,25 @@
                                                         <strong>Phone:</strong>
                                                         <%= userData.phone %>
                                                     </p>
-                                                    <% } %>
-
-                                                        <button type="button" class="btn btn-primary"
-                                                            onclick="editUserDetails('<%= userData._id %>','<%= userData.fname %>',' <%= userData.lname %>','<%= userData.phone %>')">
-                                                            Edit
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            onclick="editUserPassword('<%= userData._id %>')">
-                                                            Edit Password
-                                                        </button>
+                                                <% } %>
+                             
+                                                <!-- Three dots dropdown -->
+                                                <div class="dropdown" style="position: absolute; top: 0; right: 0;">
+                                                    <a href="#" data-bs-toggle="dropdown">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="5" r="1"></circle>
+                                                            <circle cx="12" cy="12" r="1"></circle>
+                                                            <circle cx="12" cy="19" r="1"></circle>
+                                                        </svg>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item" onclick="editUserDetails()">Edit Details</a>
+                                                        <a class="dropdown-item" onclick="editUserPassword('<%= userData._id %>')">Edit Password</a>
+                                                    </div>
+                                                </div>
+                                            
+                                               
                                             </div>
-
                                             <!-- edit user details start -->
                                             <div id="editUserForm" style="display: none">
                                                 <form id="userDetailsForm">
@@ -342,10 +356,15 @@
             };
 
 
+                const editUserDetails = () => {
 
-                const editUserDetails = (id, firstName, lastName, phone) => {
+                    const userInfo = document.getElementById('userInfoDisplay');
 
-                    console.log(id, firstName, lastName, phone);
+                    const id = userInfo.getAttribute('data-user-id')
+                    const firstName = userInfo.getAttribute('data-fname')
+                    const  lastName = userInfo.getAttribute('data-lname')
+                    const  phone =  userInfo.getAttribute('data-phone')
+                   
 
                     const userInfoDisplay = document.getElementById("userInfoDisplay");
 
@@ -354,6 +373,8 @@
                     userInfoDisplay.style.display = "none";
                     editUserForm.style.display = "block";
 
+    
+                    
                     const firstNameInput = document.getElementById("fnameInput");
                     const lastNameInput = document.getElementById("lnameInput");
                     const phoneInput = document.getElementById("phoneInput");
@@ -406,12 +427,8 @@
                                 .then((data) => {
                                     console.log(`received edited data`, data);
                                     if (data.success) {
-                                        document.getElementById(
-                                            "userName"
-                                        ).innerHTML = `<strong>Name:</strong> ${data.updatedData.fname} ${data.updatedData.lname}`;
-                                        document.getElementById(
-                                            "userPhone"
-                                        ).innerHTML = `<strong>Phone:</strong> ${data.updatedData.phone}`;
+                                        document.getElementById("userName").innerHTML = `<strong>Name:</strong> ${data.updatedData.fname} ${data.updatedData.lname}`;
+                                        document.getElementById("userPhone").innerHTML = `<strong>Phone:</strong> ${data.updatedData.phone}`;
                                         userInfoDisplay.style.display = "block";
                                         editUserForm.style.display = "none";
 
@@ -433,6 +450,16 @@
                     });
                 };
 
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 const displayErrorMessage = (message) => {
     Swal.fire({
         icon: 'error',

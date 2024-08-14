@@ -4,7 +4,6 @@ const connectDB = require('./config/databaseConfig')
 const sessionConfig = require('./config/sessionConfig')
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
-const cacheControl = require('./middleware/cacheControl')
 const morgan = require('morgan');
 
 

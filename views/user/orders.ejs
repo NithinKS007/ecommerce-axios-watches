@@ -1,6 +1,30 @@
 <%- include('../layouts/userLayouts/header') %>
 <%- include('../layouts/userLayouts/navbar1') %>
-<main class="main">
+<style>
+   
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 400px; 
+        margin: 5px 10px; 
+    }
+@media (max-width: 768px) {
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 100%; 
+        margin: 5px 0; 
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 150px;
+    }
+}
+    
+</style>
+
+<main class="main" >
     <section style="padding-top: 100px; padding-bottom: 100px;">
         <div class="container">
             <div class="row">
@@ -13,12 +37,12 @@
                                 
                                 <% if (orderData && orderData.length > 0) { %>
                                     <% orderData.forEach(order => { %>
-                                        <div class="order-card card mb-3" style="border-radius: 10px;">
+                                        <div class="order-card card mb-3" style="border-radius: 10px;"data-order-id="<%= order._id %>">
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#orderDetails-<%= order._id %>">
                                                     <div>
                                                         <p class="mb-1"><strong>Order Number:</strong> #<%= order._id %></p>
-                                                        <p class="mb-1"><strong>Total:</strong> ₹ <%= order.totalAmount %></p>
+                                                        <p class="mb-1"><strong>Total:</strong> Rs <%= order.totalAmount %></p>
                                                         <p class="mb-1"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
                                                         <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                                     </div>
@@ -54,7 +78,7 @@
                                                             <div class="flex-grow-1" >
                                                                 <p class="mb-1"><strong>Name:</strong> <%= item.productName %></p>
                                                                 <p class="mb-1"><strong>Brand:</strong> <%= item.brandName %></p>
-                                                                <p class="mb-0"><strong>Price:</strong> ₹ <%= item.price %> inc GST</p>
+                                                                <p class="mb-0"><strong>Price:</strong> Rs <%= item.price %> inc GST</p>
                                                                 <p id="orderProductStatus<%= item._id %>" class="order-product-status mb-0 text-warning">
                                                                     <strong>Status: <%= item.orderProductStatus.toUpperCase() %></strong>
                                                                 </p>
@@ -64,10 +88,12 @@
                                                                
                                                               <!-- Disable Cancel Button for returnInitiated, returnApproved, returnRejected statuses -->
                                                             <% if (['returnInitiated', 'returnApproved', 'returnRejected'].includes(item.orderProductStatus)) { %>
+                                                               
                                                                 <button id="cancelProductButton<%= item._id %>" class="btn btn-sm individualCancel" disabled>
                                                                    return
                                                                 </button>
                                                             <% } else if (item.orderProductStatus !== 'delivered') { %>
+                                                       
                                                                 <button id="cancelProductButton<%= item._id %>" class="btn btn-sm individualCancel" 
                                                                     onclick="cancelProduct('<%= item._id %>', '<%= order._id %>', '<%= item.orderProductStatus %>')"
                                                                     <%= item.orderProductStatus === 'cancelled' ? 'disabled' : '' %> >
@@ -77,6 +103,7 @@
 
                                                             <!-- Return Button -->
                                                             <% if (item.orderProductStatus === 'delivered') { %>
+                                                              
                                                                 <button id="returnProductButton<%= item._id %>" class="btn btn-primary btn-sm" 
                                                                     onclick="returnProduct('<%= item._id %>','<%= item.product %>', '<%= order._id %>','<%= item.orderProductStatus %>')"
                                                                     <%= ['returnInitiated', 'returnApproved', 'returnRejected'].includes(item.orderProductStatus) ? 'disabled' : '' %>>
@@ -89,24 +116,27 @@
                                                         </div>
                                                     <% }); %>
                                                     <div class="mb-3">
-                                                        <p class="mb-1"><strong>Subtotal:</strong> ₹ <%= order.subTotalAmount %></p>
-                                                        <p class="mb-1"><strong>Discount:</strong> ₹ <%= order.discountAmount %></p>
-                                                        <p class="mb-1"><strong>Total:</strong> ₹ <%= order.totalAmount %></p>
+                                                        <p class="mb-1"><strong>Subtotal:</strong> Rs <%= order.subTotalAmount %></p>
+                                                        <p class="mb-1"><strong>Discount:</strong> Rs <%= order.discountAmount %></p>
+                                                        <p class="mb-1"><strong>Total:</strong> Rs <%= order.totalAmount %></p>
                                                         <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                                     </div>
                                                     <div class="text-end">
                                                         <% const shouldDisableCancelOrder = order.items.some(item => ['returnInitiated', 'returnApproved', 'returnRejected'].includes(item.orderProductStatus)); %>
                                                         <% if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
-                                                            <button class="btn btn-secondary btn-sm">Invoice</button>
+                                                           <button class="btn btn-secondary btn-sm" onclick="getInvoice('<%= order._id %>')">Invoice</button>
                                                             <button class="btn btn-sm" id="cancelOrderButton<%= order._id %>" 
                                                                 onclick="cancelOrder('<%= order._id %>', '<%= order.orderStatus %>')"
                                                                 <%= shouldDisableCancelOrder ? 'disabled' : '' %>>
                                                                 Cancel Order
                                                             </button>
                                                         <% } else { %>
+                                                           <button class="btn btn-secondary btn-sm" onclick="getInvoice('<%= order._id %>')">Invoice</button>
                                                             <button class="btn btn-secondary btn-sm" disabled>
                                                                 <%= order.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel Order' %>
+
                                                             </button>
+                                                            
                                                         <% } %>
                                                     </div>
                                                 </div>
@@ -161,41 +191,111 @@
         </div>
     </section>
 </main>
-<style>
-    /* Custom styling for SweetAlert2 buttons */
-    .swal2-confirm,
-    .swal2-cancel {
-        width: 400px; /* Set the same width for both buttons */
-        margin: 5px 10px; /* Space between buttons */
-    }/* Adjust button styles for different screen sizes */
-@media (max-width: 768px) {
-    .swal2-confirm,
-    .swal2-cancel {
-        width: 100%; /* Full width on small screens */
-        margin: 5px 0; /* Margin adjustment for small screens */
-    }
-}
-
-@media (min-width: 769px) and (max-width: 992px) {
-    .swal2-confirm,
-    .swal2-cancel {
-        width: 150px; /* Adjust width for medium screens */
-    }
-}
-    
-</style>
-
 <%- include('../layouts/userLayouts/footer') %>
-
-
-
 <script>
 
+
+    function getInvoice(orderId) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Find the specific order card
+        const orderCard = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
+        
+        if (!orderCard) {
+            console.error('Order card not found!');
+            return;
+        }
+
+        // Extract order details
+        const orderNumber = orderCard.querySelector('p').textContent.split(':')[1].trim();
+        const total = orderCard.querySelectorAll('p')[1].textContent.split(':')[1].trim();
+        const orderDate = orderCard.querySelectorAll('p')[2].textContent.split(':')[1].trim();
+        const paymentMethod = orderCard.querySelectorAll('p')[3].textContent.split(':')[1].trim();
+
+        // Collect items
+        const items = orderCard.querySelectorAll('.d-flex.mb-3');
+        const itemData = [];
+
+        items.forEach(item => {
+            const productName = item.querySelector('p').textContent.split(':')[1].trim();
+            const brandName = item.querySelectorAll('p')[1].textContent.split(':')[1].trim();
+            const price = item.querySelectorAll('p')[2].textContent.split(':')[1].trim();
+            const itemStatus = item.querySelector('.order-product-status').textContent.split(':')[1].trim();
+
+            itemData.push([productName, brandName, price, itemStatus]);
+        });
+
+        // Add order details to PDF
+        doc.setFontSize(18);
+        doc.text('Order Details', 14, 20);
+
+        doc.setFontSize(14);
+        doc.text(`Order Number: ${orderNumber}`, 14, 30);
+        doc.text(`Total: ${total}`, 14, 40);
+        doc.text(`Order Date: ${orderDate}`, 14, 50);
+        doc.text(`Payment Method: ${paymentMethod}`, 14, 60);
+
+        doc.setFontSize(16);
+
+        doc.autoTable({
+            startY: 90,
+            head: [['Product Name', 'Brand Name', 'Price', 'Status']],
+            body: itemData
+        });
+
+        doc.save(`order-${orderNumber}.pdf`);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
+
     console.log(`Return product ${itemId} in order ${orderId}, ${orderProductStatus}`);
 
     try {
-        // Confirm return action with SweetAlert2
+     
         const result = await Swal.fire({
             title: 'Return Product',
             html: `
@@ -212,7 +312,7 @@ const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Return Product',
             cancelButtonText: 'Cancel',
-            // Custom CSS for buttons
+          
             customClass: {
                 confirmButton: 'swal2-confirm',
                 cancelButton: 'swal2-cancel'
@@ -228,7 +328,7 @@ const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
 
         if (result.isConfirmed) {
             const { reason } = result.value;
-            // Make a PATCH request to the server
+            
             const response = await fetch(`http://localhost:7000/return`, {
                 method: "PATCH",
                 headers: {

@@ -18,10 +18,21 @@ const transaction = require('../models/onlineTransactionModel')
 
 const returnUserOrder = require('../models/returnOrderModel')
 
-const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils');
+const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils')
+
 const wallet = require('../models/walletModel');
 
+const dayjs = require('dayjs');
+
+const puppeteer = require('puppeteer')
+
+const handlebars = require('handlebars') 
+
 require('dotenv').config();
+
+const fs = require('fs');
+
+const path = require('path');
 
 const RAZORPAY_SECRECT_KEY = process.env.RAZORPAY_SECRECT_KEY
 const RAZORPAY_ID_KEY  = process.env.RAZORPAY_ID_KEY 
@@ -513,7 +524,6 @@ const loadCart = async (req,res) =>{
 
     try {
         
-
         let userFromGidSessionOrSession 
 
         if(req.session.userId){
@@ -1138,9 +1148,30 @@ const placeOrder = async (req,res) =>{
         
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
         const addressData = await userAddress.findOne({_id:address})
+        const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+        
+        const {balance} = walletData
+
+        const walletBalance = balance
 
         const {finalPrice,totalQuantity,subTotal,discount} = await priceSummary(cartData,couponCode)
 
+        if (finalPrice > 1000 && paymentMethod === "cashOnDelivery") {
+            return res.status(400).json({
+                success: false,
+                message: 'Order value for Cash on Delivery must be 1000 or less.',
+            });
+        }
+
+        if(paymentMethod === "wallet" && walletBalance < finalPrice){
+            return res.status(400).json({
+                success: false,
+                message: 'Insufficient wallet balance',
+            });
+
+        }
+
+        
         if(discount>0&&couponCode){
 
             await coupons.findOneAndUpdate({ couponCode }, { $addToSet: { userBy: userFromGidSessionOrSession } })
@@ -1156,7 +1187,7 @@ const placeOrder = async (req,res) =>{
             message: 'No items selected or final price is zero',
         });
     }
-       console.log(`this is is selected items only`,isSelectedItemsOnly);
+    //    console.log(`this is is selected items only`,isSelectedItemsOnly);
    
        const orderItems = isSelectedItemsOnly.map(item =>({
         product:item.product._id,
@@ -1240,6 +1271,26 @@ const placeOrder = async (req,res) =>{
         })
     
         const transactionsData = await newTransaction.save()
+
+      }else{
+
+        const newWalletTransaction = {
+
+            orderId:orderData._id,
+            amount:finalPrice,
+            type:"debit",
+            walletTransactionStatus:"paid"
+
+        }
+
+        await wallet.findOneAndUpdate(
+            { userId: userFromGidSessionOrSession },
+            {
+                $inc: { balance: -finalPrice }, 
+                $push: { transactions: newWalletTransaction }
+            },
+            { new: true }
+        )
       }
       
 
@@ -2235,6 +2286,7 @@ const returnProductOrder = async (req,res) =>{
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 
 
 module.exports = {

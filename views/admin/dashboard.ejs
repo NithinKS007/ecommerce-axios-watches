@@ -143,14 +143,15 @@
                                     </tr>
                                 </thead>
                                 <tbody id="salesTableBody">
-                                    <tr>
-                                      
-                                        <td><%= date || 'N/A' %></td>
-                                        <td><%= totalNumberOfOrders || 0 %></td>
-                                        <td>₹ <%= grossSales || 0 %></td>
-                                        <td>₹ <%= couponDeductions || 0 %></td>
-                                        <td>₹ <%= netSales || 0 %></td>
-                                    </tr>
+                                    <% tableSalesData.forEach(sale => { %>
+                                        <tr>
+                                          <td><%= sale.date || 'N/A' %></td>
+                                          <td><%= sale.totalNumberOfOrders || 0 %></td>
+                                          <td> <%= sale.grossSales || 0 %></td>
+                                          <td> <%= sale.couponDeductions || 0 %></td>
+                                          <td> <%= sale.netSales || 0 %></td>
+                                        </tr>
+                                      <% }) %>
                                     
                                     
                                 </tbody>
@@ -158,9 +159,9 @@
                                     <tr>
                                         <td><%= date ? 'Total' : date %></td>
                                         <td><%=tableTotalNumberOfOrders|| 0 %> </td>
-                                        <td>₹ <%= tableTotalGrossSales ||  0 %></td>
-                                        <td>₹ <%= tableTotalCouponDeductions ||  0%></td>
-                                        <td>₹ <%= tableTotalNetSales||  0 %></td>
+                                        <td>Rs <%= tableTotalGrossSales ||  0 %></td>
+                                        <td>Rs <%= tableTotalCouponDeductions ||  0%></td>
+                                        <td>Rs <%= tableTotalNetSales||  0 %></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -168,9 +169,11 @@
                         </div>
                         
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary">Download PDF</button>
-                            <button class="btn btn-primary">Download Excel</button>
+                            <button id="downloadPDF" class="btn btn-primary">Download PDF</button>
+                            <button id="downloadExcel" class="btn btn-primary">Download Excel</button>
                         </div>
+                        
+                        
                     </div>
                     
                     
@@ -197,6 +200,9 @@
                     timer: 5000
                 });
             }
+
+            document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
+            document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
         });
 
  const sendDataToBackend = async (dateFrom, dateTill, period) => {
@@ -269,7 +275,14 @@ const customDate = () => {
 
     } else {
 
-        alert('Please select both dates.');
+        Swal.fire({
+                    text: 'Please select both dates',
+                    icon: 'error',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
     }
 };
 
@@ -286,9 +299,9 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
          <tr>
                 <td>N/A</td>
                 <td>0</td>
-                <td>₹0</td>
-                <td>₹0</td>
-                <td>₹0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
             </tr>
 
         `
@@ -297,9 +310,9 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
         footerRow.innerHTML = `
             <td> Total</td>
             <td>0</td>
-            <td>₹ 0</td>
-            <td>₹ 0</td>
-            <td>₹ 0</td>
+            <td> 0</td>
+            <td> 0</td>
+            <td> 0</td>
         `;
         console.log("InnerHTML set successfully.");
     } else {
@@ -314,9 +327,9 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
                 <tr>
                     <td>${sale.date || '--'}</td>
                     <td>${sale.totalNumberOfOrders || 0}</td>
-                    <td>₹${sale.grossSales || 0}</td>
-                    <td>₹${sale.couponDeductions || 0}</td>
-                    <td>₹${sale.netSales || 0}</td>
+                    <td>${sale.grossSales || 0}</td>
+                    <td>${sale.couponDeductions || 0}</td>
+                    <td>${sale.netSales || 0}</td>
                 </tr>
             `;
             tableBody.insertAdjacentHTML('beforeend', rowHtml);
@@ -326,9 +339,9 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
         footerRow.innerHTML = `
              <td>Total</td>
             <td>${tableTotalNumberOfOrders}</td>
-            <td>₹${tableTotalGrossSales}</td>
-            <td>₹${tableTotalCouponDeductions}</td>
-            <td>₹${tableTotalNetSales}</td>
+            <td>Rs ${tableTotalGrossSales}</td>
+            <td>Rs ${tableTotalCouponDeductions}</td>
+            <td>Rs ${tableTotalNetSales}</td>
         `;
     }
 }
@@ -375,5 +388,21 @@ const Sales = (period) => {
     
     sendDataToBackend(null, null, period);
 };
+const downloadPDF = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const table = document.querySelector('table');
+
+    doc.autoTable({ html: table });
+    doc.save('sales-report.pdf');
+};
+
+const downloadExcel = () => {
+    const ws = XLSX.utils.table_to_sheet(document.querySelector('table'));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
+    XLSX.writeFile(wb, 'sales-report.xlsx');
+};
+
         </script>
         <%- include('../layouts/adminLayouts/footer') %>

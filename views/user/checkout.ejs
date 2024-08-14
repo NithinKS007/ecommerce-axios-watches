@@ -164,6 +164,7 @@
                             <div id="addressForm" style="display: none;">
 
                                 <form id="newAddressForm" method="post" action="/addAddress">
+
                                     <input type="hidden" name="sourcePage" value="checkout">
                                     <div class="mb-3">
                                         <input type="text" class="form-control" name="name" placeholder="Name" required>
@@ -256,7 +257,8 @@
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save Address</button>
-                                    <a href="/chekout" style="display: inline-block; text-decoration: none;"></a>
+                                    <a href="/checkout" style="display: inline-block; text-decoration: none;"></a>
+                                    <!-- <a href="/checkout" style="display: inline-block; text-decoration: none;"></a> -->
                                 </form>
                             </div>
 
@@ -374,6 +376,13 @@
                                         Cash on Delivery
                                     </label>
                                 </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="wallet"
+                                        value="wallet">
+                                    <label class="form-check-label" for="wallet">
+                                       wallet
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -412,7 +421,9 @@
 
                     const razorPay = document.getElementById('razorPay');
                     const cashOnDelivery = document.getElementById('cashOnDelivery');
+                    const wallet = document.getElementById('wallet')
                     const placeOrderButton = document.getElementById('placeOrder');
+                   
 
 
                     placeOrderButton.addEventListener("click", () => {
@@ -495,7 +506,6 @@
 
                                         }else{
 
-
                                             Swal.fire({
                                             icon: 'success',
                                             text: 'Order placed successfully!',
@@ -511,6 +521,19 @@
                                         });
                                         }
                                         
+                                    }else{
+
+                                        Swal.fire({
+                                        icon: 'error',
+                                        text: `${data.message}`,
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timerProgressBar: true,
+                                        timer: 3000
+                                    });
+
+
                                     }
 
 
@@ -536,6 +559,7 @@
 
             
 
+         
             const verifyOnlinePayment = (paymentId, orderId, signature,amount) =>{
 
                 console.log(`klkjsdlfasdh`,paymentId, orderId, signature);
@@ -593,6 +617,8 @@
                             return cashOnDelivery.value;
                         } else if (razorPay.checked) {
                             return razorPay.value;
+                        }else if(wallet.checked){
+                            return wallet.value
                         }
                         return null
                     }
@@ -616,7 +642,7 @@
 
 
                 })
-
+              
 
 
                 const editAddress = (id, addressType, addressName, addressPhone, address, addressLocality, addressCityDistTown, addressState, addressPincode, addressLandMark, addressAltPhone, addressEmail) => {
@@ -775,6 +801,8 @@
 
                 }
                 const updateNewAddress = (id, updatedUserAddress) => {
+
+                    
                     document.getElementById(`addressSubContainer${id}`).innerHTML = `
         <div class="card-body">
     <div class="d-flex justify-content-between align-items-start">

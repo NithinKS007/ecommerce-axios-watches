@@ -153,12 +153,12 @@ const loadDashboard = async (req,res) =>{
             totalRevenue(),
             overAllOrderAmount(),
             overAllDiscount(),
-            getSalesData(),
+            getSalesData(startOfMonth,today),
         ]);
 
-
-
-        const [{ date = '',totalNumberOfOrders = 0, grossSales = 0, couponDeductions = 0, netSales = 0 } = {}] = tableSalesData;
+        console.log(`this is the data`,tableSalesData);
+    
+         const [{ date } = {}] = tableSalesData;
 
         let tableTotalNumberOfOrders = 0;
         let tableTotalGrossSales = 0;
@@ -175,7 +175,7 @@ const loadDashboard = async (req,res) =>{
 
         return res.status(200).render('admin/dashboard',{successMessage,totalOrders,totalProducts,totalCategories,monthlyRev,startOfMonth: startOfMonth,
 
-            today:today,totalRev,totalSalesC,overallSalesTotalAmount,overAllDiscountAmount,date, totalNumberOfOrders, grossSales, couponDeductions, netSales,tableTotalNumberOfOrders,tableTotalGrossSales,tableTotalCouponDeductions,tableTotalNetSales})
+            today:today,totalRev,totalSalesC,overallSalesTotalAmount,overAllDiscountAmount,tableTotalNumberOfOrders,tableTotalGrossSales,tableTotalCouponDeductions,tableTotalNetSales,tableSalesData,date})
 
     } catch (error) {
 
@@ -430,7 +430,7 @@ const getSalesDataJson = async (req,res) =>{
 
 }
 
-const getSalesData = async (startDate=null, endDate=null) =>{
+const getSalesData = async (startDate,endDate) =>{
 
     try {
         
