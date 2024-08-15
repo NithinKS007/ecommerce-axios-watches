@@ -1416,7 +1416,52 @@ const addCoupon = async (req,res) =>{
     }
 }
 
+const activateDeactivateCoupon = async (req,res) =>{
 
+    const couponId = req.query.couponId
+
+    console.log(`this is the coupon id received from the front end`,couponId);
+    
+
+    try {
+
+        const couponData = await coupons.findById(couponId)
+
+        if(!couponData){
+
+            return res.status(404).json({ success: false, message: "Coupon not found" });
+
+        }
+
+        if(couponData.couponStatus){
+
+            const updatedCouponStatus = await coupons.findByIdAndUpdate({_id:couponId},{$set:{couponStatus:false}},{new:true})
+            console.log(`Deactivated coupon from the backend coupon status to false`)
+            return res.status(200).json({
+                success:true,
+                message:"coupon status set to false",
+                couponId:updatedCouponStatus
+            })
+     
+        }else{
+
+            const updatedCouponStatus = await coupons.findByIdAndUpdate({_id:couponId},{$set:{couponStatus:true}},{new:true})
+            console.log(`Activated coupon from the backend coupon status to true`)
+            return res.status(200).json({
+                success:true,
+                message:"coupon status set to true",
+                couponId:updatedCouponStatus
+            })
+            
+        }
+        
+    } catch (error) {
+        
+        console.log(`error while while blocking or unblocking the coupon`,error.message);
+        return res.status(500).send("Internal server Error")
+        
+    }
+}
 
 const loadReturnedOrder = async (req,res) =>{
 
@@ -1577,6 +1622,186 @@ const rejectReturn = async (req,res) =>{
     }
 
 }
+
+const bestSellers = async(req,res) =>{
+
+    try {
+        
+        const type = req.query.type;
+
+        if (type === 'product') {
+          
+        console.log(`this is the type received from the backend`,type);
+
+        const topTenBestSellingProducts = await orders.aggregate([
+
+            {$match:{orderStatus:"delivered"}},
+            {$unwind:"$items"},
+            {$match:{"items.orderProductStatus":"delivered"}},
+            {
+
+                $group:{
+
+                    _id:"$items.product",
+                    totalSold:{$sum:"$items.quantity"},
+                    productName:{$first:"$items.productName"}
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+
+            { $unwind: "$productDetails" },
+
+            {
+                $project: {
+                    _id: 0,
+                    productName: 1,
+                    totalSold: 1,
+                    price: "$productDetails.salesPrice",
+                    firstImage: { $first: "$productDetails.images" },
+                }
+            },
+            {$sort:{totalSold:-1}},
+            {$limit:10}
+        ])
+
+        console.log(`top 10 best selling products`,topTenBestSellingProducts);
+
+        return res.render("admin/productBestSelling",{topTenBestSellingProducts:topTenBestSellingProducts})
+ 
+        } else if (type === 'category') {
+
+            console.log(`this is the type received from the backend`,type);
+
+            const topTenBestSellingCategory = await orders.aggregate([
+
+                
+                    {$match:{orderStatus:"delivered"}},
+                    {$unwind:"$items"},
+                    {$match:{"items.orderProductStatus":"delivered"}},
+                    {
+                        $group:{
+
+                            _id: { category: "$items.category", product: "$items.productName" },
+
+                            totalSold: { $sum: "$items.quantity" },
+
+                        }
+                    },
+                    {
+                        $sort: { totalSold: -1 } 
+                    },
+                    {
+                        $group:{
+
+                            _id:"$_id.category",
+                            topProduct: { $first: "$_id.product" },
+                            totalSold: { $first: "$totalSold" },
+                            totalItemsSold: { $sum: "$totalSold" }, 
+                            totalOrders: { $sum: 1 }
+                        }
+                    },
+                    { $lookup: {
+                        from: "categories",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "categoryDetails"
+                               }
+                    },
+                    { $unwind: "$categoryDetails" },
+                    {
+                        $project: {
+                            _id: 0,
+                            categoryName: "$categoryDetails.name",
+                            totalItemsSold: 1,
+                            totalOrders: 1,
+                            topProduct: 1
+                        }
+                    },
+                    { $sort: { totalItemsSold: -1 } },
+
+                    { $limit: 10 }
+                
+            ])
+
+        return res.render("admin/categoryBestSelling",{topTenBestSellingCategory:topTenBestSellingCategory})
+          
+        } else {
+
+        console.log(`this is the type received from the backend`,type);
+
+        const topTenBestSellingBrand = await orders.aggregate([
+
+            {$match:{orderStatus:"delivered"}},
+            {$unwind:"$items"},
+            {$match:{"items.orderProductStatus":"delivered"}},
+            {
+
+                $group:{
+
+                    _id:{ brand :"$items.brand",product:"$items.productName"},
+
+                    totalSold:{$sum:"$items.quantity"},
+
+                }
+
+            },
+            {
+                $sort:{totalSold:-1}
+            },
+            {
+                $group:{
+                    _id:"$_id.brand",
+                    topProduct:{$first:"$_id.product"},
+                    totalSold:{$first:"$totalSold"},
+                    totalItemsSold:{$sum:"$totalSold"},
+                    totalOrders:{$sum:1}
+                }
+            },
+            {
+                $lookup:{
+
+                    from:"brands",
+                    localField:"_id",
+                    foreignField:"_id",
+                    as:"brandDetails"
+                }
+            },
+            {$unwind:"$brandDetails"},
+            {
+                $project:{
+                    _id:0,
+                    brandName:"$brandDetails.name",
+                    totalItemsSold:1,
+                    totalOrders:1,
+                    topProduct:1
+                }
+            },
+
+            {$sort:{totalItemsSold:-1}},
+            {$limit:10}
+
+        ])
+         
+        return res.render("admin/brandBestSelling",{topTenBestSellingBrand:topTenBestSellingBrand})
+
+        }
+
+    } catch (error) {
+        
+        console.log(`error while finding the best sellers`,error.message);
+
+        return res.send("internal server error")
+        
+    }
+
+}
 module.exports = {
 
     //admin authentication
@@ -1627,6 +1852,7 @@ module.exports = {
   
     //coupon management
     addCoupon,
+    activateDeactivateCoupon,
 
    
     loadReturnedOrder,
@@ -1635,7 +1861,8 @@ module.exports = {
 
     //calculate sales report
     getSalesData,
-    getSalesDataJson
+    getSalesDataJson,
+    bestSellers
   
 
 }

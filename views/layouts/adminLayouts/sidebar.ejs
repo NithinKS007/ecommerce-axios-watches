@@ -21,11 +21,18 @@
                     <span class="text">Products</span>
                 </a>
             </li>
-            <!-- <li class="menu-item">
-                <a class="menu-link" href="#"> <i class="icon material-icons md-shopping_cart"></i>
-                    <span class="text">Orders</span>
+            <li class="menu-item dropdown">
+                <a class="menu-link dropdown-toggle" href="#" id="bestSellersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="icon material-icons md-trending_up"></i>
+                    <span class="text">Best Sellers</span>
                 </a>
-            </li> -->
+                <ul class="dropdown-menu" aria-labelledby="bestSellersDropdown">
+                    <li><a class="dropdown-item" href="/admin/bestSellers?type=product">Best 10 Selling Products</a></li>
+                    <li><a class="dropdown-item" href="/admin/bestSellers?type=category">Best 10 Selling Categories</a></li>
+                    <li><a class="dropdown-item" href="/admin/bestSellers?type=brand">Best 10 Selling Brands</a></li>
+                </ul>
+            </li>
+            
             <li class="menu-item">
                 <a class="menu-link" href="/admin/customerlist"> <i class="icon material-icons md-store"></i>
                     <span class="text">customers</span>

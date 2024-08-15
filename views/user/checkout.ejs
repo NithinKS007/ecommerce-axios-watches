@@ -1,5 +1,87 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
+
+    <style>
+        .accordion-item {
+            border: none; /* Remove border */
+            border-bottom: 1px solid #e0e0e0; /* Light bottom border */
+        }
+    
+        .accordion-header {
+            background-color: #f5f5f5; /* Light gray background */
+            padding: 15px; /* More padding */
+            font-size: 16px; /* Slightly larger font */
+            font-weight: 600; /* Bold text */
+            cursor: pointer; /* Pointer cursor */
+            border-radius: 4px;
+        }
+    
+        .accordion-button {
+            background: none; /* Remove button background */
+            border: none; /* Remove button border */
+            font-size: 16px;
+            padding: 10px 0;
+            color: #333; /* Dark text color */
+            text-align: left;
+            width: 100%; /* Full width */
+        }
+    
+        .accordion-button:focus {
+            box-shadow: none; /* Remove focus outline */
+        }
+    
+        .accordion-button.collapsed {
+            color: #333;
+        }
+    
+        .accordion-button::after {
+            display: none; /* Remove the default caret */
+        }
+    
+        .accordion-body {
+            padding: 15px 15px 15px 60px; /* Add more padding, align text with image */
+            background-color: #fff; /* White background */
+        }
+    
+        .accordion-body img {
+            margin-right: 15px; /* Space between image and text */
+        }
+    
+        .product-details {
+            display: flex;
+            align-items: center;
+        }
+    
+        .product-details img {
+            width: 80px; /* Larger image */
+            height: 80px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+    
+        .product-info {
+            font-size: 14px;
+            color: #555;
+        }
+    
+        .product-info p {
+            margin: 0;
+            padding: 0;
+        }
+    
+        .product-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #388e3c; /* Green color for price */
+        }
+    
+        .remove-btn, .save-btn {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+        }
+    </style>
             <main class="container my-5">
                 <h1 style=" font-size: 24px;
                 font-weight: bold;
@@ -12,12 +94,12 @@
                         font-weight: bold;
                         color: #333;
                         margin-bottom: 16px;
-                      ">PRODUCT DETAILS</h4>
+                      ">Items purchased</h4>
                         <!-- Shipping Address Section -->
-                        <div class="card shadow-sm mb-4">
-
-                            <div class="accordion" id="productAccordion">
-                                <% selectedItems.forEach((item, index)=> { %>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="accordion" id="productAccordion">
+                                    <% selectedItems.forEach((item, index) => { %>
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="productHeading<%= index %>">
                                             <button class="accordion-button collapsed" type="button"
@@ -30,28 +112,29 @@
                                             aria-labelledby="productHeading<%= index %>"
                                             data-bs-parent="#productAccordion">
                                             <div class="accordion-body">
-                                                <img src="/productImages/<%= item.product.images[0]?.filename %>"
-                                                    class="card-img"
-                                                    style="width: 50px; height: 50px; object-fit: cover; margin-bottom: 15px;"
-                                                    alt="Product Image">
-                                                <p>
-                                                    <%= item.product.name %>
-                                                </p>
-                                                <p>Rs <%= item.price %>
-                                                </p>
+                                                <div class="product-details">
+                                                    <img src="/productImages/<%= item.product.images[0]?.filename %>" alt="Product Image">
+                                                    <div class="product-info">
+                                                        <p><%= item.product.name %></p>
+                                                        <p class="product-price">Rs <%= item.price %></p>
+                                                       
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <% }); %>
+                                </div>
                             </div>
-                        </div>
+                            
+                       
 
                         <div class="card-body">
                             <h3 class="card-title h5 mb-3" style=" font-size: 24px;
                             font-weight: bold;
                             color: #333;
                             margin-bottom: 16px;
-                          ">SELECT SHIPPING ADDRESS</h3>
+                          ">Select a shipping address</h3>
 
 
 
@@ -263,14 +346,19 @@
                             </div>
 
                             <br></br>
+                            <% if (address.length === 0) { %>
+                                <div class="alert alert-info" role="alert">
+                                    <strong>No addresses available!</strong> Please add an address to proceed with checkout.
+                                </div>
+                            <% }else { %>
                             <div class="row">
-                                <div class="col-lg-8">
+                                <div class="col-lg-12"> 
 
                                     <div class="card shadow-sm mb-4">
                                         <div class="card-body">
                                             <div id="addressContainer" class="row">
                                                 <% address.forEach((address, index)=> { %>
-                                                    <div class="col-md-6 mb-3" id="addressSubContainer<%=address._id%>">
+                                                    <div class="col-md-12 mb-3" id="addressSubContainer<%=address._id%>">
                                                         <div class="card-body">
                                                             <div
                                                                 class="d-flex justify-content-between align-items-start">
@@ -319,7 +407,7 @@
                                 </div>
                             </div>
 
-
+                            <% } %>
 
 
                         </div>

@@ -22,17 +22,7 @@ const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPa
 
 const wallet = require('../models/walletModel');
 
-const dayjs = require('dayjs');
-
-const puppeteer = require('puppeteer')
-
-const handlebars = require('handlebars') 
-
 require('dotenv').config();
-
-const fs = require('fs');
-
-const path = require('path');
 
 const RAZORPAY_SECRECT_KEY = process.env.RAZORPAY_SECRECT_KEY
 const RAZORPAY_ID_KEY  = process.env.RAZORPAY_ID_KEY 
@@ -507,7 +497,7 @@ const loadUserLogout = async (req,res) =>{
                 return res.status(500).send('failed to logout')
             }
 
-            res.redirect("/")
+            return res.status(200).redirect("/")
 
         })
 
@@ -515,6 +505,9 @@ const loadUserLogout = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while logging out`,error.message);
+
+        return res.status(500).send("An error occurred while logging out the user.")
+
     }
 
 }
@@ -1159,7 +1152,7 @@ const placeOrder = async (req,res) =>{
         if (finalPrice > 1000 && paymentMethod === "cashOnDelivery") {
             return res.status(400).json({
                 success: false,
-                message: 'Order value for Cash on Delivery must be 1000 or less.',
+                message: 'Cash on delivery only available for upto 1000Rs purchase.',
             });
         }
 
@@ -1929,41 +1922,46 @@ const removeCoupon = async (req, res) => {
     }
 };
 //loading user wishlist page
-const loadWishList = async (req,res) =>{
-
+const loadWishList = async (req, res) => {
     try {
-
         let userFromGidSessionOrSession;
 
         if (req.session.userId) {
-
             userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
         } else if (req.user) {
-
             userFromGidSessionOrSession = new ObjectId(req.user.id);
-
         }
 
-        const wishListOfUser = await wishList.findOne({userId:userFromGidSessionOrSession})
+        let wishListOfUser = await wishList.findOne({ userId: userFromGidSessionOrSession });
 
-        if(!wishListOfUser){
+        if (!wishListOfUser) {
 
-            return res.send("No user found")
+            const newWishList = new wishList({
+
+                userId: userFromGidSessionOrSession
+
+            });
+            
+            await newWishList.save();
+
+            wishListOfUser = newWishList; 
+            
         }
 
-        const productIds = wishListOfUser.productIds
+        const productIds = wishListOfUser.productIds || []
+        const productData = await products.find({ _id: { $in: productIds } });
 
-        const productData = await products.find({_id:{$in:productIds}})
+        return res.status(200).render("user/wishList", { productData });
 
-        return res.status(200).render("user/wishList",{productData})
-
-        
     } catch (error) {
-        
-        console.log(`error while loading the wishlist`);
+
+        console.log(`Error while loading the wishlist:`, error);
+
+        return res.status(500).send("An error occurred while loading the wishlist.");
+
     }
-}
+};
+
 
 //product adding to wishlist
 const addToWishList = async (req, res) => {

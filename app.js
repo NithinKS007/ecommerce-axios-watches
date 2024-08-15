@@ -33,13 +33,13 @@ app.use(express.urlencoded({extended: true}))
 app.use(sessionConfig)
 
 
+
 //for google verification
 app.use(passport.initialize())
 app.use(passport.session())
 
-
 //using user routes
-app.use("/",userRoute)
+app.use("/", userRoute)
 //using admin routes
 app.use("/admin", adminRoute)
 

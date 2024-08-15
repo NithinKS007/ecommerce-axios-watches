@@ -64,4 +64,7 @@ adminRoute.patch("/updateReturnStatus",noCacheMid.noCacheMiddleware,adminAuth.is
 //sales report calculate
 adminRoute.get("/salesReport",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.getSalesDataJson)
 
+adminRoute.get("/bestSellers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.bestSellers)
+
+adminRoute.patch("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCoupon)
 module.exports = adminRoute

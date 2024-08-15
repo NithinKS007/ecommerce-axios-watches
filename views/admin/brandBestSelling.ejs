@@ -1,0 +1,42 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+    <%- include('../layouts/adminLayouts/searchbar') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Top 10 Best Selling Brand</h2>
+                <p>Dashboard > Best Sellers > Top 10 Best Selling Brand</p>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <!-- table content starts -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Brand Name</th>
+                                <th scope="col">Total Units Sold</th>
+                                <th scope="col">Total Orders</th>
+                                <th scope="col">Top Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% topTenBestSellingBrand.forEach(brand => { %>
+                                <tr>
+                                    <td><%= brand.brandName %></td>
+                                    <td><%= brand.totalItemsSold %></td>
+                                    <td><%= brand.totalOrders %></td>
+                                    <td><%= brand.topProduct %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section> <!-- content-main end// -->
+</main>
+<%- include('../layouts/adminLayouts/footer') %>

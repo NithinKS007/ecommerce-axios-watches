@@ -1,53 +1,39 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
 
-        <div class="container mt-5" id="mainContainer" style="height: auto;">
-            <div class="row">
-                <% if (productData.length===0) { %>
-                    <div class="col-12 text-center wishlistEmptyMessage" >
-                        <h2>Your wishlist is empty!</h2>
-                        <p>Add items to it now.</p>
-                        <a href="/home" class="btn btn-primary">Shop now</a>
-                    </div>
-                    <% } else { %>
-                        <div class="col-md-8" id="sendWishListItem">
-                           
-                            <% productData.forEach(product=> { %>
-                               
-                                <div class="card mb-3" id="productContainer<%= product._id %>">
-                                 
-                                    <div class="row no-gutters">
-                                        <div class="col-md-4 d-flex align-items-center justify-content-center">
-                                            <img src="/productImages/<%= product.images[0]?.filename %>"
-                                                class="card-img"
-                                                style="width: 100px; height: 100px; object-fit: cover; margin: 15px;"
-                                                alt="Product Image">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <%= product.name %>
-                                                </h5>
-                                                <strong>Price:</strong>
-                                               
-                                                        <%= product.regularPrice %>
-                                                    
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div class="d-flex align-items-center">
-                                                        </div>
-                                                        <span class="text-secondary"
-                                                            onclick="removeFromWishList('<%= product._id %>')"
-                                                            style="text-decoration: none; cursor: pointer;margin-bottom: 50px;">Remove</span>
-                                                    </div>
-                                            </div>
-                                        </div>
-                                    </div>
+    <div class="container mt-5" id="mainContainer" style="height: auto;">
+        <div class="row">
+            <% if (productData.length === 0) { %>
+                <div class="col-12 text-center wishlistEmptyMessage">
+                    <h2>Your wishlist is empty!</h2>
+                    <p>Add items to it now.</p>
+                    <a href="/home" class="btn btn-primary">Shop now</a>
+                </div>
+            <% } else { %>
+                <div class="col-12 d-flex flex-wrap justify-content-start" id="sendWishListItem" style="margin-top: 50px;">
+                    <% productData.forEach(product => { %>
+                        <div class="card shadow-sm mb-3" id="productContainer<%= product._id %>" style="width: 18rem; margin: 10px;">
+                            <img src="/productImages/<%= product.images[0]?.filename %>" class="card-img-top"
+                                 style="width: 100%; height: 200px; object-fit: cover;" alt="Product Image">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title" style="font-size: 13px; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">
+                                        <%= product.name %>
+                                    </h5>
+                                    <button class="btn btn-link btn-sm" style="text-decoration: none;" 
+                                        onclick="removeFromWishList('<%= product._id %>')">Remove</button>
                                 </div>
-                                <% }); %>
+                                <p class="card-text">
+                                    <strong>₹<%= product.regularPrice %></strong>
+                                </p>
+                            </div>
                         </div>
-                        <% } %>
-            </div>
+                    <% }); %>
+                </div>
+            <% } %>
         </div>
+    </div>
+    
         <div id="preloader-active">
             <div class="preloader d-flex align-items-center justify-content-center">
                 <div class="preloader-inner position-relative">
