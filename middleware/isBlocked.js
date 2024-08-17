@@ -7,9 +7,6 @@ module.exports = async (req, res, next) => {
     try {
 
         let userFromGidSessionOrSession;
-
-        console.log('Session:', req.session);
-        console.log('User:', req.user);
         
         if (req.session.userId) {
 

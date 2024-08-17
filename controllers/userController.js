@@ -984,6 +984,7 @@ const addAddress = async (req,res) =>{
     }
 }
 
+
 const editAddress = async (req,res) =>{
 
     const {id} = req.body
@@ -1142,7 +1143,16 @@ const placeOrder = async (req,res) =>{
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
         const addressData = await userAddress.findOne({_id:address})
         const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
-        
+        if(!walletData){
+
+            const newWalletData = new wallet({
+
+                userId: userFromGidSessionOrSession
+
+            });
+
+            walletData = await newWalletData.save();
+        }
         const {balance} = walletData
 
         const walletBalance = balance
@@ -1267,23 +1277,28 @@ const placeOrder = async (req,res) =>{
 
       }else{
 
-        const newWalletTransaction = {
+        if(paymentMethod==="wallet"){
 
-            orderId:orderData._id,
-            amount:finalPrice,
-            type:"debit",
-            walletTransactionStatus:"paid"
+            const newWalletTransaction = {
 
+                orderId:orderData._id,
+                amount:finalPrice,
+                type:"debit",
+                walletTransactionStatus:"paid"
+    
+            }
+    
+            await wallet.findOneAndUpdate(
+                { userId: userFromGidSessionOrSession },
+                {
+                    $inc: { balance: -finalPrice }, 
+                    $push: { transactions: newWalletTransaction }
+                },
+                { new: true }
+            )
         }
 
-        await wallet.findOneAndUpdate(
-            { userId: userFromGidSessionOrSession },
-            {
-                $inc: { balance: -finalPrice }, 
-                $push: { transactions: newWalletTransaction }
-            },
-            { new: true }
-        )
+        
       }
       
 
@@ -1692,8 +1707,7 @@ const getEnumValues = (schema, path) => {
 
   };
 
-const advancedSearch = async (req, res) => {
-    console.log();
+  const advancedSearch = async (req, res) => {
     const { categories, brands, sortby, targetGroup } = req.query;
 
     const categoriesArray = categories ? categories.split(',').map(id => new ObjectId(id)) : [];
@@ -1702,73 +1716,60 @@ const advancedSearch = async (req, res) => {
 
     let arrayToAggregate = [];
 
-    const lookUpBrandsData = () =>{
+    const lookUpBrandsAndCategoriesData = () => {
         arrayToAggregate.push({
             $lookup: {
-              from: 'brands',
-              localField: 'brand',
-              foreignField: '_id',
-              as: 'brandData'
+                from: 'brands',
+                localField: 'brand',
+                foreignField: '_id',
+                as: 'brandData'
             }
-          });
-        
-    }
+        });
+        arrayToAggregate.push({
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'categoryData'
+            }
+        });
+    };
+
     if (categoriesArray.length > 0) {
         arrayToAggregate.push({ $match: { category: { $in: categoriesArray } } });
-        lookUpBrandsData()
-      
+        lookUpBrandsAndCategoriesData();
     }
     if (brandsArray.length > 0) {
         arrayToAggregate.push({ $match: { brand: { $in: brandsArray } } });
-        lookUpBrandsData()
-        
+        lookUpBrandsAndCategoriesData();
     }
     if (targetGroup) {
         arrayToAggregate.push({ $match: { targetGroup: targetGroup } });
-        lookUpBrandsData()
-        
+        lookUpBrandsAndCategoriesData();
     }
 
     if (sortbyArray.includes('priceLowHigh')) {
         arrayToAggregate.push({ $sort: { salesPrice: 1 } });
-        lookUpBrandsData()
-        
     } else if (sortbyArray.includes('priceHighLow')) {
         arrayToAggregate.push({ $sort: { salesPrice: -1 } });
-        lookUpBrandsData()
-      
     } else if (sortbyArray.includes('newArrivals')) {
         arrayToAggregate.push({ $sort: { createdAt: -1 } });
-        lookUpBrandsData()
-        
     } else if (sortbyArray.includes('aToZ')) {
         arrayToAggregate.push({ $sort: { name: 1 } });
-        lookUpBrandsData()
-        
     } else if (sortbyArray.includes('zToA')) {
         arrayToAggregate.push({ $sort: { name: -1 } });
-       
-        lookUpBrandsData()
-    } else if(sortbyArray.includes('OutOfStock')){
-
-        arrayToAggregate.push({$match:{stock:0}})
+    } else if (sortbyArray.includes('OutOfStock')) {
+        arrayToAggregate.push({ $match: { stock: 0 } });
     }
-
-
 
     arrayToAggregate.push({ $match: { isBlocked: false } });
 
-    
     try {
         let filterResult;
         if (arrayToAggregate.length > 0) {
-
-            filterResult = await products.aggregate(arrayToAggregate)
-
+            filterResult = await products.aggregate(arrayToAggregate);
         } else {
-
-            filterResult = await products.find({ isBlocked: false })
-
+            filterResult = await products.find({ isBlocked: false });
         }
 
         return res.status(200).json({

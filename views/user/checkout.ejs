@@ -2,32 +2,41 @@
     <%- include('../layouts/userLayouts/navbar1') %>
 
     <style>
+          .error {
+      font-size: 0.8em;
+      color: red;
+    }
+
+    .small-text {
+      font-size: 0.8em;
+      line-height: 1.2;
+    }
         .accordion-item {
-            border: none; /* Remove border */
-            border-bottom: 1px solid #e0e0e0; /* Light bottom border */
+            border: none;
+            border-bottom: 1px solid #e0e0e0; 
         }
     
         .accordion-header {
-            background-color: #f5f5f5; /* Light gray background */
-            padding: 15px; /* More padding */
-            font-size: 16px; /* Slightly larger font */
-            font-weight: 600; /* Bold text */
-            cursor: pointer; /* Pointer cursor */
+            background-color: #f5f5f5; 
+            padding: 15px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
             border-radius: 4px;
         }
     
         .accordion-button {
-            background: none; /* Remove button background */
-            border: none; /* Remove button border */
+            background: none; 
+            border: none;
             font-size: 16px;
             padding: 10px 0;
-            color: #333; /* Dark text color */
+            color: #333; 
             text-align: left;
-            width: 100%; /* Full width */
+            width: 100%; 
         }
     
         .accordion-button:focus {
-            box-shadow: none; /* Remove focus outline */
+            box-shadow: none; 
         }
     
         .accordion-button.collapsed {
@@ -35,16 +44,16 @@
         }
     
         .accordion-button::after {
-            display: none; /* Remove the default caret */
+            display: none; 
         }
     
         .accordion-body {
-            padding: 15px 15px 15px 60px; /* Add more padding, align text with image */
-            background-color: #fff; /* White background */
+            padding: 15px 15px 15px 60px; 
+            background-color: #fff; 
         }
     
         .accordion-body img {
-            margin-right: 15px; /* Space between image and text */
+            margin-right: 15px;
         }
     
         .product-details {
@@ -53,7 +62,7 @@
         }
     
         .product-details img {
-            width: 80px; /* Larger image */
+            width: 80px; 
             height: 80px;
             object-fit: cover;
             margin-right: 20px;
@@ -72,7 +81,7 @@
         .product-price {
             font-size: 16px;
             font-weight: bold;
-            color: #388e3c; /* Green color for price */
+            color: #388e3c; 
         }
     
         .remove-btn, .save-btn {
@@ -81,20 +90,29 @@
             color: #007bff;
             cursor: pointer;
         }
+
     </style>
             <main class="container my-5">
-                <h1 style=" font-size: 24px;
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 16px;
-              " class="h2 mb-4">CHECKOUT</h1>
+                <h1 style="
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+" class="h2 mb-4">CHECKOUT</h1>
+
                 <div class="row">
                     <div class="col-lg-8">
-                        <h4 style=" font-size: 24px;
-                        font-weight: bold;
-                        color: #333;
-                        margin-bottom: 16px;
-                      ">Items purchased</h4>
+                        <p style="
+                        font-family: 'Roboto', sans-serif;
+                        font-size: 22px;
+                        font-weight: 500;
+                        color: #212121;
+                        margin-bottom: 12px;
+                        letter-spacing: 0.5px;
+                    ">Items Purchased</p>
+                    
                         <!-- Shipping Address Section -->
                             
                             <div class="card shadow-sm mb-4">
@@ -130,52 +148,61 @@
                        
 
                         <div class="card-body">
-                            <h3 class="card-title h5 mb-3" style=" font-size: 24px;
-                            font-weight: bold;
-                            color: #333;
-                            margin-bottom: 16px;
-                          ">Select a shipping address</h3>
-
-
-
-                            <button id="showButton" class="btn btn-outline-primary" style=" margin-bottom: 10px;">
+                          
+                            <button id="addAddressButton" class="btn btn-outline-primary" style=" margin-bottom: 10px;">
                                 <i class="bi bi-plus-lg"></i> Add New Address
                             </button>
 
                             <!-- for editing address starts-->
-                            <div id="editAddressForm" style="display: none;">
-                                <form id="newAddressForm">
+                            <div id="editContainer" style="display: none;">
+
+                                <h2 style="
+                                font-family: 'Roboto', sans-serif;
+                                font-size: 24px;
+                                font-weight: 600;
+                                color: #333;
+                                margin-bottom: 16px;
+                                letter-spacing: 0.5px;
+                                display: inline; /* Ensures it's displayed inline */ 
+                            ">Edit Address</h2>
+                            
+                                <form id="editAddressForm">
                                     <input type="hidden" value="address">
                                     <div class="mb-3">
                                         <input type="text" id="addressNameInput" class="form-control" name="name"
-                                            placeholder="Name" required>
+                                            placeholder="Name" >
+                                            <span id="editNameError" class="error"></span>
                                     </div>
                                     <div class="mb-3">
                                         <input type="tel" id="addressPhoneInput" class="form-control" name="phone"
-                                            placeholder="10-digit mobile number" required>
+                                            placeholder="10-digit mobile number" >
+                                            <span id="editPhoneError" class="error"></span>
                                     </div>
                                     <div class="mb-3">
                                         <input type="text" id="addressPincodeInput" class="form-control" name="pincode"
-                                            placeholder="Pincode" required>
+                                            placeholder="Pincode" >
+                                            <span id="editPincodeError" class="error"></span>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
                                             <input type="text" id="addressLocalityInput" class="form-control"
-                                                name="locality" placeholder="Locality" required>
+                                                name="locality" placeholder="Locality" >
+                                                <span id="editLocalityError" class="error"></span>
                                         </div>
                                         <div class="col">
                                             <textarea class="form-control" id="addressTextAreaInput" name="address"
-                                                rows="3" placeholder="Address (Area and Street)" required></textarea>
+                                                rows="3" placeholder="Address (Area and Street)" ></textarea>
+                                                <span id="editAddressError" class="error"></span>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
                                             <input type="text" class="form-control" id="addressCityDistTownInput"
-                                                name="cityDistTown" placeholder="City/District/Town" required>
+                                                name="cityDistTown" placeholder="City/District/Town" >
+                                                <span id="editCityDistTownError" class="error"></span>
                                         </div>
                                         <div class="col">
-                                            <select class="form-select" id="addressStateInput" name="state" required>
-                                                <option selected disabled>--Select State--</option>
+                                            <select class="form-select" id="addressStateInput" name="state" >
                                                 <option value="Andhra Pradesh">Andhra Pradesh</option>
                                                 <option value="Arunachal Pradesh">Arunachal Pradesh</option>
                                                 <option value="Assam">Assam</option>
@@ -205,6 +232,7 @@
                                                 <option value="Uttarakhand">Uttarakhand</option>
                                                 <option value="West Bengal">West Bengal</option>
                                             </select>
+                                            <span id="editStateError" class="error"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -217,13 +245,14 @@
                                     </div>
                                     <div class="mb-3">
                                         <input type="email" id="addressEmailInput" class="form-control" name="email"
-                                            placeholder="Email" required>
+                                            placeholder="Email" >
+                                            <span id="editEmailError" class="error"></span>
                                     </div>
                                     <label class="form-label">Address Type</label>
                                     <div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="addressType" id="home"
-                                                value="home" required>
+                                                value="home" >
                                             <label class="form-check-label" for="home">Home</label>
                                         </div>
                                         <div class="form-check form-check-inline">
@@ -236,48 +265,57 @@
                                                 value="other">
                                             <label class="form-check-label" for="other">Other</label>
                                         </div>
+                                        <span id="editAddressTypeError" class="error"></span>
                                     </div>
-                                    <button type="submit" id="saveChangesAddressFormButton" class="btn btn-primary">Save
+                                    <button type="submit" id="saveChangesEditAddressFormButton" class="btn btn-primary">Save
                                         Address</button>
+                                        <button type="button" id="cancelEditAddressFormButton" class="btn btn-secondary">Cancel</button>
                                 </form>
                             </div>
 
                             <!-- for editing address ends-->
 
-                            <div id="addressForm" style="display: none;">
+                            <div id="addAddressContainer" style="display: none;">
 
-                                <form id="newAddressForm" method="post" action="/addAddress">
+                                <form id="addAddressForm" method="post" action="/addAddress">
 
                                     <input type="hidden" name="sourcePage" value="checkout">
                                     <div class="mb-3">
-                                        <input type="text" class="form-control" name="name" placeholder="Name" required>
+                                        <input type="text" class="form-control" name="name" placeholder="Name"  id="name">
+                                        <span id="nameError" class="error"></span>
                                     </div>
                                     <div class="mb-3">
-                                        <input type="tel" class="form-control" name="phone"
-                                            placeholder="10-digit mobile number" required>
+                                        <input type="tel" class="form-control" name="phone" id="phone"
+                                            placeholder="10-digit mobile number">
+                                            <span id="phoneError" class="error"></span>
                                     </div>
                                     <div class="mb-3">
-                                        <input type="text" class="form-control" name="pincode" placeholder="Pincode"
-                                            required>
+                                        <input type="text" class="form-control" name="pincode"  id="pincode" placeholder="Pincode"
+                                            >
+                                            <span id="pincodeError" class="error"></span>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <input type="text" class="form-control" name="locality"
-                                                placeholder="Locality" required>
+                                            <input type="text" class="form-control" name="locality" id="locality" 
+                                                placeholder="Locality">
+                                                <span id="localityError" class="error"></span>
                                         </div>
                                         <div class="col">
-                                            <textarea class="form-control" name="address" rows="3"
-                                                placeholder="Address (Area and Street)" required></textarea>
+                                            <textarea class="form-control" name="address"  id="address"  rows="3"
+                                                placeholder="Address (Area and Street)"></textarea>
+                                                <span id="addressError" class="error"></span>
                                         </div>
+                                        
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <input type="text" class="form-control" name="cityDistTown"
-                                                placeholder="City/District/Town" required>
+                                            <input type="text" class="form-control" name="cityDistTown" id="cityDistTown"
+                                                placeholder="City/District/Town">
+                                                <span id="cityDistTownError" class="error"></span>
                                         </div>
                                         <div class="col">
-                                            <select class="form-select" name="state" required>
-                                                <option selected disabled>--Select State--</option>
+                                            <select class="form-select" name="state"  id="state">
+
                                                 <option value="Andhra Pradesh">Andhra Pradesh</option>
                                                 <option value="Arunachal Pradesh">Arunachal Pradesh</option>
                                                 <option value="Assam">Assam</option>
@@ -307,6 +345,7 @@
                                                 <option value="Uttarakhand">Uttarakhand</option>
                                                 <option value="West Bengal">West Bengal</option>
                                             </select>
+                                            <span id="stateError" class="error"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -318,14 +357,15 @@
                                             placeholder="Alternate Phone (Optional)">
                                     </div>
                                     <div class="mb-3">
-                                        <input type="email" class="form-control" name="email" placeholder="Email"
-                                            required>
+                                        <input type="email" class="form-control" name="email"  id="email" placeholder="Email"
+                                            >
+                                            <span id="emailError" class="error"></span>
                                     </div>
                                     <label class="form-label">Address Type</label>
                                     <div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="addressType" id="home"
-                                                value="home" required>
+                                                value="home">
                                             <label class="form-check-label" for="home">Home</label>
                                         </div>
                                         <div class="form-check form-check-inline">
@@ -338,10 +378,10 @@
                                                 value="other">
                                             <label class="form-check-label" for="other">Other</label>
                                         </div>
+                                        <span id="addressTypeError" class="error"></span>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save Address</button>
-                                    <a href="/checkout" style="display: inline-block; text-decoration: none;"></a>
-                                    <!-- <a href="/checkout" style="display: inline-block; text-decoration: none;"></a> -->
+                                    <button type="button" id="cancelAddAddressFormButton" class="btn btn-secondary">Cancel</button>
                                 </form>
                             </div>
 
@@ -351,7 +391,7 @@
                                     <strong>No addresses available!</strong> Please add an address to proceed with checkout.
                                 </div>
                             <% }else { %>
-                            <div class="row">
+                            <div class="row" id="addressList">
                                 <div class="col-lg-12"> 
 
                                     <div class="card shadow-sm mb-4">
@@ -450,6 +490,7 @@
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
                                 <h3 class="card-title h5 mb-3">Payment Method</h3>
+
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="payment_method" id="razorPay"
                                         value="razorPay">
@@ -473,7 +514,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <!-- <div id="paymentMethodError" class="text-danger mb-3" style="color: red; font-size: 5px; display: none; margin-top: 2px;margin-bottom: 5px;"></div> -->
                         <button type="submit" class="btn btn-primary btn-lg w-100" id="placeOrder">Place Order</button>
                     </div>
                 </div>
@@ -494,19 +535,242 @@
                     </div>
                 </div>
             </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
+<script>
+ document.addEventListener('DOMContentLoaded', () => {
 
-                    document.getElementById('showButton').addEventListener('click', function () {
-                        var addressForm = document.getElementById('addressForm');
-                        if (addressForm.style.display === 'none') {
-                            addressForm.style.display = 'block';
-                        } else {
-                            addressForm.style.display = 'none';
-                        }
-                    });
+//form validation ids for adding new address
+const nameInput = document.getElementById('name');
+const nameError = document.getElementById('nameError');
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phoneError');
+const pincodeInput = document.getElementById('pincode');
+const pincodeError = document.getElementById('pincodeError');
+const localityInput = document.getElementById('locality');
+const localityError = document.getElementById('localityError');
+const addressInput = document.getElementById('address');
+const addressError = document.getElementById('addressError');
+const cityDistTownInput = document.getElementById('cityDistTown');
+const cityDistTownError = document.getElementById('cityDistTownError');
+const stateInput = document.getElementById('state');
+const stateError = document.getElementById('stateError');
+const emailInput = document.getElementById('email');
+const emailError = document.getElementById('emailError');
+const addressTypeInputs = document.querySelectorAll('input[name="addressType"]');
+const addressTypeError = document.getElementById('addressTypeError');
+
+const formAddNewAddress = document.getElementById("addAddressForm")
+const addAddressContainer = document.getElementById("addAddressContainer")
+const addAddressButton = document.getElementById("addAddressButton")
+const cancelAddAddressFormButton = document.getElementById("cancelAddAddressFormButton")
+const addressList = document.getElementById("addressList")
+
+const validateName = () =>{
+    if (nameInput.value.trim() === '') {
+        nameError.textContent = '* Name is required';
+        return false
+    }else if(nameInput.value.trim().length < 2){
+
+        nameError.textContent = '* Name must be at least 2 characters long'
+        return false
+    }
+     else {
+        nameError.textContent = '';
+       return true
+    }
+}
+nameInput.addEventListener('input', validateName);
+
+//mobile validaton
+
+const validatePhone = () =>{
+
+    const phoneRegex =  /^\d{10}$/; 
+
+    if (phoneInput.value.trim() === '') {
+        phoneError.textContent = '* Phone Number is required';
+      return false
+    }else if( !phoneRegex.test(phoneInput.value.trim())){
+
+        phoneError.textContent = '* Enter a valid Phone Number';
+        return false
+
+    }else {
+        phoneError.textContent = '';
+       return true
+    }
+}
+
+phoneInput.addEventListener('input', validatePhone);
+
+//pincode validaton
+
+const validatePincode = () =>{
+
+    const pincodeRegex =  /^\d{6}$/; 
+
+    if (pincodeInput.value.trim() === '') {
+        pincodeError.textContent = '*Pincode is required';
+      return false
+    }else if( !pincodeRegex.test(pincodeInput.value.trim())){
+
+        pincodeError.textContent = '* Enter a valid Pincode';
+        return false
+
+    }else {
+        pincodeError.textContent = '';
+       return true
+    }
+}
+
+pincodeInput.addEventListener('input', validatePincode);
+
+//locality validation
+
+const validateLocality = () => {
+    if (localityInput.value.trim() === '') {
+        localityError.textContent = '* Locality is required';
+        return false;
+    } else {
+        localityError.textContent = '';
+        return true;
+    }
+}
+
+localityInput.addEventListener('input', validateLocality);
+
+//address  validation
+
+const validateAddress = () =>{
+    if (addressInput.value.trim() === '') {
+        addressError.textContent = '* Address is required';
+        return false
+
+    } else {
+        addressError.textContent = '';
+        
+       return true
+    }
+}
+addressInput.addEventListener('input', validateAddress);
+
+//cityDistTown  validation
+
+const validateCityDistTown = () =>{
+
+    if (cityDistTownInput.value.trim() === '') {
+        cityDistTownError.textContent = '*cityDistTown is required';
+        return false
+
+    } else {
+        cityDistTownError.textContent = '';
+        
+       return true
+    }
+}
+cityDistTownInput.addEventListener('input', validateCityDistTown);
+
+//validate state
+
+const validateState = () => {
+    if (stateInput.value === '') {
+        stateError.textContent = '* State is required';
+        return false;
+    } else {
+        stateError.textContent = '';
+        return true;
+    }
+}
+
+stateInput.addEventListener('change', validateState);
 
 
+//email validaton
+
+
+const validateEmail = () =>{
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailInput.value.trim() === '') {
+        emailError.textContent = '* Email is required';
+        return false
+    }else if( !emailRegex.test(emailInput.value.trim()) ){
+
+        emailError.textContent = '* Enter a valid email';
+       return false
+
+    }else {
+        emailError.textContent = '';
+       return true
+    }
+}
+
+emailInput.addEventListener('input', validateEmail);
+
+//address type validation
+
+    const validateAddressType = () => {
+        const isChecked = Array.from(addressTypeInputs).some(input => input.checked);
+        if (!isChecked) {
+            addressTypeError.textContent = '* Address Type is required';
+            return false;
+        } else {
+            addressTypeError.textContent = '';
+            return true;
+        }
+    };
+    addressTypeInputs.forEach(input => input.addEventListener('change', validateAddressType));
+
+ 
+    
+    formAddNewAddress.addEventListener("submit",(event)=>{
+
+        
+        const isNameValid = validateName();
+        const isPhoneValid = validatePhone();
+        const isPincodeValid = validatePincode();
+        const isLocalityValid = validateLocality();
+        const isAddressValid = validateAddress();
+        const isCityDistTownValid = validateCityDistTown();
+        const isStateValid = validateState();
+        const isEmailValid = validateEmail();
+        const isAddressTypeValid = validateAddressType();
+    
+        console.log(isNameValid);
+        
+
+        if (!(isNameValid && isPhoneValid && isPincodeValid && isLocalityValid && isAddressValid && isCityDistTownValid && isStateValid && isEmailValid && isAddressTypeValid)) {
+            console.log(`entering inside this`);
+            
+            event.preventDefault(); 
+           
+        }else {
+
+            console.log("Form is valid. Submitting");
+
+        }
+    })
+
+
+    addAddressButton.addEventListener('click', ()=> {
+                       
+          addAddressContainer.style.display = 'block';
+
+          addressList.style.display = 'none'
+                   
+    });
+
+    cancelAddAddressFormButton.addEventListener("click",()=>{
+
+         addAddressContainer.style.display = 'none';
+
+         addressList.style.display = 'block'
+
+         })
+
+
+
+                      
                     const razorPay = document.getElementById('razorPay');
                     const cashOnDelivery = document.getElementById('cashOnDelivery');
                     const wallet = document.getElementById('wallet')
@@ -516,6 +780,7 @@
 
                     placeOrderButton.addEventListener("click", () => {
 
+                        let errorMessage = '';
                         const selectedPaymentMethod = getSelectedPaymentMethod();
                         const selectedAddressId = getSelectedAddressId()
                         const couponCode = document.getElementById('couponCode').value;
@@ -531,7 +796,7 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             });
-
+                            // errorMessage = 'Please select a payment method and address.';
                         } else if (!selectedAddressId) {
 
                             Swal.fire({
@@ -543,7 +808,7 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             });
-
+                            // errorMessage = 'Please select an address.';
                         } else if (!selectedPaymentMethod) {
 
                             Swal.fire({
@@ -555,6 +820,7 @@
                                 timerProgressBar: true,
                                 timer: 3000
                             });
+                            // errorMessage = 'Please select a payment method.';
 
                         } else {
 
@@ -639,13 +905,21 @@
                                     });
 
                                 });
+                                // errorMessage = '';
                         }
 
-
+                            //                     const errorElement = document.getElementById('paymentMethodError');
+                            // if (errorMessage) {
+                            //     errorElement.textContent = errorMessage;
+                            //     errorElement.style.display = 'block'; // Ensure the error message is visible
+                            // } else {
+                            //     errorElement.textContent = ''; // Clear error message
+                            //     errorElement.style.display = 'none'; // Hide the error message container
+                            // }
 
                     });
 
-            
+    
 
          
             const verifyOnlinePayment = (paymentId, orderId, signature,amount) =>{
@@ -728,8 +1002,28 @@
 
                     }
 
+                    
 
-                })
+  const successMessage = sessionStorage.getItem('successMessage');
+
+  if (successMessage) {
+    Swal.fire({
+      title: "Success!",
+      text: successMessage,
+      icon: "success",
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000
+    });
+
+   
+    sessionStorage.removeItem('successMessage');
+
+  }
+
+})
               
 
 
@@ -752,7 +1046,22 @@
                     const addressTypeHome = document.getElementById('home');
                     const addressTypeWork = document.getElementById('work');
                     const addressTypeOther = document.getElementById('other');
-                    const editAddressForm = document.getElementById('editAddressForm')
+
+                    const editNameError = document.getElementById('editNameError')
+                    const editPhoneError= document.getElementById('editPhoneError')
+                    const editPincodeError = document.getElementById('editPincodeError')
+                    const editLocalityError = document.getElementById('editLocalityError')
+                    const editAddressError = document.getElementById('editAddressError')
+                    const editCityDistTownError = document.getElementById('editCityDistTownError')
+                    const editStateError = document.getElementById('editStateError')
+                    const editEmailError = document.getElementById('editEmailError')
+                    const editAddressTypeError = document.getElementById('editAddressTypeError')
+
+
+
+
+
+                    const editContainer = document.getElementById('editContainer')
 
                     addressNameInput.value = addressName;
                     addressPhoneInput.value = addressPhone;
@@ -779,20 +1088,157 @@
 
                     }
 
-                    if (editAddressForm.style.display === 'none') {
+                    if (editContainer.style.display === 'none') {
 
-                        editAddressForm.style.display = 'block';
+                        editContainer.style.display = 'block';
+                        document.getElementById("addressList").style.display="none"
+                        document.getElementById('addAddressButton').style.display = "none"
 
                     } else {
-                        editAddressForm.style.display = 'none';
-
+                        editContainer.style.display = 'none';
+                        document.getElementById('addressList').style.display="block"
+                        document.getElementById('addAddressButton').style.display = "block"
                     }
 
-                    const saveChangesAddressFormButton = document.getElementById('saveChangesAddressFormButton')
 
-                    saveChangesAddressFormButton.addEventListener("click", (event) => {
+                    const validateEditName = () => {
+                    if (addressNameInput.value.trim() === '') {
+                        editNameError.textContent = '* Name is required';
+                        return false;
+                    } else if (addressNameInput.value.trim().length < 2) {
+                        editNameError.textContent = '* Name must be at least 2 characters long';
+                        return false;
+                    } else {
+                        editNameError.textContent = '';
+                        return true;
+                    }
+                };
 
-                        event.preventDefault()
+                const validateEditPhone = () => {
+                    const phoneRegex = /^\d{10}$/;
+                    if (addressPhoneInput.value.trim() === '') {
+                       editPhoneError.textContent = '* Phone Number is required';
+                        return false;
+                    } else if (!phoneRegex.test(addressPhoneInput.value.trim())) {
+                       editPhoneError.textContent = '* Enter a valid Phone Number';
+                        return false;
+                    } else {
+                       editPhoneError.textContent = '';
+                        return true;
+                    }
+                };
+
+            const validateEditPincode = () => {
+                const pincodeRegex = /^\d{6}$/;
+                if (addressPincodeInput.value.trim() === '') {
+                    editPincodeError.textContent = '* Pincode is required';
+                    return false;
+                } else if (!pincodeRegex.test(addressPincodeInput.value.trim())) {
+                    editPincodeError.textContent = '* Enter a valid Pincode';
+                    return false;
+                } else {
+                    editPincodeError.textContent = '';
+                    return true;
+                }
+            };
+
+                const validateEditLocality = () => {
+                    if (addressLocalityInput.value.trim() === '') {
+                        editLocalityError.textContent = '* Locality is required';
+                        return false;
+                    } else {
+                        editLocalityError.textContent = '';
+                        return true;
+                    }
+                };
+
+                const validateEditAddress = () => {
+                    if (addressTextAreaInput.value.trim() === '') {
+                       editAddressError.textContent = '* Address is required';
+                        return false;
+                    } else {
+                       editAddressError.textContent = '';
+                        return true;
+                    }
+                };
+
+                const validateEditCityDistTown = () => {
+                    if (addressCityDistTownInput.value.trim() === '') {
+                       editCityDistTownError.textContent = '* City/District/Town is required';
+                        return false;
+                    } else {
+                       editCityDistTownError.textContent = '';
+                        return true;
+                    }
+                };
+
+                const validateEditState = () => {
+                    if (addressStateInput.value === '') {
+                        editStateError.textContent = '* State is required';
+                        return false;
+                    } else {
+                        editStateError.textContent = '';
+                        return true;
+                    }
+                };
+
+                const validateEditEmail = () => {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (addressEmailInput.value.trim() === '') {
+                       editEmailError.textContent = '* Email is required';
+                        return false;
+                    } else if (!emailRegex.test(addressEmailInput.value.trim())) {
+                       editEmailError.textContent = '* Enter a valid Email';
+                        return false;
+                    } else {
+                       editEmailError.textContent = '';
+                        return true;
+                    }
+                };
+
+                const validateEditAddressType = () => {
+                    const isChecked = [addressTypeHome, addressTypeWork, addressTypeOther].some(input => input.checked);
+                    if (!isChecked) {
+                      editAddressTypeError.textContent = '* Address Type is required';
+                        return false;
+                    } else {
+                      editAddressTypeError.textContent = '';
+                        return true;
+                    }
+                };
+
+    // Attach validation to inputs
+    addressNameInput.addEventListener('input', validateEditName);
+    addressPhoneInput.addEventListener('input', validateEditPhone);
+    addressPincodeInput.addEventListener('input', validateEditPincode);
+    addressLocalityInput.addEventListener('input', validateEditLocality);
+    addressTextAreaInput.addEventListener('input', validateEditAddress);
+    addressCityDistTownInput.addEventListener('input', validateEditCityDistTown);
+    addressStateInput.addEventListener('change', validateEditState);
+    addressEmailInput.addEventListener('input', validateEditEmail);
+    [addressTypeHome, addressTypeWork, addressTypeOther].forEach(input => input.addEventListener('change', validateEditAddressType));
+
+                    const saveChangesEditAddressFormButton = document.getElementById('saveChangesEditAddressFormButton')
+
+                    saveChangesEditAddressFormButton.addEventListener("click", (event) => {
+
+                        event.preventDefault();
+
+                            // Perform all validation checks
+                            const isNameValid = validateEditName();
+                            const isPhoneValid = validateEditPhone();
+                            const isPincodeValid = validateEditPincode();
+                            const isLocalityValid = validateEditLocality();
+                            const isAddressValid = validateEditAddress();
+                            const isCityDistTownValid = validateEditCityDistTown();
+                            const isStateValid = validateEditState();
+                            const isEmailValid = validateEditEmail();
+                            const isAddressTypeValid = validateEditAddressType();
+
+                            if (!(isNameValid && isPhoneValid && isPincodeValid && isLocalityValid && isAddressValid && isCityDistTownValid && isStateValid && isEmailValid && isAddressTypeValid)) {
+                             
+                                return;
+                            }
 
                         Swal.fire({
                             title: 'Confirm Update',
@@ -847,25 +1293,11 @@
                                 }).then((data) => {
 
 
-                                    console.log(`data received to checkout page after editing address`, data.updatedUserAddress);
+                                console.log(`data received to checkout page after editing address`, data.updatedUserAddress);
 
-                                    if (data.success) {
+                                   window.location.reload()
 
-
-                                        updateNewAddress(id, data.updatedUserAddress);
-
-                                        Swal.fire({
-                                            icon: 'success',
-                                            text: `${data.updatedUserAddress.addressType} address successfully updated.`,
-                                            toast: true,
-                                            position: 'top-right',
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                            timer: 3000
-                                        });
-                                    }
-
-                                    editAddressForm.style.display = 'none';
+                                   sessionStorage.setItem(`successMessage`, `${data.updatedUserAddress.addressType} address edited successfully!`)
 
 
                                 }).catch(error => {
@@ -888,37 +1320,14 @@
                     })
 
                 }
-                const updateNewAddress = (id, updatedUserAddress) => {
-
+                
+                document.getElementById('cancelEditAddressFormButton').addEventListener("click", () => {
                     
-                    document.getElementById(`addressSubContainer${id}`).innerHTML = `
-        <div class="card-body">
-    <div class="d-flex justify-content-between align-items-start">
-        <div class="form-check flex-grow-1">
-            <input class="form-check-input" type="radio" name="addressSelection" value="${updatedUserAddress._id}" data-address-id="${updatedUserAddress._id}">
-            <label class="form-check-label" for="address_${updatedUserAddress._id}">
-                ${updatedUserAddress.name}<br>
-                ${updatedUserAddress.address}<br>
-                ${updatedUserAddress.cityDistTown}, ${updatedUserAddress.state} - ${updatedUserAddress.pincode}<br>
-                Phone: ${updatedUserAddress.phone}
-            </label>
-        </div>
-        <div class="dropdown dropdown-menu-end">
-            <a href="#" data-bs-toggle="dropdown">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="5" r="1"></circle>
-                    <circle cx="12" cy="12" r="1"></circle>
-                    <circle cx="12" cy="19" r="1"></circle>
-                </svg>
-            </a>
-            <div class="dropdown-menu">
-                <a onclick="editAddress('${updatedUserAddress._id}', '${updatedUserAddress.addressType}', '${updatedUserAddress.name}', '${updatedUserAddress.phone}', '${updatedUserAddress.address}', '${updatedUserAddress.locality}', '${updatedUserAddress.cityDistTown}', '${updatedUserAddress.state}', '${updatedUserAddress.pincode}', '${updatedUserAddress.landMark}', '${updatedUserAddress.altPhone}', '${updatedUserAddress.email}')" class="dropdown-item">Edit info</a>
-                <a onclick="removeAddress('${updatedUserAddress._id}')" class="dropdown-item text-danger">Delete</a>
-            </div>
-        </div>
-    </div>
-</div>`;
-                };
+                    editContainer.style.display = 'none';
+                     document.getElementById('addressList').style.display = 'block'
+                     document.getElementById('addAddressButton').style.display = 'block'
+                     
+            });   
 
             </script>
             <!-- Vendor JS -->

@@ -8,11 +8,25 @@
             font-size: 0.8em;
             color: red;
           }
-
           .small-text {
             font-size: 0.8em;
             line-height: 1.2;
           }
+        
+        .table-wrapper {
+          max-height: 400px; 
+          overflow-y: auto;
+          position: relative; 
+        }
+        .table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .table thead {
+          position: sticky;
+          top: 0;
+        }
+
         </style>
 
         <section class="content-main">
@@ -31,10 +45,7 @@
               <div class="row">
                 <div class="col-md-3">
                   <form action="/admin/brandCategoryManagement" id="formDataCreateCategory" method="post">
-                    <!-- Hidden input field for category ID -->
-
                     <div class="mb-4">
-
                       <label for="categoryName" class="form-label">Name</label>
                       <input type="text" name="cName" placeholder="Type here" class="form-control" id="categoryName" />
                       <span id="categoryNameError" class="error"></span>
@@ -53,12 +64,15 @@
                         style="display: none;">
                         Save Changes
                       </button>
+                      <button type="button" id="cancelChangesCategoryFormButton" class="btn btn-secondary" style="display: none;margin-top: 10px;">
+                        Cancel
+                      </button>
                     </div>
                   </form>
                 </div>
                 <div class="col-md-9">
-                  <div class="table-responsive">
-                    <table class="table table-hover">
+                  <div class="table-responsive table-wrapper">
+                    <table id="categories-table" class="table table-striped table-bordered">
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
@@ -132,32 +146,6 @@
             <!-- card body .// -->
           </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           <!-- card .// -->
           <div class="content-header">
             <div>
@@ -186,12 +174,15 @@
                         style="display: none;">
                         Save Changes
                       </button>
+                      <button type="button" id="cancelChangesBrandFormButton" class="btn btn-secondary" style="display: none;margin-top: 10px;">
+                        Cancel
+                      </button>
                     </div>
                   </form>
                 </div>
                 <div class="col-md-9">
-                  <div class="table-responsive">
-                    <table class="table table-hover">
+                  <div class="table-responsive table-wrapper">
+                    <table id="brands-table" class="table table-striped table-bordered">
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
@@ -257,55 +248,12 @@
             <!-- card body .// -->
           </div>
           <!-- card .// -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           
         </section>
         <!-- content-main end// -->
 
         <script>
           //soft deleting the categories
-
           const softDeleteCategory = (categoryId) => {
             const deleteButton = document.getElementById(
               `softDeleteButton${categoryId}`
@@ -482,233 +430,265 @@
             });
           };
 
-          //function for editing category
-          const editCategory = (id, categoryName, categoryDescription) => {
+const categoryNameInput = document.getElementById('categoryName');
+const categoryNameError = document.getElementById("categoryNameError");
+const categoryDescriptionInput = document.getElementById('categoryDescription');
+const categoryDescriptionError = document.getElementById("categoryDescriptionError");
+const createCategoryFormButton = document.getElementById('createCategoryFormButton');
+const formDataCreateCategory = document.getElementById("formDataCreateCategory");
+const saveChangesCategoryFormButton = document.getElementById('saveChangesCategoryFormButton');  
+const cancelChangesCategoryFormButton = document.getElementById('cancelChangesCategoryFormButton');
 
-            // console.log(id,categoryName,categoryDescription);
+const brandNameInput = document.getElementById('brandName');
+const brandNameError = document.getElementById("brandNameError");
+const createBrandFormButton = document.getElementById('createBrandFormButton');
+const formDataCreateBrand = document.getElementById("formDataCreateBrand");
+const saveChangesBrandFormButton = document.getElementById('saveChangesBrandFormButton');
+const cancelChangesBrandFormButton = document.getElementById('cancelChangesBrandFormButton');
 
-            const categoryNameInput = document.getElementById('categoryName')
-            const catrgoryDescription = document.getElementById('categoryDescription')
-            const createCategoryFormButton = document.getElementById('createCategoryFormButton')
-            const saveChangesCategoryFormButton = document.getElementById('saveChangesCategoryFormButton')
+const editCategory = async (id, categoryName, categoryDescription) => {
 
-            categoryNameInput.value = categoryName
+  categoryNameInput.value = categoryName;
+  categoryDescriptionInput.value = categoryDescription;
 
-            categoryDescriptionInput.value = categoryDescription
-
-            createCategoryFormButton.style.display = 'none';
-            saveChangesCategoryFormButton.style.display = 'block';
-
-            if (saveChangesCategoryFormButton.style.display == 'block') {
-
-              saveChangesCategoryFormButton.addEventListener("click", () => {
-
-                Swal.fire({
-                  title: 'Confirm Changes',
-                  text: 'Are you sure you want to save these changes? This action cannot be undone.',
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonText: 'Yes, save changes',
-                  cancelButtonText: 'No, cancel',
-                  reverseButtons: true
-                }).then((result) => {
-
-                  if (result.isConfirmed) {
+  createCategoryFormButton.style.display = 'none';
+  saveChangesCategoryFormButton.style.display = 'block';
+  cancelChangesCategoryFormButton.style.display = 'block';
 
 
-                    const name = categoryNameInput.value
-                    const description = categoryDescriptionInput.value
-                    const categoryId = id
+  saveChangesCategoryFormButton.addEventListener("click", async (event) => {
 
-                    fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
+    
+    event.preventDefault();
 
-                      method: "PUT",
-                      headers: {
+const isValidateCategoryName = validateCategoryName()
+const isValidateCategoryDescription = validateCategoryDescription()
 
-                        'Content-Type': 'application/json',
+const categoryName = categoryNameInput.value.trim();
 
-                      },
-                      body: JSON.stringify({ name, description, categoryId })
+if(!(isValidateCategoryName&&isValidateCategoryDescription)){
 
-                    }).then((response) => {
+  console.log(`entered in category adding validation`);
+  
+  return
 
-                      if (!response.ok) {
+}
+    const result = await Swal.fire({
+      title: 'Confirm Changes',
+      text: 'Are you sure you want to save these changes? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, save changes',
+      cancelButtonText: 'No, cancel',
+      reverseButtons: true
+    });
+    const cExists = await categoryExists(categoryName);
 
-                        throw new Error("Network response was not ok")
-                      }
+    if (result.isConfirmed) {
+      if (cExists) {
+        Swal.fire({
+        title: "Category Exists!",
+        text: "A category with this name already exists.",
+        icon: "warning",
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000
+      });
+        return;
+      }
+      const name = categoryNameInput.value;
+      const description = categoryDescriptionInput.value;
+      const categoryId = id;
 
-                      return response.json()
+      try {
+        const response = await fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, description, categoryId })
+        });
 
-                    }).then((data) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
 
-                      console.log(`data received`, data);
+        const data = await response.json();
+        console.log(`data received`, data);
 
-                      const row = document.querySelector(`#categoryRow${categoryId}`);
+  
+        if (data.categoryDetails) {
 
-                      if (row) {
+          sessionStorage.setItem('successMessage', 'Category has been updated successfully!');
+          sessionStorage.setItem('categoryName', name);
 
-                        row.querySelector('.cName').innerHTML = name
-                        row.querySelector('.cDes').innerHTML = description
+          categoryNameInput.value = '';
+          categoryDescriptionInput.value = '';
+          createCategoryFormButton.style.display = 'block';
+          saveChangesCategoryFormButton.style.display = 'none';
 
-                        categoryNameInput.value = '';
-                        categoryDescriptionInput.value = '';
-                        createCategoryFormButton.style.display = 'block';
-                        saveChangesCategoryFormButton.style.display = 'none';
+          cancelChangesCategoryFormButton.style.display = 'none';
 
-                        Swal.fire({
-                          title: 'Updated!',
-                          text: 'Category has been updated successfully.',
-                          icon: 'success',
-                          toast: true,
-                          position: 'top-right',
-                          showConfirmButton: false,
-                          timerProgressBar: true,
-                          timer: 3000
-                        });
-                      }
+          window.location.reload()
+      
+        }
+      } catch (error) {
+        console.error('Error:', error.message);
 
-                    }).catch((error) => {
+        await Swal.fire({
+          title: 'Error!',
+          text: `There was a problem updating the category: ${error.message}`,
+          icon: 'error',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000
+        });
+      }
+    }
+  });
 
-                      console.error('Error:', error.message);
+  cancelChangesCategoryFormButton.addEventListener("click", () => {
+        categoryNameInput.value = '';
+        categoryDescriptionInput.value = '';
+        createCategoryFormButton.style.display = 'block';
+        saveChangesCategoryFormButton.style.display = 'none';
+        cancelChangesCategoryFormButton.style.display = 'none';  
+      });
+    };
+;
 
-                      Swal.fire({
-                        title: 'Error!',
-                        text: `There was a problem updating the category: ${error.message}`,
-                        icon: 'error',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
 
-                    })
 
-                  }
 
-                })
+const editBrand = async(id, brandName) => {
 
-              })
+brandNameInput.value = brandName;
 
-            }
+createBrandFormButton.style.display = 'none';
+saveChangesBrandFormButton.style.display = 'block';
+cancelChangesBrandFormButton.style.display = 'block'; 
+
+saveChangesBrandFormButton.addEventListener("click", async (event) => {
+  event.preventDefault()
+
+const isValidateBrandName = validateBrandName()
+const brandName = brandNameInput.value.trim();
+
+if (!(isValidateBrandName)) {
+
+  console.log(`entered in brand adding validation`)
+
+  return
+
+}
+        const result = await Swal.fire({
+          title: 'Confirm Changes',
+          text: 'Are you sure you want to save these changes? This action cannot be undone.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, save changes',
+          cancelButtonText: 'No, cancel',
+          reverseButtons: true
+        });
+        const bExists = await brandExists(brandName)
+
+             
+
+      if (result.isConfirmed) {
+      try {
+        if (bExists) {
+
+          Swal.fire({
+          title: "Brand Exists!",
+          text: "A brand with this name already exists.",
+          icon: "warning",
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000
+          });
+          return
 
           }
+        const name = brandNameInput.value;
+        const brandId = id;
+
+        const response = await fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, brandId })
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        console.log('Data received:', data);
+
+      
+        if (data.brandDetails) {
+    
+          sessionStorage.setItem('successMessage', 'Brand has been updated successfully!');
+          sessionStorage.setItem('brandName', name);
+
+          brandNameInput.value = '';
+          createBrandFormButton.style.display = 'block';
+          saveChangesBrandFormButton.style.display = 'none';
+          cancelChangesBrandFormButton.style.display = 'none'; 
+
+          window.location.reload();
+         
+        }else {
+          Swal.fire({
+            title: 'Error!',
+            text: data.errorMessage || 'There was a problem updating the brand.',
+            icon: 'error',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000
+          });
+        }
+
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: `There was a problem updating the brand: ${error.message}`,
+          icon: 'error',
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000
+        });
+      }
+    }
+
+  });
+  cancelChangesBrandFormButton.addEventListener("click", () => {
+        brandNameInput.value = '';
+        createBrandFormButton.style.display = 'block';
+        saveChangesBrandFormButton.style.display = 'none';
+        cancelChangesBrandFormButton.style.display = 'none'; 
+      });
+    
+}
 
 
-          const editBrand = (id, brandName) => {
 
-            const brandNameInput = document.getElementById('brandName')
-            const createBrandFormButton = document.getElementById('createBrandFormButton')
-            const saveChangesBrandFormButton = document.getElementById('saveChangesBrandFormButton')
+     
 
-
-            brandNameInput.value = brandName
-
-            createBrandFormButton.style.display = 'none'
-
-            saveChangesBrandFormButton.style.display = 'block'
-
-            if (saveChangesBrandFormButton.style.display == 'block') {
-
-              saveChangesBrandFormButton.addEventListener("click", () => {
-                Swal.fire({
-                  title: 'Confirm Changes',
-                  text: 'Are you sure you want to save these changes? This action cannot be undone.',
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonText: 'Yes, save changes',
-                  cancelButtonText: 'No, cancel',
-                  reverseButtons: true
-
-                }).then((result) => {
-
-                  if (result.isConfirmed) {
-
-                    const name = brandNameInput.value
-                    const brandId = id
-
-                    fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
-
-                      method: "PUT",
-                      headers: {
-
-                        'Content-Type': 'application/json',
-
-                      },
-
-                      body: JSON.stringify({ name, brandId })
-
-                    }).then((response) => {
-
-                      if (!response.ok) {
-
-                        throw new Error("Network response was not ok")
-                      }
-                      return response.json()
-                    }).then((data) => {
-
-                      console.log(`data received`, data);
-
-                      const row = document.querySelector(`#brandRow${brandId}`)
-
-                      if (row) {
-
-                        row.querySelector('.bName').innerHTML = name
-
-                        brandNameInput.value = '';
-
-                        createBrandFormButton.style.display = 'block';
-                        saveChangesBrandFormButton.style.display = 'none';
-
-                        Swal.fire({
-                          title: 'Success!',
-                          text: 'Brand has been updated successfully.',
-                          icon: 'success',
-                          toast: true,
-                          position: 'top-right',
-                          showConfirmButton: false,
-                          timerProgressBar: true,
-                          timer: 3000
-                        });
-
-                      }
-
-                    }).catch(error => {
-
-
-                      Swal.fire({
-                        title: 'Error!',
-                        text: `There was a problem updating the brand: ${error.message}`,
-                        icon: 'error',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
-
-
-                    })
-
-
-                  }
-
-
-                })
-
-
-              })
-            }
-
-          }
-
-          //category adding category done using backend
-
-          //form validation for adding new category
-
-          const categoryNameInput = document.getElementById("categoryName");
-          const categoryNameError = document.getElementById("categoryNameError");
-
+        
+  
           const validateCategoryName = () => {
             if (categoryNameInput.value.trim() === "") {
               categoryNameError.textContent = "* Category Name is required";
@@ -721,21 +701,15 @@
 
           categoryNameInput.addEventListener("input", validateCategoryName);
 
-          const categoryDescriptionInput = document.getElementById(
-            "categoryDescription"
-          );
-          const categoryDescriptionError = document.getElementById(
-            "categoryDescriptionError"
-          );
+        
+     
 
           const validateCategoryDescription = () => {
             if (categoryDescriptionInput.value.trim() === "") {
-              categoryDescriptionError.textContent =
-                "* Category is Description required";
+              categoryDescriptionError.textContent = "* Category is Description required";
               return false
             } else if (categoryDescriptionInput.value.trim().length < 5) {
-              categoryDescriptionError.textContent =
-                "* Description should be atleast 5 charactors";
+              categoryDescriptionError.textContent ="* Description should be atleast 5 charactors";
               return false
             }
             categoryDescriptionError.textContent = "";
@@ -743,10 +717,24 @@
 
           }
 
-          categoryDescriptionInput.addEventListener(
-            "input",
-            validateCategoryDescription
-          );
+          categoryDescriptionInput.addEventListener("input",validateCategoryDescription);
+
+
+            //form validation for adding new brand
+            const validateBrandName = () => {
+            if (brandNameInput.value.trim() === "") {
+              brandNameError.textContent = "* Brand Name is required";
+              return false;
+            } else if (brandNameInput.value.trim().length < 2) {
+              brandNameError.textContent = "* Name should be atleast 2 charactors";
+              return false
+            } else {
+              brandNameError.textContent = "";
+              return true
+            }
+          };
+
+          brandNameInput.addEventListener("input", validateBrandName);
 
           //checking for existing category 
           const categoryExists = async (categoryName) => {
@@ -785,17 +773,21 @@
           };
 
 
-          const formDataCreateCategory = document.getElementById(
-            "formDataCreateCategory");
+
 
           formDataCreateCategory.addEventListener("submit", async (event) => {
 
             event.preventDefault();
 
+            const isValidateCategoryName = validateCategoryName()
+            const isValidateCategoryDescription = validateCategoryDescription()
+
             const categoryName = categoryNameInput.value.trim();
 
-            if (!validateCategoryName() || !validateCategoryDescription()) {
-             
+            if(!(isValidateCategoryName&&isValidateCategoryDescription)){
+
+              console.log(`entered in category adding validation`);
+              
               return
 
             }
@@ -839,28 +831,7 @@
 
 
 
-          //brand adding category done using backend
-
-          //form validation for adding new brand
-
-
-          const brandNameInput = document.getElementById("brandName");
-          const brandNameError = document.getElementById("brandNameError");
-
-          const validateBrandName = () => {
-            if (brandNameInput.value.trim() === "") {
-              brandNameError.textContent = "* Brand Name is required";
-              return false;
-            } else if (brandNameInput.value.trim().length < 2) {
-              brandNameError.textContent = "* Name should be atleast 2 charactors";
-              return false
-            } else {
-              brandNameError.textContent = "";
-              return true
-            }
-          };
-
-          brandNameInput.addEventListener("input", validateBrandName);
+        
 
 
           //checking for existing brand
@@ -902,17 +873,17 @@
 
           };
 
-          const formDataCreateBrand = document.getElementById(
-            "formDataCreateBrand"
-          );
-
+        
           formDataCreateBrand.addEventListener("submit", async (event) => {
 
             event.preventDefault()
 
+            const isValidateBrandName = validateBrandName()
             const brandName = brandNameInput.value.trim();
 
-            if (!validateBrandName()) {
+            if (!(isValidateBrandName)) {
+
+              console.log(`entered in brand adding validation`)
 
               return
 
@@ -953,12 +924,52 @@
                   showConfirmButton: false,
                   timerProgressBar: true,
                   timer: 3000
-                });
-
+                })
             }
 
           });
 
-        </script>
+       
+        document.addEventListener('DOMContentLoaded', () => {
+          const successMessage = sessionStorage.getItem('successMessage');
+          const brandName = sessionStorage.getItem('brandName');
+          const categoryName = sessionStorage.getItem('categoryName');
+
+          if (successMessage && brandName) {
+            Swal.fire({
+              text: `${successMessage} for ${brandName}`,
+              icon: 'success',
+              toast: true,
+              position: 'top-right',
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000
+            });
+      
+            // Clear the message after displaying
+            sessionStorage.removeItem('successMessage');
+            sessionStorage.removeItem('brandName');
+          }
+      
+          if (successMessage && categoryName) {
+          Swal.fire({
+            title: successMessage,
+            text: `${successMessage} for ${categoryName}`,
+            icon: 'success',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000
+          });
+
+      // Clear session storage
+        sessionStorage.removeItem('successMessage');
+        sessionStorage.removeItem('categoryName');
+       }
+      });
+      </script>
+      
+        
         <%- include('../layouts/adminLayouts/footer') %>
     </main>

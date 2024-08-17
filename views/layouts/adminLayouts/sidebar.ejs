@@ -52,10 +52,16 @@
                 </a>
             </li>
             
-            <!-- <li class="menu-item">
-                <a class="menu-link" href="#"> <i class="icon material-icons md-stars"></i>
-                    <span class="text">Banner Management</span> </a>
-            </li> -->
+            <li class="menu-item dropdown">
+                <a class="menu-link dropdown-toggle" href="#" id="bestSellersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="icon material-icons md-trending_up"></i>
+                    <span class="text">Offer Management</span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="bestSellersDropdown">
+                    <li><a class="dropdown-item" href="/admin/categoryOffer">Category</a></li>
+                    <li><a class="dropdown-item" href="">Product</a></li>
+                </ul>
+            </li>
             <li class="menu-item">
                 <a class="menu-link" disabled href="/admin/brandCategoryManagement"> <i
                         class="icon material-icons md-pie_chart"></i>

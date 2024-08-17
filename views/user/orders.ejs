@@ -52,6 +52,7 @@
                                                 </div>
                                                 <div id="orderDetails-<%= order._id %>" class="collapse">
                                                     <hr>
+                                                    <div class="scrollable-content" style="max-height: 300px; overflow-y: auto;">
                                                     <div class="mb-3">
                                                         <p class="mb-1">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %></p>
                                                         <p class="mb-1">Ship To: <%= order.shippingAddress.name %></p>
@@ -139,7 +140,9 @@
                                                             
                                                         <% } %>
                                                     </div>
+                                                </div> 
                                                 </div>
+
                                             </div>
                                         </div>
                                     <% }); %>

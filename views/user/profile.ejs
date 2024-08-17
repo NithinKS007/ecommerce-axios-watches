@@ -107,6 +107,8 @@
                                                         class="btn btn-primary">
                                                         Save Changes
                                                     </button>
+                                                    <button type="button" id="cancelNewUserDetailsButton" class="btn btn-secondary">Cancel</button>
+
                                                 </form>
                                             </div>
                                             <!-- edit user details ends -->
@@ -135,6 +137,7 @@
                                                         class="btn btn-primary">
                                                         Save Changes
                                                     </button>
+                                                    <button type="button" id="cancelNewPasswordButton" class="btn btn-secondary">Cancel</button>
                                                 </form>
                                             </div>
                                             <!-- edit user password ends -->
@@ -152,9 +155,15 @@
             <script>
                 //validation starts for resetting the password
                 const existingPasswordInput = document.getElementById("existingPassword");
-                const existingPasswordError = document.getElementById(
-                    "existingPasswordError"
-                );
+                const existingPasswordError = document.getElementById("existingPasswordError");
+                const newPasswordInput = document.getElementById("newPassword");
+                const newPasswordError = document.getElementById("newPasswordError");
+                const confirmPasswordInput = document.getElementById("confirmPassword");
+                const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+                const userInfoDisplay = document.getElementById("userInfoDisplay");
+                const editPasswordForm = document.getElementById("passwordEditForm");
+                const saveUserNewPasswordButton = document.getElementById("saveUserNewPasswordButton");
 
                 const validateExistingPassword = () => {
                     if (existingPasswordInput.value.trim() === "") {
@@ -169,11 +178,10 @@
                         return true;
                     }
                 };
-                existingPasswordInput.addEventListener("input", validateExistingPassword);
+
 
                 //validation for new password
-                const newPasswordInput = document.getElementById("newPassword");
-                const newPasswordError = document.getElementById("newPasswordError");
+
 
                 const validateNewPassword = () => {
                     if (newPasswordInput.value.trim() === "") {
@@ -189,13 +197,9 @@
                     }
                 };
 
-                newPasswordInput.addEventListener("input", validateNewPassword);
+
 
                 //validation for confirm password field
-                const confirmPasswordInput = document.getElementById("confirmPassword");
-                const confirmPasswordError = document.getElementById("confirmPasswordError");
-
-
 
                 const validateConfirmPassword = () => {
                     if (confirmPasswordInput.value.trim() === "") {
@@ -214,39 +218,30 @@
                         return true;
                     }
                 };
+
+                existingPasswordInput.addEventListener("input", validateExistingPassword);
+                newPasswordInput.addEventListener("input", validateNewPassword);
                 confirmPasswordInput.addEventListener("input", validateConfirmPassword);
 
-                const isPasswordResettingValid = () => {
-                    return (
-                        validateExistingPassword() &&
-                        validateNewPassword() &&
-                        validateConfirmPassword()
-                    );
-                };
-
-                //validation ends for resetting the password
-
                 const editUserPassword = (id) => {
+
                     console.log(`id to edit the password`, id);
-
-                    const userInfoDisplay = document.getElementById("userInfoDisplay");
-                    const editPasswordForm = document.getElementById("passwordEditForm");
-
                     userInfoDisplay.style.display = "none";
                     editPasswordForm.style.display = "block";
 
-                    const existingPasswordInput = document.getElementById("existingPassword");
-                    const newPasswordInput = document.getElementById("newPassword");
-                    const confirmPasswordInput = document.getElementById("confirmPassword");
 
-                    const saveUserNewPasswordButton = document.getElementById(
-                        "saveUserNewPasswordButton"
-                    );
 
-                    saveUserNewPasswordButton.addEventListener("click", () => {
+                    saveUserNewPasswordButton.addEventListener("click", (event) => {
                         event.preventDefault();
 
-                        if (isPasswordResettingValid()) {
+                        const isValidateExistingPassword = validateExistingPassword()
+                        const isValidateNewPassword = validateNewPassword()
+                        const isValidateConfirmPassword = validateConfirmPassword()
+                        if (!(isValidateExistingPassword&&isValidateConfirmPassword&&isValidateNewPassword)) {
+
+                            return;
+                                  
+                        }
                             Swal.fire({
                                 title: 'Are you sure?',
                             text: "You want to edit the details.",
@@ -254,7 +249,7 @@
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
                             cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, cancel it!'
+                            confirmButtonText: 'Yes, edit it!'
                         }).then((result)=>{
 
                             if (result.isConfirmed) {
@@ -286,14 +281,16 @@
                                     .then((data) => {
                                         if (data.success && !data.incorrectPassword) {
                                             console.log(`password edited successfully`);
-                                            displaySuccessMessage(data.message);
+                                            window.location.reload()
+                                            sessionStorage.setItem(`successMessage`, `${data.message}`)
                                             userInfoDisplay.style.display = "block";
                                             editPasswordForm.style.display = "none";
                                         }
                                     })
                                     .catch((error) => {
                                         console.log(`error received`, error.message);
-                                        displayErrorMessage(error.message);
+                                         window.location.reload()
+                                         sessionStorage.setItem(`errorMessage`, `${error.message}`)
                                         userInfoDisplay.style.display = "block";
                                         editPasswordForm.style.display = "none";
                                     });
@@ -301,8 +298,7 @@
 
                         })
 
-                            
-                        }
+                      
                     });
                 };
 
@@ -351,10 +347,6 @@
             lnameInput.addEventListener("input", validateLastName);
             phoneInput.addEventListener("input", validatePhone);
 
-            const isUserDetailsValid = () => {
-                return validateFirstName() && validateLastName() && validatePhone();
-            };
-
 
                 const editUserDetails = () => {
 
@@ -383,14 +375,18 @@
                     lastNameInput.value = lastName ||""
                     phoneInput.value = phone ||""
 
-                    const saveUserNewDetailsButton = document.getElementById(
-                        "saveUserNewDetailsButton"
-                    );
+                    const saveUserNewDetailsButton = document.getElementById("saveUserNewDetailsButton");
 
                     saveUserNewDetailsButton.addEventListener("click", (event) => {
                         event.preventDefault();
 
-                        if(isUserDetailsValid()){
+                        const isValidfirstName = validateFirstName()
+                        const isValidLastName = validateLastName()
+                        const isValidPhone = validatePhone()
+                        if(!(isValidfirstName&&isValidLastName&&isValidPhone)){
+
+                            return
+                        }
                             Swal.fire({
                                 title: 'Are you sure?',
                             text: "You want to edit the details.",
@@ -427,68 +423,77 @@
                                 .then((data) => {
                                     console.log(`received edited data`, data);
                                     if (data.success) {
-                                        document.getElementById("userName").innerHTML = `<strong>Name:</strong> ${data.updatedData.fname} ${data.updatedData.lname}`;
-                                        document.getElementById("userPhone").innerHTML = `<strong>Phone:</strong> ${data.updatedData.phone}`;
-                                        userInfoDisplay.style.display = "block";
-                                        editUserForm.style.display = "none";
+                                       
+                                        window.location.reload();
 
-                                        displaySuccessMessage(data.message);
+                                        sessionStorage.setItem('successMessage', 'Profile updated successfully!');
+
                                     } else {
+
                                         throw new Error(data.message);
+
+                                        sessionStorage.setItem(`errorMessage`, `${data.message}`)
                                     }
                                 })
                                 .catch((error) => {
                                     console.log(`error received editing the data`);
 
-                                    displayErrorMessage(error.message);
+                                    Swal.fire({
+                                    title: 'Error!',
+                                    text: `Could not update the profile: ${error.message}`,
+                                    icon: 'error',
+                                    toast: true,
+                                    position: 'top-right',
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 3000
+                                    });
+
                                 });
                             }
                         })
 
-                        }
+                        
                        
                     });
                 };
+                               
+  document.addEventListener('DOMContentLoaded', () => {
+  const successMessage = sessionStorage.getItem('successMessage');
+  const errorMessage = sessionStorage.getItem('errorMessage')
 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                const displayErrorMessage = (message) => {
+  if (successMessage) {
     Swal.fire({
-        icon: 'error',
-        text: message,
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
+      title: "Success!",
+      text: successMessage,
+      icon: "success",
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000
     });
-};
 
-const displaySuccessMessage = (message) => {
+   
+    sessionStorage.removeItem('successMessage');
+  }
+  if (errorMessage) {
     Swal.fire({
-        icon: 'success',
-        text: message,
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
+      title: "Error",
+      text: errorMessage,
+      icon: "error",
+      toast: true,
+      position: 'top-right',
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 3000
     });
-};
+
+   
+    sessionStorage.removeItem('errorMessage');
+  }
+});
+  
+
+
             </script>

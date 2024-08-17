@@ -564,15 +564,7 @@
 
                         console.log('Error adding product to wishlist:', error);
 
-                        Swal.fire({
-                            icon: 'error',
-                            text: 'Error adding product to wishlist:',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
-                        });
+                        window.location.href = "http://localhost:7000/signin"
 
                     }
 
@@ -671,25 +663,18 @@
                     addToCartButton.removeAttribute("onclick")
                     addToCartButton.addEventListener("click", () => {
 
-                        window.location.href = "http://localhost:7000/cart"
+                         window.location.href = "http://localhost:7000/cart"
                     })
 
                     }
                                         
+              
 
                 }).catch((error) => {
 
                     console.log(`error while fetching the data`, error.message)
-                 Swal.fire({
-                icon: 'error',
-                text: 'Please log in first.',
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 2000
-            });
-
+            
+                    window.location.href = "http://localhost:7000/signin"
 
                 })
 

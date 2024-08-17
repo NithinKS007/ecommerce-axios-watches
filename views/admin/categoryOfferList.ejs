@@ -1,0 +1,95 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Categories</h2>
+        <p>Dashboard > Category Offer</p>
+        <p>Add or Delete Offer</p>
+      </div>
+      <div>
+        <a href="/admin/addCategoryOffer" class="btn btn-primary btn-sm rounded">Add Category Offer</a>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <header class="card-header">
+        <div class="row align-items-center">
+          <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+            <select class="form-select" id="statusFilter" name="status">
+              <option selected>All Offers</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Expired</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="categoryOfferTable">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Category Name</th>
+                <th scope="col">Offer Name</th>
+                <th scope="col">Discount</th>
+                <th scope="col">Min Purchase</th>
+                <th scope="col">Max Discount</th>
+                <th scope="col">Expiry Date</th>
+                <th scope="col" class="text-end">Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="categoryOfferTableBody">
+              <!-- Dummy Data -->
+              <tr>
+                <td>1</td>
+                <td>Electronics</td>
+                <td>Summer Sale</td>
+                <td>20%</td>
+                <td>$100</td>
+                <td>$50</td>
+                <td>2024-08-30</td>
+                <td class="text-end">
+                  <button onclick="toggleOfferStatus('1')" id="toggleOfferButton1" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Deactivate</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Clothing</td>
+                <td>Winter Discount</td>
+                <td>15%</td>
+                <td>$50</td>
+                <td>$30</td>
+                <td>2024-12-31</td>
+                <td class="text-end">
+                  <button onclick="toggleOfferStatus('2')" id="toggleOfferButton2" class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">Activate</button>
+                </td>
+              </tr>
+              <!-- End of Dummy Data -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start">
+          <li class="page-item"><a class="page-link" href="#"><strong>&lt;</strong></a></li>
+          <li class="page-item active"><a class="page-link" href="#"><strong>1</strong></a></li>
+          <li class="page-item"><a class="page-link" href="#"><strong>2</strong></a></li>
+          <li class="page-item"><a class="page-link" href="#"><strong>3</strong></a></li>
+          <li class="page-item"><a class="page-link" href="#"><strong>&gt;</strong></a></li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+  
+</main>

@@ -67,4 +67,13 @@ adminRoute.get("/salesReport",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogi
 adminRoute.get("/bestSellers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.bestSellers)
 
 adminRoute.patch("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCoupon)
+
+adminRoute.get("/categoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadCategoryOffer)
+adminRoute.get("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddCategoryOffer)
+adminRoute.post("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addCategoryOffer)
+
+
+
+
+
 module.exports = adminRoute

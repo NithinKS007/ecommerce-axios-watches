@@ -14,7 +14,7 @@ const handleSearch = (req, res, next) => {
 
     } else {
         
-        return res.status(400).json({ message: "No search parameters provided" });
+        return res.status(400).send("No search parameters provided")
     }
 }
 

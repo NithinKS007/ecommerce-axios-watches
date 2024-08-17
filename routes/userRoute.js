@@ -36,11 +36,11 @@ userRoute.get("/google/callback",noCacheMid.noCacheMiddleware,passport.authentic
 
 
 // Showcase routes
-userRoute.get("/showcase",isBlocked,noCacheMid.noCacheMiddleware,userController.loadShowCase)
+userRoute.get("/showcase",noCacheMid.noCacheMiddleware,userController.loadShowCase)
 
 
 // Product details and cart routes
-userRoute.get("/productDetails",isBlocked, noCacheMid.noCacheMiddleware,userController.loadProductDetails)
+userRoute.get("/productDetails", noCacheMid.noCacheMiddleware,userController.loadProductDetails)
 userRoute.post("/productDetails",isBlocked, noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.addToCart)
 userRoute.get("/cart",isBlocked, noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.loadCart)
 userRoute.delete("/cart",isBlocked, noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.removeFromCart)
@@ -77,7 +77,7 @@ userRoute.patch("/orders",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUser
 userRoute.put("/orders",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.cancelOrder)
 
 //advanced search filtering the product
-userRoute.get("/filter",isBlocked,noCacheMid.noCacheMiddleware,handleSearch.handleSearch)
+userRoute.get("/filter",noCacheMid.noCacheMiddleware,handleSearch.handleSearch)
 
 
 //wishlist route

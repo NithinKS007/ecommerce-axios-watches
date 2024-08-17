@@ -12,7 +12,20 @@ const categorySchema = new mongoose.Schema({
   isBlocked: {
     type: Boolean,
     default: false
-  }
+  },
+  categoryOffer: {
+    offerName: String,
+    discountPercentage: Number,
+    startDate: Date,
+    expiryDate: Date,
+    isActive: {
+      type: Boolean,
+    }
+  },
+  hasOffer: { 
+    type: Boolean,
+    default: false
+}
 }, { timestamps: true });  
 
 

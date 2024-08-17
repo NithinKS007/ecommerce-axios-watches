@@ -113,6 +113,7 @@
                                             </div>
                                         </div>
                                         <button type="submit" id="saveChangesAddressFormButton" class="btn btn-primary">Save Address</button>
+                                        <button type="button" id="cancelEditAddressFormButton" class="btn btn-secondary">Cancel</button>
                                     </form>
                                 </div>
 
@@ -203,6 +204,8 @@
     const addressTypeWork = document.getElementById('work');
     const addressTypeOther = document.getElementById('other');
     const editAddressForm = document.getElementById('editAddressForm')
+    const addressListingContainer = document.getElementById('mainContainer');
+    const cancelEditAddressFormButton = document.getElementById('cancelEditAddressFormButton');
                    
     addressNameInput.value = addressName;
     addressPhoneInput.value = addressPhone;
@@ -229,14 +232,8 @@
 
     }
 
-    if (editAddressForm.style.display === 'none') {
-
-        editAddressForm.style.display = 'block';
-
-       } else {
-        editAddressForm.style.display = 'none';
-
-        }
+    addressListingContainer.style.display = 'none';
+    editAddressForm.style.display = 'block';
 
     const saveChangesAddressFormButton = document.getElementById('saveChangesAddressFormButton');
     
@@ -314,7 +311,7 @@
 
 
                 editAddressForm.style.display = 'none';
-
+                addressListingContainer.style.display = 'block';
 
                 }).catch((error)=>{
 
@@ -333,7 +330,10 @@
                 }
             })
     })
-                  
+    cancelEditAddressFormButton.addEventListener("click", () => {
+        editAddressForm.style.display = 'none';
+        addressListingContainer.style.display = 'block';
+    });               
  } 
  const updateNewAddress = (id,updatedUserAddress) => {
     document.getElementById(`addressContainer${id}`).innerHTML = `

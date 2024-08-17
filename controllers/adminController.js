@@ -1014,13 +1014,13 @@ const addProduct = async (req,res) =>{
     
         const productData = await product.save()
     
-      return  res.status(200).redirect("/admin/addProducts")
+      return  res.status(200).json({message:"Product upload successfully",success:true})
         
     } catch (error) {
         
         console.log(`cannot add the products `,error.message);
           
-        return res.status(500).send("Internal server Error")
+        return res.status(500).json({ message: "Error while uploading products", success: false });
     }
 }
 
@@ -1802,6 +1802,99 @@ const bestSellers = async(req,res) =>{
     }
 
 }
+
+
+
+const loadCategoryOffer = async (req,res) =>{
+
+    try {
+
+        return res.status(200).render("admin/categoryOfferList")
+        
+    } catch (error) {
+        
+        console.log(`error while loading the offer applying to category page`,error.message);
+        
+    }
+}
+const loadAddCategoryOffer = async (req,res) =>{
+
+    try {
+        
+        const categoriesData= await categories.find({})
+
+        return res.status(200).render("admin/addCategoryOffer",{categoriesData:categoriesData})
+
+
+    } catch (error) {
+        
+        console.log(`error while loading the offer applying to category page`,error.message);
+    }
+
+}
+const addCategoryOffer = async (req,res) =>{
+
+    try {
+
+        const {offerName, category, discountPercentage, startDate, expiryDate, status} = req.body
+
+        console.log(`this is the category offer details`,offerName, category, discountPercentage, startDate, expiryDate, status);
+
+        if (!offerName || !category || !discountPercentage || !startDate || !expiryDate || !status) {
+
+            return res.status(400).send("All fields are required");
+        }
+
+        let isActive
+        if(status==="on"){
+
+             isActive = true
+
+        }else{
+
+            isActive = false
+
+        }
+        const categoryId = new ObjectId(category)
+       
+
+        const categoryData = await categories.findByIdAndUpdate(categoryId,{
+
+            $set:{
+
+                categoryOffer:{
+
+                    offerName:offerName,
+                    discountPercentage:discountPercentage,
+                    startDate:new Date(startDate),
+                    expiryDate:new Date(expiryDate),
+                    isActive:isActive
+                },
+                
+                hasOffer:true
+            }
+        },
+        { new: true }
+    )        
+       
+            if (!categoryData) {
+
+             return res.status(404).send("Category not found");
+
+            }
+
+     return res.status(200).redirect("/categoryOffer")
+      
+        
+    } catch (error) {
+        
+        console.log(`error while adding offer to category`,error.message);
+        
+        return res.send("Internal server error")
+    }
+}
+
+
 module.exports = {
 
     //admin authentication
@@ -1823,6 +1916,10 @@ module.exports = {
     loadEditProduct,
     loadCoupon,
     loadAddCoupon,
+    loadCategoryOffer,
+    loadAddCategoryOffer,
+    loadReturnedOrder,
+
 
     // user management
 
@@ -1855,14 +1952,17 @@ module.exports = {
     activateDeactivateCoupon,
 
    
-    loadReturnedOrder,
+   
     approveReturn,
     rejectReturn,
 
     //calculate sales report
     getSalesData,
     getSalesDataJson,
-    bestSellers
+    bestSellers,
+
+    //offer management
+    addCategoryOffer
   
 
 }

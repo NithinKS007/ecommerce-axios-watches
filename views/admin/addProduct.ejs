@@ -206,6 +206,7 @@
     </main>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+
         const form = document.getElementById("productForm");
         const imageInput = document.getElementById("fileAccess");
         const imagePreview = document.getElementById("imagePreview");
@@ -213,10 +214,35 @@
         const imageToCrop = document.getElementById("imageToCrop");
         const cropAndSave = document.getElementById("cropAndSave");
         const cropperModalElement = document.getElementById("cropperModal");
-
         const formSubmitButton = document.getElementById("submitForm");
-
         const fileAccessError = document.getElementById("fileAccessError");
+
+        const productNameInput = document.getElementById("productName");
+        const productDescriptionInput = document.getElementById("productDescription");
+        const regularPriceInput = document.getElementById("regularPrice");
+        const salesPriceInput = document.getElementById("salesPrice");
+        const dialShapeInput = document.getElementById("dialShape");
+        const displayTypeInput = document.getElementById("displayType");
+        const strapMaterialInput = document.getElementById("strapMaterial");
+        const strapColorInput = document.getElementById("strapColor");
+        const stockInput = document.getElementById("stock");
+        const menRadio = document.getElementById("men");
+        const womenRadio = document.getElementById("women");
+        const kidsRadio = document.getElementById("kids");
+
+
+
+        const productNameError = document.getElementById("productNameError");
+        const productDescriptionError = document.getElementById("productDescriptionError");
+        const regularPriceError = document.getElementById("regularPriceError");
+        const salesPriceError = document.getElementById("salesPriceError");
+        const dialShapeError = document.getElementById("dialShapeError");
+        const displayTypeError = document.getElementById("displayTypeError");
+        const strapMaterialError = document.getElementById("strapMaterialError");
+        const strapColorError = document.getElementById("strapColorError");
+        const stockError = document.getElementById("stockError");
+        const targetGroupError = document.getElementById("targetGroupError");
+
 
         let cropper; //hold the cropper js instance
         let currentImage;
@@ -343,27 +369,46 @@
 
         formSubmitButton.addEventListener("click", (event) => {
 
-          console.log("submitted");
+          event.preventDefault()
 
-          if (imageInput.files.length === 0) {
-            fileAccessError.textContent = "* image is required";
-            event.preventDefault();
+          const isValidProductName = validateProductName()
+          const isValidateProductDescription = validateProductDescription()
+          const isValidateRegularPrice = validateRegularPrice()
+          const isValidateSalesPrice = validateSalesPrice()
+          const isValidateDialShape = validateDialShape()
+          const isValidateDisplayType = validateDisplayType()
+          const isValidateStrapMaterial = validateStrapMaterial()
+          const isValidateStrapColor  = validateStrapColor()
+          const isValidateStock = validateStock()
+          const isValidateTargetGroup = validateTargetGroup()
+          const isValidateImage = Array.from(imageInput.files).every(validateImage)
+          const imagereq =  imageInput.files.length === 0
+
+          if(!(isValidProductName&&isValidateProductDescription&&isValidateRegularPrice&&isValidateSalesPrice&&isValidateDialShape&&isValidateDisplayType&&isValidateStrapMaterial&&isValidateStrapColor&&isValidateStock&&isValidateTargetGroup&&isValidateImage)){
+
+            return;
+
           }
+          if(imagereq){
 
-          if (!validateProductName() || !validateProductDescription() || !validateRegularPrice() || !validateSalesPrice() || !validateDialShape() || !validateDisplayType() || !validateStrapMaterial() || !validateStrapColor() || !validateStock() || !validateTargetGroup() || !validateImage()) {
-            console.log("Not ok")
-            event.preventDefault()
+            fileAccessError.textContent = `*Image is required`
+            
+            return
           }
-
-
+          console.log(`enterning here after validation`);
+          
           const formData = new FormData();
           const formElements = document.getElementById("productForm").elements;
 
           for (let element of formElements) {
-            if (element.name && element.type !== "file") {
-              formData.append(element.name, element.value);
+            if (element.name && element.type !== "file" && element.type !== "radio") {
+                formData.append(element.name, element.value);
+              }
+             
+              if (element.type === "radio" && element.checked) {
+                formData.append(element.name, element.value);
+              }
             }
-          }
 
           // Add all files from the file input
           Array.from(imageInput.files).forEach((file, index) => {
@@ -383,6 +428,7 @@
               })
               .then((data) => {
                 console.log("Success:", data);
+                window.location.reload()
               })
               .catch((error) => {
                 console.error(
@@ -395,7 +441,7 @@
           }
         });
 
-
+ 
         const validateImage = (file) => {
           const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
           const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -414,8 +460,7 @@
 
         };
 
-        const productNameInput = document.getElementById("productName");
-        const productNameError = document.getElementById("productNameError");
+
 
         const validateProductName = () => {
 
@@ -432,11 +477,7 @@
 
         //form validation for product description
 
-        const productDescriptionInput = document.getElementById("productDescription");
-        const productDescriptionError = document.getElementById(
-          "productDescriptionError"
-        );
-
+      
         const validateProductDescription = () => {
           if (productDescriptionInput.value.trim() === "") {
             productDescriptionError.textContent = "* Product Description required";
@@ -458,8 +499,6 @@
 
         //form validation for product regular price
 
-        const regularPriceInput = document.getElementById("regularPrice");
-        const regularPriceError = document.getElementById("regularPriceError");
 
         const validateRegularPrice = () => {
           if (regularPriceInput.value.trim() === "") {
@@ -485,8 +524,7 @@
         //form validation for product sales price
 
 
-        const salesPriceInput = document.getElementById("salesPrice");
-        const salesPriceError = document.getElementById("salesPriceError");
+     
 
         const validateSalesPrice = () => {
           if (salesPriceInput.value.trim() === "") {
@@ -510,8 +548,7 @@
         //form validation for product display shape
 
 
-        const dialShapeInput = document.getElementById("dialShape");
-        const dialShapeError = document.getElementById("dialShapeError");
+     
 
         const validateDialShape = () => {
           if (dialShapeInput.value.trim() === "") {
@@ -531,8 +568,6 @@
 
         //form validation for product display type
 
-        const displayTypeInput = document.getElementById("displayType");
-        const displayTypeError = document.getElementById("displayTypeError");
 
         const validateDisplayType = () => {
           if (displayTypeInput.value.trim() === "") {
@@ -552,8 +587,7 @@
         //form validation for product strap material
 
 
-        const strapMaterialInput = document.getElementById("strapMaterial");
-        const strapMaterialError = document.getElementById("strapMaterialError");
+        
 
         const validateStrapMaterial = () => {
           if (strapMaterialInput.value.trim() === "") {
@@ -574,8 +608,7 @@
         //form validation for product display type
 
 
-        const strapColorInput = document.getElementById("strapColor");
-        const strapColorError = document.getElementById("strapColorError");
+     
 
         const validateStrapColor = () => {
           if (strapColorInput.value.trim() === "") {
@@ -596,8 +629,7 @@
 
 
 
-        const stockInput = document.getElementById("stock");
-        const stockError = document.getElementById("stockError");
+      
 
         const validateStock = () => {
           if (stockInput.value.trim() === "") {
@@ -618,10 +650,7 @@
 
 
 
-        const menRadio = document.getElementById("men");
-        const womenRadio = document.getElementById("women");
-        const kidsRadio = document.getElementById("kids");
-        const targetGroupError = document.getElementById("targetGroupError");
+     
 
         const validateTargetGroup = () => {
           if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
@@ -636,6 +665,10 @@
         menRadio.addEventListener("change", validateTargetGroup);
         womenRadio.addEventListener("change", validateTargetGroup);
         kidsRadio.addEventListener("change", validateTargetGroup);
+
+
+
+
       });
 
 

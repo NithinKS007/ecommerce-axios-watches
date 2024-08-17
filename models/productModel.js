@@ -62,6 +62,10 @@ const productSchema = new mongoose.Schema({
     targetGroup:{
         type:String,
         required:true
+    },
+    discoutPrice:{
+        
+        type:Number
     }
       
 },{ timestamps: true });
