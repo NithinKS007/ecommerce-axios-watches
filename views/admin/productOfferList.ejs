@@ -1,0 +1,75 @@
+<%- include('../layouts/adminLayouts/header') %>
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Product Offers</h2>
+        <p>Dashboard > Offer Applied Products</p>
+        <p>Add or Delete Offer</p>
+      </div>
+      <div>
+        <a href="/admin/addProductOffer" class="btn btn-primary btn-sm rounded">Add Product Offer</a>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <% if (offerAppliedProducts.length === 0) { %>
+          <p>No offers are currently applied to any products.</p>
+        <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover" id="productOfferTable">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Image</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Regular Price Price</th>
+                <th scope="col">Sales Price</th>
+                <th scope="col">Price after Product Offer</th>
+                <th scope="col">Offer Name</th>
+                <th scope="col">Discount Percentage</th>
+                <th scope="col">Discount Start Date</th>
+                <th scope="col">Discount Expiry Date</th>
+                <th scope="col" class="text-end">status</th>
+                <th scope="col" class="text-end">Delete</th>
+              </tr>
+            </thead>
+
+            <tbody id="productOfferTableBody">
+              <% offerAppliedProducts.forEach((product, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><img src="/productImages/<%= product.images[0]?.filename %>" alt="Product Image" style="width: 100px;"></td>
+                  <td><%= product.name %></td>
+                  <td><%= product.regularPrice %></td>
+                  <td><%= product.salesPrice %></td>
+                  <td><%= product.productSalesPriceAfterDiscount %></td>
+                  <td><%= product.productOffer.offerName %></td>
+                  <td><%= product.productOffer.offerDiscountPercentage %> %</td>
+                  <td><%= new Date(product.productOffer.offerStartDate).toISOString().split('T')[0] %></td>
+                  <td><%= new Date(product.productOffer.offerExpiryDate).toISOString().split('T')[0] %></td>
+                  <td class="text-end">
+                    <% if (new Date(product.productOffer.offerExpiryDate) > new Date()) { %>
+                        <button onclick="activateOrInactivate('<%= product._id %>')" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Inactivate</button>
+                    <% } %>
+                  </td>
+                  <td>   
+                     <button onclick="deleteOffer('<%= product._id %>')" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</button></td>
+              
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    
+  </section>
+</main>

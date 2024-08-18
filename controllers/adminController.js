@@ -1836,54 +1836,21 @@ const addCategoryOffer = async (req,res) =>{
 
     try {
 
-        const {offerName, category, discountPercentage, startDate, expiryDate, status} = req.body
+        const {offerName, category, discountPercentage, startDate, expiryDate} = req.body
 
-        console.log(`this is the category offer details`,offerName, category, discountPercentage, startDate, expiryDate, status);
+        console.log(`this is the category offer details`,offerName, category, discountPercentage, startDate, expiryDate);
 
         if (!offerName || !category || !discountPercentage || !startDate || !expiryDate || !status) {
 
             return res.status(400).send("All fields are required");
         }
 
-        let isActive
-        if(status==="on"){
-
-             isActive = true
-
-        }else{
-
-            isActive = false
-
-        }
         const categoryId = new ObjectId(category)
        
-
-        const categoryData = await categories.findByIdAndUpdate(categoryId,{
-
-            $set:{
-
-                categoryOffer:{
-
-                    offerName:offerName,
-                    discountPercentage:discountPercentage,
-                    startDate:new Date(startDate),
-                    expiryDate:new Date(expiryDate),
-                    isActive:isActive
-                },
-                
-                hasOffer:true
-            }
-        },
-        { new: true }
-    )        
        
-            if (!categoryData) {
+           
 
-             return res.status(404).send("Category not found");
-
-            }
-
-     return res.status(200).redirect("/categoryOffer")
+     return res.status(200).redirect("/admin/categoryOffer")
       
         
     } catch (error) {
@@ -1894,6 +1861,91 @@ const addCategoryOffer = async (req,res) =>{
     }
 }
 
+
+const loadProductOffer = async (req,res) =>{
+
+    try {
+
+        const offerAppliedProducts = await products.find({ 'productOffer.offerDiscountAmount': { $exists: true }})
+
+        return res.status(200).render("admin/productOfferList",{offerAppliedProducts:offerAppliedProducts})
+        
+    } catch (error) {
+        
+        console.log(`error while loading the offer applying to category page`,error.message);
+        
+    }
+}
+const loadAddProductOffer = async (req,res) =>{
+
+    try {
+        
+        const productsData = await products.find({})
+
+        return res.status(200).render("admin/addProductOffer",{productsData:productsData})
+
+
+    } catch (error) {
+        
+        console.log(`error while loading the offer applying to category page`,error.message);
+    }
+
+}
+const addProductOffer = async (req,res) =>{
+
+    try {
+
+        const { offerName, product, discountPercentage, startDate, expiryDate, status } = req.body;
+
+        console.log(`Offer details received:`, offerName, product, discountPercentage, startDate, expiryDate, status);
+
+        // Validation
+        if (!offerName || !product || !discountPercentage || !startDate || !expiryDate) {
+
+            return res.status(400).send("All fields are required");
+
+        }
+        const productId = new ObjectId(product)
+       
+        const productData = await products.findById(productId)
+
+        if(!productData){
+
+            return res.status(404).send("Product not found");
+
+        }
+
+        const discountAmount = (productData.salesPrice * discountPercentage) / 100;
+
+        const updatedProduct = await products.findOneAndUpdate(
+            { _id: productId },
+            {
+                $set: {
+                    'productOffer.offerName': offerName,
+                    'productOffer.offerDiscountPercentage': discountPercentage,
+                    'productOffer.offerDiscountAmount': discountAmount,
+                    'productOffer.offerStartDate': startDate,
+                    'productOffer.offerExpiryDate': expiryDate,
+                    'productOffer.offerStatus':true,
+                    productSalesPriceAfterOfferDiscount: productData.salesPrice - discountAmount
+                }
+            },
+
+            { new: true }
+        );
+           
+      console.log(`Product updated successfully and offer applied`, updatedProduct)
+
+     return res.status(200).redirect("/admin/productOffer")
+      
+        
+    } catch (error) {
+        
+        console.log(`error while adding offer to category`,error.message);
+        
+        return res.send("Internal server error")
+    }
+}
 
 module.exports = {
 
@@ -1919,6 +1971,8 @@ module.exports = {
     loadCategoryOffer,
     loadAddCategoryOffer,
     loadReturnedOrder,
+    loadProductOffer,
+    loadAddProductOffer,
 
 
     // user management
@@ -1962,7 +2016,8 @@ module.exports = {
     bestSellers,
 
     //offer management
-    addCategoryOffer
+    addCategoryOffer,
+    addProductOffer
   
 
 }

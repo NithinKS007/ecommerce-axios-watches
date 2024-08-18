@@ -44,15 +44,24 @@ const securePassword = async(password)=>{
 //loading the home page 
 const loadHome = async (req,res) => {
     
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData =  12
+
     try {
 
-        const successMessage = req.session.successMessage;
+        const totalProducts = await products.countDocuments();
+        const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData))
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+        const skip = (pageNumber - 1) * perPageData;
 
+        const productsArray =await products.find({}).populate('brand').populate('category').sort({createdAt:-1}) .skip(skip)
+        .limit(perPageData)
+        .exec();
+
+        const successMessage = req.session.successMessage;
         req.session.successMessage = null;
 
-        const productsArray =await products.find({}).populate('brand').populate('category').sort({createdAt:-1})
-       
-        return res.status(200).render("user/home",{productsArray, successMessage})
+        return res.status(200).render("user/home",{productsArray, successMessage,totalPages,currentPage: pageNumber})
 
     } catch (error) {
         
@@ -253,7 +262,7 @@ const verifySignin = async (req,res) => {
     
         req.session.userId = userData._id
         
-        req.session.successMessage = "Login successful! Welcome back!";
+        req.session.successMessage = `Login successful! Welcome back, ${userData.fname}`;
         
 
        return res.status(200).redirect("/home")
@@ -273,14 +282,25 @@ const verifySignin = async (req,res) => {
 const loadShowCase = async (req,res) =>{
 
     const targetGroup = req.query.targetGroup
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 9;
+
     try {
 
         const categoriesArray = await categories.find({isBlocked:false})
         const brandArray = await brands.find({isBlocked:false})
-        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category').sort({createdAt:-1})
+
+        const totalProducts = await products.countDocuments({ targetGroup: targetGroup });
+        const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
+
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+        const skip = (pageNumber - 1) * perPageData;
+
+        const productsArray   = await products.find({targetGroup:targetGroup}).populate('brand').populate('category').sort({createdAt:-1}).skip(skip).limit(perPageData);
+
         const latestProducts  = await products.find({targetGroup:targetGroup}).sort({createdAt:-1}).limit(10).populate('brand').populate('category')
         
-        return res.status(200).render("user/showCase",{categoriesArray,brandArray,productsArray,latestProducts,targetGroup})
+        return res.status(200).render("user/showCase",{categoriesArray,brandArray,productsArray,latestProducts,targetGroup,totalPages,currentPage: pageNumber})
 
     } catch (error) {
         
@@ -1709,7 +1729,7 @@ const getEnumValues = (schema, path) => {
 
   const advancedSearch = async (req, res) => {
     const { categories, brands, sortby, targetGroup } = req.query;
-
+    
     const categoriesArray = categories ? categories.split(',').map(id => new ObjectId(id)) : [];
     const brandsArray = brands ? brands.split(',').map(id => new ObjectId(id)) : [];
     const sortbyArray = sortby ? sortby.split(',') : [];
@@ -1830,8 +1850,6 @@ const searchProducts = async (req, res) => {
 
             
         }
-
-        // console.log(`Aggregation : ${JSON.stringify(arrayToAggregate)}`);
 
         const productsArray = await products.aggregate(arrayToAggregate)
         const categoriesArray = await categories.find().exec();
@@ -2129,6 +2147,9 @@ const verifyOnlinePayment = async (req,res) =>{
 
 const loadWallet = async (req, res) => {
 
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 5    
+
     try {
         let userFromGidSessionOrSession;
 
@@ -2151,7 +2172,24 @@ const loadWallet = async (req, res) => {
             walletData = await newWalletData.save();
         }
 
-        return res.status(200).render("user/wallet", { walletData,transactionsData:walletData.transactions});
+        const totalTransactions = walletData.transactions.length;
+        const totalPages = Math.max(1, Math.ceil(totalTransactions / perPageData));
+
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+
+        const skip = (pageNumber - 1) * perPageData;
+
+        // Paginate transactions
+        const transactionsData = walletData.transactions
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(skip, skip + perPageData);
+
+        return res.status(200).render("user/wallet", { 
+            walletData,
+            transactionsData,
+            totalPages,
+            currentPage: pageNumber
+        });
 
     } catch (error) {
 

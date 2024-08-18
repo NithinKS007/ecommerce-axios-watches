@@ -19,7 +19,7 @@
       <!-- Content Header -->
       <div class="col-12 mb-3">
         <div class="content-header">
-          <h2 class="content-title">ADD CATEGORY OFFER</h2>
+          <h2 class="content-title">ADD PRODUCT OFFER</h2>
         </div>
       </div>
 
@@ -30,7 +30,7 @@
             <h4>Offer Details</h4>
           </div>
           <div class="card-body">
-            <form id="newOfferForm" method="post" action="/admin/addCategoryOffer">
+            <form id="newOfferForm" method="post" action="/admin/addProductOffer">
               <!-- Offer Name -->
               <div class="mb-4">
                 <label for="offerName" class="form-label">Offer Name</label>
@@ -38,16 +38,16 @@
                 <span id="offerNameError" class="error"></span>
               </div>
 
-              <!-- Category -->
+              <!-- Product -->
               <div class="mb-4">
-                <label for="category" class="form-label">Category</label>
-                <select class="form-select" id="category" name="category">
-                    <% if(categoriesData.length > 0) { %>
-                        <% categoriesData.forEach(category => { %>
-                            <option value="<%= category.id %>"><%= category.name %></option>
+                <label for="product" class="form-label">Product</label>
+                <select class="form-select" id="product" name="product">
+                    <% if(productsData.length > 0) { %>
+                        <% productsData.forEach(product => { %>
+                            <option value="<%= product.id %>"><%= product.name %></option>
                         <% }) %>
                     <% } else { %>
-                        <option>No Category Found</option>
+                        <option>No Product Found</option>
                     <% } %>
                 </select>
               </div>
@@ -72,6 +72,7 @@
                 <input type="date" name="expiryDate" class="form-control" id="expiryDate" />
                 <span id="expiryDateError" class="error"></span>
               </div>
+
               <!-- Submit Button -->
               <div style="display: flex; justify-content: center; padding-top: 15px;">
                 <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">

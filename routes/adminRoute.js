@@ -68,9 +68,14 @@ adminRoute.get("/bestSellers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogi
 
 adminRoute.patch("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCoupon)
 
+//route for category offer
 adminRoute.get("/categoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadCategoryOffer)
 adminRoute.get("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddCategoryOffer)
 adminRoute.post("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addCategoryOffer)
+
+adminRoute.get("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadProductOffer)
+adminRoute.get("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddProductOffer)
+adminRoute.post("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addProductOffer)
 
 
 

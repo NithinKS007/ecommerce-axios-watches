@@ -2,6 +2,36 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const ObjectId = Schema.Types.ObjectId
 
+const offerSchema = new Schema({
+    offerName: {
+        type: String,
+        required: true
+    },
+    offerDiscountPercentage: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 100
+    },
+    offerDiscountAmount:{
+
+        type:Number,
+        required:true
+    },
+    offerStartDate: {
+        type: Date,
+        required: true
+    },
+    offerExpiryDate: {
+        type: Date,
+        required: true
+    },
+    offerStatus: {
+        type: Boolean,
+        required:true
+    }
+},{ timestamps: true })
+
 const productSchema = new mongoose.Schema({
     category: {
         type:ObjectId ,
@@ -63,10 +93,13 @@ const productSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    discoutPrice:{
-        
-        type:Number
-    }
+
+    productSalesPriceAfterOfferDiscount:{
+
+       type:Number
+
+    },
+    productOffer: offerSchema 
       
 },{ timestamps: true });
 

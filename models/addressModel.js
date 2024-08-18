@@ -6,6 +6,7 @@ const addressSchema = new mongoose.Schema({
 
      name:{
        type: String,
+       required:true
      },
      userId:{
 
@@ -16,29 +17,35 @@ const addressSchema = new mongoose.Schema({
      },
      phone:{
 
-        type:Number
+        type:Number,
+        required:true
      },
      pincode:{
 
-        type:Number
+        type:Number,
+        required:true
      },
    
      locality:{
 
-        type:String
+        type:String,
+        required:true
      },
      address:{
 
-        type:String
+        type:String,
+        required:true
 
      },
      cityDistTown:{
 
-        type:String 
+        type:String,
+        required:true
     },
     state:{
 
-        type:String
+        type:String,
+        required:true
     },
     landMark:{
 
@@ -52,11 +59,13 @@ const addressSchema = new mongoose.Schema({
      email:{
 
         type:String,
+        required:true
 
      },
      addressType:{
 
-        type:String
+        type:String,
+        required:true
      }
       
 })

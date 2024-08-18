@@ -1,6 +1,23 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
         <main class="main">
+            <style>
+                .pagination-area {
+                display: flex;
+                justify-content: center;
+                margin: 30px 0;
+            }
+            
+            .pagination {
+                display: flex;
+                gap: 5px; 
+            }
+            
+            .page-item {
+                margin: 0 2px;
+            }
+            
+            </style>
             <section class="product-tabs section-padding position-relative wow fadeIn animated">
                 <div class="bg-square"></div>
                 <div class="container">
@@ -74,6 +91,46 @@
                                     </div>
                                     <% } %>
                                 </div>
+
+                                
+                                <div class="pagination-area mt-30 mb-50 text-center">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-start">
+                                            <% if (currentPage > 1) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                                                        <strong>&lt;</strong>
+                                                    </a>
+                                                </li>
+                                            <% } %>
+                                            
+                                            <% 
+                                            let startPage = Math.max(1, currentPage - 2);
+                                            let endPage = Math.min(totalPages, startPage + 4);
+                                            if (endPage - startPage < 4) {
+                                                startPage = Math.max(1, endPage - 4);
+                                            }
+                                            %>
+                                            
+                                            <% for (let i = startPage; i <= endPage; i++) { %>
+                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>"><strong><%= i %></strong></a>
+                                                </li>
+                                            <% } %>
+                                            
+                                            <% if (currentPage < totalPages) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                                                        <strong>&gt;</strong>
+                                                    </a>
+                                                </li>
+                                            <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+
+
                             </div>
                           
                         </div>
@@ -88,7 +145,7 @@
 
         <script>
              document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve the success message from EJS variable
+        
             let successMessage = '<%= successMessage %>';
 
             if (successMessage) {

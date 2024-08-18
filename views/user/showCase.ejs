@@ -1,5 +1,22 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
+    <style>
+    .pagination-area {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+    }
+    
+    .pagination {
+        display: flex;
+        gap: 5px; 
+    }
+    
+    .page-item {
+        margin: 0 2px;
+    }
+    
+    </style>
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
@@ -179,6 +196,44 @@
                     </div>
                 </div>
             </section>
+
+            <div class="pagination-area mt-30 mb-50 text-center">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage - 1 %>">
+                                    <strong>&lt;</strong>
+                                </a>
+                            </li>
+                        <% } %>
+
+                        <% 
+                        let startPage = Math.max(1, currentPage - 2);
+                        let endPage = Math.min(totalPages, startPage + 4);
+                        if (endPage - startPage < 4) {
+                            startPage = Math.max(1, endPage - 4);
+                        }
+                        %>
+
+                        <% for (let i = startPage; i <= endPage; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= i %>"><strong><%= i %></strong></a>
+                            </li>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage + 1 %>">
+                                    <strong>&gt;</strong>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+
+
             <section class="section-padding">
                 <div class="container wow fadeIn animated">
                     <h3 class="section-title mb-20"><span>New</span> Arrivals</h3>
@@ -255,6 +310,7 @@ const advancedSearch = () => {
         brands: selectedBrands.join(","),
         sortby: sortOptions.join(","),
         targetGroup: targetGroup
+        
     }
 
     console.log(filterData)

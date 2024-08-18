@@ -474,7 +474,9 @@
 
                                                             </div>
                                                             <div class="product-content-wrap">
-                                                                <h2><a href="/productDetails?id=<%= relatedProducts[i]._id %>"
+                                                                <h2  style="  overflow: hidden;
+                                                                text-overflow: ellipsis;
+                                                                white-space: nowrap;"><a href="/productDetails?id=<%= relatedProducts[i]._id %>"
                                                                         tabindex="0">
                                                                         <%= relatedProducts[i].name %>
                                                                     </a></h2>
