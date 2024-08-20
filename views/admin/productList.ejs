@@ -62,6 +62,7 @@
                                             <th scope="col">Product Name</th>
                                             <th scope="col">brand</th>
                                             <th scope="col">Price</th>
+                                            <th scope="col">Offer Price</th>
                                             <th scope="col">Stock</th>
                                             <th scope="col" >Status</th>
                                             <th scope="col" class="text-center">Update</th>
@@ -89,7 +90,11 @@
                                                         <%= productData[i].brand.name %>
                                                     </td>
                                                     <td>
-                                                        <%= productData[i].regularPrice %>
+                                                        <%= productData[i].salesPrice %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= productData[i].productSalesPriceAfterOfferDiscount %>
                                                     </td>
                                                     <td>
                                                         <%= productData[i].stock %>

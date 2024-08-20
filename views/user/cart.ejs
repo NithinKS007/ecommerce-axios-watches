@@ -30,9 +30,17 @@
                 <div class="col-md-8">
                   <div class="card-body">
                     <h5 class="card-title"><%= item.product?.name %></h5>
-                    <strong>Price:</strong>
-                    <%= item.price %>
-                    <del><%= item.regularPrice %></del>
+                  
+                    <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount) { %>
+                  
+                      <strong>Discount:</strong> <%= item?.product?.productOffer?.offerDiscountPercentage %>%<br>
+                      <strong>Price:</strong> <%= item?.productSalesPriceAfterOfferDiscount %>
+                      <del><%= item?.product?.salesPrice %></del>
+                  <% } else { %>
+                    <strong>Price:</strong> <%= item?.product?.salesPrice %>
+                  <% } %>
+                  
+                  
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center">
                         <div class="me-2">Qty:</div>
@@ -66,7 +74,7 @@
         
         <div class="card-body">
            
-          <h5 class="card-title">ORDER SUMMARY</h5>
+          <h5 class="card-title">CART SUMMARY</h5>
          
           <p class="card-text d-flex justify-content-between">
             <span id="selection"><%=selectedItemsCount%> items selected</span>

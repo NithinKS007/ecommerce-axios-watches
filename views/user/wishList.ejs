@@ -12,6 +12,7 @@
             <% } else { %>
                 <div class="col-12 d-flex flex-wrap justify-content-start" id="sendWishListItem" style="margin-top: 50px;">
                     <% productData.forEach(product => { %>
+                        <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none" style="width: 18rem; margin: 10px;">
                         <div class="card shadow-sm mb-3" id="productContainer<%= product._id %>" style="width: 18rem; margin: 10px;">
                             <img src="/productImages/<%= product.images[0]?.filename %>" class="card-img-top"
                                  style="width: 100%; height: 200px; object-fit: cover;" alt="Product Image">
@@ -24,10 +25,15 @@
                                         onclick="removeFromWishList('<%= product._id %>')">Remove</button>
                                 </div>
                                 <p class="card-text">
-                                    <strong>₹<%= product.regularPrice %></strong>
+                                    <% if (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date()&&product.productSalesPriceAfterOfferDiscount!==0) { %>
+                                        <strong>₹<%= product.productSalesPriceAfterOfferDiscount %></strong>
+                                      <% } else { %>
+                                        <strong>₹<%= product.salesPrice %></strong>
+                                      <% } %>
                                 </p>
                             </div>
                         </div>
+                    </a>
                     <% }); %>
                 </div>
             <% } %>

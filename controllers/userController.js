@@ -531,55 +531,6 @@ const loadUserLogout = async (req,res) =>{
     }
 
 }
-
-//loading cart page
-const loadCart = async (req,res) =>{
-
-    try {
-        
-        let userFromGidSessionOrSession 
-
-        if(req.session.userId){
-
-            userFromGidSessionOrSession = req.session.userId
-
-        }else if(req.user){
-
-            //checking for google session id 
-            userFromGidSessionOrSession = req.user.id
-
-        }
-
-        if(userFromGidSessionOrSession){
-
-            const cartDetails = await cart.find({user:userFromGidSessionOrSession}).populate("items.product").exec()
-
-            const couponDetails = await coupons.find({couponStatus:true})
-
-            const isAlreadyUsedCoupons = await coupons.find({ userBy: userFromGidSessionOrSession });
-
-            const usedCoupons = isAlreadyUsedCoupons.map(coupon => coupon.couponCode)
-
-            const availableCoupons  = couponDetails.filter(coupon => !usedCoupons.includes(coupon.couponCode))
-
-            const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product").exec()
-
-            const { finalPrice,subTotal } =  await priceSummary(cartDetailsForPriceCalculation)
-            
-            const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
-
-            return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons })
-
-        }
-
-        
-    } catch (error) {
-     
-        console.log(`error while loading the cart page`,error.message);
-    }
-
-}
-
 //calculating ORDER SUMMARY
 const priceSummary = async (cartData, couponCode) => {
 
@@ -588,9 +539,27 @@ const priceSummary = async (cartData, couponCode) => {
 
       if (cartData?.items.length > 0) {
 
+
         const selectedItems = cartData.items.filter((item) => item?.isSelected);
         
-        const subTotal = selectedItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+        const subTotal = selectedItems.reduce((total, item) =>{
+
+            let itemPrice = item.price;
+
+            if (item?.product?.productOffer && 
+                new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() &&
+                item?.product?.productOffer.offerStatus) {
+
+                itemPrice = item.product.productSalesPriceAfterOfferDiscount;
+
+            }
+
+            console.log(`Item: ${item._id}, Price: ${itemPrice}, Quantity: ${item.quantity}`)
+
+            return total + itemPrice  * item.quantity;
+
+            }, 0)
   
         let finalPrice = subTotal;
 
@@ -645,6 +614,56 @@ const priceSummary = async (cartData, couponCode) => {
     
   };
 
+
+//loading cart page
+const loadCart = async (req,res) =>{
+
+    try {
+        
+        let userFromGidSessionOrSession 
+
+        if(req.session.userId){
+
+            userFromGidSessionOrSession = req.session.userId
+
+        }else if(req.user){
+
+            //checking for google session id 
+            userFromGidSessionOrSession = req.user.id
+
+        }
+
+        if(userFromGidSessionOrSession){
+
+            const cartDetails = await cart.find({user:userFromGidSessionOrSession}).populate('items.product').exec();
+
+            const couponDetails = await coupons.find({couponStatus:true})
+
+            const isAlreadyUsedCoupons = await coupons.find({ userBy: userFromGidSessionOrSession });
+
+            const usedCoupons = isAlreadyUsedCoupons.map(coupon => coupon.couponCode)
+
+            const availableCoupons  = couponDetails.filter(coupon => !usedCoupons.includes(coupon.couponCode))
+
+            const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}) .populate('items.product').exec();
+
+            const { finalPrice,subTotal } =  await priceSummary(cartDetailsForPriceCalculation)
+            
+            const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
+
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons })
+
+        }
+
+        
+    } catch (error) {
+     
+        console.log(`error while loading the cart page`,error.message);
+    }
+
+}
+
+
 //product adding to cart from the product details page
 
 const addToCart = async (req,res) =>{
@@ -669,7 +688,8 @@ const addToCart = async (req,res) =>{
         const findExistingCart = await cart.findOne({user:userFromGidSessionOrSession}).exec()
         
         const productSalesPrice = await products.findOne({_id:productId},{salesPrice:1,_id:0})
-        const productRegularPrice = await products.findOne({_id:productId},{regularPrice:1,_id:0})
+        
+        const productSalesPriceAfterOfferDiscount = await products.findOne({_id:productId},{productSalesPriceAfterOfferDiscount:1,_id:0})
 
         if(!findExistingCart){
 
@@ -681,7 +701,7 @@ const addToCart = async (req,res) =>{
     
                     product:productId,
                     price:productSalesPrice.salesPrice,
-                    regularPrice:productRegularPrice.regularPrice
+                    productSalesPriceAfterOfferDiscount:productSalesPriceAfterOfferDiscount.productSalesPriceAfterOfferDiscount
     
                 }]
     
@@ -710,7 +730,7 @@ const addToCart = async (req,res) =>{
      
         }else{
 
-            await cart.updateOne({user:userFromGidSessionOrSession},{$push:{items:{product:productId,price:productSalesPrice.salesPrice,regularPrice:productRegularPrice.regularPrice}}})
+            await cart.updateOne({user:userFromGidSessionOrSession},{$push:{items:{product:productId,price:productSalesPrice.salesPrice, productSalesPriceAfterOfferDiscount:productSalesPriceAfterOfferDiscount.productSalesPriceAfterOfferDiscount}}})
 
             return res.status(200).json({
         
@@ -752,7 +772,7 @@ const removeFromCart = async (req, res) => {
 
      const productName = await products.findById(productId);
 
-     const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
+     const cartDetails = await cart.findOne({user:userFromGidSessionOrSession}).populate({path:"items.product"})
 
      const {finalPrice,subTotal,discount} =  await priceSummary(cartDetails,couponCode)
 
@@ -833,7 +853,7 @@ const removeFromCart = async (req, res) => {
             return res.status(400).json({ message: `Quantity must be between 1 and ${quantity}` });
 
           }
-        const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true})
+        const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true}).populate({path:"items.product"})
 
 
         const { finalPrice,subTotal,discount } =  await priceSummary(updatedItem,couponCode)
@@ -891,9 +911,11 @@ const removeFromCart = async (req, res) => {
             return item;
         })
 
-        await cartDetails.save()
+       const savedCartData =  await cartDetails.save()
 
-        const { finalPrice,subTotal,discount } =  await priceSummary(cartDetails,couponCode)
+       const finalSavedCartData = await savedCartData.populate({path:"items.product"})
+
+        const { finalPrice,subTotal,discount } =  await priceSummary(finalSavedCartData,couponCode)
 
         return  res.status(200).json({ message: 'Cart updated successfully',finalPrice:finalPrice,cartDetails:cartDetails,subTotal:subTotal,discount:discount});
         
@@ -903,6 +925,7 @@ const removeFromCart = async (req, res) => {
         console.log(`error while updating the selection `,error.message);
     }
  }
+
 
 const loadAddress = async (req,res) =>{
 
@@ -1103,7 +1126,7 @@ const  loadCheckout = async (req,res) =>{
 
         const {couponCode} = req.query
 
-        const cartData = await cart.findOne({user:userFromGidSessionOrSession}).populate("items.product")
+        const cartData = await cart.findOne({user:userFromGidSessionOrSession}).populate({path:"items.product"})
 
       
         
@@ -1222,7 +1245,7 @@ const placeOrder = async (req,res) =>{
         categoryDescription:item.product.category.description,
         quantity:item.quantity,
         price:item.price,
-        regularPrice:item.regularPrice,
+        productSalesPriceAfterOfferDiscount:item.productSalesPriceAfterOfferDiscount,
         description:item.product.description,
         targetGroup:item.product.targetGroup,
         displayType:item.product.displayType,
@@ -1524,11 +1547,16 @@ const cancelOrderProduct = async (req, res) => {
                 return res.status(404).json({ error: 'Item not found in the order' });
             }
             
-            const itemTotalAmount = canceledItem.price*canceledItem.quantity
-            const itemProportion = itemTotalAmount/subTotalAmount
-            const itemDiscount = itemProportion*discountAmount
-            const priceAfterEverything = itemTotalAmount-itemDiscount.toFixed(3);
-            
+            let itemTotalAmount, itemDiscount;
+                if (canceledItem.productSalesPriceAfterOfferDiscount !== 0) {
+                    itemTotalAmount = canceledItem.productSalesPriceAfterOfferDiscount * canceledItem.quantity;
+                } else {
+                    itemTotalAmount = canceledItem.price * canceledItem.quantity;
+                }
+                const itemProportion = itemTotalAmount / subTotalAmount;
+                itemDiscount = itemProportion * discountAmount;
+                const priceAfterEverything = itemTotalAmount - parseFloat(itemDiscount.toFixed(3));
+
             
             const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
 
@@ -1652,9 +1680,6 @@ const cancelOrder = async (req, res) => {
           }
 
           const orderIdOfTheOrder = new ObjectId(orderId)
-        //   const orderStatusOfOrder = orderStatus
-
-        //   let updatedOrderStatus 
           
           const order = await orders.findOne({_id:orderIdOfTheOrder})
           
@@ -1674,16 +1699,20 @@ const cancelOrder = async (req, res) => {
 
             if(order.paymentMethod==="razorPay"){
 
+              const productsAmountThatHaventRefunded =  walletData.transactions.filter(tx =>tx.type==="credit"&&tx.orderId.equals(orderIdOfTheOrder))
+                .reduce((acc,tx) => acc+tx.amount,0)
+
+                const refundAmount = totalAmount - productsAmountThatHaventRefunded
                 const newWalletTransaction = {
 
                     orderId:orderIdOfTheOrder,
-                    amount:totalAmount,
+                    amount:refundAmount,
                     type:"credit",
                     walletTransactionStatus:"refunded"
 
                 }
 
-               await wallet.findOneAndUpdate({userId:userFromGidSessionOrSession},{$inc:{balance:totalAmount},$push:{transactions:newWalletTransaction}},{new:true})
+               await wallet.findOneAndUpdate({userId:userFromGidSessionOrSession},{$inc:{balance:refundAmount},$push:{transactions:newWalletTransaction}},{new:true})
                
               }
 
@@ -1714,7 +1743,7 @@ const cancelOrder = async (req, res) => {
 
         console.log(`Error while canceling the order`, error.message);
 
-       return res.status(500).json({ error: error.message });
+       return res.status(500).json({ message:"error while canceling the whole order"});
     }
 };
 
@@ -1882,7 +1911,7 @@ const applyCoupon = async (req, res) => {
 
         if (couponCode) {
 
-            const cartDetailsForPriceCalculation = await cart.findOne({ user: userFromGidSessionOrSession }).populate("items.product").exec();
+            const cartDetailsForPriceCalculation = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path:"items.product"})
 
             const{ finalPrice,discount,message,subTotal }  = await priceSummary(cartDetailsForPriceCalculation, couponCode);
             
@@ -1919,7 +1948,7 @@ const removeCoupon = async (req, res) => {
             userFromGidSessionOrSession = new ObjectId(req.user.id);
         }
 
-        const cartDetails = await cart.findOne({ user: userFromGidSessionOrSession })
+        const cartDetails = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path:"items.product"})
 
         if (cartDetails) {
             // Recalculate the final price without any coupon
@@ -2276,10 +2305,21 @@ const returnProductOrder = async (req,res) =>{
 
         const returnedItem = items.find(item =>item.product.equals(productId))
 
-            const itemTotalAmount = returnedItem.price*returnedItem.quantity
+        let itemTotalAmount, itemDiscount;
+        
+        if(returnedItem.productSalesPriceAfterOfferDiscount!==0){
+
+            itemTotalAmount = returnedItem.productSalesPriceAfterOfferDiscount*returnedItem.quantity
+
+        }else{
+
+            itemTotalAmount = returnedItem.price*returnedItem.quantity
+
+        }
+
             const itemProportion = itemTotalAmount/subTotalAmount
-            const itemDiscount = itemProportion*discountAmount
-            const priceAfterEverything = itemTotalAmount-itemDiscount.toFixed(3);
+            itemDiscount = itemProportion*discountAmount
+            const priceAfterEverything = itemTotalAmount - parseFloat(itemDiscount.toFixed(3));
 
            // Check if all delivered items are returned
           

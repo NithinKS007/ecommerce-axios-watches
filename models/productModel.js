@@ -55,10 +55,6 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    regularPrice: {
-        type: Number,
-        required: true
-    },
     salesPrice: {   
         type: Number,
         required: true
@@ -95,9 +91,8 @@ const productSchema = new mongoose.Schema({
     },
 
     productSalesPriceAfterOfferDiscount:{
-
-       type:Number
-
+       type:Number,
+       default:0
     },
     productOffer: offerSchema 
       

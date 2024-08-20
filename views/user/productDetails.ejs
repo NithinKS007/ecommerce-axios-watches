@@ -96,12 +96,29 @@
                                             </div>
                                             <div class="clearfix product-price-cover">
                                                 <div class="product-price primary-color float-left">
-                                                    <ins><span class="text-brand">₹ <%= productDetails.salesPrice %>
-                                                        </span></ins>
-                                                    <ins><span class="old-price font-md ml-15">
-                                                            <%= productDetails.regularPrice %>
-                                                        </span></ins>
 
+                                                    <% if (productDetails.productSalesPriceAfterOfferDiscount && new Date(productDetails.productOffer.offerExpiryDate) > new Date() && productDetails.productSalesPriceAfterOfferDiscount !== 0) { %>
+                                                        <ins>
+                                                            <span class="text-brand">₹ <%= productDetails.productSalesPriceAfterOfferDiscount %></span>
+                                                        </ins>
+                                                        <ins>
+                                                            <span class="old-price font-md" style="margin-left: 5px;">
+                                                                <%= productDetails.salesPrice %>
+                                                            </span>
+                                                        </ins>
+                                                    <% } else { %>
+                                                        <ins>
+                                                            <span class="text-brand" style="font-size: 1.5em; font-weight: bold;">₹ <%= productDetails.salesPrice %></span>
+                                                        </ins>
+                                                    <% } %>
+                                                    <span class="discount-percentage" style="color: red; font-weight: bold; font-size: 1.2em; margin-left: 5px;">
+                                                        <% if (productDetails.productOffer && productDetails.productOffer.offerDiscountPercentage) { %>
+                                                            <%= productDetails.productOffer.offerDiscountPercentage %> % Off
+                                                        <% } else { %>
+                                                            90% Off
+                                                        <% } %>
+                                                    </span>
+                                                    
                                                 </div>
                                             </div>
                                             <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -485,21 +502,20 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="product-price">
-                                                                    <%if(relatedProducts[i].isBlocked ||
-                                                                        relatedProducts[i].category?.isBlocked
-                                                                        ||relatedProducts[i].brand?.isBlocked){%>
-
-                                                                        <span
-                                                                            style="color: red; font-size: 15px;">Currently
-                                                                            Unavailable</span>
-                                                                        <% } else { %>
-                                                                            <span> ₹ <%= relatedProducts[i].salesPrice
-                                                                                    %></span>
+                                                                    <% if (relatedProducts[i].isBlocked || relatedProducts[i].category?.isBlocked || relatedProducts[i].brand?.isBlocked) { %>
+                                                                        <span style="color: red; font-size: 15px;">Currently Unavailable</span>
+                                                                    <% } else { %>
+                                                                        <% if (relatedProducts[i].productSalesPriceAfterOfferDiscount && new Date(relatedProducts[i].productOffer.offerExpiryDate) > new Date()&&relatedProducts[i].productSalesPriceAfterOfferDiscount!==0) { %>
+                                                                            <span> ₹ <%= relatedProducts[i].productSalesPriceAfterOfferDiscount %></span>
                                                                             <span class="old-price">
-                                                                                <%= relatedProducts[i].regularPrice %>
+                                                                                ₹ <%= relatedProducts[i].salesPrice %>
                                                                             </span>
-                                                                            <% } %>
+                                                                        <% } else { %>
+                                                                            <span> ₹ <%= relatedProducts[i].salesPrice %></span>
+                                                                        <% } %>
+                                                                    <% } %>
                                                                 </div>
+                                                                
                                                             </div>
                                                         </div>
                                                     </div>

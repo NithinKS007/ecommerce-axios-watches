@@ -156,9 +156,13 @@
                                                                     <%= productsArray[i].name %>
                                                                 </a></h5>
                                                             <div class="rating-result" title="90%">
-                                                                <span>
+                                                                <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage) { %>
+                                                                    <span>
+                                                                        <span><%= productsArray[i].productOffer.offerDiscountPercentage %> % </span>
+                                                                    </span>
+                                                                <% } else { %>
                                                                     <span>90%</span>
-                                                                </span>
+                                                                <% } %>
                                                             </div>
                                                             <div class="product-price">
                                                                 
@@ -167,8 +171,15 @@
                                                                     <span style="color: red;">Currently Unavailable</span>
                                                                     
                                                                 <% } else { %>
-                                                                    <span>₹ <%= productsArray[i].salesPrice %></span>
-                                                                    <span class="old-price"><%= productsArray[i].regularPrice %></span>
+                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount!==0) { %>
+
+                                                                        <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
+
+                                                                        <% } else { %>
+
+                                                                        <span>₹ <%=productsArray[i].salesPrice %></span>
+                                                                        
+                                                                    <% } %>
                                                                     
                                                                 <% } %>
                                                             </div>
@@ -272,8 +283,17 @@
                                                     <span style="color: red; font-size: 15px;">Currently Unavailable</span>
                                                 <% } else { %>
 
-                                                    <span>₹ <%= latestProducts[i].salesPrice %></span>
-                                                    <span class="old-price"><%= latestProducts[i].regularPrice %></span>
+                                                    <% if (latestProducts[i].productSalesPriceAfterOfferDiscount  && new Date(latestProducts[i].productOffer.offerExpiryDate) > new Date()&&latestProducts[i].productSalesPriceAfterOfferDiscount !==0) { %>
+
+                                                        <span>₹ <%= latestProducts[i].productSalesPriceAfterOfferDiscount %></span>
+
+                                                        <span class="old-price">₹ <%= latestProducts[i].salesPrice %></span>
+
+                                                    <% } else { %>
+
+                                                        <span>₹ <%=latestProducts[i].salesPrice %></span>
+                                                        
+                                                    <% } %>
                                                    
                                                 <% } %>
                                             </div>
@@ -373,19 +393,26 @@ const updateProductDisplay = (data) =>{
                                 <a href="#">${product.brandData[0].name}</a>
                             </div>
                             <h5 style="  overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;"><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
+                        text-overflow: ellipsis;
+                        white-space: nowrap;"><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
                             <div class="rating-result" title="90%">
-                                <span>
-                                    <span>90%</span>
-                                </span>
+                               ${product.productOffer && product.productOffer.offerDiscountPercentage
+                                    ? `<span><span>${product.productOffer.offerDiscountPercentage} %</span></span>`
+                                    : `<span>90%</span>`
+                                }
+
                             </div>
                             <div class="product-price">
-                                ${product.isBlocked || product.category?.isBlocked || product.brand?.isBlocked|| product.stock===0 ? 
-                                `<span style="color: red;">Currently Unavailable</span>` :
-                                `<span>₹ ${product.salesPrice}</span>
-                                 <span class="old-price">${product.regularPrice}</span>`}
-                            </div>
+                        ${product.isBlocked || product.category?.isBlocked || product.brand?.isBlocked || product.stock === 0 
+                            ? `<span style="color: red;">Currently Unavailable</span>` 
+                            : (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount!==0
+                                ? `<span>₹ ${product.productSalesPriceAfterOfferDiscount}</span>
+                                <span class="old-price">₹ ${product.salesPrice}</span>`
+                                : `<span>₹ ${product.salesPrice}</span>`
+                            )
+                        }
+                    </div>
+
                         </div>
                     </div>
                 </div>`;

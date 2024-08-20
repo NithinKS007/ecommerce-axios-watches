@@ -82,12 +82,6 @@
                     <!-- Prices and Attributes -->
                     <div class="row">
                       <div class="col-lg-4 mb-4">
-                        <label class="form-label">Regular Price</label>
-                        <input name="regularPrice" id="regularPrice" type="text" placeholder="RS"
-                          class="form-control" />
-                        <span id="regularPriceError" class="error"></span>
-                      </div>
-                      <div class="col-lg-4 mb-4">
                         <label class="form-label">Sales Price</label>
                         <input name="salesPrice" id="salesPrice" type="text" placeholder="RS" class="form-control" />
                         <span id="salesPriceError" class="error"></span>
@@ -219,7 +213,6 @@
 
         const productNameInput = document.getElementById("productName");
         const productDescriptionInput = document.getElementById("productDescription");
-        const regularPriceInput = document.getElementById("regularPrice");
         const salesPriceInput = document.getElementById("salesPrice");
         const dialShapeInput = document.getElementById("dialShape");
         const displayTypeInput = document.getElementById("displayType");
@@ -234,7 +227,6 @@
 
         const productNameError = document.getElementById("productNameError");
         const productDescriptionError = document.getElementById("productDescriptionError");
-        const regularPriceError = document.getElementById("regularPriceError");
         const salesPriceError = document.getElementById("salesPriceError");
         const dialShapeError = document.getElementById("dialShapeError");
         const displayTypeError = document.getElementById("displayTypeError");
@@ -373,7 +365,6 @@
 
           const isValidProductName = validateProductName()
           const isValidateProductDescription = validateProductDescription()
-          const isValidateRegularPrice = validateRegularPrice()
           const isValidateSalesPrice = validateSalesPrice()
           const isValidateDialShape = validateDialShape()
           const isValidateDisplayType = validateDisplayType()
@@ -384,7 +375,7 @@
           const isValidateImage = Array.from(imageInput.files).every(validateImage)
           const imagereq =  imageInput.files.length === 0
 
-          if(!(isValidProductName&&isValidateProductDescription&&isValidateRegularPrice&&isValidateSalesPrice&&isValidateDialShape&&isValidateDisplayType&&isValidateStrapMaterial&&isValidateStrapColor&&isValidateStock&&isValidateTargetGroup&&isValidateImage)){
+          if(!(isValidProductName&&isValidateProductDescription&&isValidateSalesPrice&&isValidateDialShape&&isValidateDisplayType&&isValidateStrapMaterial&&isValidateStrapColor&&isValidateStock&&isValidateTargetGroup&&isValidateImage)){
 
             return;
 
@@ -496,30 +487,6 @@
         };
 
         productDescriptionInput.addEventListener("input", validateProductDescription);
-
-        //form validation for product regular price
-
-
-        const validateRegularPrice = () => {
-          if (regularPriceInput.value.trim() === "") {
-            regularPriceError.textContent = "* Regular Price is required";
-            return false;
-
-          } else if (isNaN(regularPriceInput.value.trim())) {
-            regularPriceError.textContent = "* Regular Price must be a number";
-            return false;
-          } else if (!/^[1-9]\d*$/.test(regularPriceInput.value.trim())) {
-            regularPriceError.textContent =
-              "* Regular Price must be a positive number";
-            return false;
-          }
-          regularPriceError.textContent = "";
-          return true;
-
-        }
-
-
-        regularPriceInput.addEventListener("input", validateRegularPrice);
 
         //form validation for product sales price
 

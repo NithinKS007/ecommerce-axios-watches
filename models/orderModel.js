@@ -43,10 +43,10 @@ const orderItemSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  regularPrice: { 
-    type: Number,
+  productSalesPriceAfterOfferDiscount:{
+    type:Number,
     required: true
-  },
+ },
   description:{
 
     type:String,

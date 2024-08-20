@@ -15,11 +15,11 @@ const CartItemSchema = new mongoose.Schema({
       min: 1,
       max: 5
     },
-    price: {
+    productSalesPriceAfterOfferDiscount: {
       type: Number,
-      required: true
+      default:0
     },
-    regularPrice : {
+    price : {
       type: Number,
       required: true
     },

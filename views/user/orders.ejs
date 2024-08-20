@@ -79,7 +79,11 @@
                                                             <div class="flex-grow-1" >
                                                                 <p class="mb-1"><strong>Name:</strong> <%= item.productName %></p>
                                                                 <p class="mb-1"><strong>Brand:</strong> <%= item.brandName %></p>
-                                                                <p class="mb-0"><strong>Price:</strong> Rs <%= item.price %> inc GST</p>
+                                                                <% if (item.productSalesPriceAfterOfferDiscount !== 0) { %>
+                                                                    <p class="mb-0"><strong>Price:</strong> Rs <%= item.productSalesPriceAfterOfferDiscount %> inc GST</p>
+                                                                <% } else { %>
+                                                                    <p class="mb-0"><strong>Price:</strong> Rs <%= item.price %> inc GST</p>
+                                                                <% } %>
                                                                 <p id="orderProductStatus<%= item._id %>" class="order-product-status mb-0 text-warning">
                                                                     <strong>Status: <%= item.orderProductStatus.toUpperCase() %></strong>
                                                                 </p>

@@ -25,12 +25,12 @@
 
                                                                 </a>
                                                             </div>
-                                                            <div class="product-action-1">
+                                                            <!-- <div class="product-action-1">
 
                                                                 <a aria-label="Add To Wishlist"
                                                                     class="action-btn hover-up" href="#"><i
                                                                         class="fi-rs-heart"></i></a>
-                                                            </div>
+                                                            </div> -->
                                                         </div>
                                                         <div class="product-content-wrap">
                                                             <div class="product-category">
@@ -43,9 +43,13 @@
                                                                     <%= productsArray[i].name %>
                                                                 </a></h5>
                                                             <div class="rating-result" title="90%">
-                                                                <span>
+                                                                <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage) { %>
+                                                                    <span>
+                                                                        <span><%= productsArray[i].productOffer.offerDiscountPercentage %> % </span>
+                                                                    </span>
+                                                                <% } else { %>
                                                                     <span>90%</span>
-                                                                </span>
+                                                                <% } %>
                                                             </div>
                                                             <div class="product-price">
                                                                 
@@ -54,19 +58,21 @@
                                                                     <span style="color: red;">Currently Unavailable</span>
                                                                     
                                                                 <% } else { %>
-                                                                    <span>₹ <%= productsArray[i].salesPrice %></span>
-                                                                    <span class="old-price"><%= productsArray[i].regularPrice %></span>
+                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date() &&productsArray[i].productSalesPriceAfterOfferDiscount!==0) { %>
+
+                                                                        <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
+
+                                                                        <span class="old-price">₹ <%= productsArray[i].salesPrice %></span>
+
+                                                                    <% } else { %>
+
+                                                                        <span>₹ <%=productsArray[i].salesPrice %></span>
+                                                                        
+                                                                    <% } %>
                                                                     
                                                                 <% } %>
                                                             </div>
                                                             
-                                                            <!-- <div class="product-action-1 show">
-                                                                <a aria-label="Add To Cart"
-                                                                    class="btn btn-outline-primary btn-sm hover-up"
-                                                                    href="#">
-                                                                    <i class="fi-rs-shopping-bag-add"></i> Add to Cart
-                                                                </a>
-                                                            </div> -->
                                                         </div>
                                                     </div>
                                                 </div>
