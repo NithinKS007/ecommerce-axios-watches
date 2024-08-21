@@ -359,7 +359,7 @@
           imageInput.files = dataTransfer.files;
         }
 
-        formSubmitButton.addEventListener("click", (event) => {
+        formSubmitButton.addEventListener("click", async(event) => {
 
           event.preventDefault()
 
@@ -373,8 +373,12 @@
           const isValidateStock = validateStock()
           const isValidateTargetGroup = validateTargetGroup()
           const isValidateImage = Array.from(imageInput.files).every(validateImage)
+          const imageCount = imageInput.files.length
           const imagereq =  imageInput.files.length === 0
 
+          const productNameE = productNameInput.value
+          
+          
           if(!(isValidProductName&&isValidateProductDescription&&isValidateSalesPrice&&isValidateDialShape&&isValidateDisplayType&&isValidateStrapMaterial&&isValidateStrapColor&&isValidateStock&&isValidateTargetGroup&&isValidateImage)){
 
             return;
@@ -385,6 +389,35 @@
             fileAccessError.textContent = `*Image is required`
             
             return
+          }
+          if (imageCount !== 4) {
+
+            fileAccessError.textContent = `* You must upload exactly 4 images. Currently, ${imageCount} image(s) uploaded.`;
+            
+            return;
+
+          }
+          try {
+
+          const pExists = await productExists(productNameE)
+
+          if(pExists){
+
+            console.log(`entered here`)
+
+            Swal.fire({
+                title: "Product Exists!",
+                text: "A Product with this name already exists.",
+                icon: "warning",
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+              });
+              
+            return
+
           }
           console.log(`enterning here after validation`);
           
@@ -430,7 +463,10 @@
           } else {
             console.error("No images to upload");
           }
-        });
+           } catch (error) {
+          console.error("There was a problem with the fetch operation:", error)
+        }
+        })
 
  
         const validateImage = (file) => {
@@ -634,6 +670,46 @@
         kidsRadio.addEventListener("change", validateTargetGroup);
 
 
+      const productExists = async (productName) =>{
+
+        try {
+
+          const encodedPName = encodeURIComponent(productName) 
+
+          const response = await fetch(`http://localhost:7000/admin/productExists?encodedPName=${encodedPName}`,{
+
+            method:"GET",
+
+            headers:{
+
+
+              'Content-Type': 'application/json',
+
+            }
+
+          })
+
+          if(!response.ok) {
+
+            throw new Error("Network response was not ok")
+
+          }
+
+          const data = await response.json()
+
+          return data.exists
+
+        } catch (error) {
+          
+
+          console.log(`error while checking the category existence`, error.message);
+
+          throw error;
+
+        }
+
+
+      }
 
 
       });

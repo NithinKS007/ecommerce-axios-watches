@@ -94,7 +94,11 @@ userRoute.get("/wallet",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLo
 //return
 userRoute.patch("/return",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.returnProductOrder)
 
-
+//forgot password routes
+userRoute.get("/forgotPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.loadForgotPassword)
+userRoute.patch("/forgotPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.handleForgotPassword)
+userRoute.get("/resetPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.loadResetPassword)
+userRoute.patch("/resetPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.ResetPassword)
 
 
 module.exports = userRoute  

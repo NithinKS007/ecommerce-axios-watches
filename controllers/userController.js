@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const utils = require('../utils/otpUtils')
+const crypto = require('crypto');
 const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types;
 
@@ -19,6 +20,8 @@ const transaction = require('../models/onlineTransactionModel')
 const returnUserOrder = require('../models/returnOrderModel')
 
 const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils')
+
+const forgotPassword = require('../utils/forgotPassword')
 
 const wallet = require('../models/walletModel');
 
@@ -40,6 +43,15 @@ const securePassword = async(password)=>{
         
     }
 }
+const secureToken = async (token) => {
+    try {
+        const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+        return tokenHash;
+    } catch (error) {
+        console.log(`Cannot hash the token:`, error.message);
+        throw new Error('Token hashing failed');
+    }
+};
 
 //loading the home page 
 const loadHome = async (req,res) => {
@@ -1233,7 +1245,7 @@ const placeOrder = async (req,res) =>{
             message: 'No items selected or final price is zero',
         });
     }
-    //    console.log(`this is is selected items only`,isSelectedItemsOnly);
+  
    
        const orderItems = isSelectedItemsOnly.map(item =>({
         product:item.product._id,
@@ -2364,8 +2376,152 @@ const returnProductOrder = async (req,res) =>{
     }
 }
 
+//loading forgot password page
+const loadForgotPassword = async (req,res) =>{
+
+    try {
+
+        return res.status(200).render("user/forgotPassword")
+
+    } catch (error) {
+        
+        console.log(`error while resetting the password`,error.message);
+
+        return res.status(500).send("Error while loading the forgot password page")
+        
+    }
+
+}
+const handleForgotPassword = async (req,res) =>{
+
+    try {
+
+        const {email} = req.body
+
+        console.log(`email received for forgot password`,email);
+
+        const userMail = email.trim()
+
+        const userData = await users.findOne({email:userMail})
+
+        if(!userData){
+
+            return res.status(400).json({message:"No user found with that email",success:false})
+        }
+        if(userData.googleId){
+
+            return res.status(400).json({message:"Try login using google",success:false})
+        }
+
+        const token =  crypto.randomBytes(32).toString('hex');
+        const hashedToken = await secureToken(token)
+
+        console.log(`this is the token generated from the backend before saving in the database`,hashedToken);
+
+        userData.resetPasswordToken = hashedToken
+        userData.resetPasswordExpires = Date.now() +  300000 //expire date 5 minutes
+        await userData.save()
+
+        req.session.forgotPasswordEmail = userMail
+
+        await forgotPassword.sendToEmailResetPassword(userMail,token)
 
 
+        return res.status(200).json({ message: "Password reset email sent", success: true });
+
+    } catch (error) {
+        
+        console.log(`error while changing the password`,error.message);
+
+        return res.status(500).json({ message: "Internal server error", success: false });
+        
+    }
+} 
+const loadResetPassword = async (req,res) =>{
+
+    try {
+        const { token } = req.query;
+
+        const hashedToken = await secureToken(token)
+
+        const tokenNotexpired = await users.findOne({ resetPasswordToken: hashedToken, resetPasswordExpires: { $gt: Date.now() } });
+
+        //token is expired
+        if (!tokenNotexpired) {
+
+            return res.status(400).send("Token expired or invalid")
+
+        }
+        
+        return res.status(200).render("user/resetPassword")
+
+        
+    } catch (error) {
+        
+        console.log(`error while loading the reset password page`,error.message);
+
+        return res.status(500).send("Internal server error")
+
+    }
+}
+const ResetPassword = async (req,res) =>{
+
+    try {
+        
+  
+        const { password, confirmPassword,token } = req.body
+
+        console.log(`hello received reset things`,password,confirmPassword,token)
+
+        if (password !== confirmPassword) {
+
+            return res.status(400).json({ message: "Passwords do not match", success: false });
+
+        }
+
+        const email = req.session.forgotPasswordEmail
+
+        console.log(`this is the email from the session`,email);
+        
+        if (!email) {
+
+            return res.status(400).json({ message: "Session has expired. Please request a new password reset.", success: false });
+
+        }
+
+        const hashedToken = await secureToken(token)
+        
+        const userData = await users.findOne({
+            email: email,
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        })
+
+       if (!userData) {
+
+            return res.status(400).json({ message: "Password reset token is invalid or has expired", success: false });
+
+        }
+
+       const newPasswordHash = await securePassword(password)
+
+       userData.password = newPasswordHash
+       userData.resetPasswordToken = undefined
+       userData.resetPasswordExpires = undefined
+
+       await userData.save()
+
+       req.session.forgotPasswordEmail = undefined
+
+       return res.status(200).json({message:"Your password has been reset successfully",success:true})
+
+    } catch (error) {
+        
+        console.log(`error while resetting the password`,error.message);
+
+        return res.status(500).json({message:"error occured",success:false})
+    }
+}
 module.exports = {
 
   // user authentication
@@ -2440,5 +2596,10 @@ module.exports = {
     //verify online payment route
     verifyOnlinePayment,
 
+    //forgotPassword 
+    loadForgotPassword,
+    handleForgotPassword,
+    loadResetPassword,
+    ResetPassword
   
 }

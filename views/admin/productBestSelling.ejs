@@ -13,6 +13,9 @@
         <div class="card mb-4">
             <!-- table content starts -->
             <div class="card-body">
+                <% if (topTenBestSellingProducts.length === 0) { %>
+                    <p>No Orders available</p>
+                <% } else { %>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -20,6 +23,7 @@
                                 <th>Image</th>
                                 <th scope="col">Product Name</th>
                                 <th scope="col">Product Price</th>
+                                <th scope="col">Product Offer Price</th>
                                 <th scope="col">Total Units Sold</th>
                             </tr>
                         </thead>
@@ -31,12 +35,18 @@
                                 </td>
                                 <td><b><%= product.productName %></b></td>
                                 <td>Rs <%= product.price %></td>
+                                <td><% if (product.productSalesPriceAfterOfferDiscount  && new Date(product.productOffer.offerExpiryDate) > new Date()&& product.productSalesPriceAfterOfferDiscount!==0) { %>
+                                    Rs <%= product.productSalesPriceAfterOfferDiscount %>
+                                  <% } else { %>
+                                    N/A
+                                  <% } %></td>
                                 <td><%= product.totalSold %></td>
                             </tr>
                             <% }); %>
                         </tbody>
                     </table>
                 </div>
+                <% } %>
             </div>
         </div>
     </section> <!-- content-main end// -->

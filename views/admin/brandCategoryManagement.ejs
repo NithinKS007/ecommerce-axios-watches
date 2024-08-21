@@ -482,7 +482,7 @@ if(!(isValidateCategoryName&&isValidateCategoryDescription)){
       cancelButtonText: 'No, cancel',
       reverseButtons: true
     });
-    const cExists = await categoryExists(categoryName);
+    const cExists = await categoryExists(id,categoryName);
 
     if (result.isConfirmed) {
       if (cExists) {
@@ -594,7 +594,7 @@ if (!(isValidateBrandName)) {
           cancelButtonText: 'No, cancel',
           reverseButtons: true
         });
-        const bExists = await brandExists(brandName)
+        const bExists = await brandExists(id,brandName)
 
              
 
@@ -737,13 +737,13 @@ if (!(isValidateBrandName)) {
           brandNameInput.addEventListener("input", validateBrandName);
 
           //checking for existing category 
-          const categoryExists = async (categoryName) => {
+          const categoryExists = async (id,categoryName) => {
 
             try {
 
               const encodedCName = encodeURIComponent(categoryName);
 
-              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedCName=${encodedCName}`, {
+              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
 
                 method: "GET",
                 headers: {
@@ -836,13 +836,13 @@ if (!(isValidateBrandName)) {
 
           //checking for existing brand
 
-          const brandExists = async (brandName) => {
+          const brandExists = async (id,brandName) => {
 
             try {
 
               const encodedBName = encodeURIComponent(brandName);
 
-              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedBName=${encodedBName}`, {
+              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedBName=${encodedBName}${id ? `&brandId=${id}` : ''}`, {
 
                 method: "GET",
                 headers: {

@@ -106,8 +106,9 @@
                                 <th scope="col">Brand</th>
                                 <th scope="col">Category</th>
                                 <th scope="col">Quantity</th>
-                                <th scope="col">Sales Price</th>
-                                <th scope="col">Regular Price</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Offer Price</th>
+                                <th scope="col">Offer Percentage</th>
                                 <th scope="col">Total</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Date</th>
@@ -138,8 +139,28 @@
                                         <td><%= item.categoryName %></td>
                                         <td><%= item.quantity %></td>
                                         <td>Rs<%= item.price %></td>
-                                        <td>Rs<%= item.regularPrice %></td>
-                                        <td>Rs<%= item.price * item.quantity %></td>
+                                        <td>
+                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
+                                              Rs <%= item.productSalesPriceAfterOfferDiscount %>
+                                            <% } else { %>
+                                              N/A
+                                            <% } %>
+                                          </td>
+                                          <td>  <% if (item.productSalesPriceAfterOfferDiscount > 0) {
+                                            const offerPercentage = ((item.price - item.productSalesPriceAfterOfferDiscount) / item.price) * 100 %>
+                                            <%= offerPercentage.toFixed(2) %>%
+                                        <% } else { %>
+                                            N/A
+                                        <% } %></td>
+                                        <td>
+                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
+                                              Rs <%= item.productSalesPriceAfterOfferDiscount * item.quantity %>
+                                            <% } else { %>
+                                              Rs <%= item.price * item.quantity %>
+                                            <% } %>
+                                            
+                                          </td>
+                                          
                                         <td>
                                             <span class="badge rounded-pill 
                                             <%= item.orderProductStatus === 'pending' ? 'alert-warning' : '' %>
@@ -187,7 +208,7 @@
                                 <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.subTotalAmount %></span>
                             </li>
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                <strong style="flex: 1;">Discount:</strong>
+                                <strong style="flex: 1;">Coupon Discount:</strong>
                                 <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.discountAmount%></span>
                             </li>
                             <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">

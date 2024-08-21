@@ -41,7 +41,7 @@ adminRoute.post("/addProducts",noCacheMid.noCacheMiddleware,adminAuth.isAdminLog
 adminRoute.get("/editProduct",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadEditProduct )
 adminRoute.put("/editProduct",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,imageUpload.upload.array('productimages',4), adminController.editProduct)
 adminRoute.delete("/removeProductImage",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin, adminController.editImage)
-// adminRoute.get("/productExists",adminAuth.isAdminLogin,adminController.ProductExists)
+adminRoute.get("/productExists",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.ProductExists)
 
 //order list
 adminRoute.get("/orders",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadOrderList)
@@ -76,6 +76,8 @@ adminRoute.post("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdm
 adminRoute.get("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadProductOffer)
 adminRoute.get("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddProductOffer)
 adminRoute.post("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addProductOffer)
+adminRoute.patch("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateProductOffer)
+
 
 
 

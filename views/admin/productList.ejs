@@ -61,7 +61,7 @@
                                             <th scope="col">ProductID</th>
                                             <th scope="col">Product Name</th>
                                             <th scope="col">brand</th>
-                                            <th scope="col">Price</th>
+                                            <th scope="col">Normal Price</th>
                                             <th scope="col">Offer Price</th>
                                             <th scope="col">Stock</th>
                                             <th scope="col" >Status</th>
@@ -94,8 +94,13 @@
                                                     </td>
 
                                                     <td>
-                                                        <%= productData[i].productSalesPriceAfterOfferDiscount %>
+                                                        <% if (productData[i].productSalesPriceAfterOfferDiscount &&new Date(productData[i].productOffer.offerExpiryDate) > new Date()&& productData[i].productSalesPriceAfterOfferDiscount!==0 ) { %>
+                                                            <%= productData[i].productSalesPriceAfterOfferDiscount %>
+                                                        <% } else { %>
+                                                            N/A
+                                                        <% } %>
                                                     </td>
+                                                    
                                                     <td>
                                                         <%= productData[i].stock %>
                                                     </td>

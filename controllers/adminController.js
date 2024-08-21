@@ -187,13 +187,33 @@ const loadDashboard = async (req,res) =>{
 
    
 }
+//not checking the delivered orders getting all the order datas discounts
+
 const overAllDiscount = async () =>{
 
     try {
         
-        const orderList = await orders.find({},{discountAmount:1})
+        const orderList = await orders.find({})
 
-        const totalDiscountAmount = orderList.reduce((acc,order)=>acc + order.discountAmount,0)
+        let subTotalAmountWithOutAnyOffer = 0;
+        let totalAmountWithAllOfferApplied = 0;
+
+        orderList.forEach(order => {
+            order.items.forEach(item => {
+                subTotalAmountWithOutAnyOffer += item.price;
+            });
+        });
+
+        console.log(`subTotalAmountWithOutAnyOffer`, subTotalAmountWithOutAnyOffer)
+         
+        orderList.forEach(order => {
+
+            totalAmountWithAllOfferApplied += order.totalAmount;
+        });
+
+        console.log(`totalAmountWithAllOfferApplied`, totalAmountWithAllOfferApplied);
+       
+        const totalDiscountAmount = subTotalAmountWithOutAnyOffer-totalAmountWithAllOfferApplied
 
         return totalDiscountAmount
 
@@ -205,6 +225,7 @@ const overAllDiscount = async () =>{
     }
 } 
 
+//not checking the delivered orders getting all the order datas discounts
 const overAllOrderAmount = async () =>{
 
     try {
@@ -222,6 +243,8 @@ const overAllOrderAmount = async () =>{
         
     }
 }
+
+//not checking the delivered orders getting all the order datas discounts
 const totalSalesCount = async() =>{
 
     try {
@@ -234,6 +257,8 @@ const totalSalesCount = async() =>{
         
     }
 }
+
+//not checking the delivered orders getting all the order datas discounts
 const countTotalOrders = async () =>{
 
     try {
@@ -298,7 +323,9 @@ const monthlyAvg = async () =>{
 
                 if(item.orderProductStatus==="delivered"){
 
-                    const itemTotalAmount = item.price*item.quantity
+                    const itemPrice = item.productSalesPriceAfterOfferDiscount > 0 ? item.productSalesPriceAfterOfferDiscount : item.price;
+
+                    const itemTotalAmount = itemPrice*item.quantity
 
                     const itemProportion = itemTotalAmount/order.subTotalAmount
 
@@ -334,7 +361,9 @@ const totalRevenue = async () =>{
 
                 if(item.orderProductStatus==="delivered"){
 
-                    const itemTotalAmount = item.price*item.quantity
+                    const itemPrice = item.productSalesPriceAfterOfferDiscount > 0 ? item.productSalesPriceAfterOfferDiscount : item.price;
+
+                    const itemTotalAmount = itemPrice*item.quantity
 
                      const itemProportion = itemTotalAmount/order.subTotalAmount
 
@@ -430,76 +459,85 @@ const getSalesDataJson = async (req,res) =>{
 
 }
 
-const getSalesData = async (startDate,endDate) =>{
-
+const getSalesData = async (startDate, endDate) => {
     try {
-        
-        const matchStage = {$match:{ "items.orderProductStatus": "delivered"}}
-       
-       if(startDate && endDate) {
-
-        matchStage.$match.orderDate = {$gte:new Date(startDate),$lte:new Date(endDate)}
-
-       }
-
-       const pipeline = [
-
+      const matchStage = { $match: { "items.orderProductStatus": "delivered" } };
+      if (startDate && endDate) {
+        matchStage.$match.orderDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+      }
+      const pipeline = [
         matchStage,
         {
-            $unwind:"$items"
+          $unwind: "$items"
         },
         {
-            $match:{
-                "items.orderProductStatus":"delivered"
-            }
+          $match: {
+            "items.orderProductStatus": "delivered"
+          }
         },
         {
-            $group:{
-
-                _id:{
-
-                    date: { $dateToString: { format: "%d-%b-%Y", date: "$orderDate" } }
-                },
-
-                totalNumberOfOrders : {$sum:1},
-                grossSales :{ $sum :{$multiply:["$items.price","$items.quantity"]}},
-
-                couponDeductions:{
-
-                    $sum:{
-
+          $group: {
+            _id: {
+              date: { $dateToString: { format: "%d-%b-%Y", date: "$orderDate" } }
+            },
+            totalNumberOfOrders: { $sum: 1 },
+            grossSales: {
+              $sum: {
+                $multiply: [
+                  {
+                    $cond: [
+                      { $gt: ["$items.productSalesPriceAfterOfferDiscount", 0] },
+                      "$items.productSalesPriceAfterOfferDiscount",
+                      "$items.price"
+                    ]
+                  },
+                  "$items.quantity"
+                ]
+              }
+            },
+            couponDeductions: {
+              $sum: {
+                $multiply: [
+                  {
+                    $divide: [
+                      {
                         $multiply: [
-                            { $divide: [{ $multiply: ["$items.price", "$items.quantity"] }, "$subTotalAmount"] },
-                            "$discountAmount"
+                          {
+                            $cond: [
+                              { $gt: ["$items.productSalesPriceAfterOfferDiscount", 0] },
+                              "$items.productSalesPriceAfterOfferDiscount",
+                              "$items.price"
+                            ]
+                          },
+                          "$items.quantity"
                         ]
-                    }
-                }
+                      },
+                      "$subTotalAmount"
+                    ]
+                  },
+                  "$discountAmount"
+                ]
+              }
             }
+          }
         },
         {
-            $project:{
-
-                date:"$_id.date",
-                totalNumberOfOrders:1,
-                grossSales:1,
-                couponDeductions:1,
-                netSales:{ $subtract: ["$grossSales", "$couponDeductions"]}
-            }
+          $project: {
+            date: "$_id.date",
+            totalNumberOfOrders: 1,
+            grossSales: 1,
+            couponDeductions: 1,
+            netSales: { $subtract: ["$grossSales", "$couponDeductions"] }
+          }
         }
-       ]
-       const salesData = await orders.aggregate(pipeline).exec();
-
-       return salesData
-
+      ];
+      const salesData = await orders.aggregate(pipeline).exec();
+      return salesData;
     } catch (error) {
-        
-        console.log(`error while calculating the sales report`,error.message);
-
-        return res.status(500).send("Internal server Error")
-    
+      console.log(`error while calculating the sales report`, error.message);
+      return res.status(500).send("Internal server Error");
     }
-}
-
+  };
 
 
 
@@ -869,7 +907,7 @@ const escapeRegExp = (string) => {
 //check existing category
 const categoryExists = async (req, res) => {
 
-    const { encodedCName } = req.query;
+    const { encodedCName,categoryId } = req.query;
 
     const escapedCName = escapeRegExp(encodedCName);
 
@@ -877,7 +915,15 @@ const categoryExists = async (req, res) => {
 
     try {
 
-        const exist = await categories.findOne({ name: { $regex: new RegExp(`^${escapedCName}`, 'i') } });
+        const query = { name: { $regex: new RegExp(`^${escapedCName}`, 'i') } }
+
+        if(categoryId){
+
+            query._id = {$ne : categoryId}
+        }
+
+        const exist = await categories.findOne(query);
+
 
         if (exist) {
 
@@ -900,7 +946,7 @@ const categoryExists = async (req, res) => {
 //check existing brand
 const brandExists = async(req,res) =>{
 
-    const {encodedBName} = req.query
+    const {encodedBName,brandId } = req.query
 
     const escapedBName = escapeRegExp(encodedBName);
 
@@ -908,7 +954,15 @@ const brandExists = async(req,res) =>{
 
     try {
 
-        const exists = await brands.findOne({name:{$regex: new RegExp(`^${escapedBName}`,'i')}})
+        const query = { name: { $regex: new RegExp(`^${escapedBName}`, 'i') } }
+
+        if (brandId) {
+
+            query._id = { $ne: brandId }; 
+
+        }
+        
+        const exists = await brands.findOne(query);
 
         if(exists){
 
@@ -989,7 +1043,7 @@ const addProduct = async (req,res) =>{
 
     try {
 
-        const {name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup} = req.body
+        const {name,brand,category,dialShape,displayType,salesPrice,strapMaterial,strapColor,stock,description,targetGroup} = req.body
 
         const brandFromcollection = await brands.find({name:brand})
         
@@ -1002,7 +1056,6 @@ const addProduct = async (req,res) =>{
             category:categoryFromcollection[0]._id,
             dialShape:dialShape,
             displayType:displayType,
-            regularPrice:regularPrice,
             salesPrice:salesPrice,
             strapMaterial:strapMaterial,
             strapColor:strapColor,
@@ -1103,7 +1156,7 @@ const editProduct = async (req, res) => {
     try {
 
       
-        const { productId,name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup } = req.body;
+        const { productId,name,brand,category,dialShape,displayType,salesPrice,strapMaterial,strapColor,stock,description,targetGroup } = req.body;
 
         const images = req.files
 
@@ -1115,13 +1168,13 @@ const editProduct = async (req, res) => {
 
         }
 
-        const updatedData = { name,brand,category,dialShape,displayType,regularPrice,salesPrice,strapMaterial,strapColor,stock,description,targetGroup};
+        const updatedData = { name,brand,category,dialShape,displayType,salesPrice,strapMaterial,strapColor,stock,description,targetGroup};
 
         const updatedProductDetails = await products.findByIdAndUpdate(productId,{ $set: updatedData },{ new: true });
         
         if (!updatedProductDetails) {
 
-            return res.status(404).json({ message: "Product cannot be updated" ,success:false});
+            return res.status(404).json({ message: "Product cannot be updated" ,success:false,updatedProductName:updatedProductDetails.name});
         }
 
         
@@ -1129,14 +1182,14 @@ const editProduct = async (req, res) => {
 
            await products.findByIdAndUpdate(productId,{$push:{images:{$each:images}}},{new:true})
         }
-
-        return res.status(200).json({ message: "Product updated successfully",success:true });
+        
+        return res.status(200).json({ message: "Product updated successfully",success:true,updatedProductName:updatedProductDetails.name });
 
     } catch (error) {
 
         console.log(`Error while editing the product data:`, error.message);
 
-        return res.status(400).json({ message: "Failed to update product", success:true });
+        return res.status(400).json({ message: "Failed to update product", success:false });
     }
 }
 
@@ -1147,7 +1200,6 @@ const editImage = async (req,res) =>{
 
         const { productId,imageName} = req.body;
 
-        console.log(typeof imageName);
         console.log(`data from the front end`,productId,imageName);
 
            if (productId&&imageName) {
@@ -1169,33 +1221,42 @@ const editImage = async (req,res) =>{
     }
 }
 
-// const ProductExists = async (req,res) =>{
+const ProductExists = async (req,res) =>{
 
-//     const {encodedPName} = req.query
+    const {encodedPName,productId} = req.query
 
-//     console.log(`Entered in existing product checking function:`,encodedPName);
+    console.log(`Entered in existing product checking function:`,encodedPName,productId)
 
-//     try {
+    try {
 
-//         const exists = await products.findOne({name:encodedPName})
 
-//         if(exists){
+         const query = { name: encodedPName }
 
-//             return res.status(200).json({message:"Product already exists",exists:true})
+         if (productId) {
 
-//         }
+            query._id = { $ne: productId }
 
-//         return res.status(200).json({message:"Product does not exist",exists:false})
+        }
+
+        const exists = await products.findOne(query)
+
+        if(exists){
+
+            return res.status(200).json({message:"Product already exists",exists:true})
+
+        }
+
+        return res.status(200).json({message:"Product does not exist",exists:false})
         
-//     } catch (error) {
+    } catch (error) {
         
-//         console.log(`error while checking the existing product`,error.message);
+        console.log(`error while checking the existing product`,error.message);
 
-//         return res.status(500).json({message:"Internal server error",error:error.message})
+        return res.status(500).json({message:"Internal server error",error:error.message})
 
-//     }
+    }
     
-// }
+}
 
 
 
@@ -1301,13 +1362,50 @@ const changeOrderStatus = async (req,res) =>{
 
             const updatedStatusPerItem = await order.save()
 
+            let updatedOrder
+
             if(updatedStatusPerItem){
 
-                const updatedOrder = await orders.updateOne({_id:orderIdofTheCart},{$set:{orderStatus:selectedStatus}},{new:true})
-
-                return res.status(200).json({message:"successfully changed the order status",success:true, updatedOrder: updatedOrder})
+                 updatedOrder = await orders.updateOne({_id:orderIdofTheCart},{$set:{orderStatus:selectedStatus}},{new:true})
 
             }
+
+            if(order.paymentMethod==="razorPay"){
+
+                const walletData = await wallet.findOne({userId:order.user})
+
+                if (!walletData) {
+
+                    return res.status(400).json({ message: "This user doesn't have any wallet" });
+                }
+
+                const productsAmountThatHaventRefunded  = walletData.transactions
+                      
+                     .filter(tx => tx.type==="credit"&&tx.orderId.equals(orderIdofTheCart))
+                     .reduce((acc,tx) => acc+tx.amount,0 )
+
+                     const refundAmount = order.totalAmount - productsAmountThatHaventRefunded
+
+                     const newWalletTransaction = {
+
+                        orderId:orderIdofTheCart,
+                        amount:refundAmount,
+                        type:"credit",
+                        walletTransactionStatus:"refunded"
+
+                     }
+
+                     await wallet.findOneAndUpdate(
+
+                        {userId:order.user},
+                        {$inc:{balance:refundAmount},$push:{transactions:newWalletTransaction}},
+                        {new:true}
+                     )
+                     
+                     return res.status(200).json({message:"successfully changed the order status",success:true, updatedOrder: updatedOrder})
+
+            }
+
         }else{
 
             return res.status(200).json({ message: "User cancelled all products", adminCannotCancel: true });
@@ -1946,7 +2044,50 @@ const addProductOffer = async (req,res) =>{
         return res.send("Internal server error")
     }
 }
+const activateDeactivateProductOffer = async (req,res) =>{
 
+    try {
+
+        const productId = req.query.productId
+
+        console.log(`this is the product id received from the front end`,productId);
+
+        const productData = await products.findById(productId)
+
+
+        if(!productData){
+
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        if(productData.productOffer.offerStatus){
+
+            const updatedProductOfferStatus = await products.findByIdAndUpdate({_id:productId},{$set:{"productOffer.offerStatus":false}},{new:true})
+
+            console.log(`Deactivated product offer from the backend product offer status to false`)
+            return res.status(200).json({
+                success:true,
+                message:"product offer status set to false",
+                updatedProductOfferStatus:updatedProductOfferStatus
+            })
+        }else{
+
+            const updatedProductOfferStatus = await products.findByIdAndUpdate({_id:productId},{$set:{"productOffer.offerStatus":true}},{new:true})
+
+            console.log(`Activated product offer from the backend product offer status to true`)
+            return res.status(200).json({
+                success:true,
+                message:"product offer status set to true",
+                updatedProductOfferStatus:updatedProductOfferStatus
+            })
+        }
+
+    } catch (error) {
+        
+        console.log(`error while changing the status of the product offer`,error.message);
+        return res.status(500).send("Internal server Error")
+    }
+}
 module.exports = {
 
     //admin authentication
@@ -1995,7 +2136,7 @@ module.exports = {
     editProduct,
     editImage,
     softDeleteProduct,
-    // ProductExists,
+    ProductExists,
     
    // total order status management
 
@@ -2017,7 +2158,8 @@ module.exports = {
 
     //offer management
     addCategoryOffer,
-    addProductOffer
+    addProductOffer,
+    activateDeactivateProductOffer
   
 
 }
