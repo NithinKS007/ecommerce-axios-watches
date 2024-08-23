@@ -555,13 +555,17 @@ const priceSummary = async (cartData, couponCode) => {
         const selectedItems = cartData.items.filter((item) => item?.isSelected);
         
 
-        const subTotal = selectedItems.reduce((total, item) =>{
+        const subTotal = selectedItems.reduce(async (total, item) =>{
 
             let itemPrice = item.price;
 
-            if (item?.product?.productOffer && 
-                new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() &&
-                item?.product?.productOffer.offerStatus) {
+            const product = await products.findOne({ _id: item.product._id })
+
+            const category = await categories.findOne({ _id: product.category })
+
+            if (item?.product?.productOffer &&  new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() && item?.product?.productOffer.offerStatus 
+            
+            ||category?.categoryOffer && new Date(category?.categoryOffer?.offerExpiryDate) >new Date() && category?.categoryOffer?.offerStatus) {
 
                 itemPrice = item.product.productSalesPriceAfterOfferDiscount;
 
@@ -2522,6 +2526,7 @@ const ResetPassword = async (req,res) =>{
         return res.status(500).json({message:"error occured",success:false})
     }
 }
+
 module.exports = {
 
   // user authentication

@@ -94,8 +94,8 @@
                                                     </td>
 
                                                     <td>
-                                                        <% if (productData[i].productSalesPriceAfterOfferDiscount &&new Date(productData[i].productOffer.offerExpiryDate) > new Date()&& productData[i].productSalesPriceAfterOfferDiscount!==0 ) { %>
-                                                            <%= productData[i].productSalesPriceAfterOfferDiscount %>
+                                                        <% if (productData[i]?.productSalesPriceAfterOfferDiscount &&new Date(productData[i]?.productOffer?.offerExpiryDate) > new Date()&& productData[i]?.productSalesPriceAfterOfferDiscount!==0 && productData[i]?.productOffer?.offerStatus) { %>
+                                                            <%= productData[i]?.productSalesPriceAfterOfferDiscount %>
                                                         <% } else { %>
                                                             N/A
                                                         <% } %>

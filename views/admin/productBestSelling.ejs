@@ -35,7 +35,7 @@
                                 </td>
                                 <td><b><%= product.productName %></b></td>
                                 <td>Rs <%= product.price %></td>
-                                <td><% if (product.productSalesPriceAfterOfferDiscount  && new Date(product.productOffer.offerExpiryDate) > new Date()&& product.productSalesPriceAfterOfferDiscount!==0) { %>
+                                <td><% if (product.productSalesPriceAfterOfferDiscount  && new Date(product.productOffer.offerExpiryDate) > new Date()&& product.productSalesPriceAfterOfferDiscount!==0 && product.productOffer.offerStatus) { %>
                                     Rs <%= product.productSalesPriceAfterOfferDiscount %>
                                   <% } else { %>
                                     N/A

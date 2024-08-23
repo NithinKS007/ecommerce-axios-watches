@@ -650,3 +650,59 @@
 
     </script>
     <%- include('../layouts/adminLayouts/footer') %>
+
+
+
+<script>
+  const createCategoryOffer = async (req, res) => {
+      try {
+        const { startDate, endDate, category, discountPercentage } = req.body;
+        const categore = await Category.findById({ _id: category });
+        categore.offer = discountPercentage;
+        categore.offerStart = startDate;
+        categore.offerEnd = endDate;
+        await categore.save();
+        const products = await Product.find({ category: categore.name });
+        products.forEach((product) => {
+          product.discountPrice = product.price - (product.price * (discountPercentage / 100));
+          product.afterDiscount = product.price - product.discountPrice;
+          product.save();
+        });
+        const categories = await Category.find({ status: "active" });
+        res.status(200).json({ message: 'Category offer created successfully', categories: categories });
+      } catch (error) {
+        console.error(error);
+        res.redirect('/admin/errorpage')
+      }
+    };
+
+    
+</script>
+    <script>
+      const createProductOffer = async (req, res) => {
+  try {
+    const { productId, discountPercentage } = req.body;
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    const category = await Category.findOne({ name: product.category });
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    if (discountPercentage <= category.offer) {
+      return res.status(200).json({
+        message: This product has a better offer with the category offer (${category.offer}%),
+        type: 'info',
+      });
+    }
+    product.discountPrice = product.price - (product.price * (discountPercentage / 100));
+    product.afterDiscount = product.price - product.discountPrice;
+    await product.save();
+    return res.status(200).json({ message: 'Offer applied successfully', type: 'success', product: product });
+  } catch (error) {
+    console.error(error);
+    res.redirect('/admin/errorpage')
+  }
+};
+    </script>

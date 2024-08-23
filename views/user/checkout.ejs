@@ -134,9 +134,9 @@
                                                     <img src="/productImages/<%= item.product.images[0]?.filename %>" alt="Product Image">
                                                     <div class="product-info">
                                                         <p><%= item.product.name %></p>
-                                                        <!-- <p class="product-price">Rs <%= item.price %></p> -->
+                                                    
 
-                                                        <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount) { %>
+                                                        <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount&&item?.product?.productOffer?.offerStatus) { %>
                                                             <strong>Price:</strong> <%= item?.productSalesPriceAfterOfferDiscount %>
                                                             <del><%= item?.product?.salesPrice %></del>
                                                             <% } else { %>

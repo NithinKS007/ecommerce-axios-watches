@@ -31,7 +31,7 @@
                   <div class="card-body">
                     <h5 class="card-title"><%= item.product?.name %></h5>
                   
-                    <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount) { %>
+                    <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount&&item?.product?.productOffer?.offerStatus) { %>
                   
                       <strong>Discount:</strong> <%= item?.product?.productOffer?.offerDiscountPercentage %>%<br>
                       <strong>Price:</strong> <%= item?.productSalesPriceAfterOfferDiscount %>

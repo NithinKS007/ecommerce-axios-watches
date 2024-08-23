@@ -25,7 +25,7 @@
                                         onclick="removeFromWishList('<%= product._id %>')">Remove</button>
                                 </div>
                                 <p class="card-text">
-                                    <% if (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date()&&product.productSalesPriceAfterOfferDiscount!==0) { %>
+                                    <% if (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date()&&product.productSalesPriceAfterOfferDiscount!==0&&product.productOffer.offerStatus) { %>
                                         <strong>₹<%= product.productSalesPriceAfterOfferDiscount %></strong>
                                       <% } else { %>
                                         <strong>₹<%= product.salesPrice %></strong>

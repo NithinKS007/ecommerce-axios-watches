@@ -16,7 +16,27 @@
             .page-item {
                 margin: 0 2px;
             }
-            
+   
+                 .product-img-action-wrap {
+                position: relative;
+                    }
+
+            .heart-icon {
+                position: absolute;
+                top: 9px;
+                right: 10px;
+                z-index: 10;
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                width: 40px; 
+                height: 40px; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+            }
+
+
+           
             </style>
             <section class="product-tabs section-padding position-relative wow fadeIn animated">
                 <div class="bg-square"></div>
@@ -44,13 +64,21 @@
                                                             </a>
                                                         </div>
                                                 
-                                                        <div class="product-action-1">
+                                                        <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
 
-                                                            <a aria-label="Add To Wishlist"
-                                                                class="action-btn hover-up"><i
-                                                                    class="fi-rs-heart"></i></a>
+                                                            <div class="wishlist-toggle" aria-label="Add to Wishlist">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                                    height="20" viewBox="0 0 24 24" fill="none"
+                                                                    stroke="currentColor" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path
+                                                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                                                    </path>
+                                                                </svg>
+                                                            </div>
+    
+    
                                                         </div>
-                                                        
                                                      
                        
                                                     </div>
@@ -66,12 +94,12 @@
                                                                 <%= productsArray[i].name %>
                                                             </a></h5>
                                                         <div class="rating-result" title="90%">
-                                                            <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage) { %>
+                                                            <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage&&new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount!==0&&productsArray[i].productOffer.offerStatus) { %>
                                                                 <span>
                                                                     <span><%= productsArray[i].productOffer.offerDiscountPercentage %> % </span>
                                                                 </span>
                                                             <% } else { %>
-                                                                <span>90%</span>
+                                                                <!-- <span>90%</span> -->
                                                             <% } %>
                                                         </div>
                                                         <div class="product-price">
@@ -80,7 +108,7 @@
                                                                 
                                                                 <span style="color: red;">Currently Unavailable</span>
                                                                 <%} else { %>
-                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount !==0) { %>
+                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount !==0 && productsArray[i].productOffer.offerStatus) { %>
 
                                                                         <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
 

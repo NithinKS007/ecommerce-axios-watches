@@ -97,7 +97,7 @@
                                             <div class="clearfix product-price-cover">
                                                 <div class="product-price primary-color float-left">
 
-                                                    <% if (productDetails.productSalesPriceAfterOfferDiscount && new Date(productDetails.productOffer.offerExpiryDate) > new Date() && productDetails.productSalesPriceAfterOfferDiscount !== 0) { %>
+                                                    <% if (productDetails.productSalesPriceAfterOfferDiscount && new Date(productDetails.productOffer.offerExpiryDate) > new Date() && productDetails.productSalesPriceAfterOfferDiscount !== 0&&productDetails.productOffer.offerStatus) { %>
                                                         <ins>
                                                             <span class="text-brand">₹ <%= productDetails.productSalesPriceAfterOfferDiscount %></span>
                                                         </ins>
@@ -112,10 +112,10 @@
                                                         </ins>
                                                     <% } %>
                                                     <span class="discount-percentage" style="color: red; font-weight: bold; font-size: 1.2em; margin-left: 5px;">
-                                                        <% if (productDetails.productOffer && productDetails.productOffer.offerDiscountPercentage) { %>
+                                                        <% if (productDetails.productOffer && productDetails.productOffer.offerDiscountPercentage&&new Date(productDetails.productOffer.offerExpiryDate) > new Date()&&productDetails.productSalesPriceAfterOfferDiscount!==0&&productDetails.productOffer.offerStatus) { %>
                                                             <%= productDetails.productOffer.offerDiscountPercentage %> % Off
                                                         <% } else { %>
-                                                            90% Off
+                                                            <!-- 90% Off -->
                                                         <% } %>
                                                     </span>
                                                     
@@ -154,10 +154,6 @@
                                                                         Cart</button>
                                                                     <% } %>
                                                         </div>
-                                                        <!-- <div class="product-extra-link2">
-                                                            <button type="submit" class="button button-add-to-cart"
-                                                                id="buyNow" style="margin-left: 10px;">Buy Now</button>
-                                                        </div> -->
                                                         <% } %>
                                                         <% if (productInWishList) { %>
                                                             <div class="product-extra-link2" style="margin-left: 10px;">
@@ -505,7 +501,7 @@
                                                                     <% if (relatedProducts[i].isBlocked || relatedProducts[i].category?.isBlocked || relatedProducts[i].brand?.isBlocked) { %>
                                                                         <span style="color: red; font-size: 15px;">Currently Unavailable</span>
                                                                     <% } else { %>
-                                                                        <% if (relatedProducts[i].productSalesPriceAfterOfferDiscount && new Date(relatedProducts[i].productOffer.offerExpiryDate) > new Date()&&relatedProducts[i].productSalesPriceAfterOfferDiscount!==0) { %>
+                                                                        <% if (relatedProducts[i].productSalesPriceAfterOfferDiscount && new Date(relatedProducts[i].productOffer.offerExpiryDate) > new Date()&&relatedProducts[i].productSalesPriceAfterOfferDiscount!==0&&relatedProducts[i].productOffer.offerStatus) { %>
                                                                             <span> ₹ <%= relatedProducts[i].productSalesPriceAfterOfferDiscount %></span>
                                                                             <span class="old-price">
                                                                                 ₹ <%= relatedProducts[i].salesPrice %>

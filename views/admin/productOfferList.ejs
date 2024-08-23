@@ -34,8 +34,9 @@
                 <th scope="col">Price After  Discount</th>
                 <th scope="col">Discount Start Date</th>
                 <th scope="col">Discount Expiry Date</th>
-                <th scope="col" class="text-end">Status</th>
-                <th scope="col" class="text-end">Delete</th>
+                <th scope="col" class="text-center">Edit</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Delete</th>
 
               </tr>
             </thead>
@@ -50,17 +51,22 @@
                   <td><%= product.productOffer.offerDiscountPercentage %> %</td>
                   <td><%= product.salesPrice %></td>
                   <td><%= product.productSalesPriceAfterOfferDiscount %></td>
-                  <td><%= new Date(product.productOffer.offerStartDate).toISOString().split('T')[0] %></td>
-                  <td><%= new Date(product.productOffer.offerExpiryDate).toISOString().split('T')[0] %></td>
-                  <td class="text-end">
+                  <td><%= new Date(product?.productOffer?.offerStartDate).toISOString().split('T')[0] %></td>
+                  <td><%= new Date(product?.productOffer?.offerExpiryDate).toISOString().split('T')[0] %></td>
+                  <td class="text-center">
+                    <a href="/admin/editProductOffer">
+                      <button class="btn btn-primary">Edit Offer</button>
+                    </a>
+                  </td>
+                  <td class="text-center">
                     <% if (new Date(product.productOffer.offerExpiryDate) > new Date()) { %>
                         <% if (product.productOffer.offerStatus) { %>
                           
-                            <button onclick="activateOrInactivate('<%= product._id %>')" id="activateOrDeactivateButton<%= product._id %>" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Deactivate</button>
+                            <button onclick="activateOrInactivate('<%= product._id %>')" id="activateOrDeactivateButton<%= product._id %>" class="btn btn-danger rounded btn-sm font-sm">Deactivate</button>
 
                         <% } else { %>
                          
-                            <button onclick="activateOrInactivate('<%= product._id %>')" id="activateOrDeactivateButton<%= product._id %>" class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">Activate</button>
+                            <button onclick="activateOrInactivate('<%= product._id %>')" id="activateOrDeactivateButton<%= product._id %>" class="btn btn-success rounded btn-sm font-sm">Activate</button>
 
                         <% } %>
 
@@ -68,7 +74,7 @@
 
                 </td>
                 
-                <td>
+                <td class="text-center">
           
                     <button onclick="deleteOffer('<%= product._id %>')" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</button>
 
