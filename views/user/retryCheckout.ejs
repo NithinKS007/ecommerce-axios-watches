@@ -1,0 +1,410 @@
+<%- include('../layouts/userLayouts/header') %>
+
+
+    <%- include('../layouts/userLayouts/navbar1') %>
+
+        <main class="container my-5">
+
+            <style>
+                .error {
+                    font-size: 0.8em;
+                    color: red;
+                }
+
+                .small-text {
+                    font-size: 0.8em;
+                    line-height: 1.2;
+                }
+
+                .alert-message,
+                .order-summary,
+                .payment-methods,
+                .order-details,
+                .customer-info,
+                .troubleshooting-tips {
+                    background-color: #f5f5f5;
+                    padding: 20px;
+                    border-radius: 4px;
+                    margin-bottom: 20px;
+                }
+
+                .alert-message {
+                    background-color: #f8d7da;
+                    color: #721c24;
+                    border: 1px solid #f5c6cb;
+                }
+
+                .order-summary {
+                    background-color: #fff;
+                }
+
+                .payment-methods {
+                    background-color: #fff;
+                }
+
+                .btn-retry {
+                    background-color: black;
+                    color: #fff;
+                    font-size: 16px;
+                    padding: 12px 20px;
+                    width: 390px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+
+
+
+
+                .customer-info p,
+                .troubleshooting-tips p {
+                    margin: 0;
+                }
+            </style>
+            <h1 style="font-family: 'Roboto', sans-serif; font-size: 24px; font-weight: 600; color: #333; margin-bottom: 16px; letter-spacing: 0.5px;"
+                class="h2 mb-4">Retry Payment</h1>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+                    <!-- Order Details Section -->
+                    <div class="order-details">
+                        <h5 class="mb-4">Order Details</h5>
+
+                        <% orderData.items.slice(0, 2).forEach(item=> { %>
+                            <% if (item.images && item.images.length> 0) { %>
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <% const fullPath=item.images[0]; const
+                                        filename=fullPath.split('\\').pop().split('/').pop(); %>
+                                        <img src="/productImages/<%= filename %>" alt="Item Image"
+                                            style="width: 50px; height: 50px; margin-right: 10px; margin-bottom: 10px;">
+                                </div>
+                                <% } %>
+                                    <% }) %>
+
+                                        <% if (orderData.items.length> 2) { %>
+                                            <div class="d-flex justify-content-between mt-2">
+                                                <span>
+                                                    <%= orderData.items.length - 2 %>+ more items
+                                                </span>
+                                            </div>
+                                            <% } %>
+                    </div>
+
+
+
+
+                    <!-- Customer Information Section -->
+                    <div class="customer-info">
+                        <h5 class="mb-4">Customer Information</h5>
+                        <p><strong>Delivery Address:</strong>
+                            <%= orderData.shippingAddress.address %>, <%= orderData.shippingAddress.locality %>, <%=
+                                        orderData.shippingAddress.cityDistTown %>, <%= orderData.shippingAddress.state
+                                            %>, <%= orderData.shippingAddress.pincode %>
+                        </p>
+                        <p><strong>Contact:</strong>
+                            <%= orderData.shippingAddress.email %>
+                        </p>
+                    </div>
+
+                    <!-- Troubleshooting Tips -->
+                    <div class="troubleshooting-tips">
+                        <h5 class="mb-4">Troubleshooting Tips</h5>
+                        <p>If you encounter any issues with the payment, please refer to our <a href="/faq">FAQ page</a>
+                            or contact our <a href="/support">support team</a>.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Order Summary Section -->
+                    <div class="order-summary">
+                        <h5 class="mb-4">Order Summary</h5>
+                        <p class="d-flex justify-content-between">
+                            <span>SubTotal Amount</span>
+                            <span>Rs <%= orderData.subTotalAmount %></span>
+                        </p>
+                        <p class="d-flex justify-content-between">
+                            <span>Coupon Discount</span>
+                            <span>Rs <%= orderData.discountAmount %></span>
+                        </p>
+                        <hr>
+                        <p class="d-flex justify-content-between">
+                            <strong>Total Amount</strong>
+                            <strong>Rs <%= orderData.totalAmount %></strong>
+                        </p>
+                    </div>
+                    <!-- Retry Payment Button -->
+                    <button type="button" class="btn btn-primary btn-lg w-100" data-order-id="<%= orderData._id %>"
+                        id="retryPayment">Retry Payment</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Preloader Start -->
+        <div id="preloader-active">
+            <div class="preloader d-flex align-items-center justify-content-center">
+                <div class="preloader-inner position-relative">
+                    <div class="text-center">
+                        <h5 class="mb-5">Now Loading</h5>
+                        <div class="loader">
+                            <div class="bar bar1"></div>
+                            <div class="bar bar2"></div>
+                            <div class="bar bar3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            const retryPaymentButton = document.getElementById("retryPayment")
+            const orderId = retryPaymentButton.getAttribute("data-order-id")
+
+            retryPaymentButton.addEventListener("click", () => {
+
+                console.log(`hello1`);
+
+                const paymentFailure = async (response) => {
+
+                    try {
+
+                        console.log("Full payment response:", response);
+
+
+
+                        const { payment_id, order_id } = response.error.metadata
+                        console.log(`this is the payment failure function working`, payment_id, order_id);
+
+
+
+                        const dataResponse = await fetch("http://localhost:7000/paymentFailure", {
+
+                            method: 'PATCH',
+                            
+                            headers: {
+
+                                'Content-Type': 'application/json',
+
+                            },
+
+                            body: JSON.stringify({ paymentId: payment_id, orderId: order_id }),
+
+                        });
+
+                        if (!dataResponse.ok) {
+
+                            throw new Error('Failed to notify the server about the payment failure');
+
+                        }
+
+
+                        const result = await dataResponse.json();
+                        console.log(result.message);
+
+                        if (result.success) {
+
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Online Payment failed!',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            }).then(() => {
+
+                                window.location.href = "http://localhost:7000/paymentFailure";
+
+                            });
+                        }
+
+
+
+                    } catch (error) {
+
+                        console.error('Error handling payment failure:', error.message);
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Error while canceling the order.',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+
+
+                    }
+
+                };
+
+                
+                fetch('http://localhost:7000/retryPayment', {
+
+                    method: "PATCH",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+
+                    body: JSON.stringify({ orderId: orderId }),
+
+                })
+
+                
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        console.log('Success:', data)
+
+                        console.log(`hello3`);
+                        if (data.success) {
+
+                            console.log(`hello4`);
+                            const options = {
+
+                                "key": data.RAZORPAY_ID_KEY,
+                                "amount": data.amount * 100,
+                                "currency": "INR",
+                                "name": "axios watches",
+                                "order_id": data.razorPayOrderPaymentId,
+                                "handler": (response) => {
+
+                                    console.log("this is the response from the verify function", response)
+                                    console.log(`hello5`);
+                                    verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
+
+
+                                },
+
+
+                            }
+
+                            let rzp = new Razorpay(options)
+
+                            rzp.on("payment.failed", paymentFailure)
+                            rzp.open()
+
+                        } else {
+
+                            Swal.fire({
+                                icon: 'error',
+                                text: `${data.message}`,
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            }).then(() => {
+
+                                window.location.href = "http://localhost:7000/paymentFailure";
+
+                            });
+
+                        }
+
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            text: `An error occurred: ${error.message}`,
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+
+                    });
+
+
+
+            })
+
+            const verifyOnlinePayment = (paymentId, orderId, signature, amount) => {
+
+                console.log(paymentId, orderId, signature);
+                console.log(`hello6`);
+                fetch('http://localhost:7000/verifyOnlinePayment', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ paymentId, orderId, signature, amount }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                text: 'Payment successful!',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            }).then(() => {
+
+                                window.location.href = "http://localhost:7000/placeOrder";
+
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Payment verification failed. Please contact support.',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'An error occurred during payment verification.',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+                    });
+            }
+
+        </script>
+        <!-- JavaScript Files -->
+        <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+        <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+        <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+        <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/plugins/slick.js"></script>
+        <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
+        <script src="assets/js/plugins/wow.js"></script>
+        <script src="assets/js/plugins/jquery-ui.js"></script>
+        <script src="assets/js/plugins/perfect-scrollbar.js"></script>
+        <script src="assets/js/plugins/magnific-popup.js"></script>
+        <script src="assets/js/plugins/select2.min.js"></script>
+        <script src="assets/js/plugins/waypoints.js"></script>
+        <script src="assets/js/plugins/counterup.js"></script>
+        <script src="assets/js/plugins/jquery.countdown.min.js"></script>
+        <script src="assets/js/plugins/images-loaded.js"></script>
+        <script src="assets/js/plugins/isotope.js"></script>
+        <script src="assets/js/plugins/scrollup.js"></script>
+        <script src="assets/js/plugins/jquery.vticker-min.js"></script>
+        <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
+        <!-- Template JS -->
+        <script src="./assets/js/main.js?v=3.4"></script>
+        <script src="./assets/js/shop.js?v=3.4"></script>
+
+        <!-- SweetAlert2 JS -->
+        <script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
+
+        <!-- Custom JS -->
+        </body>
+
+        </html>

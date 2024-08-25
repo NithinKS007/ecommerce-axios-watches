@@ -545,91 +545,78 @@ const loadUserLogout = async (req,res) =>{
 }
 //calculating ORDER SUMMARY
 const priceSummary = async (cartData, couponCode) => {
-
-
     try {
-
-      if (cartData?.items.length > 0) {
-
-
+      if (cartData?.items?.length > 0) {
         const selectedItems = cartData.items.filter((item) => item?.isSelected);
         
+        let subTotal = 0;
+        for (const item of selectedItems) {
+          let itemPrice = item.price;
+          const product = await products.findOne({ _id: item.product?._id });
+          if (
+            item?.product?.productOffer &&
+            new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() &&
+            item?.product?.productOffer.offerStatus) {
 
-        const subTotal = selectedItems.reduce(async (total, item) =>{
+            itemPrice = item.product.productSalesPriceAfterOfferDiscount;
 
-            let itemPrice = item.price;
+          }
 
-            const product = await products.findOne({ _id: item.product._id })
+          console.log(`Item: ${item._id}, Price: ${itemPrice}, Quantity: ${item.quantity}`);
 
-            const category = await categories.findOne({ _id: product.category })
-
-            if (item?.product?.productOffer &&  new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() && item?.product?.productOffer.offerStatus 
-            
-            ||category?.categoryOffer && new Date(category?.categoryOffer?.offerExpiryDate) >new Date() && category?.categoryOffer?.offerStatus) {
-
-                itemPrice = item.product.productSalesPriceAfterOfferDiscount;
-
-            }
-
-            console.log(`Item: ${item._id}, Price: ${itemPrice}, Quantity: ${item.quantity}`)
-
-            return total + itemPrice  * item.quantity;
-
-            }, 0)
-  
-        let finalPrice = subTotal;
-
-        const totalQuantity = selectedItems.reduce((total, item) => total + item.quantity, 0);
-  
-        let discount = 0;
-  
-        if (couponCode) {
-
-          console.log(`Coupon code received: ${couponCode}`);
-          
-          const coupon = await coupons.findOne({ couponCode: couponCode });
-  
-          if (coupon && coupon.couponStatus) {
-
-            if (finalPrice >= coupon.minAmount) {
-
-              discount = (finalPrice * coupon.couponDiscount) / 100;
-  
-              if (discount > coupon.maxAmount) {
-
-                discount = coupon.maxAmount;
-                
-              }
-  
-              finalPrice -= discount;
-
-            } else{
-
-                return { message: "Minimum amount for coupon is not met", subTotal: parseFloat(subTotal.toFixed(2)), finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: 0 };
-
-            }
-
-          }else {
-                    return { message: "Invalid or inactive coupon code",subTotal: parseFloat(subTotal.toFixed(2)),finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: 0};
-                }
+          subTotal += itemPrice * item.quantity;
 
         }
   
-        return { subTotal: parseFloat(subTotal.toFixed(2)),finalPrice: parseFloat(finalPrice.toFixed(2)),totalQuantity,discount: parseFloat(discount.toFixed(2)) };
-
+        let finalPrice = subTotal;
+        const totalQuantity = selectedItems.reduce((total, item) => total + item.quantity, 0);
+        let discount = 0;
+  
+        if (couponCode) {
+          console.log(`Coupon code received: ${couponCode}`);
+          const coupon = await coupons.findOne({ couponCode: couponCode });
+          
+          if (coupon && coupon.couponStatus) {
+            if (finalPrice >= coupon.minAmount) {
+              discount = (finalPrice * coupon.couponDiscount) / 100;
+              if (discount > coupon.maxAmount) {
+                discount = coupon.maxAmount;
+              }
+              finalPrice -= discount;
+            } else {
+              return {
+                message: "Minimum amount for coupon is not met",
+                subTotal: parseFloat(subTotal.toFixed(2)),
+                finalPrice: parseFloat(finalPrice.toFixed(2)),
+                totalQuantity,
+                discount: 0
+              };
+            }
+          } else {
+            return {
+              message: "Invalid or inactive coupon code",
+              subTotal: parseFloat(subTotal.toFixed(2)),
+              finalPrice: parseFloat(finalPrice.toFixed(2)),
+              totalQuantity,
+              discount: 0
+            };
+          }
+        }
+  
+        return {
+          subTotal: parseFloat(subTotal.toFixed(2)),
+          finalPrice: parseFloat(finalPrice.toFixed(2)),
+          totalQuantity,
+          discount: parseFloat(discount.toFixed(2))
+        };
       }
   
-      return {  subTotal: 0,finalPrice: 0, totalQuantity: 0, discount: 0 };
-  
+      return { subTotal: 0, finalPrice: 0, totalQuantity: 0, discount: 0 };
     } catch (error) {
-
       console.log(`Error while calculating the price details: ${error.message}`);
-     
+      return { error: error.message };
     }
-
-    
   };
-
 
 //loading cart page
 const loadCart = async (req,res) =>{
@@ -664,6 +651,7 @@ const loadCart = async (req,res) =>{
             const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}) .populate('items.product').exec();
 
             const { finalPrice,subTotal } =  await priceSummary(cartDetailsForPriceCalculation)
+            
             
             const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
 
@@ -1332,6 +1320,7 @@ const placeOrder = async (req,res) =>{
     
         })
     
+        
         const transactionsData = await newTransaction.save()
 
       }else{
@@ -1403,7 +1392,7 @@ const placeOrder = async (req,res) =>{
     } else {
         return res.status(500).json({
             success: false,
-            message: 'Failed to place order',
+            message: 'Failed to place order'
         });
     }
        
@@ -1415,6 +1404,18 @@ const placeOrder = async (req,res) =>{
 
 }
 
+const loadPaymentFailure = async (req,res) =>{
+
+    try {
+
+        return res.status(200).render("user/paymentFailure")
+        
+    } catch (error) {
+        
+        console.log(`error while loading the payment failure page`,error.message);
+        
+    }
+}
 const loadPlaceOrder = async (req, res) => {
     try {
         let userFromGidSessionOrSession 
@@ -1471,16 +1472,30 @@ const loadOrders = async (req, res) => {
       
         const skip = (pageNumber - 1) * perPageData;
 
+     
         const orderData = await orders.find({ user: userFromGidSessionOrSession })
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(perPageData)
             .exec();
 
+            const transactions = await transaction.find({
+                orderId: { $in: orderData.map(order => order._id) }
+            }).exec();
+    
+            const orderDataWithTransactions = orderData.map(order => {
+                const transaction = transactions.find(t => t.orderId.toString() === order._id.toString());
+                return {
+                    ...order.toObject(),
+                    transaction: transaction || {}
+                };
+            });
+
         return res.status(200).render("user/orders", {
-            orderData: orderData,
+            orderData: orderDataWithTransactions,
             totalPages: totalPages,
-            currentPage: pageNumber
+            currentPage: pageNumber,
+          
         });
 
     } catch (error) {
@@ -2013,8 +2028,8 @@ const loadWishList = async (req, res) => {
         }
 
         const productIds = wishListOfUser.productIds || []
-        const productData = await products.find({ _id: { $in: productIds } });
-
+        const productData = await products.find({ _id: { $in: productIds } }).populate('category') 
+        
         return res.status(200).render("user/wishList", { productData });
 
     } catch (error) {
@@ -2527,6 +2542,139 @@ const ResetPassword = async (req,res) =>{
     }
 }
 
+const handleOnlinePaymentFailure = async (req,res) =>{
+
+    try {
+
+        const { paymentId, orderId } = req.body
+
+        console.log(`payment failed`, paymentId, orderId)
+
+        const transactionsData = await transaction.findOneAndUpdate(
+            { onlinePaymentOrderId: orderId },  
+            { $set: { paymentStatus: "failed" } },  
+            { new: true }  
+        );
+
+       
+        console.log(`Transaction data updated:`, transactionsData);
+
+        if (!transactionsData) {
+         
+            return res.status(404).json({ message: "Cannot find transaction data for cancellation", success: false });
+        }
+
+       return res.status(200).json({ message: "Payment status updated to failed", success: true });
+        
+        
+    } catch (error) {
+        
+
+        console.log(`error while checking the onlinepayment failure`,error.message);
+
+        return res.status(500).json({message:"error occured",success:false})
+        
+    }
+}
+const loadRetryOrderCheckout = async (req,res) =>{
+
+    try {
+
+    let userFromGidSessionOrSession 
+
+    if(req.session.userId){
+
+        userFromGidSessionOrSession = new ObjectId(req.session.userId);
+
+    }else if(req.user){
+
+        userFromGidSessionOrSession =  new ObjectId(req.user.id);
+
+    }
+    if (!userFromGidSessionOrSession) {
+        return res.status(400).json({
+            success: false,
+            message: 'User not found'
+        });
+    }
+
+    const orderId = req.query.orderId;
+
+    console.log(`Retrying order with ID: ${orderId}`);
+
+    const orderData = await orders.findOne({_id:orderId})
+
+    console.log(`this is the order Data for retrying the order`,orderData)
+
+    return res.status(200).render("user/retryCheckout",{orderData:orderData})
+
+
+    } catch (error) {
+
+        console.log(`error while loading the checkout page for retrying order`,error.message);
+        
+        return res.status(500).send("Internal server error")
+    }
+}
+const retryOrderPayment = async (req,res) =>{
+
+    try {
+
+        const {orderId} = req.body
+
+        console.log(`order id received for payment retry`,orderId);
+
+        const orderIdOfTheOrder = new ObjectId(orderId)
+
+        const orderData = await orders.findOne({_id:orderIdOfTheOrder})
+
+        const transactionsDataOfTheOrder = await transaction.findOne({orderId:orderIdOfTheOrder})
+
+        console.log(`this is the transaction data of the order`,transactionsDataOfTheOrder);
+        
+        let razorPayOrder
+
+        const totalAmount = orderData.totalAmount
+        
+        if(orderData.paymentMethod==="razorPay"){
+
+            razorPayOrder = await createRazorPayOrder(totalAmount)
+
+            if (!razorPayOrder||!razorPayOrder.id) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to create Razorpay order',
+                });
+            }
+
+            orderData.onlinePaymentOrderId = razorPayOrder.id
+            transactionsDataOfTheOrder.onlinePaymentOrderId = razorPayOrder.id
+            transactionsDataOfTheOrder.paymentStatus = "paid"
+    
+            
+
+        }
+
+       const changedOrderData =  await orderData.save()
+       const changedTransactionData =   await transactionsDataOfTheOrder.save()
+
+        return res.status(200).json({
+
+            success:true,
+            message:"Razor pay order created",
+            RAZORPAY_ID_KEY:RAZORPAY_ID_KEY,
+            amount:changedOrderData.totalAmount,
+            razorPayOrderPaymentId:changedOrderData.onlinePaymentOrderId
+
+        })
+        
+    } catch (error) {
+
+        console.log(`error while changing the status of the payment on retry order`,error.message)
+        return res.status(500).json({success: false,message: 'Failed to retry Payment'});
+        
+    }
+}
 module.exports = {
 
   // user authentication
@@ -2557,6 +2705,8 @@ module.exports = {
     loadOrders,
     loadWishList,
     loadWallet,
+    loadPaymentFailure,
+    loadRetryOrderCheckout,
 
   // user profile management
 
@@ -2605,6 +2755,9 @@ module.exports = {
     loadForgotPassword,
     handleForgotPassword,
     loadResetPassword,
-    ResetPassword
-  
+    ResetPassword,
+
+    handleOnlinePaymentFailure,
+    retryOrderPayment
+    
 }

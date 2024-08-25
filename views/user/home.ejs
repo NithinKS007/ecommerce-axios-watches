@@ -35,7 +35,16 @@
                 justify-content: center; 
             }
 
+        .product-cart-wrap {
+         border: none;
+        box-shadow: none; 
+       }
+                            
+      .product-cart-wrap:hover {
+        box-shadow: none; 
+       }
 
+               
            
             </style>
             <section class="product-tabs section-padding position-relative wow fadeIn animated">
@@ -61,6 +70,9 @@
                                                                 <img class="default-img"
                                                                     src="/productImages/<%= productsArray[i]?.images[0]?.filename %>"
                                                                     alt="">
+                                                                    <% for (let j = 1; j < productsArray[i].images.length; j++) { %>
+                                                                        <img class="hover-img" src="/productImages/<%= productsArray[i].images[j]?.filename %>" alt="Product Image">
+                                                                    <% } %>
                                                             </a>
                                                         </div>
                                                 
@@ -94,9 +106,9 @@
                                                                 <%= productsArray[i].name %>
                                                             </a></h5>
                                                         <div class="rating-result" title="90%">
-                                                            <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage&&new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount!==0&&productsArray[i].productOffer.offerStatus) { %>
+                                                            <% if (productsArray[i]?.productOffer && productsArray[i]?.productOffer?.offerDiscountPercentage&&new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus) { %>
                                                                 <span>
-                                                                    <span><%= productsArray[i].productOffer.offerDiscountPercentage %> % </span>
+                                                                    <span><%= productsArray[i]?.productOffer?.offerDiscountPercentage %> % </span>
                                                                 </span>
                                                             <% } else { %>
                                                                 <!-- <span>90%</span> -->
@@ -108,7 +120,7 @@
                                                                 
                                                                 <span style="color: red;">Currently Unavailable</span>
                                                                 <%} else { %>
-                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount !==0 && productsArray[i].productOffer.offerStatus) { %>
+                                                                    <% if (productsArray[i]?.productSalesPriceAfterOfferDiscount  && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount !==0 && productsArray[i]?.productOffer?.offerStatus) { %>
 
                                                                         <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
 

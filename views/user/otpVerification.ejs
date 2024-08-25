@@ -52,6 +52,14 @@
   //countdown for the otp page
 
   const startTimer = (n) => {
+
+    const expiration = sessionStorage.getItem('otpExpiration');
+    const now = Date.now();
+    if (expiration) {
+    n = Math.max(0, Math.floor((parseInt(expiration) - now) / 1000));
+  } else {
+    sessionStorage.setItem('otpExpiration', now + n * 1000);
+  }
     if (n <= 0) {
       document.getElementById("countdown").textContent = "Time's up ";
       document.getElementById("verifyButton").style.display = "none";
@@ -62,18 +70,26 @@
       document.getElementById(
         "countdown"
       ).textContent = ` Time remaining : ${n} seconds`;
-
       setTimeout(() => {
         startTimer(n);
       }, 1000);
     }
   };
 
-  startTimer(15);
+  startTimer(60);
 
   //on clicking the resend otp button
 
   document.addEventListener("DOMContentLoaded", () => {
+
+    const expiration = sessionStorage.getItem('otpExpiration');
+  if (expiration) {
+    const remaining = Math.max(0, Math.floor((parseInt(expiration) - Date.now()) / 1000));
+    startTimer(remaining);
+  } else {
+    startTimer(60);
+  }
+
     const resendButton = document.getElementById("resendotp");
 
     resendButton.addEventListener("click", () => {
@@ -86,7 +102,8 @@
           return response.json(); //is not necessary but this block will return to the next then block written below
         })
         .then((data) => {
-          startTimer(15);
+          sessionStorage.removeItem('otpExpiration');
+          startTimer(60);
           document.getElementById("verifyButton").style.display = "block";
           document.getElementById("resendContainer").style.display = "none";
         })

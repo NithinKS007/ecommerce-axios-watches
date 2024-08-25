@@ -87,6 +87,10 @@ userRoute.delete("/wishList",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isU
 
 //online payment verify route
 userRoute.post("/verifyOnlinePayment",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.verifyOnlinePayment)
+userRoute.get("/paymentFailure",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.loadPaymentFailure)
+userRoute.patch("/paymentFailure",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.handleOnlinePaymentFailure)
+userRoute.get("/retryPayment",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.loadRetryOrderCheckout)
+userRoute.patch("/retryPayment",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.retryOrderPayment)
 
 //wallet route
 userRoute.get("/wallet",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userController.loadWallet)
@@ -99,6 +103,12 @@ userRoute.get("/forgotPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogo
 userRoute.patch("/forgotPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.handleForgotPassword)
 userRoute.get("/resetPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.loadResetPassword)
 userRoute.patch("/resetPassword",noCacheMid.noCacheMiddleware,userAuth.isUserLogout,userController.ResetPassword)
+
+userRoute.get("/hello",(req,res)=>{
+
+    return res.render("user/404")
+})
+
 
 
 module.exports = userRoute  

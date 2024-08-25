@@ -26,7 +26,15 @@
           position: sticky;
           top: 0;
         }
-
+        .table-responsive .btn {
+    width: 120px !important;
+    height: 40px !important;
+    font-size: 14px !important;
+    padding: 0.5rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
         </style>
 
         <section class="content-main">
@@ -101,7 +109,7 @@
 
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-                                  <button
+                                  <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;"
                                     onclick="editCategory('<%= categoriesData[i]._id %>','<%= categoriesData[i].name %>','<%= categoriesData[i].description %>')"
                                     id="editCategoryButton" type="button"
                                     class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory">
@@ -110,7 +118,7 @@
 
                                   <% if(categoriesData[i].isBlocked) { %>
 
-                                    <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
+                                    <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                       id="softDeleteButton<%= categoriesData[i]._id %>"
                                       class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
                                       List
@@ -118,7 +126,7 @@
 
                                     <% } else { %>
 
-                                      <button onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
+                                      <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
                                         id="softDeleteButton<%= categoriesData[i]._id %>"
                                         class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
                                         Unlist
@@ -205,14 +213,14 @@
                               </td>
                               <td class="text-end">
                                 <div class="d-flex justify-content-end">
-                                  <button onclick="editBrand('<%= brandsData[i]._id %>','<%= brandsData[i].name %>')"
+                                  <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="editBrand('<%= brandsData[i]._id %>','<%= brandsData[i].name %>')"
                                     id="editBrandButton" type="button"
                                     class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand">
                                     Edit info
                                   </button>
                                   <% if(brandsData[i].isBlocked) { %>
 
-                                    <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
+                                    <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                       id="softDeleteButton<%=  brandsData[i]._id %>"
                                       class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
                                       List
@@ -220,7 +228,7 @@
 
                                     <% } else { %>
 
-                                      <button onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
+                                      <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
                                         id="softDeleteButton<%=  brandsData[i]._id %>"
                                         class="btn btn-danger  rounded btn-sm font-sm flex-fill mx-1">
                                         Unlist
@@ -482,7 +490,7 @@ if(!(isValidateCategoryName&&isValidateCategoryDescription)){
       cancelButtonText: 'No, cancel',
       reverseButtons: true
     });
-    const cExists = await categoryExists(id,categoryName);
+    const cExists = await categoryExists(categoryName,id);
 
     if (result.isConfirmed) {
       if (cExists) {
@@ -594,7 +602,7 @@ if (!(isValidateBrandName)) {
           cancelButtonText: 'No, cancel',
           reverseButtons: true
         });
-        const bExists = await brandExists(id,brandName)
+        const bExists = await brandExists(brandName,id)
 
              
 
@@ -737,11 +745,17 @@ if (!(isValidateBrandName)) {
           brandNameInput.addEventListener("input", validateBrandName);
 
           //checking for existing category 
-          const categoryExists = async (id,categoryName) => {
+          const categoryExists = async (categoryName,id) => {
+
+          
+          console.log(`hello its recieived`,categoryName);
 
             try {
 
               const encodedCName = encodeURIComponent(categoryName);
+
+              console.log(`this is the name i'm sending`,encodedCName);
+            
 
               const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
 
@@ -784,6 +798,8 @@ if (!(isValidateBrandName)) {
 
             const categoryName = categoryNameInput.value.trim();
 
+            console.log(`this is the name create `,categoryName);
+            
             if(!(isValidateCategoryName&&isValidateCategoryDescription)){
 
               console.log(`entered in category adding validation`);
@@ -836,7 +852,7 @@ if (!(isValidateBrandName)) {
 
           //checking for existing brand
 
-          const brandExists = async (id,brandName) => {
+          const brandExists = async (brandName,id) => {
 
             try {
 

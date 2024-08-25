@@ -46,7 +46,20 @@ const verifyRazorPaySignature = async (orderId,paymentId,signature) =>{
 
     const text = orderId + '|' + paymentId
 
+    console.log(`Order ID: ${orderId}, Payment ID: ${paymentId}, Signature: ${signature}`);
+
+
     const generateSignature = crypto.createHmac("sha256",RAZORPAY_SECRECT_KEY).update(text).digest("hex")
+
+    const transactionsData = await transaction.findOne({onlinePaymentOrderId:paymentId})
+
+    if(generateSignature===signature){
+
+        transactionsData.paymentStatus = "paid"
+
+       await transactionsData.save()
+    
+    }
 
     return generateSignature === signature
 

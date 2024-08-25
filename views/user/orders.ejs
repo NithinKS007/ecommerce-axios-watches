@@ -2,10 +2,21 @@
 <%- include('../layouts/userLayouts/navbar1') %>
 <style>
    
-    .swal2-confirm,
+    .swal2-confirm {
+
+        width: 400px; 
+        margin: 5px 10px; 
+        color: white !important; 
+        border: 1px solid black !important;
+        border-radius: 5px !important;
+    }
     .swal2-cancel {
         width: 400px; 
         margin: 5px 10px; 
+        color: #000 !important; 
+        border: 1px solid black !important;
+        border-radius: 5px !important;     
+       
     }
 @media (max-width: 768px) {
     .swal2-confirm,
@@ -45,11 +56,23 @@
                                                         <p class="mb-1"><strong>Total:</strong> Rs <%= order.totalAmount %></p>
                                                         <p class="mb-1"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
                                                         <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                                        <p class="mb-1"><strong>Online Payment Status:</strong> <%= order.transaction.paymentStatus || 'N/A' %></p>
                                                     </div>
                                                     <div id="orderStatus<%= order._id %>" class="text-warning">
                                                         <strong><%= order.orderStatus.toUpperCase() %></strong>
                                                     </div>
+                                                    <div>
+                                                        <% if (order.transaction.paymentStatus === 'failed') { %>
+                                                            <form action="/retryPayment" method="GET" class="d-inline">
+                                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                    Retry
+                                                                </button>
+                                                            </form>
+                                                        <% } %>
+                                                    </div>
                                                 </div>
+                                                
                                                 <div id="orderDetails-<%= order._id %>" class="collapse">
                                                     <hr>
                                                     <div class="scrollable-content" style="max-height: 300px; overflow-y: auto;">
@@ -62,7 +85,7 @@
                                                         
                                                     </div>
 
-
+                                                  
                                                     <% order.items.forEach(item => { %>
                                                         <div class="d-flex mb-3">
                                                             <div class="flex-shrink-0 me-3" style="width: 50px;">
@@ -92,6 +115,7 @@
                                                             <div>
                                                                
                                                               <!-- Disable Cancel Button for returnInitiated, returnApproved, returnRejected statuses -->
+                                                              <% if (order.transaction.paymentStatus !== 'failed') { %> 
                                                             <% if (['returnInitiated', 'returnApproved', 'returnRejected'].includes(item.orderProductStatus)) { %>
                                                                
                                                                 <button id="cancelProductButton<%= item._id %>" class="btn btn-sm individualCancel" disabled>
@@ -116,17 +140,18 @@
                                                                 </button>
                                                             <% } %>
    
-                                                              
+                                                            <% } %>
                                                             </div>
                                                         </div>
                                                     <% }); %>
                                                     <div class="mb-3">
                                                         <p class="mb-1"><strong>Subtotal:</strong> Rs <%= order.subTotalAmount %></p>
-                                                        <p class="mb-1"><strong>Discount:</strong> Rs <%= order.discountAmount %></p>
+                                                        <p class="mb-1"><strong>Coupon Discount:</strong> Rs <%= order.discountAmount %></p>
                                                         <p class="mb-1"><strong>Total:</strong> Rs <%= order.totalAmount %></p>
                                                         <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                                     </div>
                                                     <div class="text-end">
+                                                        <% if (order.transaction.paymentStatus !== 'failed') { %> 
                                                         <% const shouldDisableCancelOrder = order.items.some(item => ['returnInitiated', 'returnApproved', 'returnRejected'].includes(item.orderProductStatus)); %>
                                                         <% if (order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled') { %>
                                                            <button class="btn btn-secondary btn-sm" onclick="getInvoice('<%= order._id %>')">Invoice</button>
@@ -142,6 +167,7 @@
 
                                                             </button>
                                                             
+                                                        <% } %>
                                                         <% } %>
                                                     </div>
                                                 </div> 
@@ -277,8 +303,8 @@ const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
                 </select>
             `,
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: '#ff0000',
+            cancelButtonColor: '#ffffff',
             confirmButtonText: 'Return Product',
             cancelButtonText: 'Cancel',
           
@@ -399,10 +425,10 @@ const returnProduct = async (itemId,productId,orderId, orderProductStatus) => {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You are about to cancel this product.",
-                icon: 'warning',
+               
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#000000',
+                cancelButtonColor: '#ffffff',
                 confirmButtonText: 'Yes, cancel it!'
             }).then((result)=>{
 

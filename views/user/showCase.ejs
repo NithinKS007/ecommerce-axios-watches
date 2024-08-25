@@ -34,7 +34,17 @@
             justify-content: center; 
         }
 
+ 
+     .product-cart-wrap {
+         border: none;
+        box-shadow: none; 
+       }
+                            
+      .product-cart-wrap:hover {
+        box-shadow: none; /* Removes any box-shadow on hover */
+       }
 
+                        
  
     </style>
     <div class="page-header breadcrumb-wrap">
@@ -130,11 +140,7 @@
                                 </div>
                             </div>
                         </div>
-                
-
-
-                      
-
+                                        
                         <div class="col-lg-9">
                             <div class="tab-content wow fadeIn animated" id="myTabContent">
                                 <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
@@ -153,7 +159,9 @@
                                                                         src="/productImages/<%= productsArray[i].images[0]?.filename %>"
                                                                         alt="">
 
-
+                                                                        <% for (let j = 1; j < productsArray[i].images.length; j++) { %>
+                                                                            <img class="hover-img" src="/productImages/<%= productsArray[i].images[j]?.filename %>" alt="Product Image">
+                                                                        <% } %>
                                                                 </a>
                                                             </div>
                                                             <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
@@ -185,9 +193,9 @@
                                                                     <%= productsArray[i].name %>
                                                                 </a></h5>
                                                             <div class="rating-result" title="90%">
-                                                                <% if (productsArray[i].productOffer && productsArray[i].productOffer.offerDiscountPercentage && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date() && productsArray[i].productSalesPriceAfterOfferDiscount!==0 && productsArray[i].productOffer.offerStatus ) { %>
+                                                                <% if (productsArray[i]?.productOffer && productsArray[i]?.productOffer?.offerDiscountPercentage && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date() && productsArray[i]?.productSalesPriceAfterOfferDiscount!==0 && productsArray[i]?.productOffer?.offerStatus ) { %>
                                                                     <span>
-                                                                        <span><%= productsArray[i].productOffer.offerDiscountPercentage %> % </span>
+                                                                        <span><%= productsArray[i]?.productOffer?.offerDiscountPercentage %> % </span>
                                                                     </span>
                                                                 <% } else { %>
                                                                     <!-- <span>90%</span> -->
@@ -200,13 +208,13 @@
                                                                     <span style="color: red;">Currently Unavailable</span>
                                                                     
                                                                 <% } else { %>
-                                                                    <% if (productsArray[i].productSalesPriceAfterOfferDiscount  && new Date(productsArray[i].productOffer.offerExpiryDate) > new Date()&&productsArray[i].productSalesPriceAfterOfferDiscount!==0&&productsArray[i].productOffer.offerStatus) { %>
+                                                                    <% if (productsArray[i]?.productSalesPriceAfterOfferDiscount  && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus) { %>
 
-                                                                        <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
+                                                                        <span>₹ <%= productsArray[i]?.productSalesPriceAfterOfferDiscount %></span>
 
                                                                         <% } else { %>
 
-                                                                        <span>₹ <%=productsArray[i].salesPrice %></span>
+                                                                        <span>₹ <%=productsArray[i]?.salesPrice %></span>
                                                                         
                                                                     <% } %>
                                                                     
@@ -305,15 +313,15 @@
                                                     <span style="color: red; font-size: 15px;">Currently Unavailable</span>
                                                 <% } else { %>
 
-                                                    <% if (latestProducts[i].productSalesPriceAfterOfferDiscount  && new Date(latestProducts[i].productOffer.offerExpiryDate) > new Date()&&latestProducts[i].productSalesPriceAfterOfferDiscount !==0 && latestProducts[i].productOffer.offerStatus) { %>
+                                                    <% if (latestProducts[i]?.productSalesPriceAfterOfferDiscount  && new Date(latestProducts[i]?.productOffer?.offerExpiryDate) > new Date()&&latestProducts[i]?.productSalesPriceAfterOfferDiscount !==0 && latestProducts[i]?.productOffer?.offerStatus) { %>
 
-                                                        <span>₹ <%= latestProducts[i].productSalesPriceAfterOfferDiscount %></span>
+                                                        <span>₹ <%= latestProducts[i]?.productSalesPriceAfterOfferDiscount %></span>
 
-                                                        <span class="old-price">₹ <%= latestProducts[i].salesPrice %></span>
+                                                        <span class="old-price">₹ <%= latestProducts[i]?.salesPrice %></span>
 
                                                     <% } else { %>
 
-                                                        <span>₹ <%=latestProducts[i].salesPrice %></span>
+                                                        <span>₹ <%=latestProducts[i]?.salesPrice %></span>
                                                         
                                                     <% } %>
                                                    
@@ -406,9 +414,7 @@ const updateProductDisplay = (data) =>{
                                     <img class="default-img" src="/productImages/${product.images[0]?.filename}" alt="">
                                 </a>
                             </div>
-                            <div class="product-action-1">
-                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
-                            </div>
+                            
                         </div>
                         <div class="product-content-wrap">
                             <div class="product-category">

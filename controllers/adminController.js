@@ -15,6 +15,7 @@ const returnUserOrder = require('../models/returnOrderModel')
 const wallet = require('../models/walletModel')
 const dayjs = require('dayjs');
 const order = require('../models/orderModel');
+const transactionOnline = require('../models/onlineTransactionModel')
 
 //hashing password
 const securePassword = async(password) =>{
@@ -909,9 +910,13 @@ const categoryExists = async (req, res) => {
 
     const { encodedCName,categoryId } = req.query;
 
-    const escapedCName = escapeRegExp(encodedCName);
-
-    console.log('Entered in existing category checking function:', escapedCName);
+    console.log(`Received category name: ${encodedCName}`);
+    console.log(`Received category ID: ${categoryId}`);
+    
+    const decodedCName = decodeURIComponent(encodedCName)
+    const escapedCName = escapeRegExp(decodedCName);
+    
+    console.log('this is the regex:', escapedCName);
 
     try {
 
@@ -1305,10 +1310,11 @@ const loadOrderDetailsPage = async (req, res) => {
         console.log(`this is the order id coming from the front end`,orderId);
 
         const userOrderDataDetails = await orders.findOne({ _id:orderId }).populate("user")
+        const transactionDetailsOftheOnlinePaymentOrder = await transactionOnline.findOne({orderId:orderId})
         
-        console.log(`this is the order details of that particular order`,userOrderDataDetails);
+        console.log(`this is the order details of that particular order`,userOrderDataDetails,transactionDetailsOftheOnlinePaymentOrder);
 
-        return res.render("admin/orderDetailsPage", { userOrderDataDetails});
+        return res.render("admin/orderDetailsPage", { userOrderDataDetails,transactionDetailsOftheOnlinePaymentOrder});
 
     } catch (error) {
 
@@ -1924,8 +1930,10 @@ const loadCategoryOffer = async (req,res) =>{
 const loadAddCategoryOffer = async (req,res) =>{
 
     try {
-        
-        const categoriesData= await categories.find({})
+        const currentDate = new Date();
+        const categoriesData= await categories.find({$or: [
+            
+            { "categoryOffer.offerExpiryDate": { $lt: currentDate } },  { "categoryOffer": { $exists: false } }]})
 
         return res.status(200).render("admin/addCategoryOffer",{categoriesData:categoriesData})
 
@@ -1988,7 +1996,7 @@ const addCategoryOffer = async (req,res) =>{
             const originalPriceOfTheProduct = product.salesPrice
             const newDiscountedPriceAfterApplyingCategoryOffer = originalPriceOfTheProduct - (originalPriceOfTheProduct * (discountPercentage / 100))
 
-            if(product.productSalesPriceAfterOfferDiscount < newDiscountedPriceAfterApplyingCategoryOffer){
+            if(product.productSalesPriceAfterOfferDiscount > newDiscountedPriceAfterApplyingCategoryOffer){
 
                 await products.findByIdAndUpdate(
 
@@ -1996,10 +2004,16 @@ const addCategoryOffer = async (req,res) =>{
                     {
                         $set:{
 
-                            "productSalesPriceAfterOfferDiscount":newDiscountedPriceAfterApplyingCategoryOffer
+                            "productSalesPriceAfterOfferDiscount":newDiscountedPriceAfterApplyingCategoryOffer,
+                            "productOffer.offerDiscountPercentage":discountPercentage,
+                            "productOffer.offerStartDate": startDate,
+                            "productOffer.offerExpiryDate":expiryDate,
+                            "productOffer.offerStatus":true
                         }
                     }
 
+                    ,
+                  
                 )
             }
 
@@ -2033,30 +2047,41 @@ const activateDeactivateCategoryOffer = async (req,res) =>{
 
         }
 
-        if(categoryData.categoryOffer.offerStatus){
+        const newOfferStatus = !categoryData.categoryOffer.offerStatus
 
-            const updatedCategoryOfferStatus = await categories.findByIdAndUpdate({_id:categoryId},{$set:{"categoryOffer.offerStatus":false}},{new:true})
+       const updatedCategoryOfferStatus = await categories.findByIdAndUpdate(
+            categoryId,
+            { "categoryOffer.offerStatus": newOfferStatus },
+            { new: true }
+        );
+        
+        const productsInCategory = await products.find({ category: categoryId })
 
-            console.log(`Deactivated category offer from the backend category offer status to false`)
-            return res.status(200).json({
-                success:true,
-                message:"Category offer status set to false",
-                updatedCategoryOfferStatus:updatedCategoryOfferStatus
-            })
+        for(const product of productsInCategory){
 
-        }else{
+            let s = product.salesPrice;
+            let d = (categoryData.categoryOffer.offerDiscountPercentage / 100) * s
+            let v = s - d
+            
+            if(v === product.productSalesPriceAfterOfferDiscount){
 
-            const updatedCategoryOfferStatus = await categories.findByIdAndUpdate({_id:categoryId},{$set:{"categoryOffer.offerStatus":true}},{new:true})
-            console.log(`Activated category offer from the backend category offer status to true`)
-            return res.status(200).json({
-                success:true,
-                message:"Category offer status set to true",
-                updatedCategoryOfferStatus:updatedCategoryOfferStatus
-            })
+                await products.findByIdAndUpdate(
+                    product._id,
+                    {
 
+                        "productOffer.offerStatus":newOfferStatus
+
+                    },
+                    { new: true }
+                );
+            }
         }
-        
-        
+    
+        return res.status(200).json({
+            success: true,
+            message: `Category offer status set to ${newOfferStatus}`,
+            updatedCategoryOfferStatus: updatedCategoryOfferStatus
+        });
     } catch (error) {
         
         console.log(`error while changing the status of the category offer`,error.message)
@@ -2095,14 +2120,58 @@ const editCategoryOffer = async (req,res) =>{
 
         console.log(`this is the category offer details for editing the offer`,categoryId,offerName, discountPercentage, expiryDate);
         
-        const categoryData = await categories.findById(categoryId)
+        if (!categoryId || !offerName || !discountPercentage || !expiryDate) {
 
-        console.log(`for editing purpose`,categoryData);
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        const categoryData = await categories.findById(categoryId)
         
         if(!categoryData){
 
-          return  res.status(400).json({success:false,message:"No category found"})
+          return  res.status(400).json({success:false,message:"Category not found"})
         }
+
+        const productsData = await products.find({ category: categoryId });
+
+        if (!productsData.length) {
+
+            return res.status(400).json({ success: false, message: "No products found in this category" });
+
+        }
+
+        const updatedCategory = await categories.findByIdAndUpdate(
+            { _id: categoryId },
+            {
+                $set: {
+                    "categoryOffer.offerName": offerName,
+                    "categoryOffer.offerDiscountPercentage": discountPercentage,
+                    "categoryOffer.offerExpiryDate": expiryDate,
+                }
+            },
+            { new: true }
+        );
+        productsData.forEach(async (product) => {
+            const originalPriceOfTheProduct = product.salesPrice;
+            const newDiscountedPriceAfterApplyingCategoryOffer = originalPriceOfTheProduct - (originalPriceOfTheProduct * (discountPercentage / 100));
+
+            if (product.productSalesPriceAfterOfferDiscount > newDiscountedPriceAfterApplyingCategoryOffer) {
+                await products.findByIdAndUpdate(
+                    { _id: product._id },
+                    {
+                        $set: {
+                            "productSalesPriceAfterOfferDiscount": newDiscountedPriceAfterApplyingCategoryOffer,
+                            "productOffer.offerDiscountPercentage":discountPercentage,
+                            "productOffer.offerExpiryDate":expiryDate,
+
+                        }
+                    }
+                );
+            }
+        });
+
+        return res.status(200).json({ success: true, message: "Category offer updated successfully", updatedCategory });
+
     } catch (error) {
         
         console.log(`error while editing the category offer`,error.message);
@@ -2132,8 +2201,8 @@ const loadProductOffer = async (req,res) =>{
 const loadAddProductOffer = async (req,res) =>{
 
     try {
-        
-        const productsData = await products.find({})
+        const currentDate = new Date();
+        const productsData = await products.find({ })
 
         return res.status(200).render("admin/addProductOffer",{productsData:productsData})
 
@@ -2148,9 +2217,9 @@ const addProductOffer = async (req,res) =>{
 
     try {
 
-        const { offerName, product, discountPercentage, startDate, expiryDate, status } = req.body;
+        const { offerName, product, discountPercentage, startDate, expiryDate} = req.body;
 
-        console.log(`Offer details received:`, offerName, product, discountPercentage, startDate, expiryDate, status);
+        console.log(`Offer details received:`, offerName, product, discountPercentage, startDate, expiryDate);
 
         // Validation
         if (!offerName || !product || !discountPercentage || !startDate || !expiryDate) {
@@ -2178,7 +2247,7 @@ const addProductOffer = async (req,res) =>{
 
 
 
-        if(discountPercentage<=categoryData.categoryOffer.offerDiscountPercentage&& new Date(categoryData.categoryOffer.offerExpiryDate) < new Date()){
+        if(discountPercentage<=categoryData?.categoryOffer?.offerDiscountPercentage&& new Date(categoryData?.categoryOffer?.offerExpiryDate) < new Date()){
 
 
            return res.status(400).send("product already has a better offer and is not expired")
@@ -2212,7 +2281,7 @@ const addProductOffer = async (req,res) =>{
         
     } catch (error) {
         
-        console.log(`error while adding offer to category`,error.message);
+        console.log(`error while adding offer to product`,error.message);
         
         return res.send("Internal server error")
     }
@@ -2261,6 +2330,90 @@ const activateDeactivateProductOffer = async (req,res) =>{
         return res.status(500).send("Internal server Error")
     }
 }
+const loadEditProductOffer = async (req,res) =>{
+
+    try {
+
+        const {productId} = req.query
+
+        const productData = await products.findOne({_id:productId})
+
+        return res.status(200).render("admin/editProductOffer",{productData:productData})
+
+    } catch (error) {
+        
+        console.log(`error while loading the product offer`,error.message);
+        
+    }
+}
+const editProductOffer = async (req,res) =>{
+
+    try {
+
+        const {productId,offerName,discountPercentage, expiryDate} = req.body
+
+        console.log(`this is the product offer details for editing the offer`,productId,offerName, discountPercentage, expiryDate);
+        
+        if (!productId || !offerName || !discountPercentage || !expiryDate) {
+
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        const productGivenId = new ObjectId(productId)
+
+        const productData = await products.findById(productGivenId)
+
+        if(!productData){
+
+            return res.status(404).send("Product not found");
+
+        }
+
+        const categoryData = await categories.findOne({_id:productData.category})
+
+        if(!categoryData){
+
+            return res.status(404).send("No category found with the associated product for checking which offer is better")
+
+        }
+        if(discountPercentage<=categoryData.categoryOffer.offerDiscountPercentage&& new Date(categoryData.categoryOffer.offerExpiryDate) < new Date()){
+
+
+            return res.status(400).send("product already has a better offer and is not expired")
+ 
+ 
+         }
+
+         const discountAmount = (productData.salesPrice * discountPercentage) / 100;
+
+         const updatedProduct = await products.findOneAndUpdate(
+            { _id: productId },
+            {
+       
+                $set: {
+                    'productOffer.offerName': offerName,
+                    'productOffer.offerDiscountPercentage': discountPercentage,
+                    'productOffer.offerDiscountAmount': discountAmount,
+                    'productOffer.offerExpiryDate': expiryDate,
+                    productSalesPriceAfterOfferDiscount: productData.salesPrice - discountAmount
+                }
+            },
+
+            { new: true }
+        );
+           
+      console.log(`Product updated successfully and offer applied`, updatedProduct)
+
+        return res.status(200).json({ success: true, message: "Product offer updated successfully", updatedProduct});
+
+    } catch (error) {
+        
+        console.log(`error while editing the category offer`,error.message);
+        
+    }
+}
+
+
 module.exports = {
 
     //admin authentication
@@ -2288,6 +2441,7 @@ module.exports = {
     loadProductOffer,
     loadAddProductOffer,
     loadEditCategoryOffer,
+    loadEditProductOffer,
 
 
     // user management
@@ -2336,6 +2490,7 @@ module.exports = {
     editCategoryOffer,
     addProductOffer,
     activateDeactivateProductOffer,
+    editProductOffer
     
   
 

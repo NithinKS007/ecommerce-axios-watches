@@ -1,6 +1,30 @@
 <%- include('../layouts/adminLayouts/header') %>
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
+<style>
+    /* styles.css */
+
+.payment-status {
+    text-transform: capitalize;
+}
+
+.payment-status.failed {
+    color: red;
+}
+
+.payment-status.paid {
+    color: green;
+}
+
+.payment-status.pending {
+    color: orange; /* Or any color of your choice for pending */
+}
+
+.payment-status.default {
+    color: gray; /* Default color for N/A or unknown status */
+}
+
+</style>
 <main class="main-wrap">
     <%- include('../layouts/adminLayouts/searchbar') %>
     <section class="content-main">
@@ -60,9 +84,18 @@
         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <strong>Payment Method:</strong> <%= userOrderDataDetails.paymentMethod %>
-                                <p><strong>Online Payment Order ID:</strong> <%= userOrderDataDetails.onlinePaymentOrderId || 'N/A' %></p>
+                                <div class="d-flex flex-column">
+                                    <p class="mb-2"><strong>Payment Method:</strong> <%= userOrderDataDetails.paymentMethod %></p>
+                                    <p class="mb-2">
+                                        <strong>Payment Status:</strong>
+                                        <span class="payment-status">
+                                            <%= transactionDetailsOftheOnlinePaymentOrder?.paymentStatus || 'N/A' %>
+                                        </span>
+                                    </p>
+                                    <p><strong>Online Payment Order ID:</strong> <%= userOrderDataDetails?.onlinePaymentOrderId || 'N/A' %></p>
+                                </div>
                             </div>
+                            
                             <div class="col-md-6">
                                 <strong>Delivery date:</strong> 
                                 <%= new Date(new Date(userOrderDataDetails.orderDate).setDate(new Date(userOrderDataDetails.orderDate).getDate() + 5)).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %> 
@@ -110,7 +143,7 @@
                                 <th scope="col">Offer Price</th>
                                 <th scope="col">Offer Percentage</th>
                                 <th scope="col">Total</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Order Product Status</th>
                                 <th scope="col">Date</th>
                             </tr>
                         </thead>

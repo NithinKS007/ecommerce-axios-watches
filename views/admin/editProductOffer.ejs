@@ -20,7 +20,7 @@
                         <!-- Content Header -->
                         <div class="col-12 mb-3">
                             <div class="content-header">
-                                <h2 class="content-title">EDIT CATEGORY OFFER</h2>
+                                <h2 class="content-title">EDIT PRODUCT OFFER</h2>
                             </div>
                         </div>
 
@@ -31,22 +31,22 @@
                                     <h4>Offer Details</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form id="editCategoryOfferForm">
+                                    <form id="editProductOfferForm">
                                         <!-- Offer Name -->
                                         <div class="mb-4">
                                             <label for="offerName" class="form-label">Offer Name</label>
                                             <input type="text" name="offerName"
-                                                value="<%= categoryData.categoryOffer.offerName %>"
+                                                value="<%= productData.productOffer.offerName %>"
                                                 placeholder="Enter offer name" class="form-control" id="offerName" />
                                             <span id="offerNameError" class="error"></span>
                                         </div>
 
                                         <!-- Category -->
                                         <div class="mb-4">
-                                            <label for="category" class="form-label">Category</label>
-                                            <select class="form-select" id="category" name="category" disabled>
-                                                <option value="<%= categoryData.name %>" selected>
-                                                    <%= categoryData.name %>
+                                            <label for="product" class="form-label">Product</label>
+                                            <select class="form-select" id="product" name="product" disabled>
+                                                <option value="<%= productData.name %>" selected>
+                                                    <%= productData.name %>
                                                 </option>
                                             </select>
                                         </div>
@@ -57,7 +57,7 @@
                                             <label for="discountPercentage" class="form-label">Discount
                                                 Percentage</label>
                                             <input type="number" name="discountPercentage"
-                                                value="<%= categoryData.categoryOffer.offerDiscountPercentage %>"
+                                                value="<%= productData.productOffer.offerDiscountPercentage %>"
                                                 placeholder="Enter discount percentage" class="form-control"
                                                 id="discountPercentage" />
                                             <span id="discountPercentageError" class="error"></span>
@@ -67,7 +67,7 @@
                                         <div class="mb-4">
                                             <label for="startDate" class="form-label">Start Date</label>
                                             <input type="date" name="startDate"
-                                                value="<%= categoryData.categoryOffer.offerStartDate.toISOString().split('T')[0] %>"
+                                                value="<%= productData.productOffer.offerStartDate.toISOString().split('T')[0] %>"
                                                 class="form-control" id="startDate" disabled />
                                             <span id="startDateError" class="error"></span>
                                         </div>
@@ -76,12 +76,12 @@
                                         <div class="mb-4">
                                             <label for="expiryDate" class="form-label">Expiry Date</label>
                                             <input type="date" name="expiryDate"
-                                                value="<%= categoryData.categoryOffer.offerExpiryDate.toISOString().split('T')[0] %>"
+                                                value="<%= productData.productOffer.offerExpiryDate.toISOString().split('T')[0] %>"
                                                 class="form-control" id="expiryDate" />
                                             <span id="expiryDateError" class="error"></span>
                                         </div>
 
-                                        <input type="hidden" id="categoryId" value="<%= categoryData._id %>">
+                                        <input type="hidden" id="productId" value="<%= productData._id %>">
     
                                         <!-- Submit Button -->
                                         <div style="display: flex; justify-content: center; padding-top: 15px;">
@@ -158,7 +158,7 @@
                         }
 
                         const offerData = {
-                            categoryId: document.getElementById('categoryId').value,
+                            productId: document.getElementById('productId').value,
                             offerName: document.getElementById('offerName').value,
                             discountPercentage: document.getElementById('discountPercentage').value,
                             expiryDate: document.getElementById('expiryDate').value
@@ -167,7 +167,7 @@
 
                         try {
 
-                            const response = await fetch(`http://localhost:7000/admin/editCategoryOffer`, {
+                            const response = await fetch(`http://localhost:7000/admin/editProductOffer`, {
 
                                 method: 'PUT',
                                 headers: {
@@ -181,12 +181,12 @@
 
                                 console.log('Offer updated successfully:', result);
 
+                                window.location.reload()
+
                             } else {
 
                                 console.error('Failed to update offer:', response.statusText);
 
-                                window.location.reload()
-                                
                             }
 
                         } catch (error) {

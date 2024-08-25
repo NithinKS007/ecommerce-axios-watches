@@ -81,6 +81,8 @@ adminRoute.get("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLog
 adminRoute.get("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddProductOffer)
 adminRoute.post("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addProductOffer)
 adminRoute.patch("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateProductOffer)
+adminRoute.get("/editProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadEditProductOffer)
+adminRoute.put("/editProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.editProductOffer)
 
 
 
