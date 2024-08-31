@@ -285,7 +285,7 @@
                 const addToWishList = async (productId) => {
                     try {
 
-                        const response = await fetch(`http://localhost:7000/wishList`, {
+                        const response = await fetch(`/wishList`, {
 
                             method: 'POST',
                             headers: {
@@ -324,7 +324,7 @@
 
                         console.log('Error adding product to wishlist:', error);
 
-                        window.location.href = "http://localhost:7000/signin"
+                        window.location.href = "/signin"
 
                     }
 
@@ -332,7 +332,7 @@
             //removing product from wishlist
             const removeFromWishList = async (productId) => {
                 try {
-                    const response = await fetch(`http://localhost:7000/wishList`, {
+                    const response = await fetch(`/wishList`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
@@ -385,7 +385,7 @@
 
                 const addToCartButton = document.getElementById("addToCart")
 
-                fetch(`http://localhost:7000/productDetails/`, {
+                fetch(`/productDetails/`, {
 
                     method: "POST",
                     headers: {
@@ -423,7 +423,7 @@
                     addToCartButton.removeAttribute("onclick")
                     addToCartButton.addEventListener("click", () => {
 
-                         window.location.href = "http://localhost:7000/cart"
+                         window.location.href = "/cart"
                     })
 
                     }
@@ -434,7 +434,7 @@
 
                     console.log(`error while fetching the data`, error.message)
             
-                    window.location.href = "http://localhost:7000/signin"
+                    window.location.href = "/signin"
 
                 })
 
@@ -443,7 +443,7 @@
 
             const goToCart = () => {
 
-                window.location.href = "http://localhost:7000/cart"
+                window.location.href = "/cart"
             }
         </script>
 
