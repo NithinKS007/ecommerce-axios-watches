@@ -302,7 +302,7 @@
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
-                  `http://localhost:7000/admin/brandCategoryManagement/?categoryId=${categoryId}`,
+                  `/admin/brandCategoryManagement/?categoryId=${categoryId}`,
                   {
                     method: "PATCH",
                     headers: {
@@ -395,7 +395,7 @@
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
-                  `http://localhost:7000/admin/brandCategoryManagement/?brandId=${brandId}`,
+                  `/admin/brandCategoryManagement/?brandId=${brandId}`,
                   {
                     method: "PATCH",
                     headers: {
@@ -543,7 +543,7 @@ if(!(isValidateCategoryName&&isValidateCategoryDescription)){
       const categoryId = id;
 
       try {
-        const response = await fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
+        const response = await fetch(`/admin/brandCategoryManagement/`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -663,7 +663,7 @@ if (!(isValidateBrandName)) {
         const name = brandNameInput.value;
         const brandId = id;
 
-        const response = await fetch(`http://localhost:7000/admin/brandCategoryManagement/`, {
+        const response = await fetch(`/admin/brandCategoryManagement/`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -793,7 +793,7 @@ if (!(isValidateBrandName)) {
 
             
 
-              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
+              const response = await fetch(`/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
 
                 method: "GET",
                 headers: {
@@ -894,7 +894,7 @@ if (!(isValidateBrandName)) {
 
               const encodedBName = encodeURIComponent(brandName);
 
-              const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedBName=${encodedBName}${id ? `&brandId=${id}` : ''}`, {
+              const response = await fetch(`/admin/brandCategoryExists?encodedBName=${encodedBName}${id ? `&brandId=${id}` : ''}`, {
 
                 method: "GET",
                 headers: {

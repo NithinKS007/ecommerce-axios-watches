@@ -426,7 +426,7 @@
                 const queryString = new URLSearchParams(filterData).toString();
 
 
-                fetch(`http://localhost:7000/filter?${queryString}`, {
+                fetch(`/filter?${queryString}`, {
 
                     method: "GET",
                     headers: {

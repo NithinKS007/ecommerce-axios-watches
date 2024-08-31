@@ -323,7 +323,7 @@
                                 };
 
                                 console.log(`front end password details`, updatedPasswordDetails);
-                                fetch(`http://localhost:7000/profile/`, {
+                                fetch(`/profile`, {
                                     method: "PATCH",
                                     headers: {
                                         "Content-Type": "application/json",
@@ -484,7 +484,7 @@
                                     phone: phoneInput.value,
                                 };
 
-                                fetch(`http://localhost:7000/profile/`, {
+                                fetch(`/profile`, {
                                     method: "PUT",
                                     headers: {
                                         "Content-Type": "application/json",
@@ -500,7 +500,7 @@
                                         return response.json();
                                     })
                                     .then((data) => {
-                                        console.log(`received edited data`, data);
+                                       
                                         if (data.success) {
 
                                             window.location.reload();

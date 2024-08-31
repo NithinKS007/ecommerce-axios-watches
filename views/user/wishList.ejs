@@ -62,7 +62,7 @@
 <script>
      const removeFromWishList = async (productId) => {
                 try {
-                    const response = await fetch(`http://localhost:7000/wishList`, {
+                    const response = await fetch(`/wishList`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'

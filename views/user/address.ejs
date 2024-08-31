@@ -497,7 +497,7 @@
                 email: addressEmailInput.value
             }
 
-            fetch(`http://localhost:7000/editAddress/`,{
+            fetch(`/editAddress`,{
 
                 method:"PUT",
                 headers:{
@@ -609,7 +609,7 @@
 
             if(result.isConfirmed){
 
-                fetch(`http://localhost:7000/address/`,{
+                fetch(`/address`,{
 
                     method:"DELETE",
                     headers:{

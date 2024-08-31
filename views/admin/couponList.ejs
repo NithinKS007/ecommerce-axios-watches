@@ -204,7 +204,7 @@ justify-content: center !important;
                 },
                   }).then((result) => {
                     if (result.isConfirmed) {
-                        fetch(`http://localhost:7000/admin/couponManagement/?couponId=${couponId}`, {
+                        fetch(`/admin/couponManagement/?couponId=${couponId}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json'

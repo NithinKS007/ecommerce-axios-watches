@@ -190,7 +190,7 @@
                   }).then((result) => {
 
                     if (result.isConfirmed) {
-                        fetch(`http://localhost:7000/admin/productOffer/?productId=${productId}`, {
+                        fetch(`/admin/productOffer/?productId=${productId}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json'

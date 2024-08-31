@@ -850,7 +850,7 @@
 
 
 
-                            const dataResponse = await fetch('http://localhost:7000/paymentFailure', {
+                            const dataResponse = await fetch('/paymentFailure', {
                                 method: 'PATCH',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -882,7 +882,7 @@
                                     timer: 3000
                                 }).then(() => {
 
-                                    window.location.href = "http://localhost:7000/paymentFailure";
+                                    window.location.href = "/paymentFailure";
 
                                 });
                             }
@@ -952,7 +952,7 @@
 
                     } else {
 
-                        fetch('http://localhost:7000/checkout', {
+                        fetch('/checkout', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -977,7 +977,7 @@
                                             timer: 3000
                                         }).then(() => {
 
-                                            window.location.href = "http://localhost:7000/placeOrder";
+                                            window.location.href = "/placeOrder";
 
                                         });
 
@@ -1056,7 +1056,7 @@
 
      
 
-                    fetch('http://localhost:7000/verifyOnlinePayment', {
+                    fetch('/verifyOnlinePayment', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1076,7 +1076,7 @@
                                     timer: 3000
                                 }).then(() => {
 
-                                    window.location.href = "http://localhost:7000/placeOrder";
+                                    window.location.href = "/placeOrder";
 
                                 });
 
@@ -1429,7 +1429,7 @@
                             }
 
 
-                            fetch(`http://localhost:7000/editAddress/`, {
+                            fetch(`/editAddress`, {
 
 
                                 method: "PUT",

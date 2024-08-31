@@ -440,7 +440,7 @@
           });
 
           if (imageInput.files.length > 0) {
-            fetch("http://localhost:7000/admin/addProducts", {
+            fetch("/admin/addProducts", {
               method: "POST",
               body: formData,
             })
@@ -676,7 +676,7 @@
 
           const encodedPName = encodeURIComponent(productName) 
 
-          const response = await fetch(`http://localhost:7000/admin/productExists?encodedPName=${encodedPName}`,{
+          const response = await fetch(`/admin/productExists?encodedPName=${encodedPName}`,{
 
             method:"GET",
 

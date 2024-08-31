@@ -76,7 +76,7 @@
     const resendButton = document.getElementById("resendotp");
 
     resendButton.addEventListener("click", () => {
-      fetch("http://localhost:7000/resendOtp", {})
+      fetch("/resendOtp", {})
         .then((response) => {
           if (response.status != 200) {
             throw new Error("Network response was not ok");
@@ -99,9 +99,9 @@
       const verifyButton = document.getElementById("verifyButton");
       const result = document.getElementById("errorInvalid");
 
-      console.log(`this is message from fron end`, otp);
 
-      fetch("http://localhost:7000/verifyOtp", {
+
+      fetch("/verifyOtp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@
         })
         .then((data) => {
           if (data.success) {
-            window.location.href = "http://localhost:7000/home";
+            window.location.href = "/home";
           }
         })
         .catch((error) => {

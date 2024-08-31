@@ -387,7 +387,7 @@ const toggleAndUpdateStatus = () => {
                 const selectedStatus = getOrderStatus();
                 const orderId = document.getElementById('orderDetails').getAttribute('data-order-id');
 
-                fetch('http://localhost:7000/admin/orderDetailsPage', {
+                fetch('/admin/orderDetailsPage', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

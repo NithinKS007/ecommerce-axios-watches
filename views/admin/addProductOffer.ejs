@@ -187,7 +187,7 @@
 
             try {
 
-const response = await fetch(`http://localhost:7000/admin/addProductOffer`, {
+const response = await fetch(`/admin/addProductOffer`, {
 
     method: 'POST',
     headers: {
@@ -214,7 +214,7 @@ if (response.ok) {
             timer: 3000,
         }).then(() => {
            
-            window.location.href = `http://localhost:7000/admin/productOffer`;
+            window.location.href = `/admin/productOffer`;
 
         });
 

@@ -181,7 +181,7 @@
 
             try {
 
-              const response = await fetch(`http://localhost:7000/admin/addCategoryOffer`, {
+              const response = await fetch(`/admin/addCategoryOffer`, {
 
                 method: 'POST',
                 headers: {
@@ -206,7 +206,7 @@
                     timer: 3000,
                   }).then(() => {
 
-                    window.location.href = `http://localhost:7000/admin/categoryOffer`;
+                    window.location.href = `/admin/categoryOffer`;
 
                   });
 

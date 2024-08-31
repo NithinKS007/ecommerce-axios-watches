@@ -198,7 +198,7 @@
      
       try {
 
-        const response = await fetch(`http://localhost:7000/admin/deleteCategoryOffer/`, {
+        const response = await fetch(`/admin/deleteCategoryOffer/`, {
             method: "DELETE",
             headers: {
               'Content-Type': 'application/json',
@@ -256,7 +256,7 @@
                   }).then((result) => {
 
                     if (result.isConfirmed) {
-                        fetch(`http://localhost:7000/admin/categoryOffer/?categoryId=${categoryId}`, {
+                        fetch(`/admin/categoryOffer/?categoryId=${categoryId}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json'

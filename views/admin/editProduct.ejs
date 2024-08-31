@@ -526,7 +526,7 @@
 
                     console.log('Target Group before sending:', formData.get('targetGroup'));
 
-                    fetch("http://localhost:7000/admin/editProduct", {
+                    fetch("/admin/editProduct", {
                         method: "PUT",
                         body: formData,
                     })
@@ -545,7 +545,7 @@
                                 sessionStorage.setItem('successMessage', `Successfully updated product ${data.updatedProductName} details`);
                             }
                             // Redirect to the same page
-                            window.location.href = `http://localhost:7000/admin/products`;
+                            window.location.href = `/admin/products`;
                         })
 
                         .catch((error) => {
@@ -627,7 +627,7 @@
                 // Function to send image name to backend
                 function sendImageNameToBackend(imageName) {
 
-                    fetch('http://localhost:7000/admin/removeProductImage', {
+                    fetch('/admin/removeProductImage', {
 
                         method: 'DELETE',
                         headers: {
@@ -849,7 +849,7 @@
 
                         const encodedPName = encodeURIComponent(productName)
 
-                        const response = await fetch(`http://localhost:7000/admin/productExists?encodedPName=${encodedPName}${id?`&productId=${id}`:''}`, {
+                        const response = await fetch(`/admin/productExists?encodedPName=${encodedPName}${id?`&productId=${id}`:''}`, {
 
                             method: "GET",
 

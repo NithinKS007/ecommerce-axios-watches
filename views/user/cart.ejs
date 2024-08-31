@@ -305,7 +305,7 @@ if (selectedItemsCount === 0) {
   document.getElementById('couponButtons').style.display = 'none';
 
   try {
-    const response = await fetch(`http://localhost:7000/cart/removeCoupon`, {
+    const response = await fetch(`/cart/removeCoupon`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -359,7 +359,7 @@ const applyCoupon= async () =>{
   const couponCode = couponCodeElement ? couponCodeElement.value : '';
 
     try {
-        const response = await fetch(`http://localhost:7000/cart/applyCoupon`, {
+        const response = await fetch(`/cart/applyCoupon`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -441,7 +441,7 @@ const applyCoupon= async () =>{
 
 
 
-    fetch(`http://localhost:7000/cart/`,{
+    fetch(`/cart`,{
 
       method:"DELETE",
       headers:{
@@ -581,7 +581,7 @@ function updateQuantity(productId, newQuantity) {
     const discount = document.getElementById('couponDiscount')
     const checkbox = document.querySelector(`input[value="${productId}"]`);
 
-    fetch(`http://localhost:7000/cart/`, {
+    fetch(`/cart`, {
       method: 'PATCH',
       headers: {
         "Content-Type": "application/json",
@@ -709,7 +709,7 @@ const sendToBackend = () => {
  const selection = document.getElementById('selection')
  const  couponCode =  document.getElementById('couponCode').value 
 
-  fetch('http://localhost:7000/cart/', {
+  fetch('/cart', {
 
     method: 'PATCH',
     headers: {
@@ -799,7 +799,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const encodedCouponCode = encodeURIComponent(couponCode);
     
-    const checkoutUrl = `http://localhost:7000/checkout?couponCode=${encodedCouponCode}`;
+    const checkoutUrl = `/checkout?couponCode=${encodedCouponCode}`;
     
     window.location.href = checkoutUrl;
 

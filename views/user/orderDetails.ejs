@@ -391,7 +391,7 @@ function generatePDF(orderId) {
             if (result.isConfirmed) {
                 const { reason } = result.value;
 
-                const response = await fetch(`http://localhost:7000/return`, {
+                const response = await fetch(`/return`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
@@ -464,7 +464,7 @@ function generatePDF(orderId) {
 
             if (result.isConfirmed) {
 
-                fetch(`http://localhost:7000/orders`, {
+                fetch(`/orders`, {
 
                     method: "PATCH",
                     headers: {
@@ -560,7 +560,7 @@ function generatePDF(orderId) {
             if (result.isConfirmed) {
 
 
-                fetch(`http://localhost:7000/orders`, {
+                fetch(`/orders`, {
 
                     method: "PUT",
                     headers: {

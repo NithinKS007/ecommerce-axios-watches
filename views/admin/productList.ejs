@@ -277,7 +277,7 @@
                             if (result.isConfirmed) {
 
 
-                                fetch(`http://localhost:7000/admin/products/?productId=${productId}`, {
+                                fetch(`/admin/products/?productId=${productId}`, {
 
                                     method: 'PATCH',
                                     headers: {
@@ -366,7 +366,7 @@ const editProduct = (productId) =>{
         return
     }else{
 
-        window.location.href = `http://localhost:7000/admin/editProduct/?productId=${productId}`
+        window.location.href = `/admin/editProduct/?productId=${productId}`
 
     }
 }

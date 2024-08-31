@@ -182,7 +182,7 @@
 
                         try {
 
-                            const response = await fetch(`http://localhost:7000/admin/editProductOffer`, {
+                            const response = await fetch(`/admin/editProductOffer`, {
 
                                 method: 'PUT',
                                 headers: {
@@ -208,7 +208,7 @@
                                         timer: 3000,
                                     }).then(() => {
                                        
-                                        window.location.href = `http://localhost:7000/admin/productOffer`;
+                                        window.location.href = `/admin/productOffer`;
 
                                     });
 

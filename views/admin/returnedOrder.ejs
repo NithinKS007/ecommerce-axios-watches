@@ -189,7 +189,7 @@ const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
                 },
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch('http://localhost:7000/admin/updateReturnStatus', {
+            fetch('/admin/updateReturnStatus', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
