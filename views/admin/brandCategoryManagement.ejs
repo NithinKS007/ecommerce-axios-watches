@@ -110,7 +110,7 @@
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
-                          <!-- <th>ID</th> -->
+
                           <th>Name</th>
                           <th>Description</th>
                           <th class="text-center">Action</th>
@@ -122,9 +122,7 @@
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
-                              <!-- <td>
-                                <%= categoriesData[i]._id %>
-                              </td> -->
+
 
                               <td class="cName">
                                 <%= categoriesData[i].name %>
@@ -217,7 +215,7 @@
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
-                          <!-- <th>ID</th> -->
+                       
                           <th>Name</th>
                           <th class="text-center">Action</th>
                         </tr>
@@ -228,9 +226,7 @@
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
-                              <!-- <td>
-                                <%= brandsData[i]._id %>
-                              </td> -->
+                           
                               <td class="bName">
                                 <%= brandsData[i].name %>
                               </td>
@@ -507,7 +503,7 @@ const categoryName = categoryNameInput.value.trim();
 
 if(!(isValidateCategoryName&&isValidateCategoryDescription)){
 
-  console.log(`entered in category adding validation`);
+
   
   return
 
@@ -560,7 +556,7 @@ if(!(isValidateCategoryName&&isValidateCategoryDescription)){
         }
 
         const data = await response.json();
-        console.log(`data received`, data);
+
 
   
         if (data.categoryDetails) {
@@ -624,7 +620,7 @@ const brandName = brandNameInput.value.trim();
 
 if (!(isValidateBrandName)) {
 
-  console.log(`entered in brand adding validation`)
+
 
   return
 
@@ -680,7 +676,7 @@ if (!(isValidateBrandName)) {
         }
 
         const data = await response.json();
-        console.log('Data received:', data);
+  
 
       
         if (data.brandDetails) {
@@ -788,14 +784,13 @@ if (!(isValidateBrandName)) {
           //checking for existing category 
           const categoryExists = async (categoryName,id) => {
 
-          
-          console.log(`hello its recieived`,categoryName);
+
 
             try {
 
               const encodedCName = encodeURIComponent(categoryName);
 
-              console.log(`this is the name i'm sending`,encodedCName);
+
             
 
               const response = await fetch(`http://localhost:7000/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
@@ -839,11 +834,11 @@ if (!(isValidateBrandName)) {
 
             const categoryName = categoryNameInput.value.trim();
 
-            console.log(`this is the name create `,categoryName);
+ 
             
             if(!(isValidateCategoryName&&isValidateCategoryDescription)){
 
-              console.log(`entered in category adding validation`);
+
               
               return
 
@@ -940,7 +935,6 @@ if (!(isValidateBrandName)) {
 
             if (!(isValidateBrandName)) {
 
-              console.log(`entered in brand adding validation`)
 
               return
 

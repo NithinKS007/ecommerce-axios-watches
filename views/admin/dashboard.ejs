@@ -241,7 +241,6 @@
 
             const data = await response.json();
             
-            console.log(data);
 
             updateSalesTable(data.salesData,data.tableTotalNumberOfOrders,data.tableTotalGrossSales,data.tableTotalCouponDeductions,data.tableTotalNetSales); 
 
@@ -312,7 +311,7 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
 
         `
         if (footerRow) {
-            console.log("Element found:", footerRow)
+
         footerRow.innerHTML = `
             <td> Total</td>
             <td>0</td>
@@ -320,7 +319,7 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
             <td> 0</td>
             <td> 0</td>
         `;
-        console.log("InnerHTML set successfully.");
+
     } else {
 
         console.error('Footer row element not found.');

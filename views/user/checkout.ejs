@@ -791,11 +791,11 @@
                     const isEmailValid = validateEmail();
                     const isAddressTypeValid = validateAddressType();
 
-                    console.log(isNameValid);
+                  
 
 
                     if (!(isNameValid && isPhoneValid && isPincodeValid && isLocalityValid && isAddressValid && isCityDistTownValid && isStateValid && isEmailValid && isAddressTypeValid)) {
-                        console.log(`entering inside this`);
+                  
 
                         event.preventDefault();
 
@@ -841,12 +841,12 @@
 
                         try {
 
-                            console.log("Full payment response:", response);
+                        
 
 
 
                             const { payment_id,order_id} = response.error.metadata
-                            console.log(`this is the payment failure function working`,  payment_id,order_id);
+                           
 
 
 
@@ -868,7 +868,7 @@
 
 
                             const result = await dataResponse.json();
-                            console.log(result.message);
+                    
 
                             if (result.success) {
 
@@ -963,13 +963,13 @@
 
                             .then(data => {
 
-                                console.log('Success:', data)
+                               
 
                                 if(data.success&&selectedPaymentMethod !== "razorPay"){
 
                                     Swal.fire({
                                             icon: 'success',
-                                            text: 'Payment successfull!',
+                                            text: 'Order successfull!',
                                             toast: true,
                                             position: 'top-right',
                                             showConfirmButton: false,
@@ -1054,7 +1054,7 @@
 
                 const verifyOnlinePayment = (paymentId, orderId, signature, amount) => {
 
-                    console.log(paymentId, orderId, signature);
+     
 
                     fetch('http://localhost:7000/verifyOnlinePayment', {
                         method: 'POST',
@@ -1452,7 +1452,7 @@
                             }).then((data) => {
 
 
-                                console.log(`data received to checkout page after editing address`, data.updatedUserAddress);
+                     
 
                                 window.location.reload()
 

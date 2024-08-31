@@ -189,7 +189,7 @@ justify-content: center !important;
 
     const isBlocking = deleteButton.classList.contains('btn-success')
 
-    console.log(deleteButton);
+
 
                   Swal.fire({
                     title: `Are you sure you want to ${isBlocking ? 'Activate' : 'Deactivate'} this coupon ?`,
@@ -216,8 +216,7 @@ justify-content: center !important;
                             return response.json()
                         }).then(data => {
 
-                            console.log(data);
-                            console.log(couponId);
+
                             if (data.couponId.couponStatus) {
                                 deleteButton.classList.remove('btn-success');
                                 deleteButton.classList.add('btn-danger');

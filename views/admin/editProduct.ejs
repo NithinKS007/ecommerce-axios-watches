@@ -335,7 +335,6 @@
 
                         if (!validateImage(file)) {
 
-                            console.log(`Skipping invalid file: ${file.name}`);
 
                             return;
                         }
@@ -452,7 +451,7 @@
 
                 formSubmitButton.addEventListener("click", async (event) => {
 
-                    console.log("Hello");
+            
                     event.preventDefault()
                     const isValidProductName = validateProductName()
                     const isValidateProductDescription = validateProductDescription()
@@ -483,7 +482,7 @@
 
                     if (pExists) {
 
-                        console.log(`entered here`)
+           
 
                         Swal.fire({
                             title: "Product Exists!",
@@ -500,7 +499,7 @@
 
                     }
 
-                    console.log(`enterning here after validation`);
+               
 
                     const formData = new FormData();
                     const formElements = document.getElementById("productForm").elements;
@@ -541,7 +540,7 @@
 
                             if (data.success) {
 
-                                console.log("Success:", data);
+
                                 // Store the message in sessionStorage
                                 sessionStorage.setItem('successMessage', `Successfully updated product ${data.updatedProductName} details`);
                             }
@@ -641,8 +640,7 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            console.log('Success:', data);
-                            // You can add additional logic here if needed
+
                         })
                         .catch((error) => {
                             console.error('Error:', error);

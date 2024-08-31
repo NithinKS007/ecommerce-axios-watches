@@ -116,7 +116,6 @@
                                         <tr>
                                             <th scope="col">No</th>
                                             <th scope="col">Product Image</th>
-                                            <!-- <th scope="col">ProductID</th> -->
                                             <th scope="col">Product Name</th>
                                             <th scope="col">brand</th>
                                             <th scope="col">Normal Price</th>
@@ -131,16 +130,14 @@
                                             <% for (let i=0; i < productData.length; i++) { %>
                                                 <tr>
                                                     <td class="text-center">
-                                                        <%= i + 1 %> <!-- Adjusting to display the index as 1-based -->
+                                                        <%= i + 1 %> 
                                                     </td>
                                                     <td>
                                                         <img class="img-sm img-thumbnail"
                                                             src="/productImages/<%= productData[i]?.images[0]?.filename%>"
                                                             alt="">
                                                     </td>
-                                                    <!-- <td>
-                                                        <%= productData[i]._id %>
-                                                    </td> -->
+                                                   
                                                     <td>
                                                         <%= productData[i].name %>
                                                     </td>
@@ -365,7 +362,7 @@ const editProduct = (productId) =>{
 
     if(!productId){
 
-        console.log(`Product id not found`);
+
         return
     }else{
 

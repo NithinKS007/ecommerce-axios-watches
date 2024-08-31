@@ -174,8 +174,7 @@
 
 <script>
 const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
-    console.log(`Changing return status for product ID ${returnOrderDocId} to ${status}`);
-
+   
     Swal.fire({
         title: 'Are you sure?',
         text: "You are about to change the return status of this product.",
@@ -204,7 +203,7 @@ const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
                 }
                 return response.json();
             }).then((data) => {
-                console.log(data);
+            
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
@@ -301,7 +300,7 @@ const approved = async (returnOrderDocId) => {
 };
 
 const rejected = async (returnOrderDocId) => {
-    console.log(`this is the product id for rejection`, returnOrderDocId);
+   
 
     Swal.fire({
         title: 'Reject Return?',

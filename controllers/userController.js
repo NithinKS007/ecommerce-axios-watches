@@ -473,7 +473,7 @@ const loadProductDetails = async (req,res) =>{
 
     try {
 
-        const productId = req.query.id //getting the id from the query and passing it to the product details page
+        const productId = req.query.id 
 
         let userFromGidSessionOrSession 
 
@@ -622,12 +622,11 @@ const editPassword = async (req, res) => {
 
             if(!userData){
 
-                console.log(`cannot found user data `);
+             
                 return res.status(404).json({ message: "User not found", success: false });
             }
 
-            console.log(`this is the existing password comig from the body`,updatedPasswordDetails.existingPassword);
-            console.log(`this is the password fromt he database`,userData.password);
+            
 
 
 
@@ -635,7 +634,7 @@ const editPassword = async (req, res) => {
 
             if(!passwordMatch){
 
-                console.log(`password does not match`);
+              
                 return res.status(401).json({ message: "Incorrect Current Password", success: false, incorrectPassword: true });
             }
 
@@ -646,7 +645,7 @@ const editPassword = async (req, res) => {
 
             if(updatedPassword&&hashedNewPassword){
 
-                console.log(`password matched successfully`);
+      
 
                 return res.status(200).json({ message: "Your password updated successfully", success: true, incorrectPassword: false });
 
@@ -711,7 +710,7 @@ const priceSummary = async (cartData, couponCode) => {
 
           }
 
-          console.log(`Item: ${item._id}, Price: ${itemPrice}, Quantity: ${item.quantity}`);
+        
 
           subTotal += itemPrice * item.quantity;
 
@@ -722,7 +721,7 @@ const priceSummary = async (cartData, couponCode) => {
         let discount = 0;
   
         if (couponCode) {
-          console.log(`Coupon code received: ${couponCode}`);
+         
           const coupon = await coupons.findOne({ couponCode: couponCode });
           
           if (coupon && coupon.couponStatus) {
@@ -986,7 +985,7 @@ const removeFromCart = async (req, res) => {
     
         const { productId, quantity,couponCode } = req.body
     
-       console.log(`data form the quantity`,productId, quantity,couponCode);
+       
 
         const productItem = await products.find({_id:productId})
       
@@ -1046,7 +1045,7 @@ const removeFromCart = async (req, res) => {
     
         const { selectedProductIds,couponCode } = req.body;
 
-        console.log(`data form the selection`,selectedProductIds,couponCode);
+      
 
         const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
 
@@ -1171,12 +1170,12 @@ const addAddress = async (req,res) =>{
             const sourcePage = req.body.sourcePage
             if(sourcePage==="checkout"){
 
-                console.log(`if case is working`);
+                
                 return res.redirect("/checkout")
 
             }else{
 
-                console.log(`else case is working`);
+                
 
                 return res.redirect('/address');
             }
@@ -1198,10 +1197,10 @@ const editAddress = async (req,res) =>{
     const {id} = req.body
     const {updatedAddress} = req.body
 
-    console.log(`data coming from the front end`,id,updatedAddress);
+   
     if(!updatedAddress||!id){
 
-        console.log(`nothing received from the front end`);
+        
 
         return res.status(400).json({success:false,message:"Address details are required"})
 
@@ -1212,14 +1211,14 @@ const editAddress = async (req,res) =>{
        
         if(!address){
 
-            console.log(`address id cannot found in database`);
+        
 
             return res.status(404).json({success:false,message:"address not found"})
         }
 
         const updatedUserAddress = await userAddress.findByIdAndUpdate(id,{$set:updatedAddress},{new:true})
 
-        console.log(`this is the updated user addresss after....`,updatedUserAddress);
+       
 
         return res.status(200).json({message:"Address edited successfully",success:true, updatedUserAddress:updatedUserAddress})
         
@@ -1523,8 +1522,7 @@ const placeOrder = async (req,res) =>{
 
         const quantityPurchased = orderData.items.map(item =>item.quantity)
         
-        console.log('Product IDs:', productIds);
-        console.log(`this is the quantity`,quantityPurchased);
+       
 
 
         const bulkOps = orderData.items.map(item => ({
@@ -1603,7 +1601,7 @@ const loadPlaceOrder = async (req, res) => {
         }
 
       
-        return res.render('user/placeOrder');
+        return res.status(200).render('user/placeOrder');
 
     } catch (error) {
 
@@ -1715,7 +1713,7 @@ const cancelOrderProduct = async (req, res) => {
     const { itemId, orderId,orderProductStatus } = req.body;
 
     try {
-        console.log(`Canceling product ${itemId} in order ${orderId},${orderProductStatus}`);
+   
 
        const validStatuses = getEnumValues(orders.schema, 'items.orderProductStatus');
 
@@ -1870,7 +1868,7 @@ const cancelOrder = async (req, res) => {
     const { orderId,orderStatus } = req.body;
 
     try {
-        console.log(`Canceling entire order ${orderId},${orderStatus}`);
+       
 
         const validStatuses = getEnumValues(orders.schema, 'orderStatus');
 
@@ -2045,7 +2043,7 @@ const searchProducts = async (req, res) => {
 
     try {
        
-        console.log(`Search query: ${searchProduct}`);
+     
         
  
         const categoriesArray = await categories.find({ isBlocked: false });
@@ -2137,7 +2135,7 @@ const applyCoupon = async (req, res) => {
 
         const { couponCode } = req.body;
         
-        console.log(`this is the add coupon function`, couponCode);
+      
 
         if (couponCode) {
 
@@ -2380,7 +2378,7 @@ const verifyOnlinePayment = async (req,res) =>{
         
         const {paymentId, orderId, signature} = req.body
 
-        console.log("Request Body:", req.body);
+    
 
         const isValidPayment = verifyRazorPaySignature(paymentId,orderId,signature)
 
@@ -2498,7 +2496,7 @@ const returnProductOrder = async (req,res) =>{
 
         const {itemId,productId, orderId, orderProductStatus,reason} = req.body
 
-        console.log(`data received in the return single product order fn backend`,itemId, productId,orderId, orderProductStatus,reason);
+     
 
         const validStatuses = getEnumValues(orders.schema, 'items.orderProductStatus');
 
@@ -2525,7 +2523,7 @@ const returnProductOrder = async (req,res) =>{
 
        if(updatedProductStatus.modifiedCount > 0){
 
-        console.log(`entering in the if condition`);
+       
         
        
         const orderData = await orders.findOne({ _id: orderDocIdOfTheOrder});
@@ -2577,7 +2575,7 @@ const returnProductOrder = async (req,res) =>{
 
             })
 
-            console.log(returnProductOrderData,`This is before saving`);
+          
          
            await returnProductOrderData.save()
         
@@ -2615,7 +2613,7 @@ const handleForgotPassword = async (req,res) =>{
 
         const {email} = req.body
 
-        console.log(`email received for forgot password`,email);
+       
 
         const userMail = email.trim()
 
@@ -2633,7 +2631,7 @@ const handleForgotPassword = async (req,res) =>{
         const token =  crypto.randomBytes(32).toString('hex');
         const hashedToken = await secureToken(token)
 
-        console.log(`this is the token generated from the backend before saving in the database`,hashedToken);
+      
 
         userData.resetPasswordToken = hashedToken
         userData.resetPasswordExpires = Date.now() +  300000 
@@ -2688,7 +2686,7 @@ const ResetPassword = async (req,res) =>{
   
         const { password, confirmPassword,token } = req.body
 
-        console.log(`hello received reset things`,password,confirmPassword,token)
+      
 
         if (password !== confirmPassword) {
 
@@ -2698,7 +2696,7 @@ const ResetPassword = async (req,res) =>{
 
         const email = req.session.forgotPasswordEmail
 
-        console.log(`this is the email from the session`,email);
+   
         
         if (!email) {
 
@@ -2746,7 +2744,7 @@ const handleOnlinePaymentFailure = async (req,res) =>{
 
         const { paymentId, orderId } = req.body
 
-        console.log(`payment failed`, paymentId, orderId)
+     
 
         const transactionsData = await transaction.findOneAndUpdate(
             { onlinePaymentOrderId: orderId },  
@@ -2755,7 +2753,7 @@ const handleOnlinePaymentFailure = async (req,res) =>{
         );
 
        
-        console.log(`Transaction data updated:`, transactionsData);
+       
 
         if (!transactionsData) {
          
@@ -2798,11 +2796,11 @@ const loadRetryOrderCheckout = async (req,res) =>{
 
     const orderId = req.query.orderId;
 
-    console.log(`Retrying order with ID: ${orderId}`);
+    
 
     const orderData = await orders.findOne({_id:orderId})
 
-    console.log(`this is the order Data for retrying the order`,orderData)
+    
 
     return res.status(200).render("user/retryCheckout",{orderData:orderData})
 
@@ -2820,7 +2818,7 @@ const retryOrderPayment = async (req,res) =>{
 
         const {orderId} = req.body
 
-        console.log(`order id received for payment retry`,orderId);
+       
 
         const orderIdOfTheOrder = new ObjectId(orderId)
 
@@ -2828,7 +2826,7 @@ const retryOrderPayment = async (req,res) =>{
 
         const transactionsDataOfTheOrder = await transaction.findOne({orderId:orderIdOfTheOrder})
 
-        console.log(`this is the transaction data of the order`,transactionsDataOfTheOrder);
+       
         
         let razorPayOrder
 
@@ -2900,9 +2898,7 @@ const loadOrderDetails = async (req,res) =>{
 
         const transactions = await transaction.findOne({orderId:orderData._id}).exec();
     
-        console.log(`this is the order data =>`,orderData);
-        console.log(`this is its transactions data=>`,transactions)
-        
+      
         
         return res.status(200).render("user/orderDetails", {orderData,transactions})
 

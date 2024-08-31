@@ -140,17 +140,17 @@
                                                         <span id="phoneError" class="error"></span>
                                                     </div>
 
-
+                                                    <div class="d-flex gap-2">
 
                                                     <button type="submit" id="saveUserNewDetailsButton"
-                                                        class="btn btn-primary">
+                                                        class="btn btn-primary w-100">
                                                         Save Changes
                                                     </button>
-                                                    <button type="button" id="cancelNewUserDetailsButton" class="btn btn-secondary">
+                                                    <button type="button" id="cancelNewUserDetailsButton" class="btn btn-secondary w-100">
                                                         <a href="/profile" style="color: inherit; text-decoration: none; display: block; width: 100%; height: 100%; line-height: inherit;">Cancel</a>
                                                       </button>
                                                       
-
+                                                    </div>
                                                 </form>
                                             </div>
                                             <!-- edit user details ends -->
@@ -174,15 +174,15 @@
                                                             name="confirmPassword" placeholder="Confirm Password" />
                                                         <span id="confirmPasswordError" class="error"></span>
                                                     </div>
-
+                                                    <div class="d-flex gap-2">
                                                     <button type="submit" id="saveUserNewPasswordButton"
-                                                        class="btn btn-primary">
+                                                        class="btn btn-primary w-100">
                                                         Save Changes
                                                     </button>
-                                                    <button type="button" id="cancelNewPasswordButton" class="btn btn-secondary">
+                                                    <button type="button" id="cancelNewPasswordButton" class="btn btn-secondary w-100">
                                                         <a href="/profile" style="color: inherit; text-decoration: none;">Cancel</a>
                                                       </button>
-                                                      
+                                                    </div>
                                                 </form>
                                             </div>
                                             <!-- edit user password ends -->
@@ -284,7 +284,7 @@
 
                 const editUserPassword = (id) => {
 
-                    console.log(`id to edit the password`, id);
+                   
                     userInfoDisplay.style.display = "none";
                     editPasswordForm.style.display = "block";
 
@@ -342,7 +342,7 @@
                                     })
                                     .then((data) => {
                                         if (data.success && !data.incorrectPassword) {
-                                            console.log(`password edited successfully`);
+                                        
                                             window.location.reload()
                                             sessionStorage.setItem(`successMessage`, `${data.message}`)
                                             userInfoDisplay.style.display = "block";

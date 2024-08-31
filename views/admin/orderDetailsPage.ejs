@@ -2,8 +2,7 @@
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
 <style>
-    /* styles.css */
-
+  
 .payment-status {
     text-transform: capitalize;
 }
@@ -17,11 +16,11 @@
 }
 
 .payment-status.pending {
-    color: orange; /* Or any color of your choice for pending */
+    color: orange; 
 }
 
 .payment-status.default {
-    color: gray; /* Default color for N/A or unknown status */
+    color: gray;
 }
 
 .swal1-cancel {
@@ -417,7 +416,7 @@ const toggleAndUpdateStatus = () => {
                         saveButton.style.display = "none";
                         return;
                     }
-                    console.log(`this is datas`,data);
+
                     Swal.fire({
                         text: 'Order status has been updated.',
                         icon: 'success',
@@ -466,7 +465,7 @@ const toggleAndUpdateStatus = () => {
             }
         });
     } else {
-        console.log("Edit action");
+
         editButton.style.display = "none";
         saveButton.style.display = "inline-block";
     }
@@ -482,8 +481,6 @@ const toggleAndUpdateStatus = () => {
 
     const initialStatus = '<%= userOrderDataDetails.orderStatus %>';
     const items =  '<%= userOrderDataDetails.orderProductStatus%>'
-
-    console.log(items);
 
     disableRadioButtonsBasedOnStatus(initialStatus);
     

@@ -161,18 +161,18 @@
 
             retryPaymentButton.addEventListener("click", () => {
 
-                console.log(`hello1`);
+               
 
                 const paymentFailure = async (response) => {
 
                     try {
 
-                        console.log("Full payment response:", response);
+                    
 
 
 
                         const { payment_id, order_id } = response.error.metadata
-                        console.log(`this is the payment failure function working`, payment_id, order_id);
+                
 
 
 
@@ -198,7 +198,7 @@
 
 
                         const result = await dataResponse.json();
-                        console.log(result.message);
+                       
 
                         if (result.success) {
 
@@ -254,12 +254,12 @@
 
                     .then(data => {
 
-                        console.log('Success:', data)
+                     
 
-                        console.log(`hello3`);
+                   
                         if (data.success) {
 
-                            console.log(`hello4`);
+                         
                             const options = {
 
                                 "key": data.RAZORPAY_ID_KEY,
@@ -269,8 +269,8 @@
                                 "order_id": data.razorPayOrderPaymentId,
                                 "handler": (response) => {
 
-                                    console.log("this is the response from the verify function", response)
-                                    console.log(`hello5`);
+                                  
+                                  
                                     verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
 
 
@@ -322,8 +322,8 @@
 
             const verifyOnlinePayment = (paymentId, orderId, signature, amount) => {
 
-                console.log(paymentId, orderId, signature);
-                console.log(`hello6`);
+             
+              
                 fetch('http://localhost:7000/verifyOnlinePayment', {
                     method: "POST",
                     headers: {

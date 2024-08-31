@@ -188,7 +188,7 @@
                 const deleteButton = document.getElementById(`softDeleteButton${userId}`)
                 const isBlocking = deleteButton.classList.contains('btn-danger')
 
-                console.log(deleteButton);
+
 
                 Swal.fire({
                     title: `Are you sure you want to ${isBlocking ? 'block' : 'unblock'} this person?`,
@@ -216,8 +216,7 @@
                             return response.json()
                         }).then(data => {
 
-                            console.log(data);
-                            console.log(userId);
+
                             if (data.userId.isBlocked) {
                                 deleteButton.classList.remove('btn-danger');
                                 deleteButton.classList.add('btn-success');

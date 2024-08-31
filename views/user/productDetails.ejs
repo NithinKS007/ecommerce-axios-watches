@@ -301,7 +301,7 @@
 
                         const result = await response.json();
 
-                        console.log('Product added to wishlist:', result);
+                   
 
                         const icon = document.querySelector(`[data-product-id="${productId}"]`);
                         if (icon) {
@@ -347,7 +347,7 @@
 
                     const result = await response.json();
 
-                    console.log('Product removed from wishlist:', result);
+           
 
                     const icon = document.querySelector(`[data-product-id="${productId}"]`);
                     if (icon) {
@@ -406,7 +406,7 @@
 
                 }).then((data) => {
 
-                    console.log(data);
+                  
                     if(data.success){
 
                         Swal.fire({

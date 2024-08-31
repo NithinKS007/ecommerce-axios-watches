@@ -353,7 +353,7 @@ function generatePDF(orderId) {
 
     const returnProduct = async (itemId, productId, orderId, orderProductStatus) => {
 
-        console.log(`Return product ${itemId} in order ${orderId}, ${orderProductStatus}`);
+       
 
         try {
 
@@ -406,7 +406,7 @@ function generatePDF(orderId) {
 
                 const data = await response.json();
 
-                console.log(`data received in return product fn`, data);
+              
 
                 if (data.success) {
 
@@ -448,8 +448,7 @@ function generatePDF(orderId) {
 
     const cancelProduct = (itemId, orderId, orderProductStatus) => {
 
-        console.log(`Cancel product ${itemId} in order ${orderId},${orderProductStatus}`);
-
+       
         Swal.fire({
             text: "You are about to cancel this product.",
             showCancelButton: true,
@@ -543,8 +542,7 @@ function generatePDF(orderId) {
 
     const cancelOrder = (orderId, orderStatus) => {
 
-        console.log(`Cancel order ${orderId},${orderStatus}`);
-
+        
 
         Swal.fire({
             text: "You are about to cancel this order.",
@@ -583,7 +581,7 @@ function generatePDF(orderId) {
 
                 }).then((data) => {
 
-                    console.log(`data received`, data)
+                 
                     if (data.orderNotDelivered) {
 
                         Swal.fire({
