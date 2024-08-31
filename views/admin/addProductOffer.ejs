@@ -1,154 +1,310 @@
 <%- include('../layouts/adminLayouts/header') %>
-<div class="screen-overlay"></div>
-<%- include('../layouts/adminLayouts/sidebar') %>
-<main class="main-wrap">
-  <style>
-    .error {
-      font-size: 0.8em;
-      color: red;
-    }
-    .small-text {
-      font-size: 0.8em;
-      line-height: 1.2;
-    }
-  </style>
-  <%- include('../layouts/adminLayouts/searchbar') %>
+  <div class="screen-overlay"></div>
+  <%- include('../layouts/adminLayouts/sidebar') %>
+    <main class="main-wrap">
+      <style>
+        .error {
+          font-size: 0.8em;
+          color: red;
+        }
 
-  <section class="content-main">
-    <div class="row">
-      <!-- Content Header -->
-      <div class="col-12 mb-3">
-        <div class="content-header">
-          <h2 class="content-title">ADD PRODUCT OFFER</h2>
-        </div>
-      </div>
+        .small-text {
+          font-size: 0.8em;
+          line-height: 1.2;
+        }
+      </style>
+      <%- include('../layouts/adminLayouts/searchbar') %>
 
-      <!-- Main Content -->
-      <div class="col-lg-9">
-        <div class="card mb-4">
-          <div class="card-header">
-            <h4>Offer Details</h4>
+        <section class="content-main">
+          <div class="row">
+            <!-- Content Header -->
+            <div class="col-12 mb-3">
+              <div class="content-header">
+                <h2 class="content-title">ADD PRODUCT OFFER</h2>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Offer Details</h4>
+                </div>
+                <div class="card-body">
+                  <form id="newOfferForm">
+                    <!-- Offer Name -->
+                    <div class="mb-4">
+                      <label for="offerName" class="form-label">Offer Name</label>
+                      <input type="text" name="offerName" placeholder="Enter offer name" class="form-control"
+                        id="offerName" />
+                      <span id="offerNameError" class="error"></span>
+                    </div>
+
+                    <!-- Product -->
+                    <div class="mb-4">
+                      <label for="product" class="form-label">Product</label>
+                      <select class="form-select" id="product" name="product">
+                        <% if(productsData.length> 0) { %>
+                          <% productsData.forEach(product=> { %>
+                            <option value="<%= product.id %>">
+                              <%= product.name %>
+                            </option>
+                            <% }) %>
+                              <% } else { %>
+                                <option>No Product Found</option>
+                                <% } %>
+                      </select>
+                    </div>
+
+                    <!-- Discount Percentage -->
+                    <div class="mb-4">
+                      <label for="discountPercentage" class="form-label">Discount Percentage</label>
+                      <input type="number" name="discountPercentage" placeholder="Enter discount percentage"
+                        class="form-control" id="discountPercentage" />
+                      <span id="discountPercentageError" class="error"></span>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="mb-4">
+                      <label for="startDate" class="form-label">Start Date</label>
+                      <input type="date" name="startDate" class="form-control" id="startDate" />
+                      <span id="startDateError" class="error"></span>
+                    </div>
+
+                    <!-- Expiry Date -->
+                    <div class="mb-4">
+                      <label for="expiryDate" class="form-label">Expiry Date</label>
+                      <input type="date" name="expiryDate" class="form-control" id="expiryDate" />
+                      <span id="expiryDateError" class="error"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div style="display: flex; justify-content: center; padding-top: 15px;">
+                      <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">
+                        Save Offer
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <form id="newOfferForm" method="post" action="/admin/addProductOffer">
-              <!-- Offer Name -->
-              <div class="mb-4">
-                <label for="offerName" class="form-label">Offer Name</label>
-                <input type="text" name="offerName" placeholder="Enter offer name" class="form-control" id="offerName" />
-                <span id="offerNameError" class="error"></span>
-              </div>
+        </section>
+    </main>
+    <%- include('../layouts/adminLayouts/footer') %>
 
-              <!-- Product -->
-              <div class="mb-4">
-                <label for="product" class="form-label">Product</label>
-                <select class="form-select" id="product" name="product">
-                    <% if(productsData.length > 0) { %>
-                        <% productsData.forEach(product => { %>
-                            <option value="<%= product.id %>"><%= product.name %></option>
-                        <% }) %>
-                    <% } else { %>
-                        <option>No Product Found</option>
-                    <% } %>
-                </select>
-              </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
 
-              <!-- Discount Percentage -->
-              <div class="mb-4">
-                <label for="discountPercentage" class="form-label">Discount Percentage</label>
-                <input type="number" name="discountPercentage" placeholder="Enter discount percentage" class="form-control" id="discountPercentage"/>
-                <span id="discountPercentageError" class="error"></span>
-              </div>
+          const today = new Date().toISOString().split('T')[0];
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1)
+          const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
 
-              <!-- Start Date -->
-              <div class="mb-4">
-                <label for="startDate" class="form-label">Start Date</label>
-                <input type="date" name="startDate" class="form-control" id="startDate" />
-                <span id="startDateError" class="error"></span>
-              </div>
+          const startDateInput = document.getElementById('startDate');
+          const expiryDateInput = document.getElementById('expiryDate');
 
-              <!-- Expiry Date -->
-              <div class="mb-4">
-                <label for="expiryDate" class="form-label">Expiry Date</label>
-                <input type="date" name="expiryDate" class="form-control" id="expiryDate" />
-                <span id="expiryDateError" class="error"></span>
-              </div>
+          startDateInput.setAttribute('min', today);
 
-              <!-- Submit Button -->
-              <div style="display: flex; justify-content: center; padding-top: 15px;">
-                <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">
-                  Save Offer
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-<%- include('../layouts/adminLayouts/footer') %>
+          expiryDateInput.setAttribute('min', tomorrowFormatted);
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Validation Functions
-  const validateField = (input, errorElement, errorMessage) => {
-    if (input.value.trim() === '') {
-      errorElement.textContent = errorMessage;
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+          // Validation Functions
+          const validateField = (input, errorElement, errorMessage) => {
+            if (input.value.trim() === '') {
+              errorElement.textContent = errorMessage;
+              return false;
+            } else {
+              errorElement.textContent = '';
+              return true;
+            }
+          };
 
-  const validateOfferName = () => {
-    const input = document.getElementById('offerName');
-    const errorElement = document.getElementById('offerNameError');
-    return validateField(input, errorElement, '* Offer name is required');
-  };
+          const validateOfferName = () => {
+            const input = document.getElementById('offerName');
+            const errorElement = document.getElementById('offerNameError');
+            return validateField(input, errorElement, '* Offer name is required');
+          };
 
-  const validateDiscountPercentage = () => {
-    const input = document.getElementById('discountPercentage');
-    const errorElement = document.getElementById('discountPercentageError');
-    const value = parseFloat(input.value);
-    if (isNaN(value) || value <= 0 || value > 100) {
-      errorElement.textContent = '* Enter a valid discount percentage between 0 and 100';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+          const validateDiscountPercentage = () => {
+            const input = document.getElementById('discountPercentage');
+            const errorElement = document.getElementById('discountPercentageError');
+            const value = parseFloat(input.value);
+            if (isNaN(value) || value <= 0 || value > 99) {
+              errorElement.textContent = '* Enter a valid discount percentage between 0 and 99 ';
+              return false;
+            } else {
+              errorElement.textContent = '';
+              return true;
+            }
+          };
 
-  const validateStartDate = () => {
-    const input = document.getElementById('startDate');
-    const errorElement = document.getElementById('startDateError');
-    return validateField(input, errorElement, '* Start date is required');
-  };
+          const validateStartDate = () => {
+            const input = document.getElementById('startDate');
+            const errorElement = document.getElementById('startDateError');
+            return validateField(input, errorElement, '* Start date is required');
+          };
 
-  const validateExpiryDate = () => {
-    const input = document.getElementById('expiryDate');
-    const errorElement = document.getElementById('expiryDateError');
-    return validateField(input, errorElement, '* Expiry date is required');
-  };
+          const validateExpiryDate = () => {
+            const input = document.getElementById('expiryDate');
+            const errorElement = document.getElementById('expiryDateError');
+            return validateField(input, errorElement, '* Expiry date is required');
+          };
 
-  // Event Listeners for Validation
-  document.getElementById('offerName').addEventListener('input', validateOfferName);
-  document.getElementById('discountPercentage').addEventListener('input', validateDiscountPercentage);
-  document.getElementById('startDate').addEventListener('input', validateStartDate);
-  document.getElementById('expiryDate').addEventListener('input', validateExpiryDate);
+          // Event Listeners for Validation
+          document.getElementById('offerName').addEventListener('input', validateOfferName);
+          document.getElementById('discountPercentage').addEventListener('input', validateDiscountPercentage);
+          document.getElementById('startDate').addEventListener('input', validateStartDate);
+          document.getElementById('expiryDate').addEventListener('input', validateExpiryDate);
 
-  // Form Submission Validation
-  const form = document.getElementById('newOfferForm');
-  form.addEventListener('submit', (event) => {
-    const isOfferNameValid = validateOfferName();
-    const isDiscountPercentageValid = validateDiscountPercentage();
-    const isStartDateValid = validateStartDate();
-    const isExpiryDateValid = validateExpiryDate();
+          // Form Submission Validation
+          const formSubmitButton = document.getElementById('submitForm');
 
-    if (!isOfferNameValid || !isDiscountPercentageValid || !isStartDateValid || !isExpiryDateValid) {
-      event.preventDefault();
-    }
-  });
+          formSubmitButton.addEventListener('click', async (event) => {
+
+            event.preventDefault()
+
+            const isOfferNameValid = validateOfferName();
+            const isDiscountPercentageValid = validateDiscountPercentage();
+            const isStartDateValid = validateStartDate();
+            const isExpiryDateValid = validateExpiryDate();
+
+            if (!isOfferNameValid || !isDiscountPercentageValid || !isStartDateValid || !isExpiryDateValid) {
+
+              return
+
+            }
+
+            const offerData = {
+
+              offerName: document.getElementById('offerName').value,
+              product : document.getElementById('product').value,
+              discountPercentage: document.getElementById('discountPercentage').value,
+              startDate : document.getElementById('startDate').value,
+              expiryDate: document.getElementById('expiryDate').value
+
+            };
+
+
+            try {
+
+const response = await fetch(`http://localhost:7000/admin/addProductOffer`, {
+
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(offerData),
 });
-</script>
+
+if (response.ok) {
+    const result = await response.json();
+
+    console.log('Offer updated successfully:', result)
+
+    if(result.success){
+
+        Swal.fire({
+            title: 'Success!',
+            text: 'Offer added successfully.',
+            icon: 'success',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+        }).then(() => {
+           
+            window.location.href = `http://localhost:7000/admin/productOffer`;
+
+        });
+
+    } else if(result.BetterOfferApplied){
+
+        Swal.fire({
+            title: 'Error!',
+            text: result.message ||"product already has a better offer and is not expired",
+            icon: 'error',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+        });
+
+    }else {
+
+        Swal.fire({
+            title: 'Error!',
+            text: result.message || 'Failed to update offer. Please try again.',
+            icon: 'error',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+        });
+    }
+
+ 
+        
+
+} else {
+
+    console.error('Failed to update offer:', response.statusText);
+    Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update offer. Please check your input and try again.',
+        icon: 'error',
+        toast: true,
+        position: 'top-right',
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+    });
+}
+
+} catch (error) {
+
+Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred. Please try again later.',
+    icon: 'error',
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timerProgressBar: true,
+    timer: 3000,
+});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          });
+
+
+
+
+        });
+
+
+      </script>

@@ -29,8 +29,10 @@
       </a>
       <!-- Search Form -->
       <form class="d-flex mx-auto w-50" id="searchForm" action="/filter" method="GET">
-        <input class="form-control search-bar" type="search" name="searchProduct" placeholder="Search for items..." aria-label="Search" required>
-      </form>
+        <input class="form-control search-bar" type="search" name="searchProduct" placeholder="Search for items..." aria-label="Search" value="<%= searchProduct || '' %>">
+    </form>
+    
+    
       <!-- Icons -->
       <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
         <li class="nav-item me-3">

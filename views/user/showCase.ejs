@@ -1,60 +1,80 @@
 <%- include('../layouts/userLayouts/header') %>
     <%- include('../layouts/userLayouts/navbar1') %>
-    <style>
-    .pagination-area {
-        display: flex;
-        justify-content: center;
-        margin: 30px 0;
-    }
-    
-    .pagination {
-        display: flex;
-        gap: 5px; 
-    }
-    
-    .page-item {
-        margin: 0 2px;
-    }
+        <style>
+            .pagination-area {
+                display: flex;
+                justify-content: center;
+                margin: 30px 0;
+            }
 
-                .product-img-action-wrap {
-            position: relative;
-                }
+            .pagination {
+                display: flex;
+                gap: 5px;
+            }
 
-        .heart-icon {
-            position: absolute;
-            top: 9px;
-            right: 10px;
-            z-index: 10;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            width: 40px; 
-            height: 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
+            .page-item {
+                margin: 0 2px;
+            }
 
- 
-     .product-cart-wrap {
-         border: none;
-        box-shadow: none; 
-       }
-                            
-      .product-cart-wrap:hover {
-        box-shadow: none; /* Removes any box-shadow on hover */
-       }
+            .product-img-action-wrap {
+                position: relative;
+            }
 
-                        
- 
-    </style>
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/home" rel="nofollow">Home</a>  
-                <span></span><a href="/showcase?targetGroup=<%= targetGroup %>"><%= targetGroup %></a> 
+            .heart-icon {
+                position: absolute;
+                top: 9px;
+                right: 10px;
+                z-index: 10;
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+
+            .product-cart-wrap {
+                border: none;
+                box-shadow: none;
+            }
+
+            .product-cart-wrap:hover {
+                box-shadow: none;
+            }
+
+            .product-img-action-wrap {
+                position: relative;
+            }
+
+            .offer-tag {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: red;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-weight: bold;
+                z-index: 20;
+                pointer-events: none;
+            }
+
+            .product-img {
+                position: relative;
+            }
+        </style>
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/home" rel="nofollow">Home</a>
+                    <span></span><a href="/showcase?targetGroup=<%= targetGroup %>">
+                        <%= targetGroup %>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
         <main class="main">
             <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
                 <div class="container">
@@ -67,10 +87,11 @@
                                     <div class="custome-checkbox">
                                         <% for (let i=0; i < categoriesArray.length; i++) { %>
                                             <div>
-                                                <input class="form-check-input filter-checkbox" type="checkbox" name="category"
-                                                    id="categoryCheckBox<%= categoriesArray[i]._id %>"
+                                                <input class="form-check-input filter-checkbox" type="checkbox"
+                                                    name="category" id="categoryCheckBox<%= categoriesArray[i]._id %>"
                                                     value="<%= categoriesArray[i]._id %>">
-                                                <label class="form-check-label" for="categoryCheckBox<%= categoriesArray[i]._id %>"><span>
+                                                <label class="form-check-label"
+                                                    for="categoryCheckBox<%= categoriesArray[i]._id %>"><span>
                                                         <%= categoriesArray[i].name %>
                                                     </span></label>
                                             </div>
@@ -86,10 +107,11 @@
                                     <div class="custome-checkbox">
                                         <% for (let i=0; i < brandArray.length; i++) { %>
                                             <div>
-                                                <input class="form-check-input filter-checkbox" type="checkbox" name="brand"
-                                                    id="brandCheckBox<%= brandArray[i]._id %>"
+                                                <input class="form-check-input filter-checkbox" type="checkbox"
+                                                    name="brand" id="brandCheckBox<%= brandArray[i]._id %>"
                                                     value="<%= brandArray[i]._id %>">
-                                                <label class="form-check-label" for="brandCheckBox<%= brandArray[i]._id %>"><span>
+                                                <label class="form-check-label"
+                                                    for="brandCheckBox<%= brandArray[i]._id %>"><span>
                                                         <%= brandArray[i].name %>
                                                     </span></label>
                                             </div>
@@ -103,44 +125,46 @@
                             <div class="widget-category mb-30">
                                 <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
                                 <div class="custome-checkbox">
-                
+
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="sortLowHigh"
-                                            value="priceLowHigh">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="sortLowHigh" value="priceLowHigh">
                                         <label class="form-check-label" for="sortLowHigh"><span>Price: Low to
                                                 High</span></label>
                                     </div>
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="sortHighLow"
-                                            value="priceHighLow">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="sortHighLow" value="priceHighLow">
                                         <label class="form-check-label" for="sortHighLow"><span>Price: High to
                                                 Low</span></label>
                                     </div>
-                              
+
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="newArrivals"
-                                            value="newArrivals">
-                                        <label class="form-check-label" for="newArrivals"><span>New Arrivals</span></label>
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="newArrivals" value="newArrivals">
+                                        <label class="form-check-label" for="newArrivals"><span>New
+                                                Arrivals</span></label>
                                     </div>
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="aToZ"
-                                            value="aToZ">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="aToZ" value="aToZ">
                                         <label class="form-check-label" for="aToZ"><span>aA-zZ</span></label>
                                     </div>
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="zToA"
-                                            value="zToA">
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="zToA" value="zToA">
                                         <label class="form-check-label" for="zToA"><span>zZ-aA</span></label>
                                     </div>
                                     <div>
-                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby" id="OutOfStock"
-                                            value="OutOfStock">
-                                        <label class="form-check-label" for="OutOfStock"><span>Out of stock</span></label>
+                                        <input class="form-check-input filter-checkbox" type="checkbox" name="sortby"
+                                            id="OutOfStock" value="OutOfStock">
+                                        <label class="form-check-label" for="OutOfStock"><span>Out of
+                                                stock</span></label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                                        
+
                         <div class="col-lg-9">
                             <div class="tab-content wow fadeIn animated" id="myTabContent">
                                 <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
@@ -159,12 +183,15 @@
                                                                         src="/productImages/<%= productsArray[i].images[0]?.filename %>"
                                                                         alt="">
 
-                                                                        <% for (let j = 1; j < productsArray[i].images.length; j++) { %>
-                                                                            <img class="hover-img" src="/productImages/<%= productsArray[i].images[j]?.filename %>" alt="Product Image">
+                                                                    <% for (let j=1; j < productsArray[i].images.length;
+                                                                        j++) { %>
+                                                                        <img class="hover-img"
+                                                                            src="/productImages/<%= productsArray[i].images[j]?.filename %>"
+                                                                            alt="Product Image">
                                                                         <% } %>
                                                                 </a>
                                                             </div>
-                                                            <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
+                                                            <!-- <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
 
                                                                 <div class="wishlist-toggle" aria-label="Add to Wishlist">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20"
@@ -178,49 +205,72 @@
                                                                 </div>
         
         
-                                                            </div>
+                                                            </div> -->
                                                         </div>
                                                         <div class="product-content-wrap ">
                                                             <div class="product-category ">
-                                                                <a >
+                                                                <a>
                                                                     <%= productsArray[i].brand.name %>
                                                                 </a>
                                                             </div>
                                                             <h5 style="  overflow: hidden;
                                                             text-overflow: ellipsis;
-                                                            white-space: nowrap;" ><a
+                                                            white-space: nowrap;"><a
                                                                     href="/productDetails?id=<%= productsArray[i]._id %>">
                                                                     <%= productsArray[i].name %>
                                                                 </a></h5>
-                                                            <div class="rating-result" title="90%">
-                                                                <% if (productsArray[i]?.productOffer && productsArray[i]?.productOffer?.offerDiscountPercentage && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date() && productsArray[i]?.productSalesPriceAfterOfferDiscount!==0 && productsArray[i]?.productOffer?.offerStatus ) { %>
-                                                                    <span>
-                                                                        <span><%= productsArray[i]?.productOffer?.offerDiscountPercentage %> % </span>
-                                                                    </span>
-                                                                <% } else { %>
-                                                                    <!-- <span>90%</span> -->
-                                                                <% } %>
+                                                            <div>
+                                                                <% if (productsArray[i]?.productOffer &&
+                                                                    productsArray[i]?.productOffer?.offerDiscountPercentage
+                                                                    && new
+                                                                    Date(productsArray[i]?.productOffer?.offerExpiryDate)>
+                                                                    new Date() &&
+                                                                    productsArray[i]?.productSalesPriceAfterOfferDiscount!==0
+                                                                    && productsArray[i]?.productOffer?.offerStatus ) {
+                                                                    %>
+                                                                    <div class="offer-tag">
+                                                                        <span>
+                                                                            <%= productsArray[i]?.productOffer?.offerDiscountPercentage
+                                                                                %> % OFF
+                                                                        </span>
+                                                                    </div>
+                                                                    <% } else { %>
+                                                                       
+                                                                        <% } %>
                                                             </div>
                                                             <div class="product-price">
-                                                                
-                                                                <% if (productsArray[i].isBlocked ||productsArray[i].category?.isBlocked ||productsArray[i].brand?.isBlocked ||productsArray[i].stock===0) { %>
 
-                                                                    <span style="color: red;">Currently Unavailable</span>
-                                                                    
-                                                                <% } else { %>
-                                                                    <% if (productsArray[i]?.productSalesPriceAfterOfferDiscount  && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus) { %>
+                                                                <% if (productsArray[i].isBlocked
+                                                                    ||productsArray[i].category?.isBlocked
+                                                                    ||productsArray[i].brand?.isBlocked
+                                                                    ||productsArray[i].stock===0) { %>
 
-                                                                        <span>₹ <%= productsArray[i]?.productSalesPriceAfterOfferDiscount %></span>
+                                                                    <span style="color: red;">Currently
+                                                                        Unavailable</span>
 
-                                                                        <% } else { %>
+                                                                    <% } else { %>
+                                                                        <% if
+                                                                            (productsArray[i]?.productSalesPriceAfterOfferDiscount
+                                                                            && new
+                                                                            Date(productsArray[i]?.productOffer?.offerExpiryDate)>
+                                                                            new
+                                                                            Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus)
+                                                                            { %>
 
-                                                                        <span>₹ <%=productsArray[i]?.salesPrice %></span>
-                                                                        
-                                                                    <% } %>
-                                                                    
-                                                                <% } %>
+                                                                            <span>₹ <%=
+                                                                                    productsArray[i]?.productSalesPriceAfterOfferDiscount.toFixed(2)
+                                                                                    %></span>
+
+                                                                            <% } else { %>
+
+                                                                                <span>₹ <%=productsArray[i]?.salesPrice.toFixed(2)
+                                                                                        %></span>
+
+                                                                                <% } %>
+
+                                                                                    <% } %>
                                                             </div>
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -241,35 +291,36 @@
             <div class="pagination-area mt-30 mb-50 text-center">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
-                        <% if (currentPage > 1) { %>
+                        <% if (currentPage> 1) { %>
                             <li class="page-item">
-                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage - 1 %>">
+                                <a class="page-link"
+                                    href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage - 1 %>">
                                     <strong>&lt;</strong>
                                 </a>
                             </li>
-                        <% } %>
+                            <% } %>
 
-                        <% 
-                        let startPage = Math.max(1, currentPage - 2);
-                        let endPage = Math.min(totalPages, startPage + 4);
-                        if (endPage - startPage < 4) {
-                            startPage = Math.max(1, endPage - 4);
-                        }
-                        %>
+                                <% let startPage=Math.max(1, currentPage - 2); let endPage=Math.min(totalPages,
+                                    startPage + 4); if (endPage - startPage < 4) { startPage=Math.max(1, endPage - 4); }
+                                    %>
 
-                        <% for (let i = startPage; i <= endPage; i++) { %>
-                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= i %>"><strong><%= i %></strong></a>
-                            </li>
-                        <% } %>
+                                    <% for (let i=startPage; i <=endPage; i++) { %>
+                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                            <a class="page-link"
+                                                href="/showCase?targetGroup=<%= targetGroup %>&page=<%= i %>"><strong>
+                                                    <%= i %>
+                                                </strong></a>
+                                        </li>
+                                        <% } %>
 
-                        <% if (currentPage < totalPages) { %>
-                            <li class="page-item">
-                                <a class="page-link" href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage + 1 %>">
-                                    <strong>&gt;</strong>
-                                </a>
-                            </li>
-                        <% } %>
+                                            <% if (currentPage < totalPages) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                        href="/showCase?targetGroup=<%= targetGroup %>&page=<%= currentPage + 1 %>">
+                                                        <strong>&gt;</strong>
+                                                    </a>
+                                                </li>
+                                                <% } %>
                     </ul>
                 </nav>
             </div>
@@ -291,41 +342,48 @@
                                                     <img class="default-img"
                                                         src="/productImages/<%= latestProducts[i]?.images[0].filename %>"
                                                         alt="">
-                                                    <!-- <img class="hover-img" src="assets/imgs/shop/product-2-2.jpg" alt=""> -->
+
                                                 </a>
-                                            </div>
-                                            <div class="product-action-1">
-                                                <a aria-label="Add To Wishlist" class="action-btn small hover-up"
-                                                    href="#" tabindex="0"><i class="fi-rs-heart"></i></a>
                                             </div>
                                         </div>
                                         <div class="product-content-wrap">
                                             <h6 style="  overflow: hidden;
                                             text-overflow: ellipsis;
-                                            white-space: nowrap;"><a href="/productDetails?id=<%= latestProducts[i]._id %>">
+                                            white-space: nowrap;"><a
+                                                    href="/productDetails?id=<%= latestProducts[i]._id %>">
                                                     <%= latestProducts[i].name %>
                                                 </a></h6>
-                                            <div class="rating-result" title="90%">
+                                            <div>
                                                 <span></span>
                                             </div>
                                             <div class="product-price">
-                                                <% if (latestProducts[i].isBlocked||latestProducts[i].category?.isBlocked||latestProducts[i].brand?.isBlocked) { %>
-                                                    <span style="color: red; font-size: 15px;">Currently Unavailable</span>
-                                                <% } else { %>
-
-                                                    <% if (latestProducts[i]?.productSalesPriceAfterOfferDiscount  && new Date(latestProducts[i]?.productOffer?.offerExpiryDate) > new Date()&&latestProducts[i]?.productSalesPriceAfterOfferDiscount !==0 && latestProducts[i]?.productOffer?.offerStatus) { %>
-
-                                                        <span>₹ <%= latestProducts[i]?.productSalesPriceAfterOfferDiscount %></span>
-
-                                                        <span class="old-price">₹ <%= latestProducts[i]?.salesPrice %></span>
-
+                                                <% if
+                                                    (latestProducts[i].isBlocked||latestProducts[i].category?.isBlocked||latestProducts[i].brand?.isBlocked)
+                                                    { %>
+                                                    <span style="color: red; font-size: 15px;">Currently
+                                                        Unavailable</span>
                                                     <% } else { %>
 
-                                                        <span>₹ <%=latestProducts[i]?.salesPrice %></span>
-                                                        
-                                                    <% } %>
-                                                   
-                                                <% } %>
+                                                        <% if (latestProducts[i]?.productSalesPriceAfterOfferDiscount &&
+                                                            new Date(latestProducts[i]?.productOffer?.offerExpiryDate)>
+                                                            new
+                                                            Date()&&latestProducts[i]?.productSalesPriceAfterOfferDiscount
+                                                            !==0 && latestProducts[i]?.productOffer?.offerStatus) { %>
+
+                                                            <span>₹ <%=
+                                                                    latestProducts[i]?.productSalesPriceAfterOfferDiscount
+                                                                    %></span>
+
+                                                            <span class="old-price">₹ <%= latestProducts[i]?.salesPrice
+                                                                    %></span>
+
+                                                            <% } else { %>
+
+                                                                <span>₹ <%=latestProducts[i]?.salesPrice %></span>
+
+                                                                <% } %>
+
+                                                                    <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -336,7 +394,7 @@
                                             </div>
                                             <% } %>
 
-                                            
+
                         </div>
                     </div>
                 </div>
@@ -347,65 +405,65 @@
 
         <script>
 
-const advancedSearch = () => {
+            const advancedSearch = () => {
 
-    const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(boxValue => boxValue.value);
-    const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(boxValue => boxValue.value);
-    const sortOptions = Array.from(document.querySelectorAll('input[name="sortby"]:checked')).map(boxValue => boxValue.value);
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetGroup = urlParams.get('targetGroup');
-    
-    const filterData = {
-        categories: selectedCategories.join(","),
-        brands: selectedBrands.join(","),
-        sortby: sortOptions.join(","),
-        targetGroup: targetGroup
-        
-    }
+                const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(boxValue => boxValue.value);
+                const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(boxValue => boxValue.value);
+                const sortOptions = Array.from(document.querySelectorAll('input[name="sortby"]:checked')).map(boxValue => boxValue.value);
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetGroup = urlParams.get('targetGroup');
 
-    console.log(filterData)
+                const filterData = {
+                    categories: selectedCategories.join(","),
+                    brands: selectedBrands.join(","),
+                    sortby: sortOptions.join(","),
+                    targetGroup: targetGroup
 
-    const queryString = new URLSearchParams(filterData).toString();
+                }
 
-   
-    fetch(`http://localhost:7000/filter?${queryString}`, {
+                console.log(filterData)
 
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-        return response.json();
-    }).then((data) => {
-        console.log(`data received from the backend`, data);
+                const queryString = new URLSearchParams(filterData).toString();
 
-        updateProductDisplay(data.data);
 
-    }).catch(error => {
-        console.error('Error:', error);
-    });
-};
+                fetch(`http://localhost:7000/filter?${queryString}`, {
 
-const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
-    
-filterCheckboxes.forEach(checkbox => {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                }).then((data) => {
+                    console.log(`data received from the backend`, data);
 
-    checkbox.addEventListener('change', advancedSearch);
+                    updateProductDisplay(data.data);
 
-});
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            };
 
-const updateProductDisplay = (data) =>{
+            const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
 
-    console.log(data);
-    const productContainer = document.querySelector('.product-grid-4');
-    productContainer.innerHTML = '';  
+            filterCheckboxes.forEach(checkbox => {
 
-    if (data.length > 0) {
-        data.forEach(product => {
-            const productHTML = `
+                checkbox.addEventListener('change', advancedSearch);
+
+            });
+
+            const updateProductDisplay = (data) => {
+
+                console.log(data);
+                const productContainer = document.querySelector('.product-grid-4');
+                productContainer.innerHTML = '';
+
+                if (data.length > 0) {
+                    data.forEach(product => {
+                        const productHTML = `
                 <div class="col-lg-4 col-md-4 col-12 col-sm-6">
                     <div class="product-cart-wrap mb-30">
                         <div class="product-img-action-wrap">
@@ -423,33 +481,33 @@ const updateProductDisplay = (data) =>{
                             <h5 style="  overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;"><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
-                            <div class="rating-result" title="90%">
-                               ${product.productOffer && product.productOffer.offerDiscountPercentage&&new Date(product.productOffer.offerExpiryDate) > new Date()&&product.productSalesPriceAfterOfferDiscount!==0&&product.productOffer.offerStatus
-                                    ? `<span><span>${product.productOffer.offerDiscountPercentage} %</span></span>`
-                                    : ""
-                                }
+                            <div >
+                               ${product.productOffer && product.productOffer.offerDiscountPercentage && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount !== 0 && product.productOffer.offerStatus
+                                ? `<span style="color: red; font-weight: bold;"><span>${product.productOffer.offerDiscountPercentage} %</span></span>`
+                                : ""
+                            }
 
                             </div>
                             <div class="product-price">
-                        ${product.isBlocked || product.category?.isBlocked || product.brand?.isBlocked || product.stock === 0 
-                            ? `<span style="color: red;">Currently Unavailable</span>` 
-                            : (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount!==0&&product.productOffer.offerStatus
-                                ? `<span>₹ ${product.productSalesPriceAfterOfferDiscount}</span>
+                        ${product.isBlocked || product.category?.isBlocked || product.brand?.isBlocked || product.stock === 0
+                                ? `<span style="color: red;">Currently Unavailable</span>`
+                                : (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount !== 0 && product.productOffer.offerStatus
+                                    ? `<span>₹ ${product.productSalesPriceAfterOfferDiscount}</span>
                                 <span class="old-price">₹ ${product.salesPrice}</span>`
-                                : `<span>₹ ${product.salesPrice}</span>`
-                            )
-                        }
+                                    : `<span>₹ ${product.salesPrice}</span>`
+                                )
+                            }
                     </div>
 
                         </div>
                     </div>
                 </div>`;
-            productContainer.insertAdjacentHTML('beforeend', productHTML);
-        });
-    } else {
-        productContainer.innerHTML = '<div class="col-12"><p>No Products Found Yet</p></div>';
-    }
-   
-}
+                        productContainer.insertAdjacentHTML('beforeend', productHTML);
+                    });
+                } else {
+                    productContainer.innerHTML = '<div class="col-12"><p>No Products Found Yet</p></div>';
+                }
+
+            }
         </script>
         <%- include('../layouts/userLayouts/footer') %>

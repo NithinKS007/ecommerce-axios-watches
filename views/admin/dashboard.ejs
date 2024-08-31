@@ -143,18 +143,23 @@
                                     </tr>
                                 </thead>
                                 <tbody id="salesTableBody">
-                                    <% tableSalesData.forEach(sale => { %>
+                                    <% if (tableSalesData.length === 0) { %>
                                         <tr>
-                                          <td><%= sale.date || 'N/A' %></td>
-                                          <td><%= sale.totalNumberOfOrders || 0 %></td>
-                                          <td> <%= sale.grossSales || 0 %></td>
-                                          <td> <%= sale.couponDeductions || 0 %></td>
-                                          <td> <%= sale.netSales || 0 %></td>
+                                            <td colspan="5" style="text-align: center;">No Sales Data Available</td>
                                         </tr>
-                                      <% }) %>
-                                    
-                                    
+                                    <% } else { %>
+                                        <% tableSalesData.forEach(sale => { %>
+                                            <tr>
+                                                <td><%= sale.date || 'N/A' %></td>
+                                                <td><%= sale.totalNumberOfOrders > 0 ? sale.totalNumberOfOrders : 'Not Available' %></td>
+                                                <td><%= sale.grossSales > 0 ? sale.grossSales : 'Not Available' %></td>
+                                                <td><%= sale.couponDeductions > 0 ? sale.couponDeductions : 'Not Available' %></td>
+                                                <td><%= sale.netSales > 0 ? sale.netSales : 'Not Available' %></td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } %>
                                 </tbody>
+                                <% if (tableSalesData.length !== 0) { %>
                                 <tfoot class="table-light"  id="salesTableFooter">
                                     <tr>
                                         <td><%= date ? 'Total' : date %></td>
@@ -164,6 +169,7 @@
                                         <td>Rs <%= tableTotalNetSales||  0 %></td>
                                     </tr>
                                 </tfoot>
+                                <% } %>
                             </table>
                            
                         </div>
@@ -391,18 +397,105 @@ const Sales = (period) => {
 const downloadPDF = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const table = document.querySelector('table');
 
-    doc.autoTable({ html: table });
+
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(16);
+
+ 
+    doc.text('Axios', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.setFont('Helvetica', 'normal');
+
+
+    doc.text('Address: Kochi', doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+    doc.text('Phone: 89 234 567 90', doc.internal.pageSize.getWidth() / 2, 35, { align: 'center' });
+
+
+    doc.setFontSize(10);
+    doc.text('Sales Report', doc.internal.pageSize.getWidth() / 2, 45, { align: 'center' });
+
+    doc.setLineWidth(0.5);
+    doc.line(15, 47, doc.internal.pageSize.getWidth() - 15, 47);
+
+
+    const table = document.querySelector('table');
+    doc.autoTable({ 
+        html: table,
+        startY: 50,  
+        theme: 'grid',  
+        headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
+        bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+        footStyles: { fillColor: [211, 211, 211], textColor: [0, 0, 0] } 
+    });
+
+
     doc.save('sales-report.pdf');
 };
 
 const downloadExcel = () => {
-    const ws = XLSX.utils.table_to_sheet(document.querySelector('table'));
+    const table = document.querySelector('table');
+    const tableData = XLSX.utils.table_to_sheet(table);
+    const headerRange = XLSX.utils.decode_range(tableData['!ref']); 
+
+  
+    const headerDetails = [
+        ['Axios'],
+        ['Address: Kochi'],
+        ['Phone: 89 234 567 90'],
+        [],
+        ['Sales Report']
+    ];
+
+  
+    const ws = XLSX.utils.aoa_to_sheet(headerDetails);
+
+   
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, 
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } }, 
+        { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } }, 
+        { s: { r: 4, c: 0 }, e: { r: 4, c: 3 } }  
+    ];
+
+
+    const alignmentStyle = { alignment: { horizontal: 'center' } };
+    ws['A1'].s = alignmentStyle;
+    ws['A2'].s = alignmentStyle;
+    ws['A3'].s = alignmentStyle;
+    ws['A5'].s = alignmentStyle;
+
+
+    const startRow = 6; 
+    XLSX.utils.sheet_add_aoa(ws, XLSX.utils.sheet_to_json(tableData, { header: 1 }), { origin: { r: startRow, c: 0 } });
+
+
+    for (let row = startRow; row <= headerRange.e.r; row++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: row, c: 0 }); 
+        const cell = ws[cellAddress];
+        if (cell && cell.v instanceof Date) {
+            cell.t = 'n'; 
+            cell.z = XLSX.SSF.get_table()[14]; 
+        }
+    }
+
+   
+    ws['!cols'] = [
+        { wch: 20 }, 
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 }
+    ];
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
     XLSX.writeFile(wb, 'sales-report.xlsx');
 };
+
+
+
+
 
         </script>
         <%- include('../layouts/adminLayouts/footer') %>

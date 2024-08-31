@@ -1,4 +1,4 @@
-
+const { ObjectId } = require('mongodb')
 const userController = require('../controllers/userController')
 
 
@@ -12,9 +12,27 @@ const handleSearch = (req, res, next) => {
 
         return userController.advancedSearch(req, res, next)
 
-    } else {
+    } 
+    
+    let userFromGidSessionOrSession;
+
+    if (req.session.userId) {
+
+        userFromGidSessionOrSession = new ObjectId(req.session.userId);
+
+    } else if (req.user) {
+
+        userFromGidSessionOrSession = new ObjectId(req.user.id);
+    }
+
+    if (userFromGidSessionOrSession) {
+
+        return res.redirect('/home');
         
-        return res.status(400).send("No search parameters provided")
+    }else{
+
+        return res.redirect('/');
+
     }
 }
 

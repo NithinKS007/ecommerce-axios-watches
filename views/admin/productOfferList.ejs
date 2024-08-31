@@ -13,6 +13,35 @@
     align-items: center !important;
     justify-content: center !important;
   }
+
+  .swal1-cancel {
+        width: 100% !important; 
+        margin: 5px 0!important;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
   
   </style>
   <section class="content-main">
@@ -47,7 +76,7 @@
                 <th scope="col">Discount Expiry Date</th>
                 <th scope="col" class="text-center">Edit</th>
                 <th scope="col" class="text-center">Status</th>
-                <th scope="col" class="text-center">Delete</th>
+                <!-- <th scope="col" class="text-center">Delete</th> -->
 
               </tr>
             </thead>
@@ -61,7 +90,7 @@
                   <td><%= product.productOffer.offerName %></td>
                   <td><%= product.productOffer.offerDiscountPercentage %> %</td>
                   <td><%= product.salesPrice %></td>
-                  <td><%= product.productSalesPriceAfterOfferDiscount %></td>
+                  <td><%= product.productSalesPriceAfterOfferDiscount.toFixed(2) %></td>
                   <td><%= new Date(product?.productOffer?.offerStartDate).toISOString().split('T')[0] %></td>
                   <td><%= new Date(product?.productOffer?.offerExpiryDate).toISOString().split('T')[0] %></td>
                   <td class="text-center">
@@ -85,11 +114,11 @@
 
                 </td>
                 
-                <td class="text-center">
+                <!-- <td class="text-center">
           
                     <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="deleteOffer('<%= product._id %>')" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Delete</button>
 
-                </td>
+                </td> -->
                 </tr>
               <% }); %>
             </tbody>
@@ -98,7 +127,41 @@
         <% } %>
       </div>
     </div>
-
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+              <% if (currentPage > 1) { %>
+                  <li class="page-item">
+                      <a class="page-link" href="/admin/productOffer?page=<%= currentPage - 1 %>">
+                          <strong>&lt;</strong>
+                      </a>
+                  </li>
+              <% } %>
+              
+              <% 
+              let startPage = Math.max(1, currentPage - 2);
+              let endPage = Math.min(totalPages, startPage + 4);
+              if (endPage - startPage < 4) {
+                  startPage = Math.max(1, endPage - 4);
+              }
+              %>
+              
+              <% for (let i = startPage; i <= endPage; i++) { %>
+                  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <a class="page-link" href="/admin/productOffer?page=<%= i %>"><strong><%= i %></strong></a>
+                  </li>
+              <% } %>
+              
+              <% if (currentPage < totalPages) { %>
+                  <li class="page-item">
+                      <a class="page-link" href="/admin/productOffer?page=<%= currentPage + 1 %>">
+                          <strong>&gt;</strong>
+                      </a>
+                  </li>
+              <% } %>
+          </ul>
+      </nav>
+  </div>
     
   </section>
 </main>
@@ -117,9 +180,13 @@
                     title: `Are you sure you want to ${isBlocking ? 'Activate' : 'Deactivate'} this Product Offer ?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: `Yes, ${isBlocking ? 'Activate' : 'Deactivate'}`
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: '#ffffff',
+                    confirmButtonText: `Yes, ${isBlocking ? 'Activate' : 'Deactivate'}`,
+                    customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
                   }).then((result) => {
 
                     if (result.isConfirmed) {
@@ -185,6 +252,9 @@
 
     
   }
+
+
+
 </script>
 
 <%- include('../layouts/adminLayouts/footer') %>

@@ -3,12 +3,12 @@
 
         <style>
             .error {
-                font-size: 0.8em;
+                font-size: 0.9rem;
                 color: red;
             }
 
             .small-text {
-                font-size: 0.8em;
+                font-size: 0.9rem;
                 line-height: 1.2;
             }
 
@@ -92,17 +92,39 @@
                 color: #007bff;
                 cursor: pointer;
             }
+            .swal1-cancel {
+        width: 100%;
+        margin: 5px 0;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
+
         </style>
         <main class="container my-5">
-            <!-- <h1 style="
-    font-family: 'Roboto', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 16px;
-    letter-spacing: 0.5px;
-" class="h2 mb-4">CHECKOUT</h1> -->
-
+          
             <div class="row">
                 <div class="col-lg-8">
                     <p style="
@@ -535,7 +557,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div id="paymentMethodError" class="text-danger mb-3" style="color: red; font-size: 5px; display: none; margin-top: 2px;margin-bottom: 5px;"></div> -->
                     <button type="submit" class="btn btn-primary btn-lg w-100" id="placeOrder">Place Order</button>
                 </div>
             </div>
@@ -589,6 +610,10 @@
                     if (nameInput.value.trim() === '') {
                         nameError.textContent = '* Name is required';
                         return false
+                    } else if (!/^[a-zA-Z\s]+$/.test(nameInput.value.trim())) { 
+                        nameError.textContent = '* Name must contain only letters';
+                        return false
+                        
                     } else if (nameInput.value.trim().length < 2) {
 
                         nameError.textContent = '* Name must be at least 2 characters long'
@@ -651,6 +676,12 @@
                     if (localityInput.value.trim() === '') {
                         localityError.textContent = '* Locality is required';
                         return false;
+                     } else if (localityInput.value.trim().length < 5) {
+                        localityError.textContent = '* Locality must be at least 5 characters long';
+                        return false;
+                    } else if (!/^[a-zA-Z\s]+$/.test(localityInput.value.trim())) { 
+                        localityError.textContent = '* Locality can only contain letters';
+                        return false;
                     } else {
                         localityError.textContent = '';
                         return true;
@@ -666,7 +697,10 @@
                         addressError.textContent = '* Address is required';
                         return false
 
-                    } else {
+                    }  else if (addressInput.value.trim().length < 5) {
+                        addressError.textContent = '* Address must be at least 5 characters long';
+                        return false;
+                    }  else {
                         addressError.textContent = '';
 
                         return true
@@ -882,7 +916,7 @@
                     if (!selectedPaymentMethod && !selectedAddressId) {
 
                         Swal.fire({
-                            icon: 'error',
+                            icon: 'warning',
                             text: 'Please select a payment method and address.',
                             toast: true,
                             position: 'top-right',
@@ -890,11 +924,11 @@
                             timerProgressBar: true,
                             timer: 3000
                         });
-                        // errorMessage = 'Please select a payment method and address.';
+                      
                     } else if (!selectedAddressId) {
 
                         Swal.fire({
-                            icon: 'error',
+                            icon: 'warning',
                             text: 'Please select an address.',
                             toast: true,
                             position: 'top-right',
@@ -906,7 +940,7 @@
                     } else if (!selectedPaymentMethod) {
 
                         Swal.fire({
-                            icon: 'error',
+                            icon: 'warning',
                             text: 'Please select a payment method.',
                             toast: true,
                             position: 'top-right',
@@ -930,9 +964,28 @@
                             .then(data => {
 
                                 console.log('Success:', data)
-                                if (data.success) {
 
-                                    if (selectedPaymentMethod === "razorPay") {
+                                if(data.success&&selectedPaymentMethod !== "razorPay"){
+
+                                    Swal.fire({
+                                            icon: 'success',
+                                            text: 'Payment successfull!',
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                            timer: 3000
+                                        }).then(() => {
+
+                                            window.location.href = "http://localhost:7000/placeOrder";
+
+                                        });
+
+                                        return
+
+                                } else if (data.success&&selectedPaymentMethod === "razorPay") {
+
+                                  
 
                                         const options = {
 
@@ -961,35 +1014,16 @@
 
                                         Swal.fire({
                                             icon: 'error',
-                                            text: 'Online Payment failed!',
+                                            text: `${data.message}`,
                                             toast: true,
                                             position: 'top-right',
                                             showConfirmButton: false,
                                             timerProgressBar: true,
                                             timer: 3000
-                                        }).then(() => {
-
-                                            window.location.href = "http://localhost:7000/paymentFailure";
-
-                                        });
+                                        })
                                     }
 
-                                } else {
-
-                                    Swal.fire({
-                                        icon: 'error',
-                                        text: `${data.message}`,
-                                        toast: true,
-                                        position: 'top-right',
-                                        showConfirmButton: false,
-                                        timerProgressBar: true,
-                                        timer: 3000
-                                    });
-
-
-                                }
-
-
+            
 
                             })
                             .catch((error) => {
@@ -1214,6 +1248,9 @@
                     if (addressNameInput.value.trim() === '') {
                         editNameError.textContent = '* Name is required';
                         return false;
+                    } else if (!/^[a-zA-Z\s]+$/.test(addressNameInput.value.trim())) { 
+                        editNameError.textContent = '* Name must contain only letters';
+                        return false
                     } else if (addressNameInput.value.trim().length < 2) {
                         editNameError.textContent = '* Name must be at least 2 characters long';
                         return false;
@@ -1255,7 +1292,14 @@
                     if (addressLocalityInput.value.trim() === '') {
                         editLocalityError.textContent = '* Locality is required';
                         return false;
-                    } else {
+                    }else if (addressLocalityInput.value.trim().length < 5) {
+                        editLocalityError.textContent = '* Locality must be at least 5 characters long';
+                        return false;
+                    } else if (!/^[a-zA-Z\s]+$/.test(addressLocalityInput.value.trim())) { 
+                        editLocalityError.textContent = '* Locality can only contain letters';
+                        return false;
+                    }
+                     else {
                         editLocalityError.textContent = '';
                         return true;
                     }
@@ -1265,7 +1309,10 @@
                     if (addressTextAreaInput.value.trim() === '') {
                         editAddressError.textContent = '* Address is required';
                         return false;
-                    } else {
+                    } else if (addressTextAreaInput.value.trim().length < 5) {
+                        editAddressError.textContent = '* Address must be at least 5 characters long';
+                        return false
+                    }else {
                         editAddressError.textContent = '';
                         return true;
                     }
@@ -1350,13 +1397,16 @@
                     }
 
                     Swal.fire({
-                        title: 'Confirm Update',
-                        text: 'Are you sure you want to save these changes? This action cannot be undone.',
-                        icon: 'warning',
+                        text: 'Are you sure you want to save these changes?',
                         showCancelButton: true,
+                        confirmButtonColor: '#000000',
+                        cancelButtonColor: '#ffffff',
                         confirmButtonText: 'Yes, save changes',
                         cancelButtonText: 'No, cancel',
-                        reverseButtons: true
+                        customClass: {
+                            confirmButton: 'swal1-confirm',
+                            cancelButton: 'swal1-cancel'
+                        },
                     }).then((result) => {
 
                         if (result.isConfirmed) {

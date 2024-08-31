@@ -13,17 +13,24 @@ require("dotenv").config();
 const app = express()
 const PORT = process.env.PORT;
 
+//this required here because of google authentication
 require('./middleware/userAuth')
 
 //connecting to mongodb
 connectDB()
   
+
+//for searching the product
+app.use((req, res, next) => {
+    res.locals.searchProduct = "";
+    next();
+});
 //setting the viewengine
 app.set('view engine', 'ejs')
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.static('public/assets'));
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
 // sweet alert js file from the installed npm install sweetalert2 library
 app.use('/modules', express.static('node_modules'))
 

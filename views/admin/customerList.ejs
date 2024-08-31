@@ -11,6 +11,34 @@
     align-items: center !important;
     justify-content: center !important;
   }
+  .swal1-cancel {
+        width: 100% !important; 
+        margin: 5px 0!important;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
     </style>
     <%- include('../layouts/adminLayouts/sidebar') %>
         <main class="main-wrap">
@@ -21,34 +49,35 @@
                             <h2 class="content-title card-title">Customers List </h2>
                             <p>Dashboard> customerslist</p>
                         </div>
-                        <!-- <div>
-                            <input type="text" placeholder="Search order ID" class="form-control bg-white">
-                        </div> -->
                     </div>
 
                     <div class="card mb-4">
                         <header class="card-header">
-                            <div class="row gx-3">
-                                <div class="col-lg-4 col-md-6 me-auto">
-                                    <input type="text" placeholder="Search..." class="form-control">
+                            <form action="/admin/customerlist" method="get" style="padding-left: 20px; padding-right: 20px;">
+                                <div class="row gx-3">
+                                    <!-- Search Input with Button -->
+                                    <div class="col-lg-4 col-md-6 me-auto" style="margin-top: 20px;">
+                                        <div class="input-group w-100">
+                                            <input type="text" name="search" class="form-control" placeholder="Search term" value="<%= search %>">
+                                            <button class="btn btn-light bg" type="submit">
+                                                <i class="material-icons md-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                        
+                                    <!-- Status Filter Dropdown -->
+                                    <div class="col-lg-2 col-6 col-md-3" style="margin-top: 20px;">
+                                        <select name="status" class="form-select" onchange="this.form.submit();">
+                                            <option value="" <%= statusFilter === '' ? 'selected' : '' %>>Status</option>
+                                            <option value="Active" <%= statusFilter === 'Active' ? 'selected' : '' %>>Active</option>
+                                            <option value="Disabled" <%= statusFilter === 'Disabled' ? 'selected' : '' %>>Disabled</option>
+                                            <option value="" <%= statusFilter === '' ? 'selected' : '' %>>Show all</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-lg-2 col-6 col-md-3">
-                                    <select class="form-select">
-                                        <option>Status</option>
-                                        <option>Active</option>
-                                        <option>Disabled</option>
-                                        <option>Show all</option>
-                                    </select>
-                                </div>
-                                <!-- <div class="col-lg-2 col-6 col-md-3">
-                                    <select class="form-select">
-                                        <option>Show 20</option>
-                                        <option>Show 30</option>
-                                        <option>Show 40</option>
-                                    </select>
-                                </div> -->
-                            </div>
+                            </form>
                         </header>
+                        
                         <!-- table content starts -->
                         <div class="card-body">
                             <div class="table-responsive">
@@ -99,7 +128,7 @@
                             </td>
                             </tr>
                             <%}%>
-                                <%}else {%>}
+                                <%}else {%>
                                     <tr>
                                     <tr>
                                         <td colspan="5">No Users Found Yet</td>
@@ -165,9 +194,14 @@
                     title: `Are you sure you want to ${isBlocking ? 'block' : 'unblock'} this person?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: `Yes, ${isBlocking ? 'block' : 'unblock'}`
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: '#ffffff',
+                    confirmButtonText: `Yes, ${isBlocking ? 'block' : 'unblock'}`,
+
+                    customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch(`http://localhost:7000/admin/customerlist/?userId=${userId}`, {

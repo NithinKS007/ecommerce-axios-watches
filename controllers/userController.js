@@ -14,23 +14,17 @@ const userAddress = require('../models/addressModel')
 const orders = require('../models/orderModel')
 const coupons = require('../models/couponModel')
 const wishList = require('../models/wishList')
-
 const transaction = require('../models/onlineTransactionModel')
-
 const returnUserOrder = require('../models/returnOrderModel')
-
-const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils')
-
-const forgotPassword = require('../utils/forgotPassword')
-
 const wallet = require('../models/walletModel');
 
+const {createRazorPayOrder, verifyRazorPaySignature} = require('../utils/razorPayUtils')
+const forgotPassword = require('../utils/forgotPassword')
 require('dotenv').config();
 
-const RAZORPAY_SECRECT_KEY = process.env.RAZORPAY_SECRECT_KEY
 const RAZORPAY_ID_KEY  = process.env.RAZORPAY_ID_KEY 
 
-//hashing password
+
 const securePassword = async(password)=>{
     try {
        const passwordHash = await bcrypt.hash(password,10)  
@@ -49,18 +43,153 @@ const secureToken = async (token) => {
         return tokenHash;
     } catch (error) {
         console.log(`Cannot hash the token:`, error.message);
+
         throw new Error('Token hashing failed');
     }
 };
 
-//loading the home page 
+
+
+
 const loadHome = async (req,res) => {
+    
     
     let pageNumber = parseInt(req.query.page) || 1;
     const perPageData =  12
+ 
 
     try {
 
+        const popularBrand = await orders.aggregate([
+
+            {$match:{orderStatus:"delivered"}},
+            {$unwind:"$items"},
+            {$match:{"items.orderProductStatus":"delivered"}},
+            {
+
+                $group:{
+
+                    _id:{ brand :"$items.brand",product:"$items.productName"},
+
+                    totalSold:{$sum:"$items.quantity"},
+
+                }
+
+            },
+            {
+                $sort:{totalSold:-1}
+            },
+            {
+                $group:{
+                    _id:"$_id.brand",
+                    topProduct:{$first:"$_id.product"},
+                    totalSold:{$first:"$totalSold"},
+                    totalOrders:{$sum:1}
+                }
+            },
+            {
+                $lookup:{
+
+                    from:"brands",
+                    localField:"_id",
+                    foreignField:"_id",
+                    as:"brandDetails"
+                }
+            },
+            {$unwind:"$brandDetails"},
+            {
+                $project:{
+                    brandName:"$brandDetails.name",
+                }
+            },
+
+            {$sort:{totalSold:-1}},
+            {$limit:4}
+
+        ])
+
+        
+
+        const bestSellers = await orders.aggregate([
+            { $match: { orderStatus: "delivered" } },
+            { $unwind: "$items" },
+            { $match: { "items.orderProductStatus": "delivered" } },
+            {
+                $group: {
+                    _id: "$items.product",
+                    totalSold: { $sum: "$items.quantity" },
+                    productName: { $first: "$items.productName" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $project: {
+                    productName: "$productDetails.name", 
+                    firstImage: { $first: "$productDetails.images" },
+                    price: {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    { $eq: ["$productDetails.productOffer.offerStatus", true] },
+                                    { $lte: ["$productDetails.productOffer.offerStartDate", new Date()] },
+                                    { $gte: ["$productDetails.productOffer.offerExpiryDate", new Date()] }
+                                ]
+                            },
+                            then: "$productDetails.productSalesPriceAfterOfferDiscount",
+                            else: "$productDetails.salesPrice"
+                        }
+                    }
+                }
+            },
+            { $sort: { totalSold: -1 } },
+            { $limit: 4 }
+        ]);
+        
+        
+
+
+        const newArrivals  = await products.find({}).sort({createdAt:-1}).limit(4).populate('brand').populate('category')
+
+        
+        const currentDate = new Date();
+
+        const activeProductOffers = await products.find({
+            "productOffer.offerStatus": true,
+            "productOffer.offerStartDate": { $lte: currentDate },
+            "productOffer.offerExpiryDate": { $gte: currentDate }
+        }).populate('brand').populate('category').limit(4).exec();
+
+        const activeCategoryOffers = await categories.find({
+            "categoryOffer.offerStatus": true,
+            "categoryOffer.offerStartDate": { $lte: currentDate },
+            "categoryOffer.offerExpiryDate": { $gte: currentDate }
+        }).limit(4).exec();
+
+
+        const topDeals = await products.aggregate([
+
+            {
+                $match:{
+
+                    "productOffer.offerExpiryDate": { $gte: currentDate },
+                    "productOffer.offerStatus": true
+                }
+            },
+            { $sort: { "productOffer.offerDiscountPercentage": -1 } },
+
+            { $limit: 4 },
+
+
+        ])
+        
         const totalProducts = await products.countDocuments();
         const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData))
         pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
@@ -70,20 +199,24 @@ const loadHome = async (req,res) => {
         .limit(perPageData)
         .exec();
 
+        const categoryData = await categories.find({})
+
         const successMessage = req.session.successMessage;
         req.session.successMessage = null;
 
-        return res.status(200).render("user/home",{productsArray, successMessage,totalPages,currentPage: pageNumber})
+
+        
+        return res.status(200).render("user/home",{productsArray, successMessage,totalPages,currentPage: pageNumber,bestSellers,newArrivals, activeProductOffers, activeCategoryOffers,categoryData,popularBrand,newArrivals,topDeals})
 
     } catch (error) {
         
         console.log(`error while loading the home page before logging in`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
     }
 }
-//loading the registraion page 
+
 const loadRegister = async (req,res) => {
     try {
         
@@ -93,20 +226,29 @@ const loadRegister = async (req,res) => {
 
         console.log(`cannot render signup page`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
         
     }
 }
 
-//verifying user
+
 
 const generateOtp = async (req,res) => {
 
     req.session.formData = req.body
     const {email}        = req.session.formData
    
+    const existingUser = await users.findOne({email:email})
 
+
+
+    if(existingUser){
+
+        return res.status(200).render("user/signin", { message: "This email already has an account on this website." })
+
+    }
+    
     try {
 
         const otp = await utils.generateOtp()
@@ -125,13 +267,13 @@ const generateOtp = async (req,res) => {
 
         console.log(`cannot render otpverification page or generate otp`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
         
     }
 }
 
-//loading the otp verification page 
+ 
 const otpVPage = async (req, res) => {
     try {
 
@@ -141,12 +283,12 @@ const otpVPage = async (req, res) => {
 
         console.error('Error loading the OTP verification page:', error.message)
 
-        return res.status(500).send('Internal Server Error')
+        return res.status(500).render("user/500")
         
     }
 }
 
-//resend otp function
+
 
 const resendOtp = async (req,res) =>{
 
@@ -174,7 +316,7 @@ const resendOtp = async (req,res) =>{
     }
 }
 
-//verifying the otp 
+
 
 const verifyOtp = async (req,res) => {
    
@@ -199,7 +341,9 @@ const verifyOtp = async (req,res) => {
                 lname:userDataSession.lname,
                 email:userDataSession.email,
                 phone:userDataSession.phone,
-                password:hashedPassword     
+                password:hashedPassword,
+                googleId: userDataSession.googleId || undefined,
+                     
             })
     
            const userData = await user.save()
@@ -229,7 +373,7 @@ const verifyOtp = async (req,res) => {
 }
 
 
-//loading the signin page
+
 const loadsignin = async (req,res) =>{
 
     try {
@@ -240,13 +384,13 @@ const loadsignin = async (req,res) =>{
         
         console.log(`error while loading the login page`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
     }
 }
 
 
-//verifying the user from the signin page
+
 const verifySignin = async (req,res) => {
 
     const {email,password} = req.body
@@ -283,14 +427,14 @@ const verifySignin = async (req,res) => {
 
         console.log(`error in the signin function`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
         
     }
 
 }
 
-//loading mens page
+
 const loadShowCase = async (req,res) =>{
 
     const targetGroup = req.query.targetGroup
@@ -318,12 +462,12 @@ const loadShowCase = async (req,res) =>{
         
         console.log(`error while loading mens page`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
     }
 }
 
-//loading the product details page 
+
 
 const loadProductDetails = async (req,res) =>{
 
@@ -374,14 +518,15 @@ const loadProductDetails = async (req,res) =>{
         
         console.log(`error while loading the product details page`,error.message);
 
-        return res.status(500).send("Internal server Error")
+         return res.status(500).render("user/500")
 
     }
 }
 
 
-//loading the profile of user
+
 const loadUserProfile = async (req,res) =>{
+
 
     let userFromGidSessionOrSession 
 
@@ -393,7 +538,7 @@ const loadUserProfile = async (req,res) =>{
 
         }else if(req.user){
 
-            //checking for google session id 
+       
             userFromGidSessionOrSession = req.user.id
 
         }
@@ -409,6 +554,8 @@ const loadUserProfile = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading user profile`,error.message);
+
+        return res.status(500).render("user/500")
     }
 
 }
@@ -510,12 +657,14 @@ const editPassword = async (req, res) => {
 
             console.log(`Error while editing the password`, error.message);
 
+            return res.status(500).render("user/500")
+
         }
    
 };
 
 
-//loggingout for user
+
 
 const loadUserLogout = async (req,res) =>{
 
@@ -538,12 +687,12 @@ const loadUserLogout = async (req,res) =>{
         
         console.log(`error while logging out`,error.message);
 
-        return res.status(500).send("An error occurred while logging out the user.")
+         return res.status(500).render("user/500")
 
     }
 
 }
-//calculating ORDER SUMMARY
+
 const priceSummary = async (cartData, couponCode) => {
     try {
       if (cartData?.items?.length > 0) {
@@ -614,12 +763,13 @@ const priceSummary = async (cartData, couponCode) => {
       return { subTotal: 0, finalPrice: 0, totalQuantity: 0, discount: 0 };
     } catch (error) {
       console.log(`Error while calculating the price details: ${error.message}`);
-      return { error: error.message };
+      return res.status(500).render("user/500")
     }
   };
 
-//loading cart page
+
 const loadCart = async (req,res) =>{
+
 
     try {
         
@@ -631,7 +781,7 @@ const loadCart = async (req,res) =>{
 
         }else if(req.user){
 
-            //checking for google session id 
+          
             userFromGidSessionOrSession = req.user.id
 
         }
@@ -655,7 +805,7 @@ const loadCart = async (req,res) =>{
             
             const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
 
-            return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons })
+            return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons})
 
         }
 
@@ -663,12 +813,14 @@ const loadCart = async (req,res) =>{
     } catch (error) {
      
         console.log(`error while loading the cart page`,error.message);
+
+        return res.status(500).render("user/500")
     }
 
 }
 
 
-//product adding to cart from the product details page
+
 
 const addToCart = async (req,res) =>{
 
@@ -749,10 +901,12 @@ const addToCart = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while adding product to cart from product details page backend`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
-//product removing from the cart
+
 const removeFromCart = async (req, res) => {
 
     try {
@@ -794,7 +948,8 @@ const removeFromCart = async (req, res) => {
                 subTotal:subTotal,
                 finalPrice:finalPrice,
                 discount:discount,
-                cartDetails
+                cartDetails,
+                couponCode
             });
             } else {
             return res.status(500).json({
@@ -808,12 +963,12 @@ const removeFromCart = async (req, res) => {
 
       console.log('Error while removing an item from the cart', error.message)
 
-      return res.status(500).send('Internal Server Error')
+      return res.status(500).render("user/500")
 
     }
   }
 
-  //increasing the quantity of the product inside the cart
+
   const updateQuantityFromCart = async (req,res) =>{
 
     try {
@@ -934,7 +1089,7 @@ const removeFromCart = async (req, res) => {
 const loadAddress = async (req,res) =>{
 
     let userFromGidSessionOrSession
-
+   
     if (req.session.userId) {
 
       userFromGidSessionOrSession =  new ObjectId(req.session.userId) 
@@ -955,6 +1110,8 @@ const loadAddress = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the address page`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
@@ -968,6 +1125,8 @@ const loadAddAddress = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the address adding page`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 const addAddress = async (req,res) =>{
@@ -1028,6 +1187,8 @@ const addAddress = async (req,res) =>{
         
         console.log(`error while adding the address`,error.message);
 
+        return res.status(500).render("user/500")
+
     }
 }
 
@@ -1065,6 +1226,8 @@ const editAddress = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while editing the address`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
@@ -1109,6 +1272,8 @@ const removeAddress = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while deleting the address`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 //loading the checkout page
@@ -1146,6 +1311,8 @@ const  loadCheckout = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the checkout page`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
@@ -1234,7 +1401,7 @@ const placeOrder = async (req,res) =>{
        if (isSelectedItemsOnly.length === 0 || finalPrice === 0) {
         return res.status(400).json({
             success: false,
-            message: 'No items selected or final price is zero',
+            message: 'Something went wrong please try again',
         });
     }
   
@@ -1400,6 +1567,8 @@ const placeOrder = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while placing the order`,error.message)
+
+        return res.status(500).render("user/500")
     }
 
 }
@@ -1413,6 +1582,8 @@ const loadPaymentFailure = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the payment failure page`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 }
@@ -1438,7 +1609,7 @@ const loadPlaceOrder = async (req, res) => {
 
         console.log(`Error while loading the place order page:`, error.message);
 
-        return res.status(500).send('An error occurred while loading the place order page.');
+        return res.status(500).render("user/500")
     }
 };
 
@@ -1501,7 +1672,7 @@ const loadOrders = async (req, res) => {
     } catch (error) {
         console.log("Error while loading the orders page:", error.message);
 
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).render("user/500")
 
     }
 }
@@ -1596,7 +1767,7 @@ const cancelOrderProduct = async (req, res) => {
                 return res.status(404).json({ error: 'Wallet not found' });
             }
        
-            if (orderData.paymentMethod === "razorPay") {
+            if (orderData.paymentMethod === "razorPay"||orderData.paymentMethod === "wallet") {
                 const newWalletTransaction = {
                     orderId: orderIdOfTheCart, 
                     amount: priceAfterEverything,
@@ -1678,7 +1849,7 @@ const cancelOrder = async (req, res) => {
 
     }else if(req.user){
 
-        //checking for google session id 
+      
         userFromGidSessionOrSession =  new ObjectId(req.user.id);
 
     }
@@ -1728,7 +1899,7 @@ const cancelOrder = async (req, res) => {
             const allOrderCancelled = await orders.updateOne({_id:orderIdOfTheOrder},{$set:{orderStatus:"cancelled"}})
             
 
-            if(order.paymentMethod==="razorPay"){
+            if(order.paymentMethod==="razorPay"||order.paymentMethod==="wallet"){
 
               const productsAmountThatHaventRefunded =  walletData.transactions.filter(tx =>tx.type==="credit"&&tx.orderId.equals(orderIdOfTheOrder))
                 .reduce((acc,tx) => acc+tx.amount,0)
@@ -1867,12 +2038,18 @@ const getEnumValues = (schema, path) => {
 };
 
 const searchProducts = async (req, res) => {
+    const { searchProduct = '', targetGroup } = req.query;
 
-    const { searchProduct } = req.query;
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 9;
 
     try {
-      
+       
         console.log(`Search query: ${searchProduct}`);
+        
+ 
+        const categoriesArray = await categories.find({ isBlocked: false });
+        const brandArray = await brands.find({ isBlocked: false });
 
         const arrayToAggregate = [];
 
@@ -1890,41 +2067,63 @@ const searchProducts = async (req, res) => {
                     ]
                 }
             });
-
-            arrayToAggregate.push({
-                $lookup: {
-                    from: 'brands',
-                    localField: 'brand',
-                    foreignField: '_id',
-                    as: 'brandData'
-                }
-            });
-            arrayToAggregate.push({
-                $lookup: {
-                    from: 'categories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'categoryData'
-                }
-            });
-
-            
         }
 
-        const productsArray = await products.aggregate(arrayToAggregate)
-        const categoriesArray = await categories.find().exec();
-        const brandArray = await brands.find().exec();
+        arrayToAggregate.push({
+            $lookup: {
+                from: 'brands',
+                localField: 'brand',
+                foreignField: '_id',
+                as: 'brandData'
+            }
+        });
+        arrayToAggregate.push({
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'categoryData'
+            }
+        });
 
-        console.log(`Products array:`, productsArray);
+        const query = targetGroup ? { targetGroup } : {};
 
-        return res.status(200).render("user/showCaseSearch", { productsArray, categoriesArray ,brandArray});
+        const totalProducts = await products.countDocuments({ ...query, ...searchProduct ? { $or: arrayToAggregate[0].$match.$or } : {} });
+        const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
 
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+        const skip = (pageNumber - 1) * perPageData;
+
+        const productsArray = await products.aggregate([
+            ...arrayToAggregate,
+            { $match: { ...query, ...searchProduct ? { $or: arrayToAggregate[0].$match.$or } : {} } },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: perPageData }
+        ]);
+
+        const latestProducts = await products.find(query).sort({ createdAt: -1 }).limit(10).populate('brand').populate('category');
+
+        return res.status(200).render("user/showCase", {
+            productsArray,
+            categoriesArray,
+            brandArray,
+            latestProducts,
+            targetGroup,
+            totalPages,
+            currentPage: pageNumber,
+            searchProduct
+            
+        });
     } catch (error) {
-        console.log(`Error while searching the products`,error.message)
+
+        console.log(`Error while searching the products`, error.message);
 
         return res.status(500).send('Internal server error');
+
     }
 };
+
 
 const applyCoupon = async (req, res) => {
     try {
@@ -2239,7 +2438,6 @@ const loadWallet = async (req, res) => {
 
         const skip = (pageNumber - 1) * perPageData;
 
-        // Paginate transactions
         const transactionsData = walletData.transactions
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(skip, skip + perPageData);
@@ -2272,7 +2470,7 @@ const returnProductOrder = async (req,res) =>{
 
     }else if(req.user){
 
-        //checking for google session id 
+    
         userFromGidSessionOrSession =  new ObjectId(req.user.id);
 
     }
@@ -2438,7 +2636,7 @@ const handleForgotPassword = async (req,res) =>{
         console.log(`this is the token generated from the backend before saving in the database`,hashedToken);
 
         userData.resetPasswordToken = hashedToken
-        userData.resetPasswordExpires = Date.now() +  300000 //expire date 5 minutes
+        userData.resetPasswordExpires = Date.now() +  300000 
         await userData.save()
 
         req.session.forgotPasswordEmail = userMail
@@ -2465,7 +2663,7 @@ const loadResetPassword = async (req,res) =>{
 
         const tokenNotexpired = await users.findOne({ resetPasswordToken: hashedToken, resetPasswordExpires: { $gt: Date.now() } });
 
-        //token is expired
+     
         if (!tokenNotexpired) {
 
             return res.status(400).send("Token expired or invalid")
@@ -2675,6 +2873,47 @@ const retryOrderPayment = async (req,res) =>{
         
     }
 }
+
+const loadOrderDetails = async (req,res) =>{
+
+
+    let userFromGidSessionOrSession; 
+
+    if (req.session.userId) {
+
+        userFromGidSessionOrSession = new ObjectId(req.session.userId)
+
+    } else if (req.user) {
+
+        // Checking for Google session ID
+        userFromGidSessionOrSession = new ObjectId(req.user.id)
+
+    }
+
+    try {
+      
+        const {orderId} = req.query
+
+        const orderIdOfTheOrder = new ObjectId(orderId)
+       
+        const orderData = await orders.findOne({_id:orderIdOfTheOrder }).exec();
+
+        const transactions = await transaction.findOne({orderId:orderData._id}).exec();
+    
+        console.log(`this is the order data =>`,orderData);
+        console.log(`this is its transactions data=>`,transactions)
+        
+        
+        return res.status(200).render("user/orderDetails", {orderData,transactions})
+
+    } catch (error) {
+
+        console.log(`error while loading the order details page`,error.message)
+        return res.status(500).json({success: false,message: 'error while loading the order details page'})
+        
+    }
+
+}
 module.exports = {
 
   // user authentication
@@ -2758,6 +2997,9 @@ module.exports = {
     ResetPassword,
 
     handleOnlinePaymentFailure,
-    retryOrderPayment
+    retryOrderPayment,
+
+
+    loadOrderDetails
     
 }

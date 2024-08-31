@@ -12,6 +12,35 @@
                     font-size: 0.8em;
                     line-height: 1.2;
                 }
+                .swal1-cancel {
+        width: 100% !important; 
+        margin: 5px 0!important;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
+
             </style>
             <%- include('../layouts/adminLayouts/searchbar') %>
                 <!--  modal section starts-->
@@ -563,9 +592,13 @@
                             text: 'Do you want to remove this image?',
                             icon: 'warning',
                             showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#ffffff',
                             confirmButtonText: 'Yes, remove it!',
+                            customClass: {
+                                confirmButton: 'swal1-confirm',
+                                cancelButton: 'swal1-cancel'
+                            },
                         });
 
                         if (result.isConfirmed) {

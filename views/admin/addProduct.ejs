@@ -245,9 +245,9 @@
 
           Array.from(files).forEach((file) => {
             if (!validateImage(file)) {
-              console.log(`Skipping invalid file: ${file.name}`);
 
               return;
+              
             }
             const reader = new FileReader();
 

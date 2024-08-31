@@ -2,19 +2,29 @@
 
 const isAdminLogin = async (req, res, next) => {
   try {
-    if (!req.session.adminId) {
+    if (req.session.adminId) {
 
-      console.log("Access denied for admin. Admin ID not found.");
-
-     return res.status(403).send("Access Denied");
+      if (req.path === "/signin") {
+        return res.redirect("/admin/dashboard");
+      }
+      return next();
 
     } 
-    next()
+    if (!req.session.adminId) {
+
+      if (req.path !== "/signin") {
+
+        return res.redirect("/admin/signin");
+
+      }
+
+    }
+    return next();
   } catch (error) {
 
     console.log("error from the admin isAdminLogin middleware", error.message);
 
-    return res.status(500).send("Internal Server Error");
+     return res.status(500).render("user/500");
 
   }
 };
@@ -27,17 +37,21 @@ const isAdminLogout = async (req, res, next) => {
 
     if (req.session.adminId) {
 
-      console.log("Access denied for admin logout. Admin is still logged in.")
-
-      return res.status(403).send("Access Denied");
+      if (req.path === "/signin" || req.path === "/signup") {
+        return res.redirect("/admin/dashboard");
+      }
+      return next();
 
     }
-    next()
+    if (req.path === "/signin" || req.path === "/signup") {
+      return next();
+    }
+    return res.redirect("/signin");
   } catch (error) {
 
     console.error("Error from isAdminLogout middleware:", error.message);
 
-    return res.status(500).send("Internal Server Error");
+    return res.status(500).render("user/500");
     
   }
 };

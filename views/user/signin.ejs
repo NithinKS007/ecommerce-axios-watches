@@ -1,22 +1,37 @@
 <%- include('../layouts/adminLayouts/header') %>
 
     <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-    <main class="d-flex align-items-center justify-content-center vh-100">
-        <style>
+    <main class="d-flex align-items-center justify-content-center vh-100" >
+        <style> 
             .error {
-            font-size: 0.8em;
+            font-size: 0.9rem;
             color: red;
         }
         .small-text {
-            font-size: 0.8em;
+            font-size: 0.9em;
             line-height: 1.2;
             
         }
+        .card-login {
+          
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .card-login {
+            width: 100%; 
+            max-width: 450px; 
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 5px; 
+        }
+        .rounded-button {
+    border-radius: 5px; 
+    padding: 10px 20px; 
+}
+
         </style>
-        <section class="content-main" style="width: 100%; max-width: 400px;">
+        <section class="content-main" style="width: 100%; max-width: 1200px;">
             <div class="card mx-auto card-login">
                 <div class="card-body">
-                    <h4 class="card-title mb-4 text-center">Sign in</h4>
+                    <h4 class="card-title mb-4 text-center" style="font-size: 25px;">Sign in</h4>
 
                     <% if (typeof message !='undefined' ) { %>
 
@@ -44,13 +59,13 @@
                                 </div>
 
                                 <div class="mb-4">
-                                    <button type="submit" name="signin" class="btn btn-primary w-100">Login</button>
+                                    <button type="submit" name="signin" class="btn btn-primary w-100" style="font-size: 18px; line-height: 1.5;">Login</button>
                                 </div>
                             </form>
 
                             <p class="text-center small text-muted mb-15">or sign up with</p>
-                            <div class="d-grid gap-3 mb-4">
-                                <a href="/auth/google" class="btn w-100 btn-light font-sm">
+                            <div class="d-grid gap-3 mb-4" >
+                                <a href="/auth/google" class="btn w-100 btn-light font-sm rounded-button">
                                     <svg aria-hidden="true" class="icon-svg" width="20" height="20" viewBox="0 0 20 20">
                                         <path
                                             d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"
@@ -107,17 +122,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordError = document.getElementById('passwordError');
 
   const validatePassword = () => {
-    if (passwordInput.value.trim() === '') {
-      passwordError.textContent = '* Password is required';
-      return false;
-    } else if (passwordInput.value.trim().length < 5) {
-      passwordError.textContent = '* Password should be at least 5 characters long';
-      return false;
-    } else {
-      passwordError.textContent = '';
-      return true;
-    }
-  };
+  const password = passwordInput.value.trim();
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.{8,})/;
+
+  if (password === '') {
+    passwordError.textContent = '* Password is required';
+    return false;
+  } else if (password.length < 8) {
+    passwordError.textContent = '* Password should be at least 8 characters long';
+    return false;
+  } else if (!regex.test(password)) {
+    passwordError.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character';
+    return false;
+  } else {
+    passwordError.textContent = '';
+    return true;
+  }
+};
   passwordInput.addEventListener('input', validatePassword);
 
   // Form Submission Validation

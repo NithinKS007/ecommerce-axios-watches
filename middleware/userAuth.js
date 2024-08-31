@@ -6,19 +6,19 @@ require('dotenv').config();
 
 //authentication using google
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    passReqToCallback: true
-  },
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL,
+  passReqToCallback: true
+},
 
   async (request, accessToken, refreshToken, profile, cb) => {
-    
+
     console.log('Google OAuth function is working')
-    
+
     try {
-      
-      let user = await users.findOne({googleId: profile.id });
+
+      let user = await users.findOne({ googleId: profile.id });
 
       console.log(profile.id);
       if (!user) {
@@ -71,58 +71,50 @@ passport.deserializeUser(async (id, done) => {
 })
 
 
-
-//user login in middleware
-
-const isUserLogin = async(req,res,next) =>{
-
+const isUserLogin = async (req, res, next) => {
   try {
-
-    if(!req.session.userId && (!req.isAuthenticated() || !req.user)){
-  
-      console.log("Access denied for user. Redirecting to signin.")
-      
-      return res.redirect("/signin")
-
-    }
-    
-   next()
-
-  } catch (error) {
-    
-    console.log(`error from the user isUserLogin middleware`,error.message);
-
-    return res.status(500).send("Internal Server Error");
-
-  }
-
-
-
-}
-
-//user logout in middleware
-
-const isUserLogout = async (req,res,next) =>{
-
-  try {
-    
-    if(req.session.userId && (req.isAuthenticated() || req.user)){
-
-      console.log("Access denied for user logout");
-
-      return res.redirect("/")
+    if (req.session.userId || (req.isAuthenticated() && req.user)) {
+      if (req.path === "/signin") {
+        return res.redirect("/home");
+      }
+      return next();
     }
 
-    next()
-    
+    if (!req.session.userId && (!req.isAuthenticated() || !req.user)) {
+      if (req.path !== "/signin") {
+        return res.redirect("/signin");
+      }
+    }
+    return next();
   } catch (error) {
-    
-    console.log(`error from the user isUserLogout middleware`,error.message);
-
-    return res.status(500).send("Internal Server Error");
-
+    console.error("Error in isUserLogin middleware:", error.message);
+    return res.status(500).render("user/500");
   }
-}
+};
+
+// Middleware to check if the user is logged out
+const isUserLogout = async (req, res, next) => {
+  try {
+    if (req.session.userId || (req.isAuthenticated() && req.user)) {
+      if (req.path === "/signin" || req.path === "/signup") {
+        return res.redirect("/home");
+      }
+      return next();
+    }
+
+    if (req.path === "/signin" || req.path === "/signup") {
+      return next();
+    }
+
+    return res.redirect("/signin");
+  } catch (error) {
+    console.error("Error in isUserLogout middleware:", error.message);
+    return res.status(500).render("user/500");
+  }
+};
+
+
+
 module.exports = {
 
   passport,
@@ -130,3 +122,5 @@ module.exports = {
   isUserLogout
 
 }
+
+

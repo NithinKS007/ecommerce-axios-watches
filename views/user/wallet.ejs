@@ -1,5 +1,24 @@
-<%- include('../layouts/userLayouts/header') %> <%- include('../layouts/userLayouts/navbar1') %>
+<%- include('../layouts/userLayouts/header') %>
+<style>
+    .body {
+        background-color: #f8f9fa;
+        color: #212529;
+        margin-top: 100px;
+    }
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    .table {
+        color: #212529;
+    }
+  
+    .text-primary {
+        color: #000 !important;
+    }
+</style>
 
+<%- include('../layouts/userLayouts/navbar1') %>
         <main class="main">
             <section class="pt-150 pb-150">
                 <div class="container">
@@ -8,18 +27,19 @@
                             <div class="row">
                                 <%- include('../layouts/userLayouts/sidebar') %>
                                 <div class="col-md-8">
-                                    <h2>Your Wallet</h2>
-                                    <div class="container mt-4">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <div class="card">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">Wallet Balance</h5>
-                                                        <h2 class="card-text text-primary">₹ <%= walletData.balance%></h2>
-                                                    </div>
-                                                </div>
-                                
-                                                <table class="table table-striped mt-4">
+                                    <h2 class="mb-4">Your Wallet</h2>
+                                    <div class="card mb-4 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Wallet Balance</h5>
+                                            <h2 class="card-text text-primary">₹ <%= walletData.balance%></h2>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title mb-3">Recent Transactions</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">Transaction ID</th>
@@ -45,8 +65,8 @@
                                                                 <td colspan="5" class="text-center">No transactions available</td>
                                                             </tr>
                                                         <% } %>
-                                                    </tbody>
                                                 </table>
+
                                                 <div class="pagination-area mt-30 mb-50">
                                                     <nav aria-label="Page navigation example">
                                                         <ul class="pagination justify-content-start">

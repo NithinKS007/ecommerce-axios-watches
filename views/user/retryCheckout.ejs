@@ -1,18 +1,16 @@
 <%- include('../layouts/userLayouts/header') %>
-
-
     <%- include('../layouts/userLayouts/navbar1') %>
 
         <main class="container my-5">
 
             <style>
                 .error {
-                    font-size: 0.8em;
+                    font-size: 0.9rem;
                     color: red;
                 }
 
                 .small-text {
-                    font-size: 0.8em;
+                    font-size: 0.9rem;
                     line-height: 1.2;
                 }
 
@@ -181,7 +179,7 @@
                         const dataResponse = await fetch("http://localhost:7000/paymentFailure", {
 
                             method: 'PATCH',
-                            
+
                             headers: {
 
                                 'Content-Type': 'application/json',
@@ -239,7 +237,7 @@
 
                 };
 
-                
+
                 fetch('http://localhost:7000/retryPayment', {
 
                     method: "PATCH",
@@ -251,7 +249,7 @@
 
                 })
 
-                
+
                     .then(response => response.json())
 
                     .then(data => {

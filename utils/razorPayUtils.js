@@ -15,7 +15,6 @@ const  createRazorPayOrder = async (amount) =>{
 
     try {
 
-        console.log(`this is the amount getting in the razor pay function`,amount);
         
         
         const data = {
@@ -27,17 +26,19 @@ const  createRazorPayOrder = async (amount) =>{
 
         }
 
-        console.log("this is the recepiet",data,"and",data.receipt)
         
          // creating order in razer pay
 
         const razorPayOrder = await razorpay.orders.create(data)
 
+        
         return razorPayOrder
         
     } catch (error) {
         
         console.log(`error in the create razor pay function in the utils`,error.message);
+
+        return res.status(500).render("user/500")
 
     }
 }
@@ -46,7 +47,7 @@ const verifyRazorPaySignature = async (orderId,paymentId,signature) =>{
 
     const text = orderId + '|' + paymentId
 
-    console.log(`Order ID: ${orderId}, Payment ID: ${paymentId}, Signature: ${signature}`);
+  
 
 
     const generateSignature = crypto.createHmac("sha256",RAZORPAY_SECRECT_KEY).update(text).digest("hex")

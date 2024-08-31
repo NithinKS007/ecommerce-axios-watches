@@ -9,7 +9,6 @@ const editHandle = require('../middleware/handleEdit')
 const handleCategoryBrandExists = require('../middleware/handleExistCategoryBrand')
 const adminAuth = require('../middleware/adminAuth')
 const handleReturnStatus  = require('../middleware/handleReturnStatus')
-
 const noCacheMid = require('../middleware/cacheClearMiddleWare')
 
 // Admin registration and authentication
@@ -26,7 +25,7 @@ adminRoute.get("/customerlist",noCacheMid.noCacheMiddleware,adminAuth.isAdminLog
 adminRoute.patch("/customerlist",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.blockUnblock)
 
 
-// Brand and category management
+// Brand and Category management
 adminRoute.get("/brandCategoryManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadCategoryBrand)
 adminRoute.patch("/brandCategoryManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,softdeleteHandle.handleSoftDelete)
 adminRoute.put("/brandCategoryManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,editHandle.handleEdit)
@@ -43,50 +42,41 @@ adminRoute.put("/editProduct",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogi
 adminRoute.delete("/removeProductImage",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin, adminController.editImage)
 adminRoute.get("/productExists",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.ProductExists)
 
-//order list
+// Order management
 adminRoute.get("/orders",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadOrderList)
-
-
-//order details page
 adminRoute.get("/orderDetailsPage",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin, adminController.loadOrderDetailsPage);
 adminRoute.post("/orderDetailsPage",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.changeOrderStatus)
-
 
 //coupon management
 adminRoute.get("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadCoupon)
 adminRoute.get("/addCoupon",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddCoupon)
 adminRoute.post("/addCoupon",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addCoupon)
+adminRoute.patch("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCoupon)
 
-//product return
+// Product return management
 adminRoute.get("/updateReturnStatus",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadReturnedOrder)
 adminRoute.patch("/updateReturnStatus",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleReturnStatus.handleReturnStatus)
 
-//sales report calculate
+// Sales report
 adminRoute.get("/salesReport",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.getSalesDataJson)
-
 adminRoute.get("/bestSellers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.bestSellers)
 
-adminRoute.patch("/couponManagement",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCoupon)
-
-//route for category offer
+// Category offer management
 adminRoute.get("/categoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadCategoryOffer)
 adminRoute.get("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddCategoryOffer)
 adminRoute.post("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addCategoryOffer)
 adminRoute.patch("/categoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCategoryOffer)
 adminRoute.get("/editCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadEditCategoryOffer)
 adminRoute.put("/editCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.editCategoryOffer)
+adminRoute.delete("/deleteCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.deleteCategoryOffer)
 
-
+// Product offer management
 adminRoute.get("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadProductOffer)
 adminRoute.get("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadAddProductOffer)
 adminRoute.post("/addProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.addProductOffer)
 adminRoute.patch("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateProductOffer)
 adminRoute.get("/editProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadEditProductOffer)
 adminRoute.put("/editProductOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.editProductOffer)
-
-
-
-
 
 
 module.exports = adminRoute

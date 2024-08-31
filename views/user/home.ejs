@@ -3,80 +3,491 @@
         <main class="main">
             <style>
                 .pagination-area {
-                display: flex;
-                justify-content: center;
-                margin: 30px 0;
-            }
-            
-            .pagination {
-                display: flex;
-                gap: 5px; 
-            }
-            
-            .page-item {
-                margin: 0 2px;
-            }
-   
-                 .product-img-action-wrap {
-                position: relative;
-                    }
+                    display: flex;
+                    justify-content: center;
+                    margin: 30px 0;
+                }
 
-            .heart-icon {
-                position: absolute;
-                top: 9px;
-                right: 10px;
-                z-index: 10;
-                background-color: rgba(255, 255, 255, 0.8);
-                border-radius: 50%;
-                width: 40px; 
-                height: 40px; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center; 
-            }
+                .pagination {
+                    display: flex;
+                    gap: 5px;
+                }
 
-        .product-cart-wrap {
-         border: none;
-        box-shadow: none; 
-       }
-                            
-      .product-cart-wrap:hover {
-        box-shadow: none; 
-       }
+                .page-item {
+                    margin: 0 2px;
+                }
 
-               
-           
+                .product-img-action-wrap {
+                    position: relative;
+                }
+
+                .heart-icon {
+                    position: absolute;
+                    top: 9px;
+                    right: 10px;
+                    z-index: 10;
+                    background-color: rgba(255, 255, 255, 0.8);
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .product-cart-wrap {
+                    border: none;
+                    box-shadow: none;
+                }
+
+                .product-cart-wrap:hover {
+                    box-shadow: none;
+                }
+
+
+                .product-img-action-wrap {
+                    position: relative;
+                    /* Ensure that the offer tag is positioned relative to this container */
+                }
+
+                .offer-tag {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: red;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    z-index: 20;
+                    /* Ensure this is higher than other elements */
+                    pointer-events: none;
+                    /* Prevents the offer tag from blocking interactions */
+                }
+
+                .product-img {
+                    position: relative;
+                }
+
+
+
+
+                .jumbotron {
+                    background-color: #e9ecef;
+                    border-radius: 1rem;
+                    padding: 3rem;
+                    margin-bottom: 2rem;
+                }
+
+                .card {
+                    border: none;
+                    cursor: pointer;
+                    border-radius: 0.5rem;
+                    overflow: hidden;
+                    height: 100%;
+                }
+
+                .card:hover {
+
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                }
+
+                .card-img-top {
+                    height: 200px;
+                    object-fit: cover;
+                }
+
+                .card-body {
+                    padding: 1.5rem;
+                }
+
+                .btn-secondary {
+                    background-color: #6c757d;
+                    border-color: #6c757d;
+                    color: white;
+                    padding: 0.5rem 1.5rem;
+                    font-weight: 600;
+                }
+
+                .btn-secondary:hover {
+                    background-color: #5a6268;
+                    border-color: #545b62;
+                }
+
+                .text-danger {
+                    color: #dc3545;
+                }
+
+                .display-4 {
+                    font-weight: 700;
+                    margin-bottom: 1rem;
+                }
+
+                .lead {
+                    font-size: 1.25rem;
+                    font-weight: 300;
+                }
+
+                .section-title {
+                    font-size: 2rem;
+                    font-weight: 700;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                }
             </style>
-            <section class="product-tabs section-padding position-relative wow fadeIn animated">
-                <div class="bg-square"></div>
-                <div class="container">
-                    <div class="tab-content wow fadeIn animated" id="myTabContent">
-                        <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
-                            <div class="container mt-5">
-                                <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
-                                    aria-labelledby="tab-one">
-                                    <% if (productsArray.length === 0) { %>
-                                        <div class="text-center">
-                                            <h3>No Products Found Yet</h3>
+            <style>
+                .popular-brands-section {
+                    background-color: #000;
+                    color: #fff;
+                    padding: 2rem;
+                    border-radius: 10px;
+                }
+
+                .brands-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+
+                .brand-card {
+                    background-color: #1c1c1c;
+                    border: 2px solid #333;
+                    border-radius: 8px;
+                    transition: transform 0.3s, box-shadow 0.3s;
+                    min-width: 150px;
+                    max-width: 200px;
+                    width: 100%;
+                    color: #f0f0f0;
+                    /* Light grey text color */
+                }
+
+                .brand-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+                    background-color: #2a2a2a;
+                    /* Slightly lighter on hover */
+                }
+
+                .brand-name {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    display: block;
+                    color: #f0f0f0;
+                    /* Light grey color */
+                }
+
+                h2.h4.font-weight-bold {
+                    color: #f0f0f0;
+                    /* Light grey for the heading */
+                    text-transform: uppercase;
+                }
+
+                .popular-brands-section h2::after {
+                    content: '';
+                    display: block;
+                    width: 60px;
+                    height: 4px;
+                    background-color: #f0f0f0;
+                    /* Accent color underline */
+                    margin: 0.5rem auto 0;
+                    border-radius: 2px;
+                }
+            </style>
+
+            <style>
+                .new-arrivals-section {
+                    background-color: #f8f9fa;
+                    padding: 2rem;
+                    border-radius: 10px;
+                }
+
+                .card {
+                    background-color: #ffffff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                }
+
+                .card-img-top {
+                    border-bottom: 1px solid #dee2e6;
+                }
+
+                .card-body {
+                    padding: 1rem;
+                }
+
+                .card-title {
+                    color: #333;
+                }
+
+                .card-text {
+                    color: #555;
+                }
+
+                .btn-link {
+                    color: #007bff;
+                }
+
+                .btn-link:hover {
+                    color: #0056b3;
+                }
+            </style>
+            <!-- Main Content -->
+            <div class="container my-5">
+                <div class="jumbotron text-center">
+
+                    <p class="lead">Discover amazing deals and exclusive offers!</p>
+                </div>
+
+                <section class="mb-5">
+                    <h2 class="section-title">Exclusive Product Offers</h2>
+                    <div class="row">
+                        <% activeProductOffers.forEach(product=> { %>
+                            <% if (product.productOffer) { %>
+                                <div class="col-md-3 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none">
+                                            <img class="card-img-top"
+                                                src="/productImages/<%= product?.images[0]?.filename %>"
+                                                alt="<%= product.productOffer.offerName %>"></a>
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title">
+                                                <%= product.productOffer.offerName %>
+                                            </h5>
+                                            <p class="card-text">
+                                                <span class="text-danger fw-bold">
+                                                    <%= product.productOffer.offerDiscountPercentage %>% OFF
+                                                </span>
+                                            </p>
+                                            <a href="/productDetails?id=<%= product._id %>"
+                                                class="text-decoration-none btn btn-primary mt-auto">Shop Now</a>
+
                                         </div>
-                                    <% } else { %>
-                                    <div class="row product-grid-5">
-                                        <% for(let i=0; i < productsArray.length; i++) { %>
-                                            <div class="col-lg-2-4 col-md-3 col-6 col-sm-4">
-                                                <div class="product-cart-wrap mb-30">
-                                                    <div class="product-img-action-wrap">
-                                                        <div class="product-img product-img-zoom">
-                                                            <a href="/productDetails?id=<%= productsArray[i]._id %>">
-                                                                <img class="default-img"
-                                                                    src="/productImages/<%= productsArray[i]?.images[0]?.filename %>"
-                                                                    alt="">
-                                                                    <% for (let j = 1; j < productsArray[i].images.length; j++) { %>
-                                                                        <img class="hover-img" src="/productImages/<%= productsArray[i].images[j]?.filename %>" alt="Product Image">
-                                                                    <% } %>
-                                                            </a>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <% }) %>
+                    </div>
+                </section>
+
+                <div class="container my-5">
+                    <!-- Other content -->
+
+                    <section class="mb-5">
+                        <h2 class="section-title">Category Offers</h2>
+                        <div class="row">
+                            <% activeCategoryOffers.forEach(category=> { %>
+                                <% if (category.categoryOffer) { %>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body d-flex flex-column text-center p-4"
+                                                style="background-color: #f8f9fa; border-radius: 10px;">
+
+                                                <!-- Icon for Category -->
+                                                <div class="icon mb-3">
+                                                    <i class="fas fa-tag fa-3x" style="color: #333;"></i>
+                                                </div>
+
+                                                <!-- Category Offer Name -->
+                                                <h5 class="card-title"
+                                                    style="color: #333; font-size: 1.8rem; font-weight: 700;">
+                                                    <%= category.categoryOffer.offerName %>
+                                                </h5>
+
+                                                <!-- Offer Discount -->
+                                                <p class="card-text mt-3" style="color: #555; font-size: 1.4rem;">
+                                                    <span class="fw-bold">
+                                                        <%= category.categoryOffer.offerDiscountPercentage %>% OFF
+                                                    </span>
+                                                </p>
+
+                                                <!-- Call to Action Button -->
+                                                <a href="#" class="btn btn-dark mt-auto fw-bold"
+                                                    style="border-radius: 25px; padding: 10px 20px;">
+                                                    Explore Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                        <% }) %>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Add FontAwesome CDN for icons -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+
+                <section class="product-tabs section-padding position-relative wow fadeIn animated">
+                    <div class="bg-square"></div>
+                    <div class="container">
+                        <div class="container my-5">
+
+
+
+                            <section class="popular-brands-section my-5">
+                                <h2 class="h4 font-weight-bold text-center mb-4">Popular Brands</h2>
+                                <div class="brands-container d-flex justify-content-center flex-wrap">
+                                    <% popularBrand.forEach(brand=> { %>
+                                        <div class="brand-card p-3 m-2 text-center">
+                                            <span class="brand-name">
+                                                <%= brand.brandName %>
+                                            </span>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </section>
+
+
+                            <section class="new-arrivals-section my-5">
+                                <h2 class="h4 font-weight-bold text-center mb-4" style=" background-color: #f8f9fa;  color: #333  ;font-size: 24px;
+                            font-weight: 700;
+                            text-transform: uppercase">New Arrivals</h2>
+                                <div class="row product-grid-5">
+                                    <% newArrivals.forEach(product=> { %>
+                                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                            <div class="card shadow-sm mb-3" id="productContainer<%= product._id %>"
+                                                style="width: 100%; max-width: 18rem; margin: auto;">
+                                                <a href="/productDetails?id=<%= product._id %>"
+                                                    class="text-decoration-none">
+                                                    <img src="/productImages/<%= product.images[0]?.filename %>"
+                                                        class="card-img-top"
+                                                        style="width: 100%; height: 200px; object-fit: cover;"
+                                                        alt="Product Image">
+                                                </a>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a href="/productDetails?id=<%= product._id %>"
+                                                            class="text-decoration-none"
+                                                            style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                            <h5 class="card-title"
+                                                                style="font-size: 14px; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">
+                                                                <%= product.name %>
+                                                            </h5>
+                                                        </a>
+
+                                                    </div>
+                                                    <p class="card-text">
+                                                        <% if (product?.productSalesPriceAfterOfferDiscount && new
+                                                            Date(product?.productOffer?.offerExpiryDate)> new Date() &&
+                                                            product?.productSalesPriceAfterOfferDiscount !== 0 &&
+                                                            product?.productOffer?.offerStatus) { %>
+                                                                <strong>₹<%= Math.floor(product.productSalesPriceAfterOfferDiscount).toLocaleString('en-IN') %></strong>
+                                                            <% } else { %>
+                                                                <strong>₹<%= Math.floor(product.salesPrice).toLocaleString('en-IN') %></strong>
+                                                                <% } %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </section>
+
+
+                            <!-- Best Sellers Section -->
+                            <section class="my-5">
+                                <h2 class="h4 font-weight-bold mb-4 text-center" style="font-size: 24px; color: #333;">
+                                    Best Sellers</h2>
+                                <div class="row">
+                                    <% bestSellers.forEach(item=> { %>
+                                        <div class="col-6 col-md-3 mb-4">
+                                            <div class="card h-100 shadow-sm border-0">
+                                                <a href="/productDetails?id=<%= item._id %>"
+                                                    class="text-decoration-none">
+                                                    <img src="/productImages/<%= item?.firstImage?.filename %>"
+                                                        class="card-img-top"
+                                                        style="height: 200px; object-fit: cover; border-radius: 0;"
+                                                        alt="<%= item.productName %>">
+                                                </a>
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-dark"
+                                                        style="font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                        <%= item.productName %>
+                                                    </h5>
+                                                    <p class="card-text text-muted" style="color: black!important;">
+                                                        ₹<%= item.price.toFixed(2) %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </section>
+
+
+
+
+                            <!-- Top Deals Section -->
+                            <hr class="my-4">
+                            <section class="my-5">
+                                <h2 class="h4 font-weight-bold mb-4 text-center" style="font-size: 24px; color: #333;">
+                                    Top Deals</h2>
+                                <div class="row">
+                                    <% topDeals.forEach(item=> { %>
+                                        <div class="col-6 col-md-3 mb-4">
+                                            <div class="card h-100 shadow-sm border-0">
+                                                <a href="/productDetails?id=<%= item._id %>"
+                                                    class="text-decoration-none">
+                                                    <img src="/productImages/<%= item?.images[0]?.filename %>"
+                                                        class="card-img-top"
+                                                        style="height: 200px; object-fit: cover; border-radius: 0;"
+                                                        alt="<%= item.name %>">
+                                                </a>
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-dark"
+                                                        style="font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                        <%= item.name %>
+                                                    </h5>
+                                                    <% if (item?.productOffer &&
+                                                        item?.productOffer?.offerDiscountPercentage && new
+                                                        Date(item?.productOffer?.offerExpiryDate)> new Date() &&
+                                                        item?.productSalesPriceAfterOfferDiscount !== 0 &&
+                                                        item?.productOffer?.offerStatus) { %>
+                                                        <div class="offer-tag">
+                                                            <span>
+                                                                <%= item?.productOffer?.offerDiscountPercentage %> % OFF
+                                                            </span>
                                                         </div>
-                                                
-                                                        <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
+                                                        <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </section>
+                            <hr class="my-4">
+
+                        </div>
+                        <div class="tab-content wow fadeIn animated" id="myTabContent">
+                            <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
+                                aria-labelledby="tab-one">
+                                <div class="container mt-5">
+                                    <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
+                                        aria-labelledby="tab-one">
+                                        <% if (productsArray.length===0) { %>
+                                            <div class="text-center">
+                                                <h3>No Products Found Yet</h3>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="row product-grid-5">
+                                                    <% for(let i=0; i < productsArray.length; i++) { %>
+                                                        <div class="col-lg-2-4 col-md-3 col-6 col-sm-4">
+                                                            <div class="product-cart-wrap mb-30">
+                                                                <div class="product-img-action-wrap">
+                                                                    <div class="product-img product-img-zoom">
+                                                                        <a
+                                                                            href="/productDetails?id=<%= productsArray[i]._id %>">
+                                                                            <img class="default-img"
+                                                                                src="/productImages/<%= productsArray[i]?.images[0]?.filename %>"
+                                                                                alt="">
+
+                                                                        </a>
+                                                                    </div>
+
+                                                                    <!-- <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
 
                                                             <div class="wishlist-toggle" aria-label="Add to Wishlist">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20"
@@ -90,127 +501,149 @@
                                                             </div>
     
     
-                                                        </div>
-                                                     
-                       
-                                                    </div>
-                                                    <div class="product-content-wrap">
-                                                        <div class="product-category">
-                                                            <a  class="h4">
-                                                                <%= productsArray[i].brand.name %>
-                                                            </a>
-                                                        </div>
-                                                        <h5 style="  overflow: hidden;
+                                                        </div> -->
+
+
+                                                                </div>
+                                                                <div class="product-content-wrap">
+                                                                    <div class="product-category">
+                                                                        <a class="h4">
+                                                                            <%= productsArray[i].brand.name %>
+                                                                        </a>
+                                                                    </div>
+                                                                    <h5 style="  overflow: hidden;
                                                         text-overflow: ellipsis;
-                                                        white-space: nowrap;"><a href="/productDetails?id=<%= productsArray[i]._id %>">
-                                                                <%= productsArray[i].name %>
-                                                            </a></h5>
-                                                        <div class="rating-result" title="90%">
-                                                            <% if (productsArray[i]?.productOffer && productsArray[i]?.productOffer?.offerDiscountPercentage&&new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus) { %>
-                                                                <span>
-                                                                    <span><%= productsArray[i]?.productOffer?.offerDiscountPercentage %> % </span>
-                                                                </span>
-                                                            <% } else { %>
-                                                                <!-- <span>90%</span> -->
-                                                            <% } %>
+                                                        white-space: nowrap;"><a
+                                                                            href="/productDetails?id=<%= productsArray[i]._id %>">
+                                                                            <%= productsArray[i].name %>
+                                                                        </a></h5>
+                                                                    <div>
+                                                                        <% if (productsArray[i]?.productOffer &&
+                                                                            productsArray[i]?.productOffer?.offerDiscountPercentage&&new
+                                                                            Date(productsArray[i]?.productOffer?.offerExpiryDate)>
+                                                                            new
+                                                                            Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount!==0&&productsArray[i]?.productOffer?.offerStatus)
+                                                                            { %>
+                                                                            <div class="offer-tag">
+                                                                                <span>
+                                                                                    <%= productsArray[i]?.productOffer?.offerDiscountPercentage
+                                                                                        %> % OFF
+                                                                                </span>
+                                                                            </div>
+                                                                            <% } else { %>
+                                                                                <!-- <span>90%</span> -->
+                                                                                <% } %>
+                                                                    </div>
+                                                                    <div class="product-price">
+                                                                        <%if(productsArray[i].isBlocked ||
+                                                                            productsArray[i].category?.isBlocked||productsArray?.isBlocked)
+                                                                            { %>
+
+
+                                                                            <span style="color: red;">Currently
+                                                                                Unavailable</span>
+                                                                            <%} else { %>
+                                                                                <% if
+                                                                                    (productsArray[i]?.productSalesPriceAfterOfferDiscount
+                                                                                    && new
+                                                                                    Date(productsArray[i]?.productOffer?.offerExpiryDate)>
+                                                                                    new
+                                                                                    Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount
+                                                                                    !==0 &&
+                                                                                    productsArray[i]?.productOffer?.offerStatus)
+                                                                                    { %>
+
+                                                                                        <span>₹ <%= Math.floor(productsArray[i].productSalesPriceAfterOfferDiscount).toLocaleString('en-IN') %></span>
+
+
+                                                                                    <% } else { %>
+
+                                                                                        <span>₹ <%= Math.floor(productsArray[i].salesPrice).toLocaleString('en-IN') %></span>
+
+
+                                                                                        <% } %>
+
+                                                                                            <% } %>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
                                                         </div>
-                                                        <div class="product-price">
-                                                            <%if(productsArray[i].isBlocked || productsArray[i].category?.isBlocked||productsArray?.isBlocked) { %>
-
-                                                                
-                                                                <span style="color: red;">Currently Unavailable</span>
-                                                                <%} else { %>
-                                                                    <% if (productsArray[i]?.productSalesPriceAfterOfferDiscount  && new Date(productsArray[i]?.productOffer?.offerExpiryDate) > new Date()&&productsArray[i]?.productSalesPriceAfterOfferDiscount !==0 && productsArray[i]?.productOffer?.offerStatus) { %>
-
-                                                                        <span>₹ <%= productsArray[i].productSalesPriceAfterOfferDiscount %></span>
-
-                                                                        <% } else { %>
-
-                                                                        <span>₹ <%=productsArray[i].salesPrice %></span>
-                                                                        
-                                                                    <% } %>
-                                                                    
-                                                            <% } %>
-                                                        </div>
-                                                       
-                                                    </div>
-
+                                                        <% } %>
                                                 </div>
-                                            </div>
-                                            <% } %>
+                                                <% } %>
                                     </div>
-                                    <% } %>
+
+
+                                    <div class="pagination-area mt-30 mb-50 text-center">
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination justify-content-start">
+                                                <% if (currentPage> 1) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                                                            <strong>&lt;</strong>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+
+                                                        <% let startPage=Math.max(1, currentPage - 2); let
+                                                            endPage=Math.min(totalPages, startPage + 4); if (endPage -
+                                                            startPage < 4) { startPage=Math.max(1, endPage - 4); } %>
+
+                                                            <% for (let i=startPage; i <=endPage; i++) { %>
+                                                                <li
+                                                                    class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                                    <a class="page-link" href="?page=<%= i %>"><strong>
+                                                                            <%= i %>
+                                                                        </strong></a>
+                                                                </li>
+                                                                <% } %>
+
+                                                                    <% if (currentPage < totalPages) { %>
+                                                                        <li class="page-item">
+                                                                            <a class="page-link"
+                                                                                href="?page=<%= currentPage + 1 %>">
+                                                                                <strong>&gt;</strong>
+                                                                            </a>
+                                                                        </li>
+                                                                        <% } %>
+                                            </ul>
+                                        </nav>
+                                    </div>
+
+
+
                                 </div>
-
-                                
-                                <div class="pagination-area mt-30 mb-50 text-center">
-                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination justify-content-start">
-                                            <% if (currentPage > 1) { %>
-                                                <li class="page-item">
-                                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">
-                                                        <strong>&lt;</strong>
-                                                    </a>
-                                                </li>
-                                            <% } %>
-                                            
-                                            <% 
-                                            let startPage = Math.max(1, currentPage - 2);
-                                            let endPage = Math.min(totalPages, startPage + 4);
-                                            if (endPage - startPage < 4) {
-                                                startPage = Math.max(1, endPage - 4);
-                                            }
-                                            %>
-                                            
-                                            <% for (let i = startPage; i <= endPage; i++) { %>
-                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                                    <a class="page-link" href="?page=<%= i %>"><strong><%= i %></strong></a>
-                                                </li>
-                                            <% } %>
-                                            
-                                            <% if (currentPage < totalPages) { %>
-                                                <li class="page-item">
-                                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">
-                                                        <strong>&gt;</strong>
-                                                    </a>
-                                                </li>
-                                            <% } %>
-                                        </ul>
-                                    </nav>
-                                </div>
-
-
 
                             </div>
-                          
+
                         </div>
-                       
+
                     </div>
-                 
-                </div>
-            </section>
+                </section>
 
 
         </main>
 
         <script>
-             document.addEventListener('DOMContentLoaded', () => {
-        
-            let successMessage = '<%= successMessage %>';
+            document.addEventListener('DOMContentLoaded', () => {
 
-            if (successMessage) {
-                Swal.fire({
-                    text: successMessage,
-                    icon: 'success',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
-            }
-        });
-       
+                let successMessage = '<%= successMessage %>';
+
+                if (successMessage) {
+                    Swal.fire({
+                        text: successMessage,
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            });
+
 
         </script>
         <%- include('../layouts/userLayouts/footer') %>

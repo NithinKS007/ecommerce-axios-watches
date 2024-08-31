@@ -13,8 +13,10 @@
                 <div class="col-12 d-flex flex-wrap justify-content-start" id="sendWishListItem" style="margin-top: 50px;">
                     <% productData.forEach(product => { %>
                         <div class="card shadow-sm mb-3" id="productContainer<%= product._id %>" style="width: 18rem; margin: 10px;">
-                            <img src="/productImages/<%= product.images[0]?.filename %>" class="card-img-top"
-                                 style="width: 100%; height: 200px; object-fit: cover;" alt="Product Image">
+                            <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none" style="display: block;">
+                                <img src="/productImages/<%= product.images[0]?.filename %>" class="card-img-top"
+                                     style="width: 100%; height: 200px; object-fit: cover;" alt="Product Image">
+                            </a>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none" style="flex: 1 ; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -36,6 +38,7 @@
                         </div>
                     <% }); %>
                 </div>
+                
                 
             <% } %>
         </div>
@@ -95,13 +98,12 @@
             const productCards = mainContainer.querySelectorAll('.card');
             
             if (productCards.length === 0) {
-                // Remove existing empty message if present
+   
                 const existingMessage = document.querySelector('.wishlistEmptyMessage');
                 if (existingMessage) {
                     existingMessage.remove();
                 }
 
-                // Create and append new empty wishlist message
                 const emptyWishlistMessage = document.createElement('div');
                 emptyWishlistMessage.className = 'col-12 text-center wishlistEmptyMessage';
                 emptyWishlistMessage.innerHTML = `

@@ -12,23 +12,33 @@
         </div>
         <div class="card mb-4">
             <header class="card-header">
-                <div class="row gx-3">
+                <form action="/admin/orders" method="GET" class="row gx-3">
                     <div class="col-lg-4 col-md-6 me-auto">
-                        <input type="text" placeholder="Search..." class="form-control">
+                        <input type="text" name="search" placeholder="Search..." class="form-control" value="<%= search %>">
                     </div>
                     <div class="col-lg-2 col-6 col-md-3">
-                        <select class="form-select">
-                            <option>Status</option>
-                            <option>Pending</option>
-                            <option>Shipped</option>
-                            <option>Delivered</option>
-                            <option>Cancelled</option>
+                        <select name="status" class="form-select" onchange="this.form.submit();">
+                            <option value="">All Status</option>
+                            <option value="pending" <%= statusFilter === 'pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="shipped" <%= statusFilter === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                            <option value="delivered" <%= statusFilter === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                            <option value="cancelled" <%= statusFilter === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            <option value="returnInitiated" <%= statusFilter === 'returnInitiated' ? 'selected' : '' %>>returnInitiated</option>
+                            <option value="returnApproved" <%= statusFilter === 'returnApproved' ? 'selected' : '' %>>returnApproved</option>
+                            <option value="returnRejected" <%= statusFilter === 'returnRejected' ? 'selected' : '' %>>returnRejected</option>
                         </select>
                     </div>
-                </div>
+                    <div class="col-lg-2 col-md-3">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+                
             </header>
             <!-- table content starts -->
             <div class="card-body">
+                <% if (orderData.length === 0) { %>
+                    <p class="text-center">No orders available</p>
+                <% } else { %>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -86,6 +96,7 @@
                         </tbody>
                     </table>
                 </div>
+                <% } %>
             </div>
         </div>
 
@@ -94,7 +105,7 @@
                 <ul class="pagination justify-content-start">
                     <% if (currentPage > 1) { %>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= statusFilter %>">
                                 <strong>&lt;</strong>
                             </a>
                         </li>
@@ -110,13 +121,13 @@
                     
                     <% for (let i = startPage; i <= endPage; i++) { %>
                         <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/admin/orders?page=<%= i %>"><strong><%= i %></strong></a>
+                            <a class="page-link" href="/admin/orders?page=<%= i %>&search=<%= search %>&status=<%= statusFilter %>"><strong><%= i %></strong></a>
                         </li>
                     <% } %>
                     
                     <% if (currentPage < totalPages) { %>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= statusFilter %>">
                                 <strong>&gt;</strong>
                             </a>
                         </li>

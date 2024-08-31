@@ -9,7 +9,34 @@
     align-items: center !important;
     justify-content: center !important;
   }
-  
+  .swal1-cancel {
+        width: 100% !important; 
+        margin: 5px 0!important;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
 </style>
     <div class="screen-overlay"></div>
     <%- include('../layouts/adminLayouts/sidebar') %>
@@ -26,42 +53,62 @@
                         </div>
                     </div>
                     <div class="card mb-4">
-                        <form style="margin-top: 20px; padding-left: 20px ;padding-right: 20px;">
-                            <div class="input-group w-100">
-                                <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+        
+                        <form id="filterForm" action="/admin/products" method="GET" style="margin-top: 20px; margin-left: 20px;">
+                            <div class="row align-items-center">
+                                <!-- Category Filter -->
+                                <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
+                                    <select class="form-select" id="categoryFilter" name="category">
+                                        <option value="">All Categories</option>
+                                        <% if (categoriesData.length > 0) { %>
+                                            <% categoriesData.forEach(category => { %>
+                                                <option value="<%= category._id %>" <%= categoryFilter === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <option value="">No Category Found</option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                        
+                                <!-- Brand Filter -->
+                                <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
+                                    <select class="form-select" id="brandFilter" name="brand">
+                                        <option value="">All Brands</option>
+                                        <% if (brandsData.length > 0) { %>
+                                            <% brandsData.forEach(brand => { %>
+                                                <option value="<%= brand._id %>" <%= brandFilter === brand._id.toString() ? 'selected' : '' %>><%= brand.name %></option>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <option value="">No Brand Found</option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                        
+                                <!-- Status Filter -->
+                                <div class="col-md-2 col-6">
+                                    <select class="form-select" id="statusFilter" name="status">
+                                        <option value="">All Statuses</option>
+                                        <option value="inStock" <%= statusFilter === 'inStock' ? 'selected' : '' %>>In Stock</option>
+                                        <option value="unListed" <%= statusFilter === 'unListed' ? 'selected' : '' %>>Unlisted</option>
+                                        <option value="outOfStock" <%= statusFilter === 'outOfStock' ? 'selected' : '' %>>Out of Stock</option>
+                                    </select>
+                                </div>
+                        
+                                <!-- Search Term -->
+                                <div class="col-md-3">
+                                    <input type="text" name="searchTerm" class="form-control" placeholder="Search term" value="<%= searchTerm %>">
+                                </div>
+                        
+                                <!-- Submit Button -->
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
                             </div>
                         </form>
-                        <form id="filterForm">
-                            <header class="card-header">
-                                <div class="row align-items-center">
-    
-                                    <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                                        <select class="form-select"  id="categoryFilter" name="category">
-                                            <% if(categoriesData.length> 0) { %>
-                                                <% categoriesData.forEach(category=> { %>
-                                                    <option>
-                                                        <%= category.name %>
-                                                    </option>
-                                                    <% }) %>
-                                                        <% } else { %>
-                                                            <option>No Category Found</option>
-                                                            <% } %>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2 col-6">
-                                        <select class="form-select" id="statusFilter" name="status">
-                                            <option selected>Out of stock</option>
-                                            <option>Active</option>
-                                            <option>Unlisted</option>
-                                            <option>Newly added</option>
-                                            <option>Show all</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </header> <!-- card-header end// -->
-                        </form>
-                       
+                        
+                        
+                        
+                        
                         <div class="card-body">
                             <div class="table-responsive " >
                                 <table class="table table-hover " id="productTable">
@@ -69,7 +116,7 @@
                                         <tr>
                                             <th scope="col">No</th>
                                             <th scope="col">Product Image</th>
-                                            <th scope="col">ProductID</th>
+                                            <!-- <th scope="col">ProductID</th> -->
                                             <th scope="col">Product Name</th>
                                             <th scope="col">brand</th>
                                             <th scope="col">Normal Price</th>
@@ -91,9 +138,9 @@
                                                             src="/productImages/<%= productData[i]?.images[0]?.filename%>"
                                                             alt="">
                                                     </td>
-                                                    <td>
+                                                    <!-- <td>
                                                         <%= productData[i]._id %>
-                                                    </td>
+                                                    </td> -->
                                                     <td>
                                                         <%= productData[i].name %>
                                                     </td>
@@ -106,7 +153,7 @@
 
                                                     <td>
                                                         <% if (productData[i]?.productSalesPriceAfterOfferDiscount &&new Date(productData[i]?.productOffer?.offerExpiryDate) > new Date()&& productData[i]?.productSalesPriceAfterOfferDiscount!==0 && productData[i]?.productOffer?.offerStatus) { %>
-                                                            <%= productData[i]?.productSalesPriceAfterOfferDiscount %>
+                                                            <%= productData[i]?.productSalesPriceAfterOfferDiscount.toFixed(2) %>
                                                         <% } else { %>
                                                             N/A
                                                         <% } %>
@@ -159,41 +206,43 @@
                                 </table>
                             </div>
                             
-                        <div class="pagination-area mt-30 mb-50">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-start">
-                                    <% if (currentPage > 1) { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>">
-                                                <strong>&lt;</strong>
-                                            </a>
-                                        </li>
-                                    <% } %>
-                                    
-                                    <% 
-                                    let startPage = Math.max(1, currentPage - 2);
-                                    let endPage = Math.min(totalPages, startPage + 4);
-                                    if (endPage - startPage < 4) {
-                                        startPage = Math.max(1, endPage - 4);
-                                    }
-                                    %>
-                                    
-                                    <% for (let i = startPage; i <= endPage; i++) { %>
-                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                            <a class="page-link" href="/admin/products?page=<%= i %>"><strong><%= i %></strong></a>
-                                        </li>
-                                    <% } %>
-                                    
-                                    <% if (currentPage < totalPages) { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>">
-                                                <strong>&gt;</strong>
-                                            </a>
-                                        </li>
-                                    <% } %>
-                                </ul>
-                            </nav>
-                        </div>
+                            <div class="pagination-area mt-30 mb-50">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-start">
+                                        <% if (currentPage > 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>">
+                                                    <strong>&lt;</strong>
+                                                </a>
+                                            </li>
+                                        <% } %>
+                            
+                                        <% 
+                                        let startPage = Math.max(1, currentPage - 2);
+                                        let endPage = Math.min(totalPages, startPage + 4);
+                                        if (endPage - startPage < 4) {
+                                            startPage = Math.max(1, endPage - 4);
+                                        }
+                                        %>
+                            
+                                        <% for (let i = startPage; i <= endPage; i++) { %>
+                                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                <a class="page-link" href="/admin/products?page=<%= i %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>"><strong><%= i %></strong></a>
+                                            </li>
+                                        <% } %>
+                            
+                                        <% if (currentPage < totalPages) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>">
+                                                    <strong>&gt;</strong>
+                                                </a>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
+                            
+                            
                         </div>
 
                     
@@ -219,9 +268,13 @@
                     title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'} this product ?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: '#ffffff',
+                    confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
+                    customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
                         }).then((result) => {
 
                             if (result.isConfirmed) {

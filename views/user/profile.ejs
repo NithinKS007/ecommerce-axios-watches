@@ -2,15 +2,15 @@
 
         <style>
             .error {
-                font-size: 0.8em;
+                font-size: 0.9rem;
                 color: red;
             }
 
             .small-text {
-                font-size: 0.8em;
+                font-size: 0.9rem;
                 line-height: 1.2;
-            } 
-    
+            }
+
 
 
             #userInfoDisplay .dropdown {
@@ -18,7 +18,35 @@
                 top: 0;
                 right: 0;
             }
-                                                        
+        .swal1-cancel {
+        width: 100%;
+        margin: 5px 0;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+          
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
         </style>
         <main class="main">
             <section class="pt-150 pb-150">
@@ -45,11 +73,15 @@
                   ">
                                                 PROFILE
                                             </h1>
-                                           
-                                            <div id="userInfoDisplay" data-user-id="<%= userData._id %>" data-fname="<%= userData.fname %>" data-lname="<%= userData.lname %>" data-email="<%= userData.email %>" data-phone="<%= userData.phone %>"  style="position: relative; padding-top: 0px;">
+
+                                            <div id="userInfoDisplay" data-user-id="<%= userData._id %>"
+                                                data-fname="<%= userData.fname %>" data-lname="<%= userData.lname %>"
+                                                data-email="<%= userData.email %>" data-phone="<%= userData.phone %>"
+                                                style="position: relative; padding-top: 0px;">
                                                 <p id="userName">
                                                     <strong>Name:</strong>
-                                                    <%= userData.fname %> <%= userData.lname %>
+                                                    <%= userData.fname %>
+                                                        <%= userData.lname %>
                                                 </p>
                                                 <p id="userEmail">
                                                     <strong>Email:</strong>
@@ -60,24 +92,31 @@
                                                         <strong>Phone:</strong>
                                                         <%= userData.phone %>
                                                     </p>
-                                                <% } %>
-                             
-                                                <!-- Three dots dropdown -->
-                                                <div class="dropdown" style="position: absolute; top: 0; right: 0;">
-                                                    <a href="#" data-bs-toggle="dropdown">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <circle cx="12" cy="5" r="1"></circle>
-                                                            <circle cx="12" cy="12" r="1"></circle>
-                                                            <circle cx="12" cy="19" r="1"></circle>
-                                                        </svg>
-                                                    </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item" onclick="editUserDetails()">Edit Details</a>
-                                                        <a class="dropdown-item" onclick="editUserPassword('<%= userData._id %>')">Edit Password</a>
-                                                    </div>
-                                                </div>
-                                            
-                                               
+                                                    <% } %>
+
+                                                        <!-- Three dots dropdown -->
+                                                        <div class="dropdown"
+                                                            style="position: absolute; top: 0; right: 0;">
+                                                            <a href="#" data-bs-toggle="dropdown">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                    height="24" viewBox="0 0 24 24" fill="none"
+                                                                    stroke="currentColor" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                                    <circle cx="12" cy="5" r="1"></circle>
+                                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                                    <circle cx="12" cy="19" r="1"></circle>
+                                                                </svg>
+                                                            </a>
+                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                <a class="dropdown-item"
+                                                                    onclick="editUserDetails()">Edit Details</a>
+                                                                <a class="dropdown-item"
+                                                                    onclick="editUserPassword('<%= userData._id %>')">Edit
+                                                                    Password</a>
+                                                            </div>
+                                                        </div>
+
+
                                             </div>
                                             <!-- edit user details start -->
                                             <div id="editUserForm" style="display: none">
@@ -86,28 +125,31 @@
                                                         <div class="col-md-6">
                                                             <input type="text" id="fnameInput" class="form-control"
                                                                 name="fname" placeholder="First Name" />
-                                                                <span id="fnameError" class="error"></span>
+                                                            <span id="fnameError" class="error"></span>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <input type="text" id="lnameInput" class="form-control"
                                                                 name="lname" placeholder="Last Name" />
-                                                                <span id="lnameError" class="error"></span>
+                                                            <span id="lnameError" class="error"></span>
                                                         </div>
                                                     </div>
 
                                                     <div class="mb-3">
                                                         <input type="tel" id="phoneInput" class="form-control"
                                                             name="phone" placeholder="Phone Number" />
-                                                            <span id="phoneError" class="error"></span>
+                                                        <span id="phoneError" class="error"></span>
                                                     </div>
-                                                  
-                                                    
+
+
 
                                                     <button type="submit" id="saveUserNewDetailsButton"
                                                         class="btn btn-primary">
                                                         Save Changes
                                                     </button>
-                                                    <button type="button" id="cancelNewUserDetailsButton" class="btn btn-secondary">Cancel</button>
+                                                    <button type="button" id="cancelNewUserDetailsButton" class="btn btn-secondary">
+                                                        <a href="/profile" style="color: inherit; text-decoration: none; display: block; width: 100%; height: 100%; line-height: inherit;">Cancel</a>
+                                                      </button>
+                                                      
 
                                                 </form>
                                             </div>
@@ -132,12 +174,15 @@
                                                             name="confirmPassword" placeholder="Confirm Password" />
                                                         <span id="confirmPasswordError" class="error"></span>
                                                     </div>
-           
+
                                                     <button type="submit" id="saveUserNewPasswordButton"
                                                         class="btn btn-primary">
                                                         Save Changes
                                                     </button>
-                                                    <button type="button" id="cancelNewPasswordButton" class="btn btn-secondary">Cancel</button>
+                                                    <button type="button" id="cancelNewPasswordButton" class="btn btn-secondary">
+                                                        <a href="/profile" style="color: inherit; text-decoration: none;">Cancel</a>
+                                                      </button>
+                                                      
                                                 </form>
                                             </div>
                                             <!-- edit user password ends -->
@@ -166,12 +211,17 @@
                 const saveUserNewPasswordButton = document.getElementById("saveUserNewPasswordButton");
 
                 const validateExistingPassword = () => {
+
+                    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.{8,})/;
                     if (existingPasswordInput.value.trim() === "") {
                         existingPasswordError.textContent = "* current password is required";
                         return false;
-                    } else if (existingPasswordInput.value.trim().length < 5) {
+                    }  else if (!regex.test(existingPasswordInput.value.trim())) {
+                        existingPasswordError.textContent = 'Existing Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character';
+                        return false;
+                    }else if (existingPasswordInput.value.trim().length < 8) {
                         existingPasswordError.textContent =
-                            "* current password should be atleast 5 charactors";
+                            "* current password should be atleast 8 charactors";
                         return false;
                     } else {
                         existingPasswordError.textContent = "";
@@ -184,13 +234,21 @@
 
 
                 const validateNewPassword = () => {
+
+                    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.{8,})/;
+
                     if (newPasswordInput.value.trim() === "") {
                         newPasswordError.textContent = "*new password is required";
                         return false;
-                    } else if (newPasswordInput.value.trim().length < 5) {
+                    } else if (newPasswordInput.value.trim().length < 8) {
                         newPasswordError.textContent =
-                            "* new password should be atleast 5 charactors";
+                            "* new password should be atleast 8 charactors";
                         return false;
+                    } else if (!regex.test(newPasswordInput.value.trim())) {
+                        newPasswordError.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character';
+
+                        return false
+
                     } else {
                         newPasswordError.textContent = "";
                         return true;
@@ -202,12 +260,13 @@
                 //validation for confirm password field
 
                 const validateConfirmPassword = () => {
+
                     if (confirmPasswordInput.value.trim() === "") {
                         confirmPasswordError.textContent = "* confirm password is required";
                         return false;
-                    } else if (confirmPasswordInput.value.trim().length < 5) {
+                    } else if (confirmPasswordInput.value.trim().length < 8) {
                         confirmPasswordError.textContent =
-                            "* confirm password should be atleast 5 charactors";
+                            "* confirm password should be atleast 8 charactors";
                         return false;
                     } else if (confirmPasswordInput.value !== newPasswordInput.value) {
                         confirmPasswordError.textContent =
@@ -237,20 +296,23 @@
                         const isValidateExistingPassword = validateExistingPassword()
                         const isValidateNewPassword = validateNewPassword()
                         const isValidateConfirmPassword = validateConfirmPassword()
-                        if (!(isValidateExistingPassword&&isValidateConfirmPassword&&isValidateNewPassword)) {
+                        if (!(isValidateExistingPassword && isValidateConfirmPassword && isValidateNewPassword)) {
 
                             return;
-                                  
+
                         }
-                            Swal.fire({
-                                title: 'Are you sure?',
-                            text: "You want to edit the details.",
-                            icon: 'warning',
+                        Swal.fire({
+                            text: 'Are you sure ? ' + " You want to edit the details.",
+        
                             showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, edit it!'
-                        }).then((result)=>{
+                            confirmButtonColor: '#000000',
+                            cancelButtonColor: '#ffffff',
+                            confirmButtonText: 'Yes, edit it!',
+                            customClass: {
+                                confirmButton: 'swal1-confirm',
+                                cancelButton: 'swal1-cancel'
+                            },
+                        }).then((result) => {
 
                             if (result.isConfirmed) {
                                 const updatedPasswordDetails = {
@@ -289,8 +351,8 @@
                                     })
                                     .catch((error) => {
                                         console.log(`error received`, error.message);
-                                         window.location.reload()
-                                         sessionStorage.setItem(`errorMessage`, `${error.message}`)
+                                        window.location.reload()
+                                        sessionStorage.setItem(`errorMessage`, `${error.message}`)
                                         userInfoDisplay.style.display = "block";
                                         editPasswordForm.style.display = "none";
                                     });
@@ -298,7 +360,7 @@
 
                         })
 
-                      
+
                     });
                 };
 
@@ -312,18 +374,32 @@
 
 
                 const validateFirstName = () => {
-                if (fnameInput.value.trim() === "") {
-                    fnameError.textContent = "* First name is required";
-                    return false;
-                } else {
-                    fnameError.textContent = "";
-                    return true;
-                }
-              };
+                    if (fnameInput.value.trim() === "") {
+                        fnameError.textContent = "* First name is required";
+                        return false;
+                    } else if (fnameInput.value.trim().length < 2) {
+                        fnameError.textContent = '* First Name must be at least 2 characters long';
+                        return false;
+                    } else if (!/^[a-zA-Z\s]+$/.test(fnameInput.value.trim())) {
+                        fnameError.textContent = '* First Name must contain only letters';
+                        return false
+                    } else {
+                        fnameError.textContent = "";
+                        return true;
+                    }
+                };
                 const validateLastName = () => {
                     if (lnameInput.value.trim() === "") {
                         lnameError.textContent = "* Last name is required";
                         return false;
+
+                    } else if (lnameInput.value.trim().length < 2) {
+                        lnameError.textContent = '* Last Name must be at least 2 characters long';
+                        return false;
+                    } else if (!/^[a-zA-Z\s]+$/.test(lnameInput.value.trim())) {
+                        lnameError.textContent = '* Last Name must contain only letters';
+                        return false
+
                     } else {
                         lnameError.textContent = "";
                         return true;
@@ -331,21 +407,21 @@
                 };
 
                 const validatePhone = () => {
-                if (phoneInput.value.trim() === "") {
-                    phoneError.textContent = "* Phone number is required";
-                    return false;
-                } else if (!/^\d{10}$/.test(phoneInput.value.trim())) {
-                    phoneError.textContent = "* Phone number should be 10 digits";
-                    return false;
-                } else {
-                    phoneError.textContent = "";
-                    return true;
-                }
-            };
+                    if (phoneInput.value.trim() === "") {
+                        phoneError.textContent = "* Phone number is required";
+                        return false;
+                    } else if (!/^\d{10}$/.test(phoneInput.value.trim())) {
+                        phoneError.textContent = "* Phone number should be 10 digits";
+                        return false;
+                    } else {
+                        phoneError.textContent = "";
+                        return true;
+                    }
+                };
 
-            fnameInput.addEventListener("input", validateFirstName);
-            lnameInput.addEventListener("input", validateLastName);
-            phoneInput.addEventListener("input", validatePhone);
+                fnameInput.addEventListener("input", validateFirstName);
+                lnameInput.addEventListener("input", validateLastName);
+                phoneInput.addEventListener("input", validatePhone);
 
 
                 const editUserDetails = () => {
@@ -354,9 +430,9 @@
 
                     const id = userInfo.getAttribute('data-user-id')
                     const firstName = userInfo.getAttribute('data-fname')
-                    const  lastName = userInfo.getAttribute('data-lname')
-                    const  phone =  userInfo.getAttribute('data-phone')
-                   
+                    const lastName = userInfo.getAttribute('data-lname')
+                    const phone = userInfo.getAttribute('data-phone')
+
 
                     const userInfoDisplay = document.getElementById("userInfoDisplay");
 
@@ -365,15 +441,15 @@
                     userInfoDisplay.style.display = "none";
                     editUserForm.style.display = "block";
 
-    
-                    
+
+
                     const firstNameInput = document.getElementById("fnameInput");
                     const lastNameInput = document.getElementById("lnameInput");
                     const phoneInput = document.getElementById("phoneInput");
 
-                    firstNameInput.value = firstName ||""
-                    lastNameInput.value = lastName ||""
-                    phoneInput.value = phone ||""
+                    firstNameInput.value = firstName || ""
+                    lastNameInput.value = lastName || ""
+                    phoneInput.value = phone || ""
 
                     const saveUserNewDetailsButton = document.getElementById("saveUserNewDetailsButton");
 
@@ -383,117 +459,120 @@
                         const isValidfirstName = validateFirstName()
                         const isValidLastName = validateLastName()
                         const isValidPhone = validatePhone()
-                        if(!(isValidfirstName&&isValidLastName&&isValidPhone)){
+                        if (!(isValidfirstName && isValidLastName && isValidPhone)) {
 
                             return
                         }
-                            Swal.fire({
-                                title: 'Are you sure?',
-                            text: "You want to edit the details.",
-                            icon: 'warning',
+                        Swal.fire({
+             
+                            text: 'Are you sure ? ' + " You want to edit the details.",
                             showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes'
-                        }).then((result)=>{
+                            confirmButtonColor: '#000000',
+                            cancelButtonColor: '#ffffff',
+                            confirmButtonText: 'Yes',
+                            customClass: {
+                                    confirmButton: 'swal1-confirm',
+                                    cancelButton: 'swal1-cancel'
+                                },
+                        }).then((result) => {
 
                             if (result.isConfirmed) {
-                            const updatedUserDetails = {
-                                id,
-                                firstName: firstNameInput.value,
-                                lastName: lastNameInput.value,
-                                phone: phoneInput.value,
-                            };
+                                const updatedUserDetails = {
+                                    id,
+                                    firstName: firstNameInput.value,
+                                    lastName: lastNameInput.value,
+                                    phone: phoneInput.value,
+                                };
 
-                            fetch(`http://localhost:7000/profile/`, {
-                                method: "PUT",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
+                                fetch(`http://localhost:7000/profile/`, {
+                                    method: "PUT",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
 
-                                body: JSON.stringify({ updatedUserDetails, id }),
-                            })
-                                .then((response) => {
-                                    if (!response.ok) {
-                                        throw new Error("Network response was not ok");
-                                    }
-
-                                    return response.json();
+                                    body: JSON.stringify({ updatedUserDetails, id }),
                                 })
-                                .then((data) => {
-                                    console.log(`received edited data`, data);
-                                    if (data.success) {
-                                       
-                                        window.location.reload();
+                                    .then((response) => {
+                                        if (!response.ok) {
+                                            throw new Error("Network response was not ok");
+                                        }
 
-                                        sessionStorage.setItem('successMessage', 'Profile updated successfully!');
+                                        return response.json();
+                                    })
+                                    .then((data) => {
+                                        console.log(`received edited data`, data);
+                                        if (data.success) {
 
-                                    } else {
+                                            window.location.reload();
 
-                                        throw new Error(data.message);
+                                            sessionStorage.setItem('successMessage', 'Profile updated successfully!');
 
-                                        sessionStorage.setItem(`errorMessage`, `${data.message}`)
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(`error received editing the data`);
+                                        } else {
 
-                                    Swal.fire({
-                                    title: 'Error!',
-                                    text: `Could not update the profile: ${error.message}`,
-                                    icon: 'error',
-                                    toast: true,
-                                    position: 'top-right',
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    timer: 3000
+                                            throw new Error(data.message);
+
+                                            sessionStorage.setItem(`errorMessage`, `${data.message}`)
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.log(`error received editing the data`);
+
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: `Could not update the profile: ${error.message}`,
+                                            icon: 'error',
+                                            toast: true,
+                                            position: 'top-right',
+                                            showConfirmButton: false,
+                                            timerProgressBar: true,
+                                            timer: 3000
+                                        });
+
                                     });
-
-                                });
                             }
                         })
 
-                        
-                       
+
+
                     });
                 };
-                               
-  document.addEventListener('DOMContentLoaded', () => {
-  const successMessage = sessionStorage.getItem('successMessage');
-  const errorMessage = sessionStorage.getItem('errorMessage')
 
-  if (successMessage) {
-    Swal.fire({
-      title: "Success!",
-      text: successMessage,
-      icon: "success",
-      toast: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000
-    });
+                document.addEventListener('DOMContentLoaded', () => {
+                    const successMessage = sessionStorage.getItem('successMessage');
+                    const errorMessage = sessionStorage.getItem('errorMessage')
 
-   
-    sessionStorage.removeItem('successMessage');
-  }
-  if (errorMessage) {
-    Swal.fire({
-      title: "Error",
-      text: errorMessage,
-      icon: "error",
-      toast: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000
-    });
+                    if (successMessage) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: successMessage,
+                            icon: "success",
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
 
-   
-    sessionStorage.removeItem('errorMessage');
-  }
-});
-  
+
+                        sessionStorage.removeItem('successMessage');
+                    }
+                    if (errorMessage) {
+                        Swal.fire({
+                            title: "Error",
+                            text: errorMessage,
+                            icon: "error",
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 3000
+                        });
+
+
+                        sessionStorage.removeItem('errorMessage');
+                    }
+                });
+
 
 
             </script>

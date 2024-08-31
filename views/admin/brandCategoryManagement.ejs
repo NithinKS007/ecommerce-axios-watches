@@ -35,6 +35,35 @@
     align-items: center !important;
     justify-content: center !important;
   }
+  .swal1-cancel {
+        width: 100% !important; 
+        margin: 5px 0!important;
+        color: #000 !important; 
+        border: 1px solid #000  !important; 
+        border-radius: 0.25rem  !important; 
+    }
+    
+    .swal1-confirm {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        margin: 5px 0;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+    }
+    @media (max-width: 768px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .swal1-confirm, .swal1-cancel {
+            width: 150px;
+        }
+    }
+
         </style>
 
         <section class="content-main">
@@ -43,9 +72,6 @@
               <h2 class="content-title card-title">Categories</h2>
               <p>Dashboard > Category & Brand</p>
               <p>Add, edit or delete a category</p>
-            </div>
-            <div>
-              <input type="text" placeholder="Search Categories" class="form-control bg-white" />
             </div>
           </div>
           <div class="card">
@@ -84,7 +110,7 @@
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
-                          <th>ID</th>
+                          <!-- <th>ID</th> -->
                           <th>Name</th>
                           <th>Description</th>
                           <th class="text-center">Action</th>
@@ -96,9 +122,9 @@
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
-                              <td>
+                              <!-- <td>
                                 <%= categoriesData[i]._id %>
-                              </td>
+                              </td> -->
 
                               <td class="cName">
                                 <%= categoriesData[i].name %>
@@ -160,9 +186,6 @@
               <h2 class="content-title card-title">Brands</h2>
               <p>Add, edit or delete a brand</p>
             </div>
-            <div>
-              <input type="text" placeholder="Search Brands" class="form-control bg-white" />
-            </div>
           </div>
           <div class="card">
             <div class="card-body">
@@ -194,7 +217,7 @@
                       <thead>
                         <tr>
                           <th class="text-center">No</th>
-                          <th>ID</th>
+                          <!-- <th>ID</th> -->
                           <th>Name</th>
                           <th class="text-center">Action</th>
                         </tr>
@@ -205,9 +228,9 @@
                               <td class="text-center">
                                 <%= [i +1] %>
                               </td>
-                              <td>
+                              <!-- <td>
                                 <%= brandsData[i]._id %>
-                              </td>
+                              </td> -->
                               <td class="bName">
                                 <%= brandsData[i].name %>
                               </td>
@@ -273,9 +296,13 @@
                 } this category?`,
               icon: "warning",
               showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`
+              confirmButtonColor: "#d33",
+              cancelButtonColor: '#ffffff',
+              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
+              customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
@@ -362,9 +389,13 @@
 
               icon: "warning",
               showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`
+              confirmButtonColor: "#d33",
+              cancelButtonColor: '#ffffff',
+              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
+              customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(
@@ -488,7 +519,12 @@ if(!(isValidateCategoryName&&isValidateCategoryDescription)){
       showCancelButton: true,
       confirmButtonText: 'Yes, save changes',
       cancelButtonText: 'No, cancel',
-      reverseButtons: true
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#ffffff',
+      customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
     });
     const cExists = await categoryExists(categoryName,id);
 
@@ -600,7 +636,12 @@ if (!(isValidateBrandName)) {
           showCancelButton: true,
           confirmButtonText: 'Yes, save changes',
           cancelButtonText: 'No, cancel',
-          reverseButtons: true
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#ffffff',
+          customClass: {
+                    confirmButton: 'swal1-confirm',
+                    cancelButton: 'swal1-cancel'
+                },
         });
         const bExists = await brandExists(brandName,id)
 

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const dayjs = require('dayjs');
 const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types;
 
@@ -9,15 +10,11 @@ const brands = require('../models/brandModel')
 const products = require('../models/productModel')
 const orders = require('../models/orderModel')
 const coupons = require('../models/couponModel');
-
 const returnUserOrder = require('../models/returnOrderModel')
-
 const wallet = require('../models/walletModel')
-const dayjs = require('dayjs');
-const order = require('../models/orderModel');
 const transactionOnline = require('../models/onlineTransactionModel')
 
-//hashing password
+
 const securePassword = async(password) =>{
     try {
 
@@ -31,7 +28,7 @@ const securePassword = async(password) =>{
     }
 }
 
-// renders the admin login page
+
 const loadLogin = (req,res) =>{
     try {
 
@@ -41,16 +38,15 @@ const loadLogin = (req,res) =>{
 
         console.log(`cannot load login page of the admin`,error.message);
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 }
 
-// registers a new admin
+
 const registerAdmin = async (req,res) =>{
 
     const {fname,lname,email,password,phone} = req.body
 
-    console.log(req.body);
     try {
 
         const hashedPassword = await securePassword(password)
@@ -72,12 +68,12 @@ const registerAdmin = async (req,res) =>{
 
         console.log(`error while registering admin`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
         
     }
 }
 
-// verifies admin
+
 const verifyAdmin = async (req,res) =>{
 
     try {
@@ -110,12 +106,12 @@ const verifyAdmin = async (req,res) =>{
 
         console.log(`error while verifying and finding the admin`,error.message);
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 
 }
  
-// logs out the admin
+
 const isSignout = async (req,res) =>{
 
     try {
@@ -129,11 +125,9 @@ const isSignout = async (req,res) =>{
         console.log(`error while using the logging out function`,error.message);
     }
 
-
-
 }
 
-//renders the admin dashboard
+
 const loadDashboard = async (req,res) =>{
 
     try {
@@ -156,8 +150,6 @@ const loadDashboard = async (req,res) =>{
             overAllDiscount(),
             getSalesData(startOfMonth,today),
         ]);
-
-        console.log(`this is the data`,tableSalesData);
     
          const [{ date } = {}] = tableSalesData;
 
@@ -182,7 +174,7 @@ const loadDashboard = async (req,res) =>{
 
         console.log(`error while loading the dashboard of the admin`,error.message)
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
     }
 
@@ -204,15 +196,11 @@ const overAllDiscount = async () =>{
                 subTotalAmountWithOutAnyOffer += item.price;
             });
         });
-
-        console.log(`subTotalAmountWithOutAnyOffer`, subTotalAmountWithOutAnyOffer)
          
         orderList.forEach(order => {
 
             totalAmountWithAllOfferApplied += order.totalAmount;
         });
-
-        console.log(`totalAmountWithAllOfferApplied`, totalAmountWithAllOfferApplied);
        
         const totalDiscountAmount = subTotalAmountWithOutAnyOffer-totalAmountWithAllOfferApplied
 
@@ -222,6 +210,8 @@ const overAllDiscount = async () =>{
     } catch (error) {
         
         console.log(`error while calculating the discount`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 } 
@@ -241,6 +231,8 @@ const overAllOrderAmount = async () =>{
     } catch (error) {
         
         console.log(`error while calculating the overall sales amount`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 }
@@ -255,6 +247,8 @@ const totalSalesCount = async() =>{
     } catch (error) {
         
         console.log(`error while calculating the sales count`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 }
@@ -269,6 +263,8 @@ const countTotalOrders = async () =>{
     } catch (error) {
         
         console.log(`error while getting the total orders`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 }
@@ -302,6 +298,8 @@ const aggregateProductByCategory = async () => {
     } catch (error) {
 
         console.log(`error while getting the total products`,error.message);
+
+        return res.status(500).render("user/500")
     }
 };
 
@@ -345,6 +343,7 @@ const monthlyAvg = async () =>{
         
         console.log(`error while getting the monthly average`,error.message);
         
+        return res.status(500).render("user/500")
     }
 }
 
@@ -383,6 +382,8 @@ const totalRevenue = async () =>{
     } catch (error) {
         
         console.log(`error while calculating the total revenue`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 
@@ -393,8 +394,6 @@ const getSalesDataJson = async (req,res) =>{
     try {
     
          const { dateFrom, dateTill, period } = req.query;
-
-         console.log(`this is the data from the front end`,dateFrom, dateTill, period)
 
          let tableTotalNumberOfOrders = 0;
          let tableTotalGrossSales = 0;
@@ -418,8 +417,6 @@ const getSalesDataJson = async (req,res) =>{
             return res.status(200).json({message:"sales data for the the given dates",salesData,tableTotalNumberOfOrders, tableTotalGrossSales,tableTotalCouponDeductions,tableTotalNetSales});
 
         }else{
-
-             console.log('Period:', period);
 
              switch (period) {
                 case 'today':
@@ -536,59 +533,73 @@ const getSalesData = async (startDate, endDate) => {
       return salesData;
     } catch (error) {
       console.log(`error while calculating the sales report`, error.message);
-      return res.status(500).send("Internal server Error");
+      return res.status(500).render("user/500")
     }
   };
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-//loads the customer list with pagination
 const loadCustomer = async (req, res) => {
-
+    const statusFilter = req.query.status;
+    const searchQuery = req.query.search || '';
     let pageNumber = parseInt(req.query.page) || 1;
 
-    const perPageData = 5; 
+    const perPageData = 5;
 
     try {
+        let query = {};
 
-        const totalUsers = await users.countDocuments();
+        if (searchQuery) {
+            query.$or = [
+                { fname: { $regex: searchQuery, $options: 'i' } },
+                { lname: { $regex: searchQuery, $options: 'i' } },
+                { email: { $regex: searchQuery, $options: 'i' } },
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: "$phone" },
+                            regex: searchQuery,
+                            options: "i"
+                        }
+                    }
+                }
+            ];
+        }
 
+        if (statusFilter === 'Active') {
+            query.isBlocked = false;
+        } else if (statusFilter === 'Disabled') {
+            query.isBlocked = true;
+        }
+
+        const totalUsers = await users.countDocuments(query);
         const totalPages = Math.max(1, Math.ceil(totalUsers / perPageData));
 
         pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
-
         const skip = (pageNumber - 1) * perPageData;
 
-        const userData = await users.find({})
+        const userData = await users.find(query)
             .skip(skip)
             .limit(perPageData)
-            .sort({createdAt: -1})
+            .sort({ createdAt: -1 })
             .exec();
 
         return res.status(200).render('admin/customerList', {
             userData: userData,
             totalPages: totalPages,
-            currentPage: pageNumber
+            currentPage: pageNumber,
+            statusFilter: statusFilter,
+            search: searchQuery
         });
     } catch (error) {
         console.log("Error while loading the customers:", error.message);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).render("user/500")
     }
-}
-//block or unblocks a customer 
+};
+
+
+
 const blockUnblock = async (req,res) =>{
     const userId = req.query.userId
     try {
@@ -596,7 +607,7 @@ const blockUnblock = async (req,res) =>{
 
        
         if(!user){
-            return res.status(404).send('user not found')
+            return res.status(404).render("user/404")
         }
         if(user.isBlocked){
             const updatedUser = await users.findByIdAndUpdate({_id:userId},{$set:{isBlocked:false}},{new:true})
@@ -617,11 +628,11 @@ const blockUnblock = async (req,res) =>{
         }
     } catch (error) {
         console.log(`error while blocking or unblocking the customer`,error.message);
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 }
 
-//loads the category and brand management page 
+
 const loadCategoryBrand = async (req,res) =>{
 
     try {
@@ -638,11 +649,10 @@ const loadCategoryBrand = async (req,res) =>{
         console.log(`cannot load the category page`,error.message);
 
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 }
 
-//add a new category or brand
 const addCategoryBrand = async (req,res) =>{
 
     const {cName,cDescription} = req.body   
@@ -667,7 +677,7 @@ const addCategoryBrand = async (req,res) =>{
 
         console.log(`error adding the category`,error.message); 
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
         
     }    
 
@@ -689,7 +699,7 @@ const addCategoryBrand = async (req,res) =>{
 
         console.log(`error adding the brand`,error.message); 
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }    
 
    }
@@ -698,13 +708,12 @@ const addCategoryBrand = async (req,res) =>{
    
 }
 
-//edits an existing category
+
 
 const editCategory = async (req,res) =>{
 
   const { categoryId, name, description} = req.body; 
 
-  console.log(`data from the backend`,categoryId,name,description);
 
     if (!categoryId ||!name ||!description) {
 
@@ -725,8 +734,6 @@ const editCategory = async (req,res) =>{
          const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{name:name,description:description}})
    
         if(UpdatedCategory){
-
-            console.log(`category data edited function worked `)
         
             return res.status(200).json({
 
@@ -742,17 +749,15 @@ const editCategory = async (req,res) =>{
 
         console.log(`error while editing the category`,error.message);
 
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
         
     }
 }
 
-//edits an existing brand
+
  const editBrand = async (req,res) =>{
 
     const { brandId, name} = req.body; 
-
-    console.log(`data from the backend`,brandId,name);
 
     if (!brandId ||!name) {
 
@@ -786,12 +791,12 @@ const editCategory = async (req,res) =>{
         
         console.log(`error while editing the brand`,error.message);
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 
  }
 
- //soft deletes (blocks/unblocks) a category
+ 
 const softDeleteCategory = async (req,res) =>{
 
     const categoryId = req.query.categoryId
@@ -810,9 +815,6 @@ const softDeleteCategory = async (req,res) =>{
 
          const UpdatedCategory = await categories.findByIdAndUpdate({_id:categoryId},{$set:{isBlocked:false}},{new:true})
 
-
-            console.log(`soft delete happened for category from the backend isactive to false `)
-
             return res.status(200).json({
 
                 success:true,
@@ -824,8 +826,6 @@ const softDeleteCategory = async (req,res) =>{
         }else{
 
         const UpdatedCategory =  await categories.findByIdAndUpdate({_id:categoryId},{$set:{isBlocked:true}},{new:true})
-
-        console.log(`soft delete happened for category from the backend isactive to true `)
 
             return res.status(200).json({
 
@@ -842,13 +842,13 @@ const softDeleteCategory = async (req,res) =>{
         console.log(`error while soft deleting the category`,error.message)
 
           
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
         
         
     }
 }
 
-// soft deletes (blocks/unblocks) a brand
+
 const softDeleteBrand = async (req,res) =>{
 
     const brandId = req.query.brandId 
@@ -866,7 +866,6 @@ const softDeleteBrand = async (req,res) =>{
 
             const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isBlocked:false}},{new:true})
 
-            console.log(`softdelete happened for brand from the backend isactive to false `)
 
             return res.status(200).json({
 
@@ -878,8 +877,6 @@ const softDeleteBrand = async (req,res) =>{
 
             const updatedBrand = await brands.findByIdAndUpdate({_id:brandId},{$set:{isBlocked:true}},{new:true})
 
-            
-            console.log(`softdelete happened for brand from the backend isactive to true `)
 
             return res.status(200).json({
 
@@ -894,7 +891,7 @@ const softDeleteBrand = async (req,res) =>{
         console.log(`error while deleting the brand`,error.message);
 
           
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 
 }
@@ -905,19 +902,14 @@ const escapeRegExp = (string) => {
 
   };
   
-//check existing category
+
 const categoryExists = async (req, res) => {
 
     const { encodedCName,categoryId } = req.query;
-
-    console.log(`Received category name: ${encodedCName}`);
-    console.log(`Received category ID: ${categoryId}`);
     
     const decodedCName = decodeURIComponent(encodedCName)
     const escapedCName = escapeRegExp(decodedCName);
     
-    console.log('this is the regex:', escapedCName);
-
     try {
 
         const query = { name: { $regex: new RegExp(`^${escapedCName}`, 'i') } }
@@ -948,14 +940,12 @@ const categoryExists = async (req, res) => {
 }
 
 
-//check existing brand
+
 const brandExists = async(req,res) =>{
 
     const {encodedBName,brandId } = req.query
 
     const escapedBName = escapeRegExp(encodedBName);
-
-    console.log('Entered in existing brand checking function:', escapedBName);
 
     try {
 
@@ -986,24 +976,49 @@ const brandExists = async(req,res) =>{
     }
 }
 
-//loads the product list page
+
 const loadProducts = async (req, res) => {
-
     let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 5;
 
-    const perPageData = 5; 
+    const categoryFilter = req.query.category || '';
+    const brandFilter = req.query.brand || '';       
+    const statusFilter = req.query.status || '';     
+    const searchTerm = (req.query.searchTerm || '').trim();
 
     try {
        
-        const totalProducts = await products.countDocuments();
+        let query = {};
+
+        if (categoryFilter) {
+            query.category = categoryFilter;
+        }
+
+        if (brandFilter) {
+            query.brand = brandFilter;
+        }
+
+        if (statusFilter === 'inStock') {
+            query.stock = { $gt: 0 };
+        } else if (statusFilter === 'outOfStock') {
+            query.stock = { $eq: 0 };
+        } else if (statusFilter === 'unListed') {
+            query.isBlocked = true; 
+        }
+
+        if (searchTerm) {
+            query.name = { $regex: searchTerm, $options: 'i' };
+        }
+
+     
+        const totalProducts = await products.countDocuments(query);
         const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
 
         pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
-
         const skip = (pageNumber - 1) * perPageData;
 
-       
-        const productData = await products.find({})
+        
+        const productData = await products.find(query)
             .populate('brand')
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -1011,21 +1026,30 @@ const loadProducts = async (req, res) => {
             .exec();
 
         const categoriesData = await categories.find({}).sort({ createdAt: -1 });
+        const brandsData = await brands.find({}).sort({ createdAt: -1 });
 
         return res.status(200).render("admin/productList", {
             productData: productData,
             categoriesData: categoriesData,
+            brandsData: brandsData,
             totalPages: totalPages,
-            currentPage: pageNumber
+            currentPage: pageNumber,
+            categoryFilter: categoryFilter,
+            brandFilter: brandFilter,
+            statusFilter: statusFilter,
+            searchTerm: searchTerm
         });
 
     } catch (error) {
         console.log("Error while loading the products page:", error.message);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).render("user/500")
     }
-}
+};
 
-//loads the add product page
+
+
+
+
 const loadaddProduct = async (req,res) =>{
 
     try {
@@ -1039,11 +1063,11 @@ const loadaddProduct = async (req,res) =>{
 
         console.log(`error while adding the product`,)
         
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 }
 
-//adds a new product
+
 const addProduct = async (req,res) =>{
 
     try {
@@ -1067,7 +1091,7 @@ const addProduct = async (req,res) =>{
             stock:stock,
             description:description,
             targetGroup:targetGroup,
-            images: req.files //converting it to array because its 3 images
+            images: req.files //converting it to array because its 4 images
         })
     
         const productData = await product.save()
@@ -1083,7 +1107,7 @@ const addProduct = async (req,res) =>{
 }
 
 
-//soft deletes (blocks/unblocks) a product
+
 const softDeleteProduct = async (req,res) =>{
 
     const productId = req.query.productId 
@@ -1102,7 +1126,7 @@ const softDeleteProduct = async (req,res) =>{
 
             const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isBlocked:false}},{new:true})
 
-            console.log(`softdelete happened for product from the backend isactive to false `)
+      
 
             return res.status(200).json({
 
@@ -1115,7 +1139,7 @@ const softDeleteProduct = async (req,res) =>{
             const updatedProduct = await products.findByIdAndUpdate({_id:productId},{$set:{isBlocked:true}},{new:true})
 
             
-            console.log(`softdelete happened for product from the backend isactive to true `)
+       
 
             return res.status(200).json({
 
@@ -1130,12 +1154,12 @@ const softDeleteProduct = async (req,res) =>{
         console.log(`error while deleting the brand`,error.message);
 
           
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 
 }
 
-//loads edit product page
+
 const loadEditProduct = async (req,res) =>{
 
     try {
@@ -1153,10 +1177,12 @@ const loadEditProduct = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while editing the product`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
-//edit product
+
 const editProduct = async (req, res) => {
     try {
 
@@ -1198,14 +1224,12 @@ const editProduct = async (req, res) => {
     }
 }
 
-//edit product image
+
 const editImage = async (req,res) =>{
 
     try {
 
         const { productId,imageName} = req.body;
-
-        console.log(`data from the front end`,productId,imageName);
 
            if (productId&&imageName) {
 
@@ -1223,14 +1247,14 @@ const editImage = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while removing the image`,error.message);
+
+        return res.status(400).json({ message: "Failed to update product image", success:false });
     }
 }
 
 const ProductExists = async (req,res) =>{
 
     const {encodedPName,productId} = req.query
-
-    console.log(`Entered in existing product checking function:`,encodedPName,productId)
 
     try {
 
@@ -1264,55 +1288,80 @@ const ProductExists = async (req,res) =>{
 }
 
 
-
-//loads the order list page
 const loadOrderList = async (req, res) => {
-    
+    const statusFilter = req.query.status || ''; 
+    const searchQuery = req.query.search || '';
     let pageNumber = parseInt(req.query.page) || 1;
     const perPageData = 5;
 
     try {
+        let query = {};
+        let searchNumber = undefined;
+        if (!isNaN(searchQuery) && searchQuery.trim() !== '') {
+            searchNumber = parseInt(searchQuery);
+        }
+    
       
-        const totalOrders = await orders.countDocuments();
+        if (searchQuery) {
+            query.$or = [
+                { 'user.fname': { $regex: searchQuery, $options: 'i' } },
+                { 'user.lname': { $regex: searchQuery, $options: 'i' } },
+                { 'user.email': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.name': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.phone': searchNumber },
+                { 'shippingAddress.locality': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.address': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.cityDistTown': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.state': { $regex: searchQuery, $options: 'i' } },
+                { 'shippingAddress.pincode':  searchNumber  },
+                { 'items.productName': { $regex: searchQuery, $options: 'i' } },
+                { 'items.brandName': { $regex: searchQuery, $options: 'i' } },
+                { 'items.categoryName': { $regex: searchQuery, $options: 'i' } }
+            ];
+        }
+
+       
+        if (statusFilter) {
+
+            query.orderStatus = statusFilter;
+        }
+
+        const totalOrders = await orders.countDocuments(query);
         const totalPages = Math.max(1, Math.ceil(totalOrders / perPageData));
 
         pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
-
         const skip = (pageNumber - 1) * perPageData;
 
-       
-        const orderData = await orders.find({})
+        const orderData = await orders.find(query)
             .populate("user")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(perPageData)
             .exec();
 
-        return res.render("admin/orderList", {
+        return res.status(200).render('admin/orderList', {
             orderData: orderData,
             totalPages: totalPages,
-            currentPage: pageNumber
+            currentPage: pageNumber,
+            statusFilter: statusFilter, 
+            search: searchQuery
         });
-
     } catch (error) {
-        console.log("Error while listing the orders:", error.message);
-        return res.status(500).send("Internal Server Error");
+        console.log("Error while loading the orders:", error.message);
+
+        return res.status(500).render("user/500")
+        
     }
-}
+};
 
 
-//loads the order details page
 const loadOrderDetailsPage = async (req, res) => {
     try {
 
         const { orderId } = req.query;
 
-        console.log(`this is the order id coming from the front end`,orderId);
-
         const userOrderDataDetails = await orders.findOne({ _id:orderId }).populate("user")
         const transactionDetailsOftheOnlinePaymentOrder = await transactionOnline.findOne({orderId:orderId})
-        
-        console.log(`this is the order details of that particular order`,userOrderDataDetails,transactionDetailsOftheOnlinePaymentOrder);
 
         return res.render("admin/orderDetailsPage", { userOrderDataDetails,transactionDetailsOftheOnlinePaymentOrder});
 
@@ -1320,12 +1369,12 @@ const loadOrderDetailsPage = async (req, res) => {
 
         console.log(`Error while rendering the order details page`, error.message);
 
-       return res.status(500).json({ message: "Internal Server Error" });
+       return res.status(500).render("user/500")
 
     }
 };
 
-//change the status of an order
+
 const changeOrderStatus = async (req,res) =>{
 
     try {
@@ -1348,9 +1397,7 @@ const changeOrderStatus = async (req,res) =>{
 
         if(!order){
 
-            console.log(`order cannot found`);
-
-            return
+            return res.status(400).render("user/500");
         }
 
         const allItemsCancelled = order.items.every(item => item.orderProductStatus === "cancelled");
@@ -1376,7 +1423,7 @@ const changeOrderStatus = async (req,res) =>{
 
             }
 
-            if(order.paymentMethod==="razorPay"){
+            if(order.paymentMethod==="razorPay"||order.paymentMethod==="wallet"){
 
                 const walletData = await wallet.findOne({userId:order.user})
 
@@ -1428,11 +1475,11 @@ const changeOrderStatus = async (req,res) =>{
         
         console.log(`error while updating the order status`,error.message);
 
-        return res.status(500).send("Internal server error");
+        return res.status(500).render("user/500")
     }
 }
 
-//checking the enum values in the data base
+
 const getEnumValues = (schema, path) => {
 
     const enumValues = schema.path(path).enumValues;
@@ -1441,21 +1488,40 @@ const getEnumValues = (schema, path) => {
   }
   
   
-//coupon adding page loading
+
 const loadCoupon = async (req, res) => {
-
     let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 5;
 
-    const perPageData = 5; 
+    const searchQuery = req.query.search || '';
+    const statusFilter = req.query.status || '';  
 
     try {
-        const totalCoupons = await coupons.countDocuments();
+        const query = {};
+
+        if (searchQuery) {
+            query.$or = [
+                { couponName: { $regex: searchQuery, $options: 'i' } },
+                { couponCode: { $regex: searchQuery, $options: 'i' } },
+            ];
+        }
+
+    
+        if (statusFilter) {
+            if (statusFilter === 'Active') {
+                query.couponStatus = true;
+            } else if (statusFilter === 'Inactive') {
+                query.couponStatus = false;
+            }
+        }
+
+        const totalCoupons = await coupons.countDocuments(query);
         const totalPages = Math.max(1, Math.ceil(totalCoupons / perPageData));
 
         pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
         const skip = (pageNumber - 1) * perPageData;
-        const couponsData = await coupons.find({})
+        const couponsData = await coupons.find(query)
             .skip(skip)
             .limit(perPageData)
             .sort({ createdAt: -1 })
@@ -1464,13 +1530,16 @@ const loadCoupon = async (req, res) => {
         return res.status(200).render('admin/couponList', {
             couponsData: couponsData,
             totalPages: totalPages,
-            currentPage: pageNumber
+            currentPage: pageNumber,
+            search: searchQuery,   
+            statusFilter: statusFilter  
         });
     } catch (error) {
         console.log("Error while loading the coupons:", error.message);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).render("user/500")
     }
 }
+
 
 
 
@@ -1479,9 +1548,11 @@ const loadAddCoupon = async(req,res) =>{
     try {
         
         return res.status(200).render("admin/addCoupon")
+
     } catch (error) {
         
         console.log(`error while adding the coupon`,error.message);
+        return res.status(500).render("user/500")
     }
 }
 
@@ -1491,9 +1562,7 @@ const addCoupon = async (req,res) =>{
     try {
         
         const {couponName,couponDescription,couponCode,couponDiscount,maxAmount,minAmount,couponStatus} = req.body
-    
-        console.log(`this is the coupon details`,couponName,couponDescription,couponCode,couponDiscount,maxAmount,minAmount,couponStatus);
-    
+        
     
         const coupon = new coupons({
 
@@ -1512,20 +1581,19 @@ const addCoupon = async (req,res) =>{
             return res.status(200).redirect("/admin/addCoupon")
         }
 
-        return res.send("something went wrong")
+        return res.status(500).render("user/500")
 
     } catch (error) {
         
         console.log(`error while adding the coupon`,error.message);
+
+        return res.status(500).render("user/500")
     }
 }
 
 const activateDeactivateCoupon = async (req,res) =>{
 
-    const couponId = req.query.couponId
-
-    console.log(`this is the coupon id received from the front end`,couponId);
-    
+    const couponId = req.query.couponId   
 
     try {
 
@@ -1540,7 +1608,7 @@ const activateDeactivateCoupon = async (req,res) =>{
         if(couponData.couponStatus){
 
             const updatedCouponStatus = await coupons.findByIdAndUpdate({_id:couponId},{$set:{couponStatus:false}},{new:true})
-            console.log(`Deactivated coupon from the backend coupon status to false`)
+            
             return res.status(200).json({
                 success:true,
                 message:"coupon status set to false",
@@ -1550,7 +1618,7 @@ const activateDeactivateCoupon = async (req,res) =>{
         }else{
 
             const updatedCouponStatus = await coupons.findByIdAndUpdate({_id:couponId},{$set:{couponStatus:true}},{new:true})
-            console.log(`Activated coupon from the backend coupon status to true`)
+         
             return res.status(200).json({
                 success:true,
                 message:"coupon status set to true",
@@ -1562,34 +1630,77 @@ const activateDeactivateCoupon = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while while blocking or unblocking the coupon`,error.message);
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
         
     }
 }
 
-const loadReturnedOrder = async (req,res) =>{
-
+const loadReturnedOrder = async (req, res) => {
     try {
+        let pageNumber = parseInt(req.query.page) || 1;
+        const perPageData = 5;
 
-        const returnedOrderData = await returnUserOrder.find({}).populate("userId").sort({createdAt:-1})
-        
-        
-        return res.status(200).render("admin/returnedOrder",{returnedOrderData})
+        const searchQuery = req.query.search || '';
+        const statusFilter = req.query.statusFilter || '';
 
-        
+        const query = {};
+
+        if (searchQuery) {
+            const isValidObjectId = ObjectId.isValid(searchQuery);
+            if (isValidObjectId) {
+                const searchObjectId = new ObjectId(searchQuery);
+                query.$or = [
+                    { orderId: searchObjectId },
+                    { userId: searchObjectId },
+                    { productId: searchObjectId }
+                ];
+            } else {
+                query.$or = [
+                    { productReturnReason: { $regex: new RegExp(searchQuery, 'i') } },
+                   
+                ];
+            }
+        }
+
+      
+        if (statusFilter) {
+
+            query.returnProductStatus = statusFilter.toLowerCase();
+
+        }
+
+       
+        const totalReturnedOrders = await returnUserOrder.countDocuments(query);
+        const totalPages = Math.max(1, Math.ceil(totalReturnedOrders / perPageData));
+
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+
+        const skip = (pageNumber - 1) * perPageData;
+        const returnedOrderData = await returnUserOrder.find(query)
+            .populate("userId")
+            .skip(skip)
+            .limit(perPageData)
+            .sort({ createdAt: -1 })
+            .exec();
+
+        return res.status(200).render('admin/returnedOrder', {
+            returnedOrderData,
+            totalPages,
+            currentPage: pageNumber,
+            search: searchQuery,
+            statusFilter
+        });
     } catch (error) {
-
-        console.log(`error while loading the returned products `,error.message);
-        
-        
+        console.log(`Error while loading returned orders:`, error.message);
+        return res.status(500).render("user/500")
     }
-}
+};
+
 
 const approveReturn = async (req, res) => {
     try {
         const { returnOrderDocId, status, addToInventory } = req.body;
 
-        console.log(`this is the id and status from approved fn`, returnOrderDocId, status, addToInventory);
 
         const returnedOrderData = await returnUserOrder.findOne({ _id: returnOrderDocId });
 
@@ -1616,7 +1727,7 @@ const approveReturn = async (req, res) => {
 
         const productStock = productToUpdate.quantity
 
-        console.log(`Stock of the product (ID: ${productId}) in the order: ${productStock}`);
+ 
 
         returnedOrderData.returnProductStatus = "approved";
         await returnedOrderData.save();
@@ -1677,8 +1788,6 @@ const rejectReturn = async (req,res) =>{
         
         const { returnOrderDocId, status, addToInventory } = req.body;
       
-        console.log(`this is the id and status from approved fn`, returnOrderDocId, status, addToInventory);
-
         
         const returnedOrderData = await returnUserOrder.findOne({ _id: returnOrderDocId });
 
@@ -1735,8 +1844,6 @@ const bestSellers = async(req,res) =>{
 
         if (type === 'product') {
           
-        console.log(`this is the type received from the backend`,type);
-
         const topTenBestSellingProducts = await orders.aggregate([
 
             {$match:{orderStatus:"delivered"}},
@@ -1774,14 +1881,13 @@ const bestSellers = async(req,res) =>{
             {$sort:{totalSold:-1}},
             {$limit:10}
         ])
-
-        console.log(`top 10 best selling products`,topTenBestSellingProducts);
+        
 
         return res.render("admin/productBestSelling",{topTenBestSellingProducts:topTenBestSellingProducts})
  
         } else if (type === 'category') {
 
-            console.log(`this is the type received from the backend`,type);
+    
 
             const topTenBestSellingCategory = await orders.aggregate([
 
@@ -1838,7 +1944,7 @@ const bestSellers = async(req,res) =>{
           
         } else {
 
-        console.log(`this is the type received from the backend`,type);
+    
 
         const topTenBestSellingBrand = await orders.aggregate([
 
@@ -1901,32 +2007,49 @@ const bestSellers = async(req,res) =>{
         
         console.log(`error while finding the best sellers`,error.message);
 
-        return res.send("internal server error")
+        return res.status(500).render("user/500")
         
     }
 
 }
 
 
-const loadCategoryOffer = async (req,res) =>{
-
+const loadCategoryOffer = async (req, res) => {
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 5;
     try {
-
-        const offerAppliedCategories = await categories.find({"categoryOffer.offerName":{$exists:true}})
-
-        console.log(`this is the categroy offers`,offerAppliedCategories);
-
-        return res.status(200).render("admin/categoryOfferList",{offerAppliedCategories:offerAppliedCategories})
-
-
+        
+        const totalOfferAppliedCategories = await categories.countDocuments({ "categoryOffer.offerName": { $exists: true } });
+        
+       
+        const totalPages = Math.max(1, Math.ceil(totalOfferAppliedCategories / perPageData));
         
         
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+        
+      
+        const skip = (pageNumber - 1) * perPageData;
+
+        
+        const offerAppliedCategories = await categories.find({ "categoryOffer.offerName": { $exists: true } })
+            .sort({ createdAt: -1 }) 
+            .skip(skip)
+            .limit(perPageData)
+            .exec();
+
+      
+        return res.status(200).render("admin/categoryOfferList", {
+            offerAppliedCategories: offerAppliedCategories,
+            totalPages: totalPages,
+            currentPage: pageNumber
+        });
+
     } catch (error) {
-        
-        console.log(`error while loading the offer applying to category page`,error.message);
-        
+        console.log(`Error while loading the offer applying to category page:`, error.message);
+      return res.status(500).render("user/500")
     }
-}
+};
+
 const loadAddCategoryOffer = async (req,res) =>{
 
     try {
@@ -1940,7 +2063,8 @@ const loadAddCategoryOffer = async (req,res) =>{
 
     } catch (error) {
         
-        console.log(`error while loading the offer applying to category page`,error.message);
+        console.log(`error while loading the offer applying to category page`,error.message)
+        return res.status(500).render("user/500")
     }
 
 }
@@ -1950,11 +2074,10 @@ const addCategoryOffer = async (req,res) =>{
 
         const {offerName, category, discountPercentage, startDate, expiryDate} = req.body
 
-        console.log(`this is the category offer details`,offerName, category, discountPercentage, startDate, expiryDate);
 
         if (!offerName || !category || !discountPercentage || !startDate || !expiryDate ) {
 
-            return res.status(400).send("All fields are required");
+            return res.status(400).json({success:false,message:"All fields are required"});
         }
 
         const categoryId = new ObjectId(category)
@@ -1963,7 +2086,7 @@ const addCategoryOffer = async (req,res) =>{
 
         if(!categoryData){
 
-            return res.status(404).send("Category not found")
+            return res.status(404).json({success:false,message:"Category not found"});
 
         }
 
@@ -1971,7 +2094,7 @@ const addCategoryOffer = async (req,res) =>{
 
         if(!productsData){
 
-            return res.status(400).send("Sorry no products are found in this category");
+            return res.status(400).json({success:false,message:"Sorry no products are found in this category"});
 
         }
         
@@ -2021,13 +2144,13 @@ const addCategoryOffer = async (req,res) =>{
 
         })
 
-     return res.status(200).redirect("/admin/categoryOffer")
+        return res.status(200).json({success:true,message:"Category Offer added successfully"})
       
     } catch (error) {
         
         console.log(`error while adding offer to category`,error.message);
         
-        return res.status(500).send("Internal server error")
+        return res.status(500).json({message:"Internal server error"})
     }
 }
 
@@ -2037,7 +2160,6 @@ const activateDeactivateCategoryOffer = async (req,res) =>{
 
         const categoryId = req.query.categoryId
 
-        console.log(`this is the category id received from the front end`,categoryId)
 
         const categoryData = await categories.findById(categoryId)
 
@@ -2085,8 +2207,7 @@ const activateDeactivateCategoryOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while changing the status of the category offer`,error.message)
-
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
 
     }
 }
@@ -2098,8 +2219,6 @@ const loadEditCategoryOffer = async (req,res) =>{
         const { categoryId } = req.query
 
         const categoryData = await categories.findOne({_id:categoryId})
-
-        console.log(`this is the categories id data to edit`,categoryData);
         
 
         return res.status(200).render("admin/editCategoryOffer",{categoryData:categoryData})
@@ -2107,7 +2226,7 @@ const loadEditCategoryOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the editing page of the category offer`,error.message);
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 
 }
@@ -2118,7 +2237,6 @@ const editCategoryOffer = async (req,res) =>{
 
         const {categoryId,offerName,discountPercentage, expiryDate} = req.body
 
-        console.log(`this is the category offer details for editing the offer`,categoryId,offerName, discountPercentage, expiryDate);
         
         if (!categoryId || !offerName || !discountPercentage || !expiryDate) {
 
@@ -2170,39 +2288,54 @@ const editCategoryOffer = async (req,res) =>{
             }
         });
 
-        return res.status(200).json({ success: true, message: "Category offer updated successfully", updatedCategory });
+        return res.status(200).json({ success: true, message: "Category offer edited successfully" });
 
     } catch (error) {
         
         console.log(`error while editing the category offer`,error.message);
+        return res.status(500).json({ message: "An error occured while editing the category offer" });
         
     }
 }
 
 
 
-
-
-
-const loadProductOffer = async (req,res) =>{
+const loadProductOffer = async (req, res) => {
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 5;
 
     try {
+        const totalOfferAppliedProducts = await products.countDocuments({ 'productOffer.offerDiscountAmount': { $exists: true } });
+        const totalPages = Math.max(1, Math.ceil(totalOfferAppliedProducts / perPageData));
 
-        const offerAppliedProducts = await products.find({ 'productOffer.offerDiscountAmount': { $exists: true }})
+        pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+        const skip = (pageNumber - 1) * perPageData;
 
-        return res.status(200).render("admin/productOfferList",{offerAppliedProducts:offerAppliedProducts})
-        
+        const offerAppliedProducts = await products.find({ 'productOffer.offerDiscountAmount': { $exists: true } })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(perPageData)
+            .exec();
+
+        return res.status(200).render("admin/productOfferList", {
+            offerAppliedProducts: offerAppliedProducts,
+            totalPages: totalPages,
+            currentPage: pageNumber
+        });
+
     } catch (error) {
-        
-        console.log(`error while loading the offer applying to category page`,error.message);
-        
+        console.log(`Error while loading the offer applied products page:`, error.message);
+        return res.status(500).render("user/500")
     }
-}
+};
+
 const loadAddProductOffer = async (req,res) =>{
 
     try {
         const currentDate = new Date();
-        const productsData = await products.find({ })
+        const productsData = await products.find({$or:[
+            {"productOffer.offerExpiryDate":{$lt :currentDate }},{"productOffer":{$exists : false}}
+        ]})
 
         return res.status(200).render("admin/addProductOffer",{productsData:productsData})
 
@@ -2210,6 +2343,8 @@ const loadAddProductOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the offer applying to category page`,error.message);
+
+        return res.status(500).render("user/500")
     }
 
 }
@@ -2219,12 +2354,10 @@ const addProductOffer = async (req,res) =>{
 
         const { offerName, product, discountPercentage, startDate, expiryDate} = req.body;
 
-        console.log(`Offer details received:`, offerName, product, discountPercentage, startDate, expiryDate);
 
-        // Validation
         if (!offerName || !product || !discountPercentage || !startDate || !expiryDate) {
 
-            return res.status(400).send("All fields are required");
+            return res.status(400).json({success:false,message:"All fields are required"});
 
         }
         const productId = new ObjectId(product)
@@ -2233,7 +2366,7 @@ const addProductOffer = async (req,res) =>{
 
         if(!productData){
 
-            return res.status(404).send("Product not found");
+            return res.status(404).json({success:false,message:"Product not found"});
 
         }
 
@@ -2241,16 +2374,16 @@ const addProductOffer = async (req,res) =>{
 
         if(!categoryData){
 
-            return res.status(404).send("No category found with the associated product for checking which offer is better")
+            return res.status(404).json({success:false,message:"No category found with the associated product for checking which offer is better"})
 
         }
 
 
 
-        if(discountPercentage<=categoryData?.categoryOffer?.offerDiscountPercentage&& new Date(categoryData?.categoryOffer?.offerExpiryDate) < new Date()){
+        if(discountPercentage<=categoryData?.categoryOffer?.offerDiscountPercentage && new Date(categoryData?.categoryOffer?.offerExpiryDate) > new Date()){
 
-
-           return res.status(400).send("product already has a better offer and is not expired")
+            
+           return res.status(200).json({ BetterOfferApplied:true, message: "product already has a better offer and is not expired"})
 
 
         }
@@ -2274,16 +2407,16 @@ const addProductOffer = async (req,res) =>{
             { new: true }
         );
            
-      console.log(`Product updated successfully and offer applied`, updatedProduct)
+ 
 
-     return res.status(200).redirect("/admin/productOffer")
+     return res.status(200).json({success:true,message:"Product Offer added successfully"})
       
         
     } catch (error) {
         
         console.log(`error while adding offer to product`,error.message);
         
-        return res.send("Internal server error")
+        return res.status(500).json({message:"Internal server error"})
     }
 }
 const activateDeactivateProductOffer = async (req,res) =>{
@@ -2291,8 +2424,6 @@ const activateDeactivateProductOffer = async (req,res) =>{
     try {
 
         const productId = req.query.productId
-
-        console.log(`this is the product id received from the front end`,productId);
 
         const productData = await products.findById(productId)
 
@@ -2306,7 +2437,6 @@ const activateDeactivateProductOffer = async (req,res) =>{
 
             const updatedProductOfferStatus = await products.findByIdAndUpdate({_id:productId},{$set:{"productOffer.offerStatus":false}},{new:true})
 
-            console.log(`Deactivated product offer from the backend product offer status to false`)
             return res.status(200).json({
                 success:true,
                 message:"product offer status set to false",
@@ -2316,7 +2446,6 @@ const activateDeactivateProductOffer = async (req,res) =>{
 
             const updatedProductOfferStatus = await products.findByIdAndUpdate({_id:productId},{$set:{"productOffer.offerStatus":true}},{new:true})
 
-            console.log(`Activated product offer from the backend product offer status to true`)
             return res.status(200).json({
                 success:true,
                 message:"product offer status set to true",
@@ -2327,7 +2456,7 @@ const activateDeactivateProductOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while changing the status of the product offer`,error.message);
-        return res.status(500).send("Internal server Error")
+        return res.status(500).render("user/500")
     }
 }
 const loadEditProductOffer = async (req,res) =>{
@@ -2343,6 +2472,8 @@ const loadEditProductOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the product offer`,error.message);
+
+        return res.status(500).render("user/500")
         
     }
 }
@@ -2352,7 +2483,6 @@ const editProductOffer = async (req,res) =>{
 
         const {productId,offerName,discountPercentage, expiryDate} = req.body
 
-        console.log(`this is the product offer details for editing the offer`,productId,offerName, discountPercentage, expiryDate);
         
         if (!productId || !offerName || !discountPercentage || !expiryDate) {
 
@@ -2365,7 +2495,7 @@ const editProductOffer = async (req,res) =>{
 
         if(!productData){
 
-            return res.status(404).send("Product not found");
+            return res.status(404).json({success: false,message:"Product not found"});
 
         }
 
@@ -2373,13 +2503,14 @@ const editProductOffer = async (req,res) =>{
 
         if(!categoryData){
 
-            return res.status(404).send("No category found with the associated product for checking which offer is better")
+            return res.status(404).json({success: false,message:"No category found with the associated product for checking which offer is better"})
 
         }
-        if(discountPercentage<=categoryData.categoryOffer.offerDiscountPercentage&& new Date(categoryData.categoryOffer.offerExpiryDate) < new Date()){
+
+        if(discountPercentage<=categoryData?.categoryOffer?.offerDiscountPercentage && new Date(categoryData?.categoryOffer?.offerExpiryDate) > new Date()){
 
 
-            return res.status(400).send("product already has a better offer and is not expired")
+            return res.status(200).json({ BetterOfferApplied:true, message: "product already has a better offer and is not expired"});
  
  
          }
@@ -2402,28 +2533,53 @@ const editProductOffer = async (req,res) =>{
             { new: true }
         );
            
-      console.log(`Product updated successfully and offer applied`, updatedProduct)
-
         return res.status(200).json({ success: true, message: "Product offer updated successfully", updatedProduct});
 
     } catch (error) {
         
-        console.log(`error while editing the category offer`,error.message);
+        console.log(`error while editing the product offer`,error.message);
+        
+        return res.status(500).json({message:"Internal server error"})
         
     }
 }
 
+const deleteCategoryOffer = async (req,res) =>{
+
+    try {
+        
+        const {id} = req.body
+
+        const categoryId = new ObjectId(id)
+
+        const categoryData = await categories.findById(categoryId)
+
+        if(!categoryData){
+
+            return res.status(404).render("user/404")
+
+        }
+
+        
+    } catch (error) {
+        
+        console.log(`error while deleting the category offer`,error.message);
+
+        return res.status(500).render("user/500")
+        
+    }
+}
 
 module.exports = {
 
-    //admin authentication
+    // Admin Authentication
 
     loadLogin,
     registerAdmin,
     verifyAdmin,
     isSignout,
 
-    // page loaders
+   // Page Loaders
 
     loadDashboard,
     loadCustomer,
@@ -2444,11 +2600,11 @@ module.exports = {
     loadEditProductOffer,
 
 
-    // user management
+     // User Management
 
     blockUnblock, 
    
-    // category and brand management
+     // Category and Brand Management
 
     addCategoryBrand,
     editCategory,
@@ -2458,7 +2614,7 @@ module.exports = {
     categoryExists,
     brandExists,
 
-    // product management
+     // Product Management
 
     addProduct,
     editProduct,
@@ -2466,28 +2622,34 @@ module.exports = {
     softDeleteProduct,
     ProductExists,
     
-   // total order status management
+     // Order Management
 
     changeOrderStatus,
   
-    //coupon management
+     // Coupon Management
+
     addCoupon,
     activateDeactivateCoupon,
 
    
-   
+     // Return Management
+
     approveReturn,
     rejectReturn,
 
-    //calculate sales report
+     // Sales Reports
+
     getSalesData,
     getSalesDataJson,
     bestSellers,
 
-    //offer management
+   
+    // Offer Management
+
     addCategoryOffer,
     activateDeactivateCategoryOffer,
     editCategoryOffer,
+    deleteCategoryOffer,
     addProductOffer,
     activateDeactivateProductOffer,
     editProductOffer
