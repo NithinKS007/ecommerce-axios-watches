@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: Number,
         
+        
     },
     addressId:[{
 
@@ -33,7 +34,6 @@ const userSchema = new mongoose.Schema({
     },
     googleId:{
         type:String,
-        unique: true,
        
     },
     isBlocked:{

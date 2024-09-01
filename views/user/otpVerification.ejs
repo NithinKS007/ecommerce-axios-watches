@@ -74,7 +74,7 @@
  
   document.addEventListener("DOMContentLoaded", () => {
     const resendButton = document.getElementById("resendotp");
-
+    const verifyButton = document.getElementById("verifyButton");
     resendButton.addEventListener("click", () => {
       fetch("/resendOtp", {})
         .then((response) => {
@@ -96,7 +96,7 @@
 
     verifyButton.addEventListener("click", () => {
       const otp = document.getElementById("otpInput").value;
-      const verifyButton = document.getElementById("verifyButton");
+      
       const result = document.getElementById("errorInvalid");
 
 
@@ -118,7 +118,31 @@
         })
         .then((data) => {
           if (data.success) {
-            window.location.href = "/home";
+
+            Swal.fire({
+            title: 'Success!',
+            text: 'Registration successfull.',
+            icon: 'success',
+            position: 'top-right',
+            toast: true,
+            timer: 2000, 
+            showConfirmButton: false
+        }).then(() => {
+            window.location.href = "/signin"; 
+        });
+
+          }else{
+            Swal.fire({
+            title: 'Success!',
+            text: data.message,
+            icon: 'success',
+            position: 'top-right',
+            toast: true,
+            timer: 2000, 
+            showConfirmButton: false
+
+          })
+
           }
         })
         .catch((error) => {

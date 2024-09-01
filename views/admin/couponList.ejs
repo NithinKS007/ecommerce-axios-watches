@@ -188,9 +188,6 @@ justify-content: center !important;
     const deleteButton = document.getElementById(`softDeleteButton${couponId}`)
 
     const isBlocking = deleteButton.classList.contains('btn-success')
-
-
-
                   Swal.fire({
                     title: `Are you sure you want to ${isBlocking ? 'Activate' : 'Deactivate'} this coupon ?`,
                     icon: "warning",

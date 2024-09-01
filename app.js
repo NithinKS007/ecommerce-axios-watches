@@ -41,7 +41,7 @@ app.use(sessionConfig)
 
 
 
-//for google verification
+//Initialize Passport
 app.use(passport.initialize())
 app.use(passport.session())
 

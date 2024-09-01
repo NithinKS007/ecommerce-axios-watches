@@ -37,6 +37,7 @@ const securePassword = async(password)=>{
         
     }
 }
+
 const secureToken = async (token) => {
     try {
         const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
@@ -342,14 +343,14 @@ const verifyOtp = async (req,res) => {
                 email:userDataSession.email,
                 phone:userDataSession.phone,
                 password:hashedPassword,
-                googleId: userDataSession.googleId || undefined,
+                ...(userDataSession.googleId && { googleId: userDataSession.googleId })
                      
             })
     
            const userData = await user.save()
 
             if(userData){
-
+               
                 return res.status(200).json({success :true, message:"otp validaton successfull"})
 
             }else{
@@ -366,7 +367,7 @@ const verifyOtp = async (req,res) => {
 
         console.log(`otp verification is not working`,error.message)
         
-        return res.status(500).json({ success: false, message: "Error during OTP verification" })
+        return res.status(500).json({ success: false, message: "Error occured during OTP verification" })
         
     }
 
@@ -656,7 +657,7 @@ const editPassword = async (req, res) => {
 
             console.log(`Error while editing the password`, error.message);
 
-            return res.status(500).render("user/500")
+            return res.status(500).json({ message: "Error while updating the passoword", success: false});
 
         }
    
@@ -761,8 +762,9 @@ const priceSummary = async (cartData, couponCode) => {
   
       return { subTotal: 0, finalPrice: 0, totalQuantity: 0, discount: 0 };
     } catch (error) {
-      console.log(`Error while calculating the price details: ${error.message}`);
-      return res.status(500).render("user/500")
+      console.log(`Error while calculating the price details: ${error.message}`)
+
+      return res.status(500).json({message:"Error while calculating the price"})
     }
   };
 
@@ -901,7 +903,12 @@ const addToCart = async (req,res) =>{
         
         console.log(`error while adding product to cart from product details page backend`,error.message);
 
-        return res.status(500).render("user/500")
+       return res.status(500).json({
+        
+                success:false,
+                message:"Error while adding product to cart",
+    
+            })
     }
 }
 
@@ -962,7 +969,10 @@ const removeFromCart = async (req, res) => {
 
       console.log('Error while removing an item from the cart', error.message)
 
-      return res.status(500).render("user/500")
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong while deleting item from the cart"
+    });
 
     }
   }
@@ -1020,7 +1030,7 @@ const removeFromCart = async (req, res) => {
 
       } catch (error) {
 
-        res.status(500).json({ error: 'Error updating quantity' })
+        res.status(500).json({ message: 'Error updating quantity' })
 
       }
 
@@ -1081,6 +1091,8 @@ const removeFromCart = async (req, res) => {
     } catch (error) {
         
         console.log(`error while updating the selection `,error.message);
+
+        return  res.status(500).json({ message: `Error while selecting items in the cart`})
     }
  }
 
@@ -1226,7 +1238,7 @@ const editAddress = async (req,res) =>{
         
         console.log(`error while editing the address`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).json({message:"Error while editing the address",success:false})
     }
 }
 
@@ -1272,7 +1284,10 @@ const removeAddress = async (req,res) =>{
         
         console.log(`error while deleting the address`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong while deleting item from the address collection"
+        });
     }
 }
 //loading the checkout page
@@ -1348,9 +1363,7 @@ const placeOrder = async (req,res) =>{
         }
         const address =  new ObjectId(addressId) 
 
-        console.log(`this is address id from the front end`,address);
-        console.log(`this is the payment method from the front end`,paymentMethod)
-        console.log(`this is the coupon code from the front end`,couponCode)
+      
 
         
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
@@ -1566,7 +1579,10 @@ const placeOrder = async (req,res) =>{
         
         console.log(`error while placing the order`,error.message)
 
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong please try again',
+        });
     }
 
 }
@@ -1719,7 +1735,7 @@ const cancelOrderProduct = async (req, res) => {
 
        if (!validStatuses.includes(orderProductStatus)) {
 
-         return res.status(400).json({ error: 'Invalid order product status' });
+         return res.status(400).json({ message: 'Invalid order product status' });
 
        }
    
@@ -1744,7 +1760,7 @@ const cancelOrderProduct = async (req, res) => {
             
             if (!canceledItem) {
 
-                return res.status(404).json({ error: 'Item not found in the order' });
+                return res.status(404).json({ message: 'Item not found in the order' });
             }
             
             let itemTotalAmount, itemDiscount;
@@ -1762,7 +1778,7 @@ const cancelOrderProduct = async (req, res) => {
 
             if (!walletData) {
 
-                return res.status(404).json({ error: 'Wallet not found' });
+                return res.status(404).json({ message: 'Wallet not found' });
             }
        
             if (orderData.paymentMethod === "razorPay"||orderData.paymentMethod === "wallet") {
@@ -1827,14 +1843,16 @@ const cancelOrderProduct = async (req, res) => {
        }
       
     
-       return res.status(400).json({ error:"cannot change status",success:false });
+       return res.status(400).json({ message:"cannot change status",success:false });
 
     } catch (error) {
 
         console.log(`Error while canceling the product`, error.message);
 
-       return res.status(500).json({ error: error.message });
+       return res.status(500).json({ message : `Error while canceling the product`});
+
     }
+
 };
 
 const cancelOrder = async (req, res) => {
@@ -1875,7 +1893,7 @@ const cancelOrder = async (req, res) => {
 
         if (!validStatuses.includes(orderStatus)) {
 
-            return res.status(400).json({ error: 'Invalid order status' });
+            return res.status(400).json({ message: 'Invalid order status' });
   
           }
 
@@ -2117,7 +2135,7 @@ const searchProducts = async (req, res) => {
 
         console.log(`Error while searching the products`, error.message);
 
-        return res.status(500).send('Internal server error');
+        return res.status(500).render("user/500")
 
     }
 };
@@ -2233,7 +2251,7 @@ const loadWishList = async (req, res) => {
 
         console.log(`Error while loading the wishlist:`, error);
 
-        return res.status(500).send("An error occurred while loading the wishlist.");
+        return res.status(500).render("user/500")
 
     }
 };
@@ -2310,7 +2328,7 @@ const addToWishList = async (req, res) => {
     } catch (error) {
         console.log(`Error while adding product to wishlist: ${error.message}`);
 
-        res.status(500).json({ message: 'Internal server error' });
+       return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
@@ -2367,7 +2385,7 @@ const removeFromWishList = async (req,res) =>{
         
         console.log(`error while removing the product from the wishlist`,error.message);
 
-        res.status(500).json({ message: 'Internal server error' });
+       return res.status(500).json({ message: 'Internal server error' });
 
     }
 }
@@ -2398,7 +2416,8 @@ const verifyOnlinePayment = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while verifiying the online payment for razorpay`,error.message);
-        
+
+        return  res.status(500).json({ success: false,message:"Cannot verify online payment for razorpay" });
     }
 }
 
@@ -2451,7 +2470,7 @@ const loadWallet = async (req, res) => {
 
         console.log(`Error while loading the wallet page:`, error.message);
 
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).render("user/500")
     }
 }
 
@@ -2602,7 +2621,7 @@ const loadForgotPassword = async (req,res) =>{
         
         console.log(`error while resetting the password`,error.message);
 
-        return res.status(500).send("Error while loading the forgot password page")
+        return res.status(500).render("user/500")
         
     }
 
@@ -2675,7 +2694,7 @@ const loadResetPassword = async (req,res) =>{
         
         console.log(`error while loading the reset password page`,error.message);
 
-        return res.status(500).send("Internal server error")
+        return res.status(500).render("user/500")
 
     }
 }
@@ -2734,7 +2753,7 @@ const ResetPassword = async (req,res) =>{
         
         console.log(`error while resetting the password`,error.message);
 
-        return res.status(500).json({message:"error occured",success:false})
+        return res.status(500).json({message:"Error while resetting the password",success:false})
     }
 }
 
@@ -2768,7 +2787,7 @@ const handleOnlinePaymentFailure = async (req,res) =>{
 
         console.log(`error while checking the onlinepayment failure`,error.message);
 
-        return res.status(500).json({message:"error occured",success:false})
+        return res.status(500).json({message:"Error while updating the onlinepayment status to failure`",success:false})
         
     }
 }
@@ -2809,7 +2828,7 @@ const loadRetryOrderCheckout = async (req,res) =>{
 
         console.log(`error while loading the checkout page for retrying order`,error.message);
         
-        return res.status(500).send("Internal server error")
+        return res.status(500).render("user/500")
     }
 }
 const retryOrderPayment = async (req,res) =>{
@@ -2867,7 +2886,7 @@ const retryOrderPayment = async (req,res) =>{
     } catch (error) {
 
         console.log(`error while changing the status of the payment on retry order`,error.message)
-        return res.status(500).json({success: false,message: 'Failed to retry Payment'});
+        return res.status(500).json({success: false,message: 'Failed to retry the payment through Razorpay'});
         
     }
 }

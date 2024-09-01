@@ -33,7 +33,9 @@ passport.use(new GoogleStrategy({
 
       }
 
-      console.log(user);
+      request.session.user_id = user._id
+      request.session.user = user
+      request.session.userType = 'google'
 
       return cb(null, user)
 
@@ -73,42 +75,44 @@ passport.deserializeUser(async (id, done) => {
 
 const isUserLogin = async (req, res, next) => {
   try {
-    if (req.session.userId || (req.isAuthenticated() && req.user)) {
-      if (req.path === "/signin") {
-        return res.redirect("/home");
-      }
-      return next();
+
+
+    if (req.session.userId || req.user) {
+
+      return next()
+
+    } else {
+
+      return res.redirect('/signin')
+
     }
 
-    if (!req.session.userId && (!req.isAuthenticated() || !req.user)) {
-      if (req.path !== "/signin") {
-        return res.redirect("/signin");
-      }
-    }
-    return next();
   } catch (error) {
     console.error("Error in isUserLogin middleware:", error.message);
     return res.status(500).render("user/500");
   }
 };
 
-// Middleware to check if the user is logged out
+
 const isUserLogout = async (req, res, next) => {
   try {
-    if (req.session.userId || (req.isAuthenticated() && req.user)) {
-      if (req.path === "/signin" || req.path === "/signup") {
-        return res.redirect("/home");
-      }
+
+
+    if (req.session.userId || req.user) {
+
+      return res.redirect('/home');
+
+    } else {
+
       return next();
+
     }
 
-    if (req.path === "/signin" || req.path === "/signup") {
-      return next();
-    }
 
-    return res.redirect("/signin");
   } catch (error) {
-    console.error("Error in isUserLogout middleware:", error.message);
+
+    console.error("Error in isUserLogout middleware:", error.message)
+
     return res.status(500).render("user/500");
   }
 };

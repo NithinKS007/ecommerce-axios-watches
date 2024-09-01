@@ -1,25 +1,70 @@
-<%- include('../layouts/userLayouts/header') %>
-
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fff; color: #333;">
-    <div style="text-align: center;">
-        <h1 style="font-size: 10rem; margin: 0;">500</h1>
-        <p style="font-size: 1.5rem; margin: 20px 0;">Oops! Something went wrong on our end.</p>
-        <a href="/" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 1rem; color: #fff; background-color: #000; text-decoration: none; border-radius: 5px;">Go back to the homepage</a>
-    </div>
-    <style>
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 6rem;
-            }
-            p {
-                font-size: 1.2rem;
-            }
-            a {
-                font-size: 0.9rem;
-                padding: 8px 16px;
-            }
+<%- include('../layouts/adminLayouts/header') %>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #fff;
+        color: #333;
+    }
+    .container {
+        text-align: center;
+        padding: 20px;
+        max-width: 90%;
+    }
+    h1 {
+        font-size: 10rem;
+        margin: 0;
+    }
+    p {
+        font-size: 1.5rem;
+        margin: 20px 0;
+        line-height: 1.4;
+    }
+    a {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #fff;
+        background-color: #000;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    a:hover {
+        background-color: #333;
+    }
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 8rem;
         }
-    </style>
+        p {
+            font-size: 1.2rem;
+        }
+    }
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 6rem;
+        }
+        p {
+            font-size: 1rem;
+        }
+        a {
+            font-size: 0.9rem;
+        }
+    }
+</style>
 
 
+
+<div class="container">
+    <h1>500</h1>
+    <p>Oops! Something went wrong on our end.</p>
+    <a href="/">Go back to the homepage</a>
+</div>
 <%- include('../layouts/adminLayouts/footer') %>

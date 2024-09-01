@@ -68,7 +68,7 @@ adminRoute.post("/addCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdm
 adminRoute.patch("/categoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.activateDeactivateCategoryOffer)
 adminRoute.get("/editCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadEditCategoryOffer)
 adminRoute.put("/editCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.editCategoryOffer)
-adminRoute.delete("/deleteCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.deleteCategoryOffer)
+// adminRoute.delete("/deleteCategoryOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.deleteCategoryOffer)
 
 // Product offer management
 adminRoute.get("/productOffer",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,adminController.loadProductOffer)

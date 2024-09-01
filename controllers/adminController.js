@@ -38,7 +38,7 @@ const loadLogin = (req,res) =>{
 
         console.log(`cannot load login page of the admin`,error.message);
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -68,7 +68,7 @@ const registerAdmin = async (req,res) =>{
 
         console.log(`error while registering admin`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
@@ -106,7 +106,7 @@ const verifyAdmin = async (req,res) =>{
 
         console.log(`error while verifying and finding the admin`,error.message);
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 
 }
@@ -118,11 +118,13 @@ const isSignout = async (req,res) =>{
 
         req.session.destroy()
 
-        res.redirect('/admin/signin')
+       return res.status(200).redirect('/admin/signin')
         
     } catch (error) {
         
         console.log(`error while using the logging out function`,error.message);
+
+        return res.status(500).render("admin/500")
     }
 
 }
@@ -174,7 +176,7 @@ const loadDashboard = async (req,res) =>{
 
         console.log(`error while loading the dashboard of the admin`,error.message)
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
 
     }
 
@@ -211,7 +213,7 @@ const overAllDiscount = async () =>{
         
         console.log(`error while calculating the discount`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 } 
@@ -232,7 +234,7 @@ const overAllOrderAmount = async () =>{
         
         console.log(`error while calculating the overall sales amount`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
@@ -248,7 +250,7 @@ const totalSalesCount = async() =>{
         
         console.log(`error while calculating the sales count`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
@@ -264,7 +266,7 @@ const countTotalOrders = async () =>{
         
         console.log(`error while getting the total orders`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
@@ -299,7 +301,7 @@ const aggregateProductByCategory = async () => {
 
         console.log(`error while getting the total products`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 };
 
@@ -343,7 +345,7 @@ const monthlyAvg = async () =>{
         
         console.log(`error while getting the monthly average`,error.message);
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -383,7 +385,7 @@ const totalRevenue = async () =>{
         
         console.log(`error while calculating the total revenue`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 
@@ -533,7 +535,7 @@ const getSalesData = async (startDate, endDate) => {
       return salesData;
     } catch (error) {
       console.log(`error while calculating the sales report`, error.message);
-      return res.status(500).render("user/500")
+      return res.status(500).render("admin/500")
     }
   };
 
@@ -594,7 +596,7 @@ const loadCustomer = async (req, res) => {
         });
     } catch (error) {
         console.log("Error while loading the customers:", error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 };
 
@@ -628,7 +630,12 @@ const blockUnblock = async (req,res) =>{
         }
     } catch (error) {
         console.log(`error while blocking or unblocking the customer`,error.message);
-        return res.status(500).render("user/500")
+
+        return res.status(500).json({
+            success:false,
+            message:"error while blocking or unblocking the customer",
+           
+        })
     }
 }
 
@@ -649,7 +656,7 @@ const loadCategoryBrand = async (req,res) =>{
         console.log(`cannot load the category page`,error.message);
 
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -671,13 +678,13 @@ const addCategoryBrand = async (req,res) =>{
 
       const  categoryData = await category.save()
 
-      res.redirect("/admin/brandCategoryManagement")
+     return res.redirect("/admin/brandCategoryManagement")
 
     } catch (error) {
 
         console.log(`error adding the category`,error.message); 
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }    
 
@@ -693,13 +700,13 @@ const addCategoryBrand = async (req,res) =>{
 
       const   brandData = await brand.save()
 
-      res.redirect("/admin/brandCategoryManagement")
+     return res.redirect("/admin/brandCategoryManagement")
 
     } catch (error) {
 
         console.log(`error adding the brand`,error.message); 
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }    
 
    }
@@ -749,7 +756,13 @@ const editCategory = async (req,res) =>{
 
         console.log(`error while editing the category`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+
+            success:false,
+            message:"error while editing the category",
+     
+        })
+
         
     }
 }
@@ -791,7 +804,12 @@ const editCategory = async (req,res) =>{
         
         console.log(`error while editing the brand`,error.message);
         
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+
+            success:false,
+            message:"error while editing the brand",
+     
+        })
     }
 
  }
@@ -839,10 +857,15 @@ const softDeleteCategory = async (req,res) =>{
 
     } catch (error) {
 
-        console.log(`error while soft deleting the category`,error.message)
+        console.log(`error while deleting the category`,error.message)
 
           
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+
+            success:false,
+            message:"error while  deleting the category",
+         
+        })
         
         
     }
@@ -891,7 +914,11 @@ const softDeleteBrand = async (req,res) =>{
         console.log(`error while deleting the brand`,error.message);
 
           
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+            success:false,
+            message:"error while deleting the brand",
+           
+        })
     }
 
 }
@@ -934,7 +961,7 @@ const categoryExists = async (req, res) => {
 
         console.log('Error while checking the existing category:', error.message);
 
-        return res.status(500).json({ message: 'Internal server error', error: error.message });
+        return res.status(500).json({ message: 'Internal server error'});
 
     }
 }
@@ -971,7 +998,7 @@ const brandExists = async(req,res) =>{
         
         console.log(`error while checking the existing brand`,error.message);
 
-        return res.status(500).json({message:'Internal server error',error:error.message})
+        return res.status(500).json({message:'Internal server error'})
 
     }
 }
@@ -1041,8 +1068,9 @@ const loadProducts = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Error while loading the products page:", error.message);
-        return res.status(500).render("user/500")
+        console.log("Error while loading the products page:", error.message)
+
+        return res.status(500).render("admin/500")
     }
 };
 
@@ -1061,9 +1089,9 @@ const loadaddProduct = async (req,res) =>{
 
     } catch (error) {
 
-        console.log(`error while adding the product`,)
+        console.log(`error while loading add product page `,)
         
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -1151,10 +1179,14 @@ const softDeleteProduct = async (req,res) =>{
         
     } catch (error) {
         
-        console.log(`error while deleting the brand`,error.message);
+        console.log(`error while deleting the product`,error.message);
 
           
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+
+            success:false,
+            message:"error while deleting the product",
+        })
     }
 
 }
@@ -1176,9 +1208,9 @@ const loadEditProduct = async (req,res) =>{
         
     } catch (error) {
         
-        console.log(`error while editing the product`,error.message);
+        console.log(`error while loading the edit product page`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -1220,7 +1252,7 @@ const editProduct = async (req, res) => {
 
         console.log(`Error while editing the product data:`, error.message);
 
-        return res.status(400).json({ message: "Failed to update product", success:false });
+        return res.status(500).json({ message: "Failed to update product", success:false });
     }
 }
 
@@ -1248,7 +1280,7 @@ const editImage = async (req,res) =>{
         
         console.log(`error while removing the image`,error.message);
 
-        return res.status(400).json({ message: "Failed to update product image", success:false });
+        return res.status(500).json({ message: "Failed to update product image", success:false });
     }
 }
 
@@ -1281,7 +1313,7 @@ const ProductExists = async (req,res) =>{
         
         console.log(`error while checking the existing product`,error.message);
 
-        return res.status(500).json({message:"Internal server error",error:error.message})
+        return res.status(500).json({message:"Internal server error"})
 
     }
     
@@ -1349,7 +1381,7 @@ const loadOrderList = async (req, res) => {
     } catch (error) {
         console.log("Error while loading the orders:", error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 };
@@ -1369,7 +1401,7 @@ const loadOrderDetailsPage = async (req, res) => {
 
         console.log(`Error while rendering the order details page`, error.message);
 
-       return res.status(500).render("user/500")
+       return res.status(500).render("admin/500")
 
     }
 };
@@ -1397,7 +1429,7 @@ const changeOrderStatus = async (req,res) =>{
 
         if(!order){
 
-            return res.status(400).render("user/500");
+            return res.status(400).json({message:"Order not found"})
         }
 
         const allItemsCancelled = order.items.every(item => item.orderProductStatus === "cancelled");
@@ -1459,23 +1491,22 @@ const changeOrderStatus = async (req,res) =>{
 
             }
 
+            return res.status(200).json({message:"successfully changed the order status",success:true, updatedOrder: updatedOrder})
+
         }else{
 
             return res.status(200).json({ message: "User cancelled all products", adminCannotCancel: true });
 
         }
-
-         return res.status(400).json({
-            message: "Order status unchanged",
-            success: false
-        });
-
     
     } catch (error) {
         
         console.log(`error while updating the order status`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+            message: "error while updating the order status",
+            success: false
+        });
     }
 }
 
@@ -1485,7 +1516,7 @@ const getEnumValues = (schema, path) => {
     const enumValues = schema.path(path).enumValues;
     return enumValues;
 
-  }
+}
   
   
 
@@ -1536,7 +1567,7 @@ const loadCoupon = async (req, res) => {
         });
     } catch (error) {
         console.log("Error while loading the coupons:", error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -1552,7 +1583,7 @@ const loadAddCoupon = async(req,res) =>{
     } catch (error) {
         
         console.log(`error while adding the coupon`,error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -1581,13 +1612,13 @@ const addCoupon = async (req,res) =>{
             return res.status(200).redirect("/admin/addCoupon")
         }
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
 
     } catch (error) {
         
         console.log(`error while adding the coupon`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 }
 
@@ -1630,7 +1661,12 @@ const activateDeactivateCoupon = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while while blocking or unblocking the coupon`,error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+
+            success:false,
+            message:"error while updating the coupon status",
+           
+        })
         
     }
 }
@@ -1692,7 +1728,7 @@ const loadReturnedOrder = async (req, res) => {
         });
     } catch (error) {
         console.log(`Error while loading returned orders:`, error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 };
 
@@ -2007,7 +2043,7 @@ const bestSellers = async(req,res) =>{
         
         console.log(`error while finding the best sellers`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 
@@ -2046,7 +2082,7 @@ const loadCategoryOffer = async (req, res) => {
 
     } catch (error) {
         console.log(`Error while loading the offer applying to category page:`, error.message);
-      return res.status(500).render("user/500")
+      return res.status(500).render("admin/500")
     }
 };
 
@@ -2064,7 +2100,7 @@ const loadAddCategoryOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the offer applying to category page`,error.message)
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 
 }
@@ -2207,7 +2243,10 @@ const activateDeactivateCategoryOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while changing the status of the category offer`,error.message)
-        return res.status(500).render("user/500")
+        return res.status(500).json({
+            success: true,
+             message:"Internal server error"
+        });
 
     }
 }
@@ -2226,7 +2265,7 @@ const loadEditCategoryOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while loading the editing page of the category offer`,error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 
 }
@@ -2325,7 +2364,7 @@ const loadProductOffer = async (req, res) => {
 
     } catch (error) {
         console.log(`Error while loading the offer applied products page:`, error.message);
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 };
 
@@ -2344,7 +2383,7 @@ const loadAddProductOffer = async (req,res) =>{
         
         console.log(`error while loading the offer applying to category page`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
     }
 
 }
@@ -2456,7 +2495,11 @@ const activateDeactivateProductOffer = async (req,res) =>{
     } catch (error) {
         
         console.log(`error while changing the status of the product offer`,error.message);
-        return res.status(500).render("user/500")
+        return res.status(200).json({
+            success:false,
+            message:"error while changing the status of the product offer",
+            
+        })
     }
 }
 const loadEditProductOffer = async (req,res) =>{
@@ -2473,7 +2516,7 @@ const loadEditProductOffer = async (req,res) =>{
         
         console.log(`error while loading the product offer`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
@@ -2565,7 +2608,7 @@ const deleteCategoryOffer = async (req,res) =>{
         
         console.log(`error while deleting the category offer`,error.message);
 
-        return res.status(500).render("user/500")
+        return res.status(500).render("admin/500")
         
     }
 }
