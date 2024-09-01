@@ -483,7 +483,7 @@
                         white-space: nowrap;"><a href="/productDetails?id=${product._id}">${product.name}</a></h5>
                             <div >
                                ${product.productOffer && product.productOffer.offerDiscountPercentage && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount !== 0 && product.productOffer.offerStatus
-                                ? `<span style="color: red; font-weight: bold;"><span>${product.productOffer.offerDiscountPercentage} %</span></span>`
+                                ? `<span style="color: red; font-weight: bold;"> <div class="offer-tag"><span>${product.productOffer.offerDiscountPercentage} % OFF</span></div></span>`
                                 : ""
                             }
 
