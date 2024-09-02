@@ -193,13 +193,13 @@
                                                             <p class="card-text">
                                                                 <%= address.address %>, <%= address.locality %>, <%= address.cityDistTown %>, <%= address.state %> - <%= address.pincode %>
                                                             </p>
-                                                            <% if (address.landMark) { %>
+                                                            <% if (address.landMark || address.landMark!=="") { %>
                                                                 <p class="card-text mb-1">Landmark: <%= address.landMark %></p>
                                                               <% } else { %>
                                                                 <p class="card-text mb-1">Landmark: Not provided</p>
                                                               <% } %>
                                                               
-                                                            <% if (address.altPhone) { %>
+                                                            <% if (address.altPhone || address.altPhone!==null) { %>
                                                                 <p class="card-text mb-1">Alternate Phone: <%= address.altPhone %></p>
                                                               <% } else { %>
                                                                 <p class="card-text mb-1">Alternate Phone: Not provided</p>

@@ -1363,12 +1363,10 @@ const placeOrder = async (req,res) =>{
         }
         const address =  new ObjectId(addressId) 
 
-      
-
         
         const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
         const addressData = await userAddress.findOne({_id:address})
-        const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+        let walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
         if(!walletData){
 
             const newWalletData = new wallet({
