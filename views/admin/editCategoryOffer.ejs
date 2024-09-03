@@ -213,7 +213,7 @@
                    
                                     Swal.fire({
                                         title: 'Error!',
-                                        text: result.message || 'Failed to update offer. Please try again.',
+                                        text: `${result.message} || Failed to update offer. Please try again.`,
                                         icon: 'error',
                                         toast: true,
                                         position: 'top-right',
@@ -225,11 +225,11 @@
 
                             } else {
 
-                                console.error('Failed to update offer:', response.statusText);
+                                console.error('Failed to update offer:', response.message);
 
                                 Swal.fire({
                                     title: 'Error!',
-                                    text: 'Failed to update offer. Please check your input and try again.',
+                                    text: `Failed to update offer. Please check your input and try again.`,
                                     icon: 'error',
                                     toast: true,
                                     position: 'top-right',
@@ -244,7 +244,7 @@
 
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'An unexpected error occurred. Please try again later.',
+                                text:`${error.message} . Please try again later.`,
                                 icon: 'error',
                                 toast: true,
                                 position: 'top-right',

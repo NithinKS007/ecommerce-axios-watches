@@ -323,9 +323,9 @@ const verifyOtp = async (req,res) => {
    
     try {
 
-        const { otp }   = req.body.otp
+        const otp    = req.body.otp
         
-        const { email }  = req.session.formData.email
+        const email   = req.session.formData.email
 
         const userDataSession = req.session.formData
 
@@ -346,7 +346,7 @@ const verifyOtp = async (req,res) => {
               
                      
             })
-    
+
            const userData = await user.save()
 
             if(userData){

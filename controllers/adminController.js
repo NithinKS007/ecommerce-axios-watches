@@ -2090,9 +2090,13 @@ const loadAddCategoryOffer = async (req,res) =>{
 
     try {
         const currentDate = new Date();
+        const categoriesWithProducts = await products.distinct('category')
+
+        console.log(categoriesWithProducts);
+        
         const categoriesData= await categories.find({$or: [
             
-            { "categoryOffer.offerExpiryDate": { $lt: currentDate } },  { "categoryOffer": { $exists: false } }]})
+            { "categoryOffer.offerExpiryDate": { $lt: currentDate } },  { "categoryOffer": { $exists: false } }], _id: { $in: categoriesWithProducts }})
 
         return res.status(200).render("admin/addCategoryOffer",{categoriesData:categoriesData})
 
@@ -2286,7 +2290,7 @@ const editCategoryOffer = async (req,res) =>{
         
         if(!categoryData){
 
-          return  res.status(400).json({success:false,message:"Category not found"})
+          return  res.status(404).json({success:false,message:"Category not found"})
         }
 
         const productsData = await products.find({ category: categoryId });
