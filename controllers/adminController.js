@@ -2092,7 +2092,7 @@ const loadAddCategoryOffer = async (req,res) =>{
         const currentDate = new Date();
         const categoriesWithProducts = await products.distinct('category')
 
-        console.log(categoriesWithProducts);
+       
         
         const categoriesData= await categories.find({$or: [
             

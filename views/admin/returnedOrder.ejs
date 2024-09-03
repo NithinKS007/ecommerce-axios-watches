@@ -227,7 +227,7 @@ const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
                             buttonsContainer.style.display = 'none';
                         }
                         if (statusElement) {
-                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus}</span>`;
+                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus.charAt(0).toUpperCase() +data.updatedStatus.slice(1) }</span>`;
                         }
                     } else {
                         if (statusContainer) {
@@ -237,7 +237,7 @@ const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
                             buttonsContainer.style.display = 'none';
                         }
                         if (statusElement) {
-                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus}</span>`
+                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus.charAt(0).toUpperCase() +data.updatedStatus.slice(1)}</span>`
                         }
                     }
                 }
