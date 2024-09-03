@@ -9,19 +9,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-<<<<<<< HEAD
-=======
-const productionUrl = process.env.PRODUCTIONURL
->>>>>>> f5c24c1 (category edit)
+
 
 const sendToEmailResetPassword = async (email, token) => {
     try {
 
-<<<<<<< HEAD
+
             productionUrl = `http://localhost:7000`; 
 
-=======
->>>>>>> f5c24c1 (category edit)
         const resetURL = `${productionUrl}/resetPassword?token=${token}`; 
 
         console.log(`this is the reset url link`,resetURL);

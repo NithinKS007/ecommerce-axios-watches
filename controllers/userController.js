@@ -323,16 +323,9 @@ const verifyOtp = async (req,res) => {
    
     try {
 
-<<<<<<< HEAD
         const otp    = req.body.otp
         
         const email   = req.session.formData.email
-=======
-
-        const otp    = req.body.otp
-        
-        const  email   = req.session.formData.email
->>>>>>> f5c24c1 (category edit)
 
         const userDataSession = req.session.formData
         console.log(otp,email)
@@ -354,10 +347,6 @@ const verifyOtp = async (req,res) => {
                      
             })
 
-<<<<<<< HEAD
-=======
-    
->>>>>>> f5c24c1 (category edit)
            const userData = await user.save()
 
             if(userData){
