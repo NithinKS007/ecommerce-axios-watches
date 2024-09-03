@@ -323,14 +323,21 @@ const verifyOtp = async (req,res) => {
    
     try {
 
+<<<<<<< HEAD
         const otp    = req.body.otp
         
         const email   = req.session.formData.email
+=======
+
+        const otp    = req.body.otp
+        
+        const  email   = req.session.formData.email
+>>>>>>> f5c24c1 (category edit)
 
         const userDataSession = req.session.formData
-
+        console.log(otp,email)
         const otpDataBase = await OTP.findOne({email,otp})
-
+        console.log(otpDataBase)
         if(otpDataBase){
                  
                    
@@ -343,10 +350,14 @@ const verifyOtp = async (req,res) => {
                 email:userDataSession.email,
                 phone:userDataSession.phone,
                 password:hashedPassword,
-              
+                           
                      
             })
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> f5c24c1 (category edit)
            const userData = await user.save()
 
             if(userData){
