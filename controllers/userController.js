@@ -323,9 +323,9 @@ const verifyOtp = async (req,res) => {
    
     try {
 
-        const otp    = req.body.otp
+        const { otp }   = req.body.otp
         
-        const email  = req.session.formData.email
+        const { email }  = req.session.formData.email
 
         const userDataSession = req.session.formData
 
@@ -343,7 +343,7 @@ const verifyOtp = async (req,res) => {
                 email:userDataSession.email,
                 phone:userDataSession.phone,
                 password:hashedPassword,
-                ...(userDataSession.googleId && { googleId: userDataSession.googleId })
+              
                      
             })
     
@@ -351,7 +351,7 @@ const verifyOtp = async (req,res) => {
 
             if(userData){
                
-                return res.status(200).json({success :true, message:"otp validaton successfull"})
+                return res.status(200).json({success :true, message:"Registration successfull"})
 
             }else{
 
