@@ -4,6 +4,7 @@ const connectDB = require('./config/databaseConfig')
 const sessionConfig = require('./config/sessionConfig')
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
+const {setUserGlobal} = require('./middleware/setUserGlobal')
 const morgan = require('morgan');
 
 
@@ -11,6 +12,7 @@ const passport = require('passport')
 
 require("dotenv").config();
 const app = express()
+
 const PORT = process.env.PORT;
 
 //this required here because of google authentication
@@ -44,6 +46,9 @@ app.use(sessionConfig)
 //Initialize Passport
 app.use(passport.initialize())
 app.use(passport.session())
+
+//setting the user globally
+app.use(setUserGlobal)
 
 //using user routes
 app.use("/", userRoute)
