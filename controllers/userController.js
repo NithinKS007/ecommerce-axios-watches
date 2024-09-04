@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types;
 
+
 const users = require('../models/userModel')
 const OTP = require('../models/otpModel')
 const products = require('../models/productModel')
@@ -258,7 +259,7 @@ const generateOtp = async (req,res) => {
 
         const otpDocument = new OTP({ email, otp })
 
-        await otpDocument.save() //saving the otp to database 
+        await otpDocument.save() 
 
         await utils.sendOtpEmail(email,otp)
 
@@ -295,6 +296,12 @@ const resendOtp = async (req,res) =>{
 
     const {email}        = req.session.formData
 
+    if (!email) {
+
+        return res.status(400).json({ success: false, message: "Email is required" });
+
+    }
+
     try {
 
         const otp = await utils.generateOtp()
@@ -303,7 +310,7 @@ const resendOtp = async (req,res) =>{
 
         const otpDocument = new OTP({ email, otp })
 
-        await otpDocument.save() //saving the otp to database 
+        await otpDocument.save() 
 
         await utils.sendOtpEmail(email,otp)
 
@@ -313,7 +320,7 @@ const resendOtp = async (req,res) =>{
 
         console.log(`error while resending the otp`,error.message)
         
-        return res.status(500).json({ success: false, message: "Error sending OTP. Please try again" })
+        return res.status(500).json({ success: false, message: "Error Resending OTP. Please try again" })
     }
 }
 
@@ -476,31 +483,15 @@ const loadProductDetails = async (req,res) =>{
 
         const productId = req.query.id 
 
-        let userFromGidSessionOrSession 
+        const currentUser = req.currentUser
 
-        let existingCartItem
-
-        if(req.session.userId){
-
-            userFromGidSessionOrSession = req.session.userId
-
-        }else if(req.user){
-
-            //checking for google session id 
-            userFromGidSessionOrSession = req.user.id
-
-        }
-
-        if(userFromGidSessionOrSession){
-
-          existingCartItem = await cart.findOne({user:userFromGidSessionOrSession,items:{$elemMatch:{product:productId}}})
-        }
+        const existingCartItem = await cart.findOne({user:currentUser._id,items:{$elemMatch:{product:productId}}})
 
         const productDetails = await products.findById({_id:productId}).populate('category').populate('brand')
 
         const productInWishList = await wishList.findOne({
 
-            userId: userFromGidSessionOrSession,
+            userId: currentUser._id,
             
             productIds: { $in: [productId] }
 
@@ -528,26 +519,15 @@ const loadProductDetails = async (req,res) =>{
 
 const loadUserProfile = async (req,res) =>{
 
-
-    let userFromGidSessionOrSession 
-
     try {
 
-        if(req.session.userId){
+        const currentUser = req.currentUser
 
-            userFromGidSessionOrSession = req.session.userId
-
-        }else if(req.user){
-
-       
-            userFromGidSessionOrSession = req.user.id
-
-        }
-        const userData = await users.findById({_id:userFromGidSessionOrSession })
+        const userData = await users.findById({_id:currentUser._id })
 
         if(!userData){
 
-            return res.status(404).send("user profile not found")
+            return res.status(404).render("user/404")
         }
         
         return res.status(200).render("user/profile",{userData:userData})
@@ -567,32 +547,31 @@ const editProfile = async (req,res) =>{
 
         const { id,updatedUserDetails } = req.body
 
-        const userId = new ObjectId(id)
 
-        const userData = await users.findOne({ _id: userId})
+        const userData = await users.findById(id)
         
         if (!userData) {
 
             return res.status(404).json({ message: "User not found", success: false })
         }
 
-        const {firstName,lastName,phone} =updatedUserDetails
+        const {firstName,lastName,phone} = updatedUserDetails
 
         const updatedData = { 
-            fname: firstName.trim(), 
-            lname: lastName.trim(), 
-            phone 
+            fname: firstName, 
+            lname: lastName, 
+            phone:phone
         }
       
-        const updatedUserData = await users.findByIdAndUpdate(userId,{$set:updatedData},{new:true})
+        await users.findByIdAndUpdate(userData._id,{$set:updatedData},{new:true})
 
-        return res.status(200).json({ message: "Your profile edited successfully", success: true , updatedData: {fname: updatedData.fname,lname: updatedData.lname,phone: updatedData.phone}})
+        return res.status(200).json({ message: "Your profile edited successfully", success: true})
         
     } catch (error) {
 
         console.log(`Error while editing the user profile:`, error.message);
 
-        return res.status(400).json({ message: "An error occurred while editing your profile", success: false });
+        return res.status(500).json({ message: "An error occurred while editing your profile", success: false });
        
     }
 }
@@ -600,25 +579,13 @@ const editProfile = async (req,res) =>{
 
 const editPassword = async (req, res) => {
    
-        const {updatedPasswordDetails } = req.body;
+        const {updatedPasswordDetails} = req.body;
 
-        console.log(updatedPasswordDetails);
-
-        let userFromGidSessionOrSession;
-
-        if (req.session.userId) {
-
-            userFromGidSessionOrSession = req.session.userId;
-
-        } else if (req.user) {
-
-            userFromGidSessionOrSession = req.user.id;
-
-        }
+        const currentUser = req.currentUser
 
         try {
 
-            const userData = await users.findOne({ _id: userFromGidSessionOrSession, isBlocked: false });
+            const userData = await users.findOne({ _id: currentUser._id, isBlocked: false });
 
 
             if(!userData){
@@ -626,8 +593,6 @@ const editPassword = async (req, res) => {
              
                 return res.status(404).json({ message: "User not found", success: false });
             }
-
-            
 
 
 
@@ -642,7 +607,7 @@ const editPassword = async (req, res) => {
 
             const hashedNewPassword = await securePassword(updatedPasswordDetails.newPassword)
 
-            const updatedPassword = await users.updateOne({_id:userFromGidSessionOrSession},{$set:{password:hashedNewPassword}})
+            const updatedPassword = await users.updateOne({_id:currentUser._id},{$set:{password:hashedNewPassword}})
 
             if(updatedPassword&&hashedNewPassword){
 
@@ -774,32 +739,19 @@ const loadCart = async (req,res) =>{
 
     try {
         
-        let userFromGidSessionOrSession 
+             const currentUser = req.currentUser     
 
-        if(req.session.userId){
-
-            userFromGidSessionOrSession = req.session.userId
-
-        }else if(req.user){
-
-          
-            userFromGidSessionOrSession = req.user.id
-
-        }
-
-        if(userFromGidSessionOrSession){
-
-            const cartDetails = await cart.find({user:userFromGidSessionOrSession}).populate('items.product').exec();
+            const cartDetails = await cart.find({user:currentUser}).populate('items.product').exec();
 
             const couponDetails = await coupons.find({couponStatus:true})
 
-            const isAlreadyUsedCoupons = await coupons.find({ userBy: userFromGidSessionOrSession });
+            const isAlreadyUsedCoupons = await coupons.find({ userBy: currentUser });
 
             const usedCoupons = isAlreadyUsedCoupons.map(coupon => coupon.couponCode)
 
             const availableCoupons  = couponDetails.filter(coupon => !usedCoupons.includes(coupon.couponCode))
 
-            const cartDetailsForPriceCalculation = await cart.findOne({user:userFromGidSessionOrSession}) .populate('items.product').exec();
+            const cartDetailsForPriceCalculation = await cart.findOne({user:currentUser}) .populate('items.product').exec();
 
             const { finalPrice,subTotal } =  await priceSummary(cartDetailsForPriceCalculation)
             
@@ -807,8 +759,6 @@ const loadCart = async (req,res) =>{
             const selectedItemsCount = cartDetailsForPriceCalculation?.items.filter(item => item?.isSelected).length;
 
             return  res.status(200).render("user/cart",{cartDetails,finalPrice,subTotal,selectedItemsCount,  availableCoupons})
-
-        }
 
         
     } catch (error) {
@@ -842,6 +792,7 @@ const addToCart = async (req,res) =>{
 
         }
 
+        
         const findExistingCart = await cart.findOne({user:userFromGidSessionOrSession}).exec()
         
         const productSalesPrice = await products.findOne({_id:productId},{salesPrice:1,_id:0})
