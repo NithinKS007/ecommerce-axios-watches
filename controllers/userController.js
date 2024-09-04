@@ -328,9 +328,9 @@ const verifyOtp = async (req,res) => {
         const email   = req.session.formData.email
 
         const userDataSession = req.session.formData
-        console.log(otp,email)
+     
         const otpDataBase = await OTP.findOne({email,otp})
-        console.log(otpDataBase)
+ 
         if(otpDataBase){
                  
                    

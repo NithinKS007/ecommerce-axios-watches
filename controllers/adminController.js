@@ -2092,8 +2092,6 @@ const loadAddCategoryOffer = async (req,res) =>{
         const currentDate = new Date();
         const categoriesWithProducts = await products.distinct('category')
 
-       
-        
         const categoriesData= await categories.find({$or: [
             
             { "categoryOffer.offerExpiryDate": { $lt: currentDate } },  { "categoryOffer": { $exists: false } }], _id: { $in: categoriesWithProducts }})

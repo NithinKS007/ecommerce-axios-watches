@@ -10,4 +10,3 @@ const sessionConfig = session({
 })
 
 module.exports =  sessionConfig 
-
