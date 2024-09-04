@@ -521,18 +521,10 @@
 
                 if(data.success){
 
-                    updateNewAddress(id, data.updatedUserAddress);
-                    Swal.fire({
-                            icon: 'success',
-                            text: `${data.updatedUserAddress.addressType} address successfully updated.`,
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
-                        });
-                    }
+                    sessionStorage.setItem('editAddressSuccessMessage', `${data.updatedUserAddress.addressType} address successfully updated.`);
 
+                    }
+                    window.location.reload()
 
                 editAddressForm.style.display = 'none';
                 addressListingContainer.style.display = 'block';
@@ -559,39 +551,7 @@
         addressListingContainer.style.display = 'block';
     });               
  } 
- const updateNewAddress = (id,updatedUserAddress) => {
-    document.getElementById(`addressContainer${id}`).innerHTML = `
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-                <div class="address-container">
-                    <div class="address-card">
-                        <span class="badge bg-secondary mb-2">${updatedUserAddress.addressType}</span>
-                        <h5 class="card-title mb-1">${updatedUserAddress.name}</h5>
-                        <p class="card-text mb-1">${updatedUserAddress.phone}</p>
-                        <p class="card-text">${updatedUserAddress.address}, ${updatedUserAddress.locality}, ${updatedUserAddress.cityDistTown}, ${updatedUserAddress.state} - ${updatedUserAddress.pincode}</p>
-                        <p class="card-text mb-1">Landmark: ${updatedUserAddress.landMark}</p>
-                        <p class="card-text mb-1">Alternate Phone: ${updatedUserAddress.altPhone}</p>
-                        <p class="card-text mb-1">Email: ${updatedUserAddress.email}</p>
-                    </div>
-                </div>
-                <div class="dropdown">
-                    <a href="#" data-bs-toggle="dropdown">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="5" r="1"></circle>
-                            <circle cx="12" cy="12" r="1"></circle>
-                            <circle cx="12" cy="19" r="1"></circle>
-                        </svg>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a onclick="editAddress('${updatedUserAddress._id}', '${updatedUserAddress.addressType}', '${updatedUserAddress.name}', '${updatedUserAddress.phone}', '${updatedUserAddress.address}', '${updatedUserAddress.locality}', '${updatedUserAddress.cityDistTown}', '${updatedUserAddress.state}', '${updatedUserAddress.pincode}', '${updatedUserAddress.landMark}', '${updatedUserAddress.altPhone}', '${updatedUserAddress.email}')" class="dropdown-item">Edit info</a>
-                        <a onclick="removeAddress('${updatedUserAddress._id}')" class="dropdown-item text-danger">Delete</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-};      
-
+ 
         const removeAddress = (addressId) =>{
 
             Swal.fire({
@@ -666,6 +626,22 @@
     }
 
 
+    window.addEventListener('load', () => {
+    const successMessage = sessionStorage.getItem('editAddressSuccessMessage');
+    if (successMessage) {
+        Swal.fire({
+            icon: 'success',
+            text: successMessage,
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000
+        });
+       
+        sessionStorage.removeItem('editAddressSuccessMessage');
+    }
+});
 
   
 </script>

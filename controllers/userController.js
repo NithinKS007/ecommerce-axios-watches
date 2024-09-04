@@ -587,14 +587,11 @@ const editPassword = async (req, res) => {
 
             const userData = await users.findOne({ _id: currentUser._id, isBlocked: false });
 
-
             if(!userData){
 
-             
                 return res.status(404).json({ message: "User not found", success: false });
+
             }
-
-
 
             const passwordMatch = await bcrypt.compare(updatedPasswordDetails.existingPassword,userData.password)
 
@@ -777,23 +774,13 @@ const addToCart = async (req,res) =>{
 
     const {productId} = req.body
 
-    let  userFromGidSessionOrSession
+    const currentUser = req.currentUser 
 
     try {
 
-        if(req.session.userId){
-
-            userFromGidSessionOrSession = new ObjectId(req.session.userId) 
-
-        }else if(req.user){
-
-           
-            userFromGidSessionOrSession = new ObjectId(req.user.id) 
-
-        }
 
         
-        const findExistingCart = await cart.findOne({user:userFromGidSessionOrSession}).exec()
+        const findExistingCart = await cart.findOne({user:currentUser._id}).exec()
         
         const productSalesPrice = await products.findOne({_id:productId},{salesPrice:1,_id:0})
         
@@ -804,7 +791,7 @@ const addToCart = async (req,res) =>{
             
             const cartItem = new cart({
     
-                user:userFromGidSessionOrSession,
+                user:currentUser._id,
                 items:[{
     
                     product:productId,
@@ -838,7 +825,7 @@ const addToCart = async (req,res) =>{
      
         }else{
 
-            await cart.updateOne({user:userFromGidSessionOrSession},{$push:{items:{product:productId,price:productSalesPrice.salesPrice, productSalesPriceAfterOfferDiscount:productSalesPriceAfterOfferDiscount.productSalesPriceAfterOfferDiscount}}})
+            await cart.updateOne({user:currentUser._id},{$push:{items:{product:productId,price:productSalesPrice.salesPrice, productSalesPriceAfterOfferDiscount:productSalesPriceAfterOfferDiscount.productSalesPriceAfterOfferDiscount}}})
 
             return res.status(200).json({
         
@@ -870,28 +857,17 @@ const removeFromCart = async (req, res) => {
 
       const { productId,couponCode } = req.body
   
-      let userFromGidSessionOrSession
-  
-      if (req.session.userId) {
-
-        userFromGidSessionOrSession =  new ObjectId(req.session.userId) 
-
-      } else if (req.user) {
-       
-        userFromGidSessionOrSession = new ObjectId (req.user.id)
-
-      }
-    
+     const currentUser = req.currentUser    
      
-     const deletedProductFromCart =  await cart.updateOne({user: userFromGidSessionOrSession},{$pull:{items:{product: productId}}})
+     const deletedProductFromCart =  await cart.updateOne({user: currentUser._id},{$pull:{items:{product: productId}}})
 
      const productName = await products.findById(productId);
 
-     const cartDetails = await cart.findOne({user:userFromGidSessionOrSession}).populate({path:"items.product"})
+     const cartDetails = await cart.findOne({user:currentUser._id}).populate({path:"items.product"})
 
      const {finalPrice,subTotal,discount} =  await priceSummary(cartDetails,couponCode)
 
-     const isCartEmpty = await cart.findOne({user:userFromGidSessionOrSession})
+     const isCartEmpty = await cart.findOne({user:currentUser._id})
 
 
      const isEmpty = isCartEmpty.items.length === 0
@@ -932,47 +908,35 @@ const removeFromCart = async (req, res) => {
   const updateQuantityFromCart = async (req,res) =>{
 
     try {
-        let userFromGidSessionOrSession
-
-        if (req.session.userId) {
-
-          userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-        } else if (req.user) {
-
-          userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-        }
-    
+       
         const { productId, quantity,couponCode } = req.body
     
-       
-
-        const productItem = await products.find({_id:productId})
+        const currentUser = req.currentUser    
       
-        const inventary = await products.findOne({_id:productId},{stock:1,_id:0})
+        const productItem = await products.findOne({_id:productId},{stock:1,_id:0})
 
+            if (!productItem) {
 
-        let productStock 
-        productStock = inventary.stock
+                return res.status(404).json({ message: 'Product not found'});
+
+          }
+       
+        const productStock = productItem.stock
        
 
-        if(Number(quantity)>productStock){
+        if(Number(quantity) > productStock){
 
             return res.status(200).json({ message: `Only ${productStock} is available`,quantity:false});
         }
 
-        if (!productItem) {
-
-          return res.status(404).json({ error: 'Cart not found for the user' });
-
-        }
+   
         if (quantity < 1 || quantity > 5) {
 
             return res.status(400).json({ message: `Quantity must be between 1 and ${quantity}` });
 
           }
-        const updatedItem = await cart.findOneAndUpdate({user:userFromGidSessionOrSession,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true}).populate({path:"items.product"})
+
+        const updatedItem = await cart.findOneAndUpdate({user:currentUser._id,"items.product":productId},{$set:{"items.$.quantity":quantity}},{new:true}).populate({path:"items.product"})
 
 
         const { finalPrice,subTotal,discount } =  await priceSummary(updatedItem,couponCode)
@@ -981,7 +945,7 @@ const removeFromCart = async (req, res) => {
 
       } catch (error) {
 
-        res.status(500).json({ message: 'Error updating quantity' })
+       return res.status(500).json({ message: 'Error updating quantity' })
 
       }
 
@@ -991,28 +955,15 @@ const removeFromCart = async (req, res) => {
 
     try {
 
-        let userFromGidSessionOrSession
-
-        if (req.session.userId) {
-
-          userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-        } else if (req.user) {
-
-          userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-        }
-
-    
         const { selectedProductIds,couponCode } = req.body;
 
-      
+        const currentUser = req.currentUser    
 
-        const cartDetails = await cart.findOne({user:userFromGidSessionOrSession})
+        const cartDetails = await cart.findOne({user:currentUser._id})
 
         if(!cartDetails){
 
-            return res.status(400).json({ success: false})
+            return res.status(400).json({message:"No selected items in the cart",success: false})
 
         }
 
@@ -1050,19 +1001,10 @@ const removeFromCart = async (req, res) => {
 
 const loadAddress = async (req,res) =>{
 
-    let userFromGidSessionOrSession
-   
-    if (req.session.userId) {
 
-      userFromGidSessionOrSession =  new ObjectId(req.session.userId) 
+    const currentUser = req.currentUser    
 
-    } else if (req.user) {
-     
-      userFromGidSessionOrSession = new ObjectId (req.user.id)
-
-    }
-
-    const addressDetails = await userAddress.find({userId:userFromGidSessionOrSession}).sort({createdAt:-1})
+    const addressDetails = await userAddress.find({userId:currentUser._id}).sort({createdAt:-1})
 
 
     try {
@@ -1095,23 +1037,13 @@ const addAddress = async (req,res) =>{
 
     const { name, phone, pincode, locality, address, cityDistTown, state, landMark, altPhone, email, addressType } = req.body
       
-    let userFromGidSessionOrSession
-
-    if (req.session.userId) {
-
-      userFromGidSessionOrSession =  new ObjectId(req.session.userId) 
-
-    } else if (req.user) {
-     
-      userFromGidSessionOrSession = new ObjectId (req.user.id)
-
-    }
+    const currentUser = req.currentUser    
     try {
         
         const newAddress = await new userAddress({
 
             name :name,
-            userId:userFromGidSessionOrSession,
+            userId:currentUser._id,
             phone:phone,
             pincode:pincode,
             locality:locality,
@@ -1126,7 +1058,7 @@ const addAddress = async (req,res) =>{
 
         const addressData = await newAddress.save()
 
-        const pushAddressIntoUser = await users.findByIdAndUpdate({_id:userFromGidSessionOrSession},{$push:{addressId:addressData._id}},{ new: true } )
+        const pushAddressIntoUser = await users.findByIdAndUpdate({_id:currentUser._id},{$push:{addressId:addressData._id}},{ new: true } )
 
         if(addressData&&pushAddressIntoUser){
 
@@ -1163,25 +1095,20 @@ const editAddress = async (req,res) =>{
    
     if(!updatedAddress||!id){
 
-        
-
         return res.status(400).json({success:false,message:"Address details are required"})
 
     }
     try {
 
-        const address = await userAddress.findById({_id:id})
+        const address = await userAddress.findById(id)
        
         if(!address){
 
-        
-
             return res.status(404).json({success:false,message:"address not found"})
+
         }
 
         const updatedUserAddress = await userAddress.findByIdAndUpdate(id,{$set:updatedAddress},{new:true})
-
-       
 
         return res.status(200).json({message:"Address edited successfully",success:true, updatedUserAddress:updatedUserAddress})
         
@@ -1197,25 +1124,14 @@ const removeAddress = async (req,res) =>{
 
     try {
 
-        const {addressId} = req.body
+      const {addressId} = req.body
+
+      const currentUser = req.currentUser    
         
-      let userFromGidSessionOrSession
-  
-      if (req.session.userId) {
+      const deletedAddressFromCollection = await userAddress.deleteOne({userId:currentUser._id,_id:addressId})
 
-        userFromGidSessionOrSession =  new ObjectId(req.session.userId) 
+      const isAddressEmpty = await userAddress.countDocuments({ userId: currentUser._id })
 
-      } else if (req.user) {
-       
-        userFromGidSessionOrSession = new ObjectId (req.user.id)
-
-      }
-        
-      const deletedAddressFromCollection = await userAddress.deleteOne({userId:userFromGidSessionOrSession,_id:addressId})
-
-      const isAddressEmpty = await userAddress.countDocuments({ userId: userFromGidSessionOrSession })
-
-    
       if (deletedAddressFromCollection) {
         return res.status(200).json({
             success: true,
@@ -1241,32 +1157,20 @@ const removeAddress = async (req,res) =>{
         });
     }
 }
-//loading the checkout page
+
 const  loadCheckout = async (req,res) =>{
 
     try {
 
-        let userFromGidSessionOrSession
-
-        if (req.session.userId) {
-
-          userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-        } else if (req.user) {
-
-          userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-        }
+        const currentUser = req.currentUser    
 
         const {couponCode} = req.query
 
-        const cartData = await cart.findOne({user:userFromGidSessionOrSession}).populate({path:"items.product"})
+        const cartData = await cart.findOne({user:currentUser._id}).populate({path:"items.product"})
 
-      
-        
         const selectedItems = cartData.items.filter(item => item.isSelected)
 
-        const address = await userAddress.find({userId:userFromGidSessionOrSession})
+        const address = await userAddress.find({userId:currentUser._id})
 
 
         const {finalPrice,subTotal,discount}= await priceSummary(cartData,couponCode)
@@ -1275,29 +1179,20 @@ const  loadCheckout = async (req,res) =>{
         
     } catch (error) {
         
-        console.log(`error while loading the checkout page`,error.message);
+        console.log(`error while loading the checkout page`,error.message)
 
         return res.status(500).render("user/500")
     }
 }
 
-//placing order
+
 const placeOrder = async (req,res) =>{
 
     try {
         
-        let userFromGidSessionOrSession
+        const currentUser = req.currentUser  
 
-        if (req.session.userId) {
-
-          userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-        } else if (req.user) {
-
-          userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-        }
-        if (!userFromGidSessionOrSession) {
+        if (!currentUser) {
             return res.status(400).json({
                 success: false,
                 message: 'User not found'
@@ -1312,17 +1207,16 @@ const placeOrder = async (req,res) =>{
                 message: 'Address ID is required'
             });
         }
-        const address =  new ObjectId(addressId) 
 
         
-        const cartData = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path: "items.product",populate: ['brand', 'category']})
-        const addressData = await userAddress.findOne({_id:address})
-        let walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+        const cartData = await cart.findOne({ user: currentUser._id }).populate({path: "items.product",populate: ['brand', 'category']})
+        const addressData = await userAddress.findById(addressId)
+        let walletData = await wallet.findOne({userId:currentUser._id})
         if(!walletData){
 
             const newWalletData = new wallet({
 
-                userId: userFromGidSessionOrSession
+                userId: currentUser._id
 
             });
 
@@ -1352,7 +1246,7 @@ const placeOrder = async (req,res) =>{
         
         if(discount>0&&couponCode){
 
-            await coupons.findOneAndUpdate({ couponCode }, { $addToSet: { userBy: userFromGidSessionOrSession } })
+            await coupons.findOneAndUpdate({ couponCode }, { $addToSet: { userBy: currentUser._id } })
         }
         const isSelectedItemsOnly =  cartData.items.filter(item => { 
 
@@ -1434,13 +1328,12 @@ const placeOrder = async (req,res) =>{
 
       const orderData = await order.save()
 
-      // creating transactions
 
       if(paymentMethod === "razorPay"){
 
         const newTransaction = new transaction ({
 
-            userId:userFromGidSessionOrSession,
+            userId:currentUser._id,
             orderId:orderData._id,
             paymentProvider:paymentMethod,
             onlinePaymentOrderId: razorPayOrder ? razorPayOrder.id : null,
@@ -1449,7 +1342,7 @@ const placeOrder = async (req,res) =>{
         })
     
         
-        const transactionsData = await newTransaction.save()
+        await newTransaction.save()
 
       }else{
 
@@ -1465,7 +1358,7 @@ const placeOrder = async (req,res) =>{
             }
     
             await wallet.findOneAndUpdate(
-                { userId: userFromGidSessionOrSession },
+                { userId: currentUser._id },
                 {
                     $inc: { balance: -finalPrice }, 
                     $push: { transactions: newWalletTransaction }
@@ -1482,11 +1375,6 @@ const placeOrder = async (req,res) =>{
 
         const productIds = orderData.items.map(item => item.product)
 
-        const quantityPurchased = orderData.items.map(item =>item.quantity)
-        
-       
-
-
         const bulkOps = orderData.items.map(item => ({
             updateOne: {
               filter: { _id: item.product },
@@ -1495,11 +1383,11 @@ const placeOrder = async (req,res) =>{
           }));
           
 
-        const updateStockOfProducts = await products.bulkWrite(bulkOps)
+         await products.bulkWrite(bulkOps)
 
-        const removingFromCart = await cart.findOneAndUpdate({user:userFromGidSessionOrSession},{$pull:{items:{product:{$in:productIds}}}})
+         await cart.findOneAndUpdate({user:currentUser._id},{$pull:{items:{product:{$in:productIds}}}})
 
-        //razor pay section start
+       
         if(paymentMethod === "razorPay") {
 
             return res.status(200).json({
@@ -1511,7 +1399,7 @@ const placeOrder = async (req,res) =>{
                 razorPayOrderPaymentId:orderData.onlinePaymentOrderId
             })
         }
-        //razor pay section end
+        
         return res.status(200).json({
             success: true,
             message: 'Order placed successfully',
@@ -1552,21 +1440,10 @@ const loadPaymentFailure = async (req,res) =>{
 }
 const loadPlaceOrder = async (req, res) => {
     try {
-        let userFromGidSessionOrSession 
-
-        if(req.session.userId){
-
-            userFromGidSessionOrSession = req.session.userId
-
-        }else if(req.user){
-
-            //checking for google session id 
-            userFromGidSessionOrSession = req.user.id
-
-        }
-
-      
-        return res.status(200).render('user/placeOrder');
+        
+        const currentUser = req.currentUser 
+        const lastOrderPlaced = await orders.findOne({ user: currentUser._id }).sort({ createdAt: -1 })
+        return res.status(200).render('user/placeOrder',{lastOrderPlacedId:lastOrderPlaced._id});
 
     } catch (error) {
 
@@ -1576,29 +1453,17 @@ const loadPlaceOrder = async (req, res) => {
     }
 };
 
-//loading orders page
 const loadOrders = async (req, res) => {
-
-    let userFromGidSessionOrSession;
 
     let pageNumber = parseInt(req.query.page) || 1;
     
     const perPageData = 5; 
 
-    if (req.session.userId) {
-
-        userFromGidSessionOrSession = req.session.userId;
-
-    } else if (req.user) {
-
-        // Checking for Google session ID
-        userFromGidSessionOrSession = req.user.id;
-
-    }
+    const currentUser = req.currentUser    
 
     try {
       
-        const totalOrders = await orders.countDocuments({ user: userFromGidSessionOrSession });
+        const totalOrders = await orders.countDocuments({ user: currentUser._id });
 
         const totalPages = Math.max(1, Math.ceil(totalOrders / perPageData));
 
@@ -1607,7 +1472,7 @@ const loadOrders = async (req, res) => {
         const skip = (pageNumber - 1) * perPageData;
 
      
-        const orderData = await orders.find({ user: userFromGidSessionOrSession })
+        const orderData = await orders.find({ user: currentUser._id })
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(perPageData)
@@ -1644,31 +1509,22 @@ const loadOrders = async (req, res) => {
 
 const cancelOrderProduct = async (req, res) => {
 
-    let userFromGidSessionOrSession
+    const currentUser = req.currentUser   
 
-    if (req.session.userId) {
-
-      userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-    } else if (req.user) {
-
-      userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-    }
-    if (!userFromGidSessionOrSession) {
+    if (!currentUser) {
         return res.status(400).json({
             success: false,
             message: 'User not found'
         });
     }
 
-    const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+    const walletData = await wallet.findOne({ userId: currentUser._id });
 
     if (!walletData) {
 
         const newWalletData = new wallet({
 
-            userId: userFromGidSessionOrSession
+            userId: currentUser._id
             
         });
 
@@ -1723,7 +1579,7 @@ const cancelOrderProduct = async (req, res) => {
                 const priceAfterEverything = itemTotalAmount - parseFloat(itemDiscount.toFixed(3));
 
             
-            const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+            const walletData = await wallet.findOne({userId:currentUser._id})
 
             if (!walletData) {
 
@@ -1739,7 +1595,7 @@ const cancelOrderProduct = async (req, res) => {
                 };
             
                 await wallet.findOneAndUpdate(
-                    { userId: userFromGidSessionOrSession },
+                    { userId: currentUser._id },
                     { 
                         $inc: { balance: priceAfterEverything },
                         $push: { transactions: newWalletTransaction }
@@ -1806,25 +1662,15 @@ const cancelOrderProduct = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
 
-    let userFromGidSessionOrSession 
+    const currentUser = req.currentUser   
 
-    if(req.session.userId){
-
-        userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-    }else if(req.user){
-
-      
-        userFromGidSessionOrSession =  new ObjectId(req.user.id);
-
-    }
-    const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+    const walletData = await wallet.findOne({ userId: currentUser._id });
 
     if (!walletData) {
 
         const newWalletData = new wallet({
 
-            userId: userFromGidSessionOrSession
+            userId: currentUser._id
             
         });
 
@@ -1852,7 +1698,7 @@ const cancelOrder = async (req, res) => {
           
           //Calculating the refund amount for the user's wallet by subtracting the discount from the total order value after canceling the entire order
 
-          const walletData = await wallet.findOne({userId:userFromGidSessionOrSession})
+          const walletData = await wallet.findOne({userId:currentUser._id})
 
           const { totalAmount } = await orders.findOne({_id:orderIdOfTheOrder},{_id:0,totalAmount:1})
          
@@ -1879,7 +1725,7 @@ const cancelOrder = async (req, res) => {
 
                 }
 
-               await wallet.findOneAndUpdate({userId:userFromGidSessionOrSession},{$inc:{balance:refundAmount},$push:{transactions:newWalletTransaction}},{new:true})
+               await wallet.findOneAndUpdate({userId:currentUser._id},{$inc:{balance:refundAmount},$push:{transactions:newWalletTransaction}},{new:true})
                
               }
 
@@ -1978,7 +1824,7 @@ const getEnumValues = (schema, path) => {
         arrayToAggregate.push({ $match: { stock: 0 } });
     }
 
-    arrayToAggregate.push({ $match: { isBlocked: false } });
+    arrayToAggregate.push({ $match: { isBlocked: false } })
 
     try {
         let filterResult;
@@ -2092,21 +1938,14 @@ const searchProducts = async (req, res) => {
 
 const applyCoupon = async (req, res) => {
     try {
-        let userFromGidSessionOrSession;
 
-        if (req.session.userId) {
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-        } else if (req.user) {
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-        }
+        const currentUser = req.currentUser  
 
         const { couponCode } = req.body;
         
-      
-
         if (couponCode) {
 
-            const cartDetailsForPriceCalculation = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path:"items.product"})
+            const cartDetailsForPriceCalculation = await cart.findOne({ user: currentUser._id }).populate({path:"items.product"})
 
             const{ finalPrice,discount,message,subTotal }  = await priceSummary(cartDetailsForPriceCalculation, couponCode);
             
@@ -2135,15 +1974,10 @@ const applyCoupon = async (req, res) => {
 
 const removeCoupon = async (req, res) => {
     try {
-        let userFromGidSessionOrSession;
 
-        if (req.session.userId) {
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-        } else if (req.user) {
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-        }
+        const currentUser = req.currentUser 
 
-        const cartDetails = await cart.findOne({ user: userFromGidSessionOrSession }).populate({path:"items.product"})
+        const cartDetails = await cart.findOne({ user: currentUser._id }).populate({path:"items.product"})
 
         if (cartDetails) {
             // Recalculate the final price without any coupon
@@ -2164,34 +1998,29 @@ const removeCoupon = async (req, res) => {
 
     }
 };
-//loading user wishlist page
+
 const loadWishList = async (req, res) => {
     try {
-        let userFromGidSessionOrSession;
 
-        if (req.session.userId) {
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-        } else if (req.user) {
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-        }
+        const currentUser = req.currentUser 
 
-        let wishListOfUser = await wishList.findOne({ userId: userFromGidSessionOrSession });
+        let userWishList = await wishList.findOne({ userId: currentUser._id });
 
-        if (!wishListOfUser) {
+        if (!userWishList) {
 
             const newWishList = new wishList({
 
-                userId: userFromGidSessionOrSession
+                userId: currentUser._id
 
             });
             
             await newWishList.save();
 
-            wishListOfUser = newWishList; 
+            userWishList = newWishList
             
         }
 
-        const productIds = wishListOfUser.productIds || []
+        const productIds = userWishList.productIds || []
         const productData = await products.find({ _id: { $in: productIds } }).populate('category') 
         
         return res.status(200).render("user/wishList", { productData });
@@ -2206,33 +2035,25 @@ const loadWishList = async (req, res) => {
 };
 
 
-//product adding to wishlist
+
 const addToWishList = async (req, res) => {
     try {
-        let userFromGidSessionOrSession;
-
-        if (req.session.userId) {
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-        } else if (req.user) {
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-        }
+        
+        const currentUser = req.currentUser 
 
         const { productId } = req.body;
 
         if (!productId) {
             return res.status(400).json({ message: 'Product ID is required' });
         }
-
-        const productObjectId = new ObjectId(productId);
-
-        // Find the wishlist for the user
-        const findExistingWishListForUser = await wishList.findOne({ userId: userFromGidSessionOrSession }).exec();
+        
+        const findExistingWishListForUser = await wishList.findOne({ userId: currentUser._id }).exec()
 
         if (!findExistingWishListForUser) {
-            // If the wishlist does not exist, create it
+           
             const wishListProducts = new wishList({
-                userId: userFromGidSessionOrSession,
-                productIds: [productObjectId] 
+                userId: currentUser._id,
+                productIds: [productId] 
             });
 
             const wishListData = await wishListProducts.save();
@@ -2251,8 +2072,8 @@ const addToWishList = async (req, res) => {
         } else {
             // Check if the product is already in the wishlist
             const productInWishList = await wishList.findOne({
-                userId: userFromGidSessionOrSession,
-                productIds: { $in: [productObjectId] }
+                userId: currentUser._id,
+                productIds: { $in: [productId] }
             }).exec();
 
             if (productInWishList) {
@@ -2264,8 +2085,8 @@ const addToWishList = async (req, res) => {
 
             // Push the product ID into the existing wishlist
             await wishList.updateOne(
-                { userId: userFromGidSessionOrSession },
-                { $push: { productIds: productObjectId } }
+                { userId: currentUser._id },
+                { $push: { productIds: productId } }
             );
 
             return res.status(200).json({
@@ -2275,7 +2096,7 @@ const addToWishList = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(`Error while adding product to wishlist: ${error.message}`);
+        console.log(`Error while adding product to wishlist`,error.message);
 
        return res.status(500).json({ message: 'Internal server error' });
     }
@@ -2284,18 +2105,7 @@ const addToWishList = async (req, res) => {
 const removeFromWishList = async (req,res) =>{
 
     try {
-
-        let userFromGidSessionOrSession;
-
-        if (req.session.userId) {
-
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-        } else if (req.user) {
-
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-
-        }
+        const currentUser = req.currentUser 
 
         const { productId } = req.body;
 
@@ -2305,20 +2115,18 @@ const removeFromWishList = async (req,res) =>{
 
         }
 
-        const productObjectId = new ObjectId(productId);
-
-        const findExistingWishListForUser = await wishList.findOne({ userId: userFromGidSessionOrSession }).exec();
+        const findExistingWishListForUser = await wishList.findOne({ userId: currentUser._id }).exec();
 
         if(!findExistingWishListForUser){
 
-            return res.status(400).json({ message: 'This users wish list is not found' });
+            return res.status(400).json({ message: 'User wishlist is not found' });
 
         }else{
 
             await wishList.updateOne(
 
-                {userId:userFromGidSessionOrSession},
-                {$pull:{productIds:productObjectId}}
+                {userId:currentUser._id},
+                {$pull:{productIds:productId}}
 
             )
 
@@ -2376,21 +2184,16 @@ const loadWallet = async (req, res) => {
     const perPageData = 5    
 
     try {
-        let userFromGidSessionOrSession;
 
-        if (req.session.userId) {
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-        } else if (req.user) {
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-        }
+        const currentUser = req.currentUser
 
-        let walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+        let walletData = await wallet.findOne({ userId: currentUser._id });
 
         if (!walletData) {
 
             const newWalletData = new wallet({
 
-                userId: userFromGidSessionOrSession
+                userId: currentUser._id
 
             });
 
@@ -2424,23 +2227,11 @@ const loadWallet = async (req, res) => {
 }
 
 
-
-
 const returnProductOrder = async (req,res) =>{
 
-  let userFromGidSessionOrSession 
+    const currentUser = req.currentUser
 
-    if(req.session.userId){
-
-        userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-    }else if(req.user){
-
-    
-        userFromGidSessionOrSession =  new ObjectId(req.user.id);
-
-    }
-    if (!userFromGidSessionOrSession) {
+    if (!currentUser) {
         return res.status(400).json({
             success: false,
             message: 'User not found'
@@ -2449,13 +2240,13 @@ const returnProductOrder = async (req,res) =>{
 
     try {
 
-        const walletData = await wallet.findOne({ userId: userFromGidSessionOrSession });
+        let walletData = await wallet.findOne({ userId: currentUser._id });
 
         if (!walletData) {
 
             const newWalletData = new wallet({
 
-                userId: userFromGidSessionOrSession
+                userId: currentUser._id
 
             });
 
@@ -2464,8 +2255,6 @@ const returnProductOrder = async (req,res) =>{
 
         const {itemId,productId, orderId, orderProductStatus,reason} = req.body
 
-     
-
         const validStatuses = getEnumValues(orders.schema, 'items.orderProductStatus');
 
         if (!validStatuses.includes(orderProductStatus)) {
@@ -2473,28 +2262,24 @@ const returnProductOrder = async (req,res) =>{
             return res.status(400).json({ error: 'Invalid order product status' });
   
           }
-
-          
-       const orderDocIdOfTheItem = new ObjectId(itemId)
-       const orderDocIdOfTheOrder = new ObjectId(orderId)
-       const productIdOftheItem = new ObjectId(productId)
-       
+   
        let updatedProductStatus
        let allDeliveredItemsReturned
+
        if(orderProductStatus==="delivered"||!orderProductStatus==="cancelled"||!orderProductStatus==="pending"||!orderProductStatus==="shipped"||!orderProductStatus==="returnInitiated"||!orderProductStatus==="returnApproved"||!orderProductStatus==="returnRejected"){
 
 
-        updatedProductStatus = await orders.updateOne({_id:orderDocIdOfTheOrder,"items._id":orderDocIdOfTheItem},{$set:{"items.$.orderProductStatus":"returnInitiated"}})
+        updatedProductStatus = await orders.updateOne({_id:orderId,"items._id":itemId},{$set:{"items.$.orderProductStatus":"returnInitiated"}})
 
 
        }
 
-       if(updatedProductStatus.modifiedCount > 0){
+       if(updatedProductStatus && updatedProductStatus.modifiedCount > 0){
 
        
         
        
-        const orderData = await orders.findOne({ _id: orderDocIdOfTheOrder});
+        const orderData = await orders.findOne({ _id: orderId});
 
         const {subTotalAmount,discountAmount,items} = orderData
 
@@ -2514,7 +2299,7 @@ const returnProductOrder = async (req,res) =>{
 
             const itemProportion = itemTotalAmount/subTotalAmount
             itemDiscount = itemProportion*discountAmount
-            const priceAfterEverything = itemTotalAmount - parseFloat(itemDiscount.toFixed(3));
+            const priceAfterEverything = itemTotalAmount - parseFloat(itemDiscount.toFixed(2));
 
            // Check if all delivered items are returned
           
@@ -2525,18 +2310,17 @@ const returnProductOrder = async (req,res) =>{
         // Update the order status to "returnInitiated" only if all delivered items have been returned
         if (allDeliveredItemsReturned) {
             await orders.updateOne(
-                { _id: orderDocIdOfTheOrder },
+                { _id: orderId },
                 { $set: { orderStatus: "returnInitiated" } }
             );
         }
-        console.log(`enterind here`)
       
 
             const returnProductOrderData = new returnUserOrder({
 
-                orderId:orderDocIdOfTheOrder,
-                userId:userFromGidSessionOrSession,
-                productId:productIdOftheItem,
+                orderId:orderId,
+                userId:currentUser._id,
+                productId:productId,
                 productRefundAmount:priceAfterEverything,
                 productReturnReason:reason
 
@@ -2559,7 +2343,7 @@ const returnProductOrder = async (req,res) =>{
     }
 }
 
-//loading forgot password page
+
 const loadForgotPassword = async (req,res) =>{
 
     try {
@@ -2575,15 +2359,14 @@ const loadForgotPassword = async (req,res) =>{
     }
 
 }
+
 const handleForgotPassword = async (req,res) =>{
 
     try {
 
         const {email} = req.body
 
-       
-
-        const userMail = email.trim()
+        const userMail = email
 
         const userData = await users.findOne({email:userMail})
 
@@ -2598,8 +2381,6 @@ const handleForgotPassword = async (req,res) =>{
 
         const token =  crypto.randomBytes(32).toString('hex');
         const hashedToken = await secureToken(token)
-
-      
 
         userData.resetPasswordToken = hashedToken
         userData.resetPasswordExpires = Date.now() +  300000 
@@ -2620,6 +2401,7 @@ const handleForgotPassword = async (req,res) =>{
         
     }
 } 
+
 const loadResetPassword = async (req,res) =>{
 
     try {
@@ -2654,8 +2436,6 @@ const ResetPassword = async (req,res) =>{
   
         const { password, confirmPassword,token } = req.body
 
-      
-
         if (password !== confirmPassword) {
 
             return res.status(400).json({ message: "Passwords do not match", success: false });
@@ -2664,8 +2444,6 @@ const ResetPassword = async (req,res) =>{
 
         const email = req.session.forgotPasswordEmail
 
-   
-        
         if (!email) {
 
             return res.status(400).json({ message: "Session has expired. Please request a new password reset.", success: false });
@@ -2710,7 +2488,7 @@ const handleOnlinePaymentFailure = async (req,res) =>{
 
     try {
 
-        const { paymentId, orderId } = req.body
+        const { orderId } = req.body
 
      
 
@@ -2744,31 +2522,9 @@ const loadRetryOrderCheckout = async (req,res) =>{
 
     try {
 
-    let userFromGidSessionOrSession 
-
-    if(req.session.userId){
-
-        userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-    }else if(req.user){
-
-        userFromGidSessionOrSession =  new ObjectId(req.user.id);
-
-    }
-    if (!userFromGidSessionOrSession) {
-        return res.status(400).json({
-            success: false,
-            message: 'User not found'
-        });
-    }
-
     const orderId = req.query.orderId;
 
-    
-
     const orderData = await orders.findOne({_id:orderId})
-
-    
 
     return res.status(200).render("user/retryCheckout",{orderData:orderData})
 
@@ -2786,18 +2542,17 @@ const retryOrderPayment = async (req,res) =>{
 
         const {orderId} = req.body
 
-       
+        const orderData = await orders.findById(orderId)
+        const transactionsDataOfTheOrder = await transaction.findOne({orderId:orderId})
 
-        const orderIdOfTheOrder = new ObjectId(orderId)
+        if (!orderData || !transactionsDataOfTheOrder) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order or transaction not found',
+            });
+        }
 
-        const orderData = await orders.findOne({_id:orderIdOfTheOrder})
-
-        const transactionsDataOfTheOrder = await transaction.findOne({orderId:orderIdOfTheOrder})
-
-       
-        
         let razorPayOrder
-
         const totalAmount = orderData.totalAmount
         
         if(orderData.paymentMethod==="razorPay"){
@@ -2839,40 +2594,23 @@ const retryOrderPayment = async (req,res) =>{
         
     }
 }
-
+//
 const loadOrderDetails = async (req,res) =>{
-
-
-    let userFromGidSessionOrSession; 
-
-    if (req.session.userId) {
-
-        userFromGidSessionOrSession = new ObjectId(req.session.userId)
-
-    } else if (req.user) {
-
-        // Checking for Google session ID
-        userFromGidSessionOrSession = new ObjectId(req.user.id)
-
-    }
 
     try {
       
         const {orderId} = req.query
-
-        const orderIdOfTheOrder = new ObjectId(orderId)
        
-        const orderData = await orders.findOne({_id:orderIdOfTheOrder }).exec();
+        const orderData = await orders.findById(orderId).exec();
 
         const transactions = await transaction.findOne({orderId:orderData._id}).exec();
     
-      
-        
         return res.status(200).render("user/orderDetails", {orderData,transactions})
 
     } catch (error) {
 
         console.log(`error while loading the order details page`,error.message)
+
         return res.status(500).json({success: false,message: 'error while loading the order details page'})
         
     }

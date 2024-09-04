@@ -437,7 +437,7 @@ const applyCoupon= async () =>{
 
         const productContainer = document.getElementById(`productContainer${productId}`)
    
-   const mainContainer = document.getElementById(`mainContainer`)
+         const mainContainer = document.getElementById(`mainContainer`)
 
 
 
@@ -467,32 +467,10 @@ const applyCoupon= async () =>{
      let productName = data.productName.name
       
     if(data.isEmpty){
+      
+      sessionStorage.setItem('successMessage', `Successfully removed ${productName} from your cart`);
 
-      if (mainContainer) {
-            mainContainer.remove();
-            
-            
-            const emptyCartMessage = document.createElement('div');
-            emptyCartMessage.className = 'col-12 text-center';
-            emptyCartMessage.innerHTML = `
-                <h2>Your cart is empty!</h2>
-                <p>Add items to it now.</p>
-                <a href="/home" class="btn btn-primary">Shop now</a>`;
-            document.body.appendChild(emptyCartMessage);
-          }
-
-         
-          Swal.fire({
-            icon: 'success',
-            text: `Successfully removed ${productName} from your cart`,
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000
-          }).then(() => {
-            window.location.reload();
-          });
+      window.location.reload();
       
     }else{
 
@@ -817,6 +795,23 @@ document.addEventListener("DOMContentLoaded", function() {
         timer: 3000
       }); 
     }
+
+    const successMessage = sessionStorage.getItem('successMessage');
+
+      if (successMessage) {
+        Swal.fire({
+          icon: 'success',
+          text: successMessage,
+          toast: true,
+          position: 'top-right',
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000
+        });
+
+        // Clear the success message from sessionStorage
+        sessionStorage.removeItem('successMessage');
+      }
 });
 
 

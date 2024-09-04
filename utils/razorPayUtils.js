@@ -36,9 +36,9 @@ const  createRazorPayOrder = async (amount) =>{
         
     } catch (error) {
         
-        console.log(`error in the create razor pay function in the utils`,error.message);
-
-        return res.status(500).render("user/500")
+        console.log(`error in the create razor pay function in the utils`,error.message)
+        
+        throw error
 
     }
 }
