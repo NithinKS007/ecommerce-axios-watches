@@ -66,7 +66,7 @@
 
 </style>
     <% if (cartDetails.length === 0 || cartDetails[0].items.length === 0) { %>
-      <div class="col-12 text-center" >
+      <div class="col-12 text-center" style="margin-top: 50px;" >
        
         <h2>Your cart is empty!</h2>
         <p>Add items to it now.</p>
@@ -245,8 +245,6 @@
     </div>
   </div>
 </div>
-
-
 
 <div id="preloader-active">
   <div class="preloader d-flex align-items-center justify-content-center">
@@ -627,7 +625,7 @@ function handleQuantityChange(action, button) {
   } else {
     Swal.fire({
   icon: 'info',
-  text: 'Quantity must be 1 - 5',
+  text: 'Quantity must be One to Five',
   toast: true,
   position: 'top-right',
   showConfirmButton: false,
@@ -771,13 +769,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function handleCheckoutClick() {
-
-      const couponCodeInput = document.getElementById('couponCode');
-    const couponCode = couponCodeInput.value;
     
-    const encodedCouponCode = encodeURIComponent(couponCode);
-    
-    const checkoutUrl = `/checkout?couponCode=${encodedCouponCode}`;
+    const checkoutUrl = `/checkout`;
     
     window.location.href = checkoutUrl;
 

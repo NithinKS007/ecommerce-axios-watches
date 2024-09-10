@@ -1,32 +1,16 @@
-const users = require("../models/userModel");
-const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
 
 module.exports = async (req, res, next) => {
 
     try {
 
-        let userFromGidSessionOrSession;
-        
-        if (req.session.userId) {
+        const currentUser = req.currentUser    
 
-            userFromGidSessionOrSession = new ObjectId(req.session.userId);
-
-        } else if (req.user) {
-
-            userFromGidSessionOrSession = new ObjectId(req.user.id);
-
-        }
-
-        const user = await users.findById(userFromGidSessionOrSession);
-
-        if (!user) {
+        if (!currentUser) {
             
-            console.log('User not found');
             return res.redirect('/signin');
         }
 
-        if (user.isBlocked) {
+        if (currentUser.isBlocked) {
 
             req.session.destroy(); 
 

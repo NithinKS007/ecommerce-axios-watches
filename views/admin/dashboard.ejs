@@ -13,11 +13,14 @@
                         <div class="col-lg-3">
                             <div class="card card-body mb-4">
                                 <article class="icontext">
-                                    <span class="icon icon-sm rounded-circle bg-primary-light"><i
-                                            class="text-primary material-icons md-monetization_on"></i></span>
+                                    <span class="icon icon-sm rounded-circle bg-primary-light">
+                                        <i class="text-primary" style="font-size: 1.5rem;">Rs</i>
+                                    </span>
+
                                     <div class="text">
                                         <h6 class="mb-1 card-title">Total Revenue</h6>
-                                        <span>Rs <%= totalRev || 0 %></span>
+                                        <span>Rs <%= (Number(totalRev)> 0 ? Number(totalRev).toFixed(2) : '0.00')
+                                                %></span>
                                         <span class="text-sm">
                                             Shipping fees are not included
                                         </span>
@@ -31,7 +34,9 @@
                                     <span class="icon icon-sm rounded-circle bg-success-light"><i
                                             class="text-success material-icons md-local_shipping"></i></span>
                                     <div class="text">
-                                        <h6 class="mb-1 card-title">Orders</h6> <span><%= totalOrders || 0 %></span>
+                                        <h6 class="mb-1 card-title">Orders</h6> <span>
+                                            <%= totalOrders || 0 %>
+                                        </span>
                                         <span class="text-sm">
                                             Total orders
                                         </span>
@@ -45,9 +50,11 @@
                                     <span class="icon icon-sm rounded-circle bg-warning-light"><i
                                             class="text-warning material-icons md-qr_code"></i></span>
                                     <div class="text">
-                                        <h6 class="mb-1 card-title">Products</h6> <span><%= totalProducts || 0 %></span>
+                                        <h6 class="mb-1 card-title">Products</h6> <span>
+                                            <%= totalProducts || 0 %>
+                                        </span>
                                         <span class="text-sm">
-                                          In <%= totalCategories || 0 %> Categories
+                                            In <%= totalCategories || 0 %> Categories
                                         </span>
                                     </div>
                                 </article>
@@ -58,35 +65,38 @@
                                 <article class="icontext">
                                     <span class="icon icon-sm rounded-circle bg-info-light"><i
                                             class="text-info material-icons md-shopping_basket"></i></span>
-                                            <div class="text">
-                                                <h6 class="mb-1 card-title">Monthly Average</h6> 
-                                                <span>Rs <%= monthlyRev || 0 %></span>
-                                                <span class="text-sm">
-                                                    <%= new Date(startOfMonth).toLocaleDateString('en-GB') || 'N/A' %> To (<%= new Date().toLocaleDateString('en-GB')  || 'N/A' %>)
-                                                </span>
-                                            </div>
+                                    <div class="text">
+                                        <h6 class="mb-1 card-title">Monthly Average</h6>
+                                        <span>Rs <%= (Number(monthlyRev)> 0 ? Number(monthlyRev).toFixed(2) : '0.00')
+                                                %></span>
+                                        <span class="text-sm">
+                                            <%= new Date(startOfMonth).toLocaleDateString('en-GB') || 'N/A' %> To (<%=
+                                                    new Date().toLocaleDateString('en-GB') || 'N/A' %>)
+                                        </span>
+                                    </div>
                                 </article>
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row">
-                        <div class="col-xl-8 col-lg-12">
-                            <div class="card mb-4">
-                                <article class="card-body">
-                                    <h5 class="card-title">Sale statistics</h5>
-                                    <canvas id="myChart" height="120px"></canvas>
-                                </article>
-                            </div>
-                            <div class="row">
-                               
-                            </div>
-                        </div>
-                       
-                    </div> -->
-                    
+
+
+
+
+
+
+
+                    <canvas id="salesChart" data-sales-data='<%= JSON.stringify(tableSalesData) %>' width="400"
+                        height="100"></canvas>
+
+
+
+
+
+
+
                     <div class="container mt-5 p-3">
                         <h2 class="m-4">SALES REPORT</h2>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="input-group">
@@ -102,35 +112,39 @@
                                 <button class="btn btn-primary" onclick="Sales('month')">This Month</button>
                             </div>
                         </div>
-                        
-                    
+
+
                         <div class="row mb-4">
                             <div class="col-md-4">
-                                <div class="card">
+                                <div class="card text-center">
                                     <div class="card-body">
                                         <h6 class="card-title">Overall Sales Count</h6>
-                                        <p class="overall-stats text-success"><%= totalSalesC || 0 %></p>
+                                        <p class="overall-stats text-success">
+                                            <%= totalSalesC || 0 %>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card">
+                                <div class="card text-center">
                                     <div class="card-body">
                                         <h6 class="card-title">Overall Order Amount</h6>
-                                        <p class="overall-stats">₹ <%= overallSalesTotalAmount || 0 %></p>
+                                        <p class="overall-stats">₹ <%= (Number(overallSalesTotalAmount)> 0 ?
+                                                Number(overallSalesTotalAmount).toFixed(2) : '0.00') %></p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card">
+                                <div class="card text-center">
                                     <div class="card-body">
                                         <h6 class="card-title">Overall Discount</h6>
-                                        <p class="overall-stats">₹ <%= overAllDiscountAmount || 0 %></p>
+                                        <p class="overall-stats">₹ <%= (Number(overAllDiscountAmount)> 0 ?
+                                                Number(overAllDiscountAmount).toFixed(2) : '0.00') %></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    
+
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -143,164 +157,330 @@
                                     </tr>
                                 </thead>
                                 <tbody id="salesTableBody">
-                                    <% if (tableSalesData.length === 0) { %>
+                                    <% if (tableSalesData.length===0) { %>
                                         <tr>
                                             <td colspan="5" style="text-align: center;">No Sales Data Available</td>
                                         </tr>
-                                    <% } else { %>
-                                        <% tableSalesData.forEach(sale => { %>
-                                            <tr>
-                                                <td><%= sale.date || 'N/A' %></td>
-                                                <td><%= sale.totalNumberOfOrders > 0 ? sale.totalNumberOfOrders : 'Not Available' %></td>
-                                                <td><%= sale.grossSales > 0 ? sale.grossSales : 'Not Available' %></td>
-                                                <td><%= sale.couponDeductions > 0 ? sale.couponDeductions : 'Not Available' %></td>
-                                                <td><%= sale.netSales > 0 ? sale.netSales : 'Not Available' %></td>
-                                            </tr>
-                                        <% }) %>
-                                    <% } %>
+                                        <% } else { %>
+                                            <% tableSalesData.forEach(sale=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= sale.date || 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= sale.totalNumberOfOrders> 0 ? sale.totalNumberOfOrders : '0'
+                                                            %>
+                                                    </td>
+                                                    <td>
+                                                        <%= sale.grossSales> 0 ? sale.grossSales.toFixed(2) : '0.00' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= sale.couponDeductions> 0 ? sale.couponDeductions.toFixed(2)
+                                                            : '0.00' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= sale.netSales> 0 ? sale.netSales.toFixed(2) : '0.00' %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                                    <% } %>
                                 </tbody>
-                                <% if (tableSalesData.length !== 0) { %>
-                                <tfoot class="table-light"  id="salesTableFooter">
-                                    <tr>
-                                        <td><%= date ? 'Total' : date %></td>
-                                        <td><%=tableTotalNumberOfOrders|| 0 %> </td>
-                                        <td>Rs <%= tableTotalGrossSales ||  0 %></td>
-                                        <td>Rs <%= tableTotalCouponDeductions ||  0%></td>
-                                        <td>Rs <%= tableTotalNetSales||  0 %></td>
-                                    </tr>
-                                </tfoot>
-                                <% } %>
+                                <% if (tableSalesData.length !==0) { %>
+                                    <tfoot class="table-light" id="salesTableFooter">
+                                        <tr>
+                                            <td>
+                                                <%= date ? 'Total' : date %>
+                                            </td>
+                                            <td>
+                                                <%=tableTotalNumberOfOrders|| 0 %>
+                                            </td>
+                                            <td>Rs <%= tableTotalGrossSales.toFixed(2) || 0 %>
+                                            </td>
+                                            <td>Rs <%= tableTotalCouponDeductions.toFixed(2) || 0%>
+                                            </td>
+                                            <td>Rs <%= tableTotalNetSales.toFixed(2)|| 0 %>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                    <% } %>
                             </table>
-                           
+
                         </div>
-                        
+
                         <div class="text-end mt-3">
                             <button id="downloadPDF" class="btn btn-primary">Download PDF</button>
                             <button id="downloadExcel" class="btn btn-primary">Download Excel</button>
                         </div>
-                        
-                        
-                    </div>
-                    
-                    
-
-    
 
 
                     </div>
-                    
+
+
+
+
+
+
+                    </div>
+
                 </section> <!-- content-main end// -->
         </main>
+
+
+
+
+
         <script>
-               document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve the success message from EJS variable
-            let successMessage = '<%= successMessage %>';
+                let salesChart; 
+            document.addEventListener('DOMContentLoaded', () => {
+               
+                let successMessage = '<%= successMessage %>';
 
-            if (successMessage) {
-                Swal.fire({
-                    text: successMessage,
-                    icon: 'success',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timer: 5000
-                });
-            }
+                if (successMessage) {
+                    Swal.fire({
+                        text: successMessage,
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timer: 5000
+                    });
+                }
 
-            document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
-            document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
-        });
+                document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
+                document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
+                const ctx = document.getElementById('salesChart').getContext('2d');
 
- const sendDataToBackend = async (dateFrom, dateTill, period) => {
-    try {
-       
-        const url = new URL('/admin/salesReport', window.location.origin);
+             
+                    initializeChart();
 
-        const params = new URLSearchParams();
 
-        if (dateFrom && dateTill) {
-            params.append('dateFrom', dateFrom);
-            params.append('dateTill', dateTill);
-        } else if (period) {
-            params.append('period', period);
-        }
+            });
+            const initializeChart = () => {
+    const salesDataElement = document.getElementById('salesChart');
+    const salesData = JSON.parse(salesDataElement.getAttribute('data-sales-data'));
+    const labels = salesData.map(sale => sale.date);
+    const grossSalesData = salesData.map(sale => sale.grossSales);
+    const netSalesData = salesData.map(sale => sale.netSales);
+    const couponDeductionsData = salesData.map(sale => sale.couponDeductions);
+    const ordersData = salesData.map(sale => sale.totalNumberOfOrders);
 
-       
-        url.search = params.toString();
-
-        const response = await fetch(url, {
-
-            method: 'GET',
-            headers: {
-
-                'Content-Type': 'application/json'
+    salesChart = new Chart(document.getElementById('salesChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Gross Sales',
+                    data: grossSalesData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'Net Sales',
+                    data: netSalesData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'Coupon Deductions',
+                    data: couponDeductionsData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'Orders',
+                    data: ordersData,
+                    backgroundColor: 'rgba(255, 205, 86, 0.5)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y2'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y1: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 50000,
+                    position: 'left',
+                    grid: {
+                        display: true 
+                    },
+                    ticks: {
+                        stepSize: 5000,
+                        callback: function (value) {
+                            if (value >= 1000) return (value / 1000) + ' K'; 
+                            return value;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: ' Amount (G.S,N.S,C.D) RS',
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                y2: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 500,
+                    position: 'right',
+                    grid: {
+                        display: true
+                    },
+                    ticks: {
+                        stepSize: 50,
+                        callback: function (value) {
+                            if (value >= 1000) return (value / 1000) + ' K'; 
+                            return value;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Number of Orders',
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false 
+                    },
+                    ticks: {
+                        display: true 
+                    }
+                }
             },
-        });
-
-        if (response.ok) {
-
-            const data = await response.json();
-            
-
-            updateSalesTable(data.salesData,data.tableTotalNumberOfOrders,data.tableTotalGrossSales,data.tableTotalCouponDeductions,data.tableTotalNetSales); 
-
-        } else {
-
-            throw new Error('Failed to fetch data');
-
+            plugins: {
+                legend: {
+                    display: true 
+                },
+                tooltip: {
+                    enabled: true 
+                }
+            }
         }
-
-    } catch (error) {
-        console.log(`Error while sending data to backend: ${error.message}`);
-        await Swal.fire({
-            icon: 'error',
-            text: `Error: ${error.message}`,
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000
-        });
-    }
+    });
 };
 
-const customDate = () => {
-    const dateFrom = document.getElementById('dateFrom').value;
-    const dateTill = document.getElementById('dateTill').value;
 
-    if (dateFrom && dateTill) {
 
-        document.getElementById('tableDateHeader').textContent = 'Date';
-        document.getElementById('tableOrdersHeader').textContent = 'Orders';
-        document.getElementById('tableGrossSalesHeader').textContent = 'Gross Sales';
-        document.getElementById('tableCouponDeductionsHeader').textContent = 'Coupon Deductions';
-        document.getElementById('tableNetSalesHeader').textContent = 'Net Sales';
 
-        sendDataToBackend(dateFrom, dateTill);
+    const updateChart = (salesData) => {
+        const labels = salesData.map(sale => sale.date);
+        const grossSalesData = salesData.map(sale => sale.grossSales);
+        const netSalesData = salesData.map(sale => sale.netSales);
+        const couponDeductionsData = salesData.map(sale => sale.couponDeductions);
 
-    } else {
+        salesChart.data.labels = labels;
+        salesChart.data.datasets[0].data = grossSalesData;
+        salesChart.data.datasets[1].data = netSalesData;
+        salesChart.data.datasets[2].data = couponDeductionsData;
+        salesChart.update();
+    };
 
-        Swal.fire({
-                    text: 'Please select both dates',
-                    icon: 'error',
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-    }
-};
+            const sendDataToBackend = async (dateFrom, dateTill, period) => {
+                try {
 
-const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSales,tableTotalCouponDeductions,tableTotalNetSales) =>{
+                    const url = new URL('/admin/salesReport', window.location.origin);
 
-    const tableBody = document.getElementById('salesTableBody')
-    const footerRow = document.getElementById('salesTableFooter')
+                    const params = new URLSearchParams();
 
-    tableBody.innerHTML = '';
+                    if (dateFrom && dateTill) {
+                        params.append('dateFrom', dateFrom);
+                        params.append('dateTill', dateTill);
+                    } else if (period) {
+                        params.append('period', period);
+                    }
 
-    if(salesData.length===0){
 
-        tableBody.innerHTML = `
+                    url.search = params.toString();
+
+                    const response = await fetch(url, {
+
+                        method: 'GET',
+                        headers: {
+
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (response.ok) {
+
+                        const data = await response.json();
+
+
+                        updateSalesTable(data.salesData, data.tableTotalNumberOfOrders, data.tableTotalGrossSales, data.tableTotalCouponDeductions, data.tableTotalNetSales);
+                        updateChart(data.salesData)
+
+                    } else {
+
+                        throw new Error('Failed to fetch data');
+
+                    }
+
+                } catch (error) {
+                    console.log(`Error while sending data to backend: ${error.message}`);
+                    await Swal.fire({
+                        icon: 'error',
+                        text: `Error: ${error.message}`,
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 3000
+                    });
+                }
+            };
+
+            const customDate = () => {
+                const dateFrom = document.getElementById('dateFrom').value;
+                const dateTill = document.getElementById('dateTill').value;
+
+                if (dateFrom && dateTill) {
+
+                    document.getElementById('tableDateHeader').textContent = 'Date';
+                    document.getElementById('tableOrdersHeader').textContent = 'Orders';
+                    document.getElementById('tableGrossSalesHeader').textContent = 'Gross Sales';
+                    document.getElementById('tableCouponDeductionsHeader').textContent = 'Coupon Deductions';
+                    document.getElementById('tableNetSalesHeader').textContent = 'Net Sales';
+
+                    sendDataToBackend(dateFrom, dateTill)
+                    
+
+                } else {
+
+                    Swal.fire({
+                        text: 'Please select both dates',
+                        icon: 'error',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            };
+
+            const updateSalesTable = (salesData, tableTotalNumberOfOrders, tableTotalGrossSales, tableTotalCouponDeductions, tableTotalNetSales) => {
+
+                const tableBody = document.getElementById('salesTableBody')
+                const footerRow = document.getElementById('salesTableFooter')
+
+                tableBody.innerHTML = '';
+
+                if (salesData.length === 0) {
+
+                    tableBody.innerHTML = `
          <tr>
                 <td>N/A</td>
                 <td>0</td>
@@ -310,9 +490,9 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
             </tr>
 
         `
-        if (footerRow) {
+                    if (footerRow) {
 
-        footerRow.innerHTML = `
+                        footerRow.innerHTML = `
             <td> Total</td>
             <td>0</td>
             <td> 0</td>
@@ -320,177 +500,177 @@ const updateSalesTable = (salesData,tableTotalNumberOfOrders,tableTotalGrossSale
             <td> 0</td>
         `;
 
-    } else {
+                    } else {
 
-        console.error('Footer row element not found.');
-    }
-    }else{
+                        console.error('Footer row element not found.');
+                    }
+                } else {
 
 
-        salesData.forEach(sale => {
-            const rowHtml = `
+                    salesData.forEach(sale => {
+                        const rowHtml = `
                 <tr>
                     <td>${sale.date || '--'}</td>
                     <td>${sale.totalNumberOfOrders || 0}</td>
-                    <td>${sale.grossSales || 0}</td>
-                    <td>${sale.couponDeductions || 0}</td>
-                    <td>${sale.netSales || 0}</td>
+                    <td>${sale.grossSales.toFixed(2) || 0}</td>
+                    <td>${sale.couponDeductions.toFixed(2) || 0}</td>
+                    <td>${sale.netSales.toFixed(2) || 0}</td>
                 </tr>
             `;
-            tableBody.insertAdjacentHTML('beforeend', rowHtml);
-           
-        });
+                        tableBody.insertAdjacentHTML('beforeend', rowHtml);
 
-        footerRow.innerHTML = `
+                    });
+
+                    footerRow.innerHTML = `
              <td>Total</td>
             <td>${tableTotalNumberOfOrders}</td>
-            <td>Rs ${tableTotalGrossSales}</td>
-            <td>Rs ${tableTotalCouponDeductions}</td>
-            <td>Rs ${tableTotalNetSales}</td>
+            <td>Rs ${tableTotalGrossSales.toFixed(2)}</td>
+            <td>Rs ${tableTotalCouponDeductions.toFixed(2)}</td>
+            <td>Rs ${tableTotalNetSales.toFixed(2)}</td>
         `;
-    }
-}
-const Sales = (period) => {
-   
-    const tableDateHeader = document.getElementById('tableDateHeader');
-    const tableOrdersHeader = document.getElementById('tableOrdersHeader');
-    const tableGrossSalesHeader = document.getElementById('tableGrossSalesHeader');
-    const tableCouponDeductionsHeader = document.getElementById('tableCouponDeductionsHeader');
-    const tableNetSalesHeader = document.getElementById('tableNetSalesHeader');
+                }
+            }
+            const Sales = (period) => {
 
-    switch (period) {
-        case 'today':
-            tableDateHeader.textContent = 'Today’s Date';
-            tableOrdersHeader.textContent = 'Today’s Orders';
-            tableGrossSalesHeader.textContent = 'Today’s Gross Sales';
-            tableCouponDeductionsHeader.textContent = 'Today’s Coupon Deductions';
-            tableNetSalesHeader.textContent = 'Today’s Net Sales';
-            break;
-        case 'week':
-            tableDateHeader.textContent = 'This Week';
-            tableOrdersHeader.textContent = 'Weekly Orders';
-            tableGrossSalesHeader.textContent = 'Weekly Gross Sales';
-            tableCouponDeductionsHeader.textContent = 'Weekly Coupon Deductions';
-            tableNetSalesHeader.textContent = 'Weekly Net Sales';
-            break;
-        case 'month':
-            tableDateHeader.textContent = 'This Month';
-            tableOrdersHeader.textContent = 'Monthly Orders';
-            tableGrossSalesHeader.textContent = 'Monthly Gross Sales';
-            tableCouponDeductionsHeader.textContent = 'Monthly Coupon Deductions';
-            tableNetSalesHeader.textContent = 'Monthly Net Sales';
-            break;
-        default:
-      
-            tableDateHeader.textContent = 'Date';
-            tableOrdersHeader.textContent = 'Orders';
-            tableGrossSalesHeader.textContent = 'Gross Sales';
-            tableCouponDeductionsHeader.textContent = 'Coupon Deductions';
-            tableNetSalesHeader.textContent = 'Net Sales';
-            break;
-    }
+                const tableDateHeader = document.getElementById('tableDateHeader');
+                const tableOrdersHeader = document.getElementById('tableOrdersHeader');
+                const tableGrossSalesHeader = document.getElementById('tableGrossSalesHeader');
+                const tableCouponDeductionsHeader = document.getElementById('tableCouponDeductionsHeader');
+                const tableNetSalesHeader = document.getElementById('tableNetSalesHeader');
 
-    
-    sendDataToBackend(null, null, period);
-};
-const downloadPDF = () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+                switch (period) {
+                    case 'today':
+                        tableDateHeader.textContent = 'Today’s Date';
+                        tableOrdersHeader.textContent = 'Today’s Orders';
+                        tableGrossSalesHeader.textContent = 'Today’s Gross Sales';
+                        tableCouponDeductionsHeader.textContent = `Today's Coupon Deductions`;
+                        tableNetSalesHeader.textContent = 'Today’s Net Sales';
+                        break;
+                    case 'week':
+                        tableDateHeader.textContent = 'This Week';
+                        tableOrdersHeader.textContent = 'Weekly Orders';
+                        tableGrossSalesHeader.textContent = 'Weekly Gross Sales';
+                        tableCouponDeductionsHeader.textContent = 'Weekly Coupon Deductions';
+                        tableNetSalesHeader.textContent = 'Weekly Net Sales';
+                        break;
+                    case 'month':
+                        tableDateHeader.textContent = 'This Month';
+                        tableOrdersHeader.textContent = 'Monthly Orders';
+                        tableGrossSalesHeader.textContent = 'Monthly Gross Sales';
+                        tableCouponDeductionsHeader.textContent = 'Monthly Coupon Deductions';
+                        tableNetSalesHeader.textContent = 'Monthly Net Sales';
+                        break;
+                    default:
+
+                        tableDateHeader.textContent = 'Date';
+                        tableOrdersHeader.textContent = 'Orders';
+                        tableGrossSalesHeader.textContent = 'Gross Sales';
+                        tableCouponDeductionsHeader.textContent = 'Coupon Deductions';
+                        tableNetSalesHeader.textContent = 'Net Sales';
+                        break;
+                }
 
 
-    doc.setFont('Helvetica', 'bold');
-    doc.setFontSize(16);
-
- 
-    doc.text('Axios', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-
-    doc.setFontSize(12);
-    doc.setFont('Helvetica', 'normal');
+                sendDataToBackend(null, null, period);
+            };
+            const downloadPDF = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
 
-    doc.text('Address: Kochi', doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
-    doc.text('Phone: 89 234 567 90', doc.internal.pageSize.getWidth() / 2, 35, { align: 'center' });
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(16);
 
 
-    doc.setFontSize(10);
-    doc.text('Sales Report', doc.internal.pageSize.getWidth() / 2, 45, { align: 'center' });
+                doc.text('Axios', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
 
-    doc.setLineWidth(0.5);
-    doc.line(15, 47, doc.internal.pageSize.getWidth() - 15, 47);
-
-
-    const table = document.querySelector('table');
-    doc.autoTable({ 
-        html: table,
-        startY: 50,  
-        theme: 'grid',  
-        headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
-        bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
-        footStyles: { fillColor: [211, 211, 211], textColor: [0, 0, 0] } 
-    });
+                doc.setFontSize(12);
+                doc.setFont('Helvetica', 'normal');
 
 
-    doc.save('sales-report.pdf');
-};
-
-const downloadExcel = () => {
-    const table = document.querySelector('table');
-    const tableData = XLSX.utils.table_to_sheet(table);
-    const headerRange = XLSX.utils.decode_range(tableData['!ref']); 
-
-  
-    const headerDetails = [
-        ['Axios'],
-        ['Address: Kochi'],
-        ['Phone: 89 234 567 90'],
-        [],
-        ['Sales Report']
-    ];
-
-  
-    const ws = XLSX.utils.aoa_to_sheet(headerDetails);
-
-   
-    ws['!merges'] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, 
-        { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } }, 
-        { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } }, 
-        { s: { r: 4, c: 0 }, e: { r: 4, c: 3 } }  
-    ];
+                doc.text('Address: Kochi', doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+                doc.text('Phone: 89 234 567 90', doc.internal.pageSize.getWidth() / 2, 35, { align: 'center' });
 
 
-    const alignmentStyle = { alignment: { horizontal: 'center' } };
-    ws['A1'].s = alignmentStyle;
-    ws['A2'].s = alignmentStyle;
-    ws['A3'].s = alignmentStyle;
-    ws['A5'].s = alignmentStyle;
+                doc.setFontSize(10);
+                doc.text('Sales Report', doc.internal.pageSize.getWidth() / 2, 45, { align: 'center' });
+
+                doc.setLineWidth(0.5);
+                doc.line(15, 47, doc.internal.pageSize.getWidth() - 15, 47);
 
 
-    const startRow = 6; 
-    XLSX.utils.sheet_add_aoa(ws, XLSX.utils.sheet_to_json(tableData, { header: 1 }), { origin: { r: startRow, c: 0 } });
+                const table = document.querySelector('table');
+                doc.autoTable({
+                    html: table,
+                    startY: 50,
+                    theme: 'grid',
+                    headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
+                    bodyStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+                    footStyles: { fillColor: [211, 211, 211], textColor: [0, 0, 0] }
+                });
 
 
-    for (let row = startRow; row <= headerRange.e.r; row++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: row, c: 0 }); 
-        const cell = ws[cellAddress];
-        if (cell && cell.v instanceof Date) {
-            cell.t = 'n'; 
-            cell.z = XLSX.SSF.get_table()[14]; 
-        }
-    }
+                doc.save('sales-report.pdf');
+            };
 
-   
-    ws['!cols'] = [
-        { wch: 20 }, 
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 }
-    ];
+            const downloadExcel = () => {
+                const table = document.querySelector('table');
+                const tableData = XLSX.utils.table_to_sheet(table);
+                const headerRange = XLSX.utils.decode_range(tableData['!ref']);
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
-    XLSX.writeFile(wb, 'sales-report.xlsx');
-};
+
+                const headerDetails = [
+                    ['Axios'],
+                    ['Address: Kochi'],
+                    ['Phone: 89 234 567 90'],
+                    [],
+                    ['Sales Report']
+                ];
+
+
+                const ws = XLSX.utils.aoa_to_sheet(headerDetails);
+
+
+                ws['!merges'] = [
+                    { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
+                    { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+                    { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
+                    { s: { r: 4, c: 0 }, e: { r: 4, c: 3 } }
+                ];
+
+
+                const alignmentStyle = { alignment: { horizontal: 'center' } };
+                ws['A1'].s = alignmentStyle;
+                ws['A2'].s = alignmentStyle;
+                ws['A3'].s = alignmentStyle;
+                ws['A5'].s = alignmentStyle;
+
+
+                const startRow = 6;
+                XLSX.utils.sheet_add_aoa(ws, XLSX.utils.sheet_to_json(tableData, { header: 1 }), { origin: { r: startRow, c: 0 } });
+
+
+                for (let row = startRow; row <= headerRange.e.r; row++) {
+                    const cellAddress = XLSX.utils.encode_cell({ r: row, c: 0 });
+                    const cell = ws[cellAddress];
+                    if (cell && cell.v instanceof Date) {
+                        cell.t = 'n';
+                        cell.z = XLSX.SSF.get_table()[14];
+                    }
+                }
+
+
+                ws['!cols'] = [
+                    { wch: 20 },
+                    { wch: 20 },
+                    { wch: 20 },
+                    { wch: 20 }
+                ];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
+                XLSX.writeFile(wb, 'sales-report.xlsx');
+            };
 
 
 

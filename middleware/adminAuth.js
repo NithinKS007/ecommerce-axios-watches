@@ -1,5 +1,3 @@
-// admin authentication 
-
 const isAdminLogin = async (req, res, next) => {
   try {
     if (req.session.adminId) {

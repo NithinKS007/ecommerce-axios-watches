@@ -117,7 +117,8 @@
                                             <th scope="col">No</th>
                                             <th scope="col">Product Image</th>
                                             <th scope="col">Product Name</th>
-                                            <th scope="col">brand</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Brand</th>
                                             <th scope="col">Normal Price</th>
                                             <th scope="col">Offer Price</th>
                                             <th scope="col">Stock</th>
@@ -140,6 +141,9 @@
                                                    
                                                     <td>
                                                         <%= productData[i].name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= productData[i].category.name %>
                                                     </td>
                                                     <td>
                                                         <%= productData[i].brand.name %>

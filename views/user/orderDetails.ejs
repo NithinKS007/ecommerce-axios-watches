@@ -131,7 +131,7 @@
                         <p class="card-text">Order Status: <span class="badge bg-<%= orderData?.orderStatus === 'delivered' ? 'success' : 'warning' %>"><%= orderData?.orderStatus?.toUpperCase() %></span></p>
                         <p class="card-text">Payment Method: <%= orderData?.paymentMethod.charAt(0).toUpperCase() + orderData?.paymentMethod.slice(1).toLowerCase() %></p>
                         <p class="card-text">Online Payment Status: <%= transactions?.paymentStatus ? transactions.paymentStatus.charAt(0).toUpperCase() + transactions.paymentStatus.slice(1).toLowerCase() : 'N/A' %></p>
-                        <p class="mb-1"><strong>Total:</strong> Rs <%= orderData?.totalAmount %></p>
+                        <p class="mb-1"><strong>Total:</strong> Rs <%= orderData?.totalAmount.toFixed(2) %></p>
                     </div>
                 </div>
             </div>
@@ -176,9 +176,9 @@
                                             <td><%= item?.quantity %></td>
                                             <td>
                                                 <% if (item?.productSalesPriceAfterOfferDiscount !== 0) { %>
-                                                    <p class="mb-0">Rs <%= item?.productSalesPriceAfterOfferDiscount %> inc GST</p>
+                                                    <p class="mb-0">Rs <%= item?.productSalesPriceAfterOfferDiscount.toFixed(2) %> inc GST</p>
                                                 <% } else { %>
-                                                    <p class="mb-0">Rs <%= item?.price %> inc GST</p>
+                                                    <p class="mb-0">Rs <%= item?.price.toFixed(2) %> inc GST</p>
                                                 <% } %>
                                             </td>
                                             <td>
@@ -236,26 +236,28 @@
 
                         </div>
                         <hr>
+                        <div class="d-flex justify-content-between">
                         <% const shouldDisableCancelOrder = orderData?.items?.some(item => ['returnInitiated', 'returnApproved', 'returnRejected'].includes(item?.orderProductStatus)|| ['failed', 'pending'].includes(transactions?.paymentStatus)); %>
                         <% if (orderData?.orderStatus !== 'delivered' && orderData?.orderStatus !== 'cancelled') { %>
-                            <button class="btn btn-secondary btn-sm" id="generateInvoiceButton" onclick="generatePDF('<%= orderData._id %>')">Invoice</button>
+                            <button class="btn btn-secondary btn-sm" id="generateInvoiceButton"   style="flex: 1; max-width: 150px; padding: 10px;" onclick="generatePDF('<%= orderData._id %>')">Invoice</button>
 
                         <button type="button" class="btn btn-primary btn-lg btn-block" id="cancelOrderButton<%= orderData._id %>" 
-                            onclick="cancelOrder('<%= orderData?._id %>', '<%= orderData?.orderStatus %>')"
+                            style="flex: 1; max-width: 150px; padding: 10px;" onclick="cancelOrder('<%= orderData?._id %>', '<%= orderData?.orderStatus %>')"
                             <%= shouldDisableCancelOrder ? 'disabled' : '' %>>
                             Cancel Order
                         </button>
                         <% } else { %>
-                            <button class="btn btn-secondary btn-sm" onclick="generatePDF('<%= orderData?._id %>')">Invoice</button>
-                             <button class="btn btn-secondary btn-sm" disabled>
+                            <button class="btn btn-secondary btn-sm"    style="flex: 1; max-width: 150px; padding: 10px;" onclick="generatePDF('<%= orderData?._id %>')">Invoice</button>
+                             <button class="btn btn-secondary btn-sm"    style="flex: 1; max-width: 150px; padding: 10px;" disabled>
                                  <%= orderData?.orderProductStatus === 'cancelled' ? 'Cancelled' : 'Cancel Order' %>
 
                              </button>
                              
                          <% } %>
+                        </div>
                     </div>
                 </div>
-                <div class="card shadow-sm">
+                <div class="card shadow-sm" style="margin-bottom: 35px;margin-top: 35px;">
                     <div class="card-body">
                         <h5 class="card-title">Shipping Address</h5>
                         <p class="card-text">
@@ -303,6 +305,7 @@ function generatePDF(orderId) {
         const paymentMethod = document.querySelector('.card-text:nth-child(4)')?.textContent || 'Payment Method not available';
         const totalAmount = document.querySelector('.mb-1 strong')?.nextSibling?.textContent.trim() || 'Total not available';
 
+        
    
         doc.setFontSize(16);
         doc.text(companyName, 105, 10, { align: 'center' });
@@ -324,7 +327,7 @@ function generatePDF(orderId) {
         doc.setFontSize(12);
         doc.text( orderDate, 10, companyDetailsY + 20);
         doc.text('Order Status: ' + orderStatus, 10, companyDetailsY + 30);
-        doc.text('Payment Method: ' + paymentMethod, 10, companyDetailsY + 40);
+        doc.text( paymentMethod, 10, companyDetailsY + 40);
         doc.text('Total: ' + totalAmount, 10, companyDetailsY + 50);
 
         const items = document.querySelectorAll('tbody tr');

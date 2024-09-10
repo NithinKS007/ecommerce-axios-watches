@@ -4,7 +4,6 @@ const GoogleStrategy = require('passport-google-oauth2').Strategy;
 require('dotenv').config();
 
 
-//authentication using google
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -26,7 +25,7 @@ passport.use(new GoogleStrategy({
           fname: profile.given_name,
           lname: profile.family_name,
           email: profile.email,
-          googleId: profile.id // Save the googleId
+          googleId: profile.id 
         })
 
         await user.save()

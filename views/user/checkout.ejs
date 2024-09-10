@@ -92,39 +92,44 @@
                 color: #007bff;
                 cursor: pointer;
             }
+
             .swal1-cancel {
-        width: 100%;
-        margin: 5px 0;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
+                width: 100%;
+                margin: 5px 0;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                border-radius: 0.25rem !important;
+            }
 
-    
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-    
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
-    }
 
+            .swal1-confirm {
+                background-color: #000;
+                color: #fff;
+                width: 100%;
+                margin: 5px 0;
+                border: 1px solid #000;
+                border-radius: 0.25rem;
+            }
+
+            @media (max-width: 768px) {
+
+                .swal1-confirm,
+                .swal1-cancel {
+                    width: 100%;
+                    margin: 5px 0;
+                }
+            }
+
+            @media (min-width: 769px) and (max-width: 992px) {
+
+                .swal1-confirm,
+                .swal1-cancel {
+                    width: 150px;
+                }
+            }
         </style>
         <main class="container my-5">
-          
+
             <div class="row">
                 <div class="col-lg-8">
                     <p style="
@@ -194,7 +199,7 @@
                         <!-- for editing address starts-->
                         <div id="editContainer" style="display: none; margin-bottom: 16px;">
 
-                            <form id="editAddressForm" >
+                            <form id="editAddressForm">
                                 <input type="hidden" value="address">
                                 <div class="mb-3">
                                     <input type="text" id="addressNameInput" class="form-control" name="name"
@@ -600,10 +605,10 @@
                     if (nameInput.value.trim() === '') {
                         nameError.textContent = '* Name is required';
                         return false
-                    } else if (!/^[a-zA-Z\s]+$/.test(nameInput.value.trim())) { 
+                    } else if (!/^[a-zA-Z\s]+$/.test(nameInput.value.trim())) {
                         nameError.textContent = '* Name must contain only letters';
                         return false
-                        
+
                     } else if (nameInput.value.trim().length < 2) {
 
                         nameError.textContent = '* Name must be at least 2 characters long'
@@ -666,10 +671,10 @@
                     if (localityInput.value.trim() === '') {
                         localityError.textContent = '* Locality is required';
                         return false;
-                     } else if (localityInput.value.trim().length < 5) {
+                    } else if (localityInput.value.trim().length < 5) {
                         localityError.textContent = '* Locality must be at least 5 characters long';
                         return false;
-                    } else if (!/^[a-zA-Z\s]+$/.test(localityInput.value.trim())) { 
+                    } else if (!/^[a-zA-Z\s]+$/.test(localityInput.value.trim())) {
                         localityError.textContent = '* Locality can only contain letters';
                         return false;
                     } else {
@@ -687,10 +692,10 @@
                         addressError.textContent = '* Address is required';
                         return false
 
-                    }  else if (addressInput.value.trim().length < 5) {
+                    } else if (addressInput.value.trim().length < 5) {
                         addressError.textContent = '* Address must be at least 5 characters long';
                         return false;
-                    }  else {
+                    } else {
                         addressError.textContent = '';
 
                         return true
@@ -781,11 +786,11 @@
                     const isEmailValid = validateEmail();
                     const isAddressTypeValid = validateAddressType();
 
-                  
+
 
 
                     if (!(isNameValid && isPhoneValid && isPincodeValid && isLocalityValid && isAddressValid && isCityDistTownValid && isStateValid && isEmailValid && isAddressTypeValid)) {
-                  
+
 
                         event.preventDefault();
 
@@ -822,21 +827,21 @@
                 const placeOrderButton = document.getElementById('placeOrder');
 
 
-                
 
 
-                   placeOrderButton.addEventListener("click", () => {
+
+                placeOrderButton.addEventListener("click", () => {
 
                     const paymentFailure = async (response) => {
 
                         try {
 
-                        
 
 
 
-                            const { payment_id,order_id} = response.error.metadata
-                           
+
+                            const { payment_id, order_id } = response.error.metadata
+
 
 
 
@@ -846,7 +851,7 @@
                                     'Content-Type': 'application/json',
                                 },
 
-                                body: JSON.stringify({paymentId: payment_id, orderId: order_id }),
+                                body: JSON.stringify({ paymentId: payment_id, orderId: order_id }),
 
                             });
 
@@ -858,7 +863,7 @@
 
 
                             const result = await dataResponse.json();
-                    
+
 
                             if (result.success) {
 
@@ -883,19 +888,19 @@
 
                             console.error('Error handling payment failure:', error.message);
                             Swal.fire({
-                            icon: 'error',
-                            text: 'Error while canceling the order.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
-                        });
+                                icon: 'error',
+                                text: 'Error while canceling the order.',
+                                toast: true,
+                                position: 'top-right',
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                timer: 3000
+                            });
 
 
                         }
 
-                        };
+                    };
 
 
                     let errorMessage = '';
@@ -914,7 +919,7 @@
                             timerProgressBar: true,
                             timer: 3000
                         });
-                      
+
                     } else if (!selectedAddressId) {
 
                         Swal.fire({
@@ -953,67 +958,67 @@
 
                             .then(data => {
 
-                               
 
-                                if(data.success&&selectedPaymentMethod !== "razorPay"){
+
+                                if (data.success && selectedPaymentMethod !== "razorPay") {
 
                                     Swal.fire({
-                                            icon: 'success',
-                                            text: 'Order successfull!',
-                                            toast: true,
-                                            position: 'top-right',
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                            timer: 3000
-                                        }).then(() => {
+                                        icon: 'success',
+                                        text: 'Order successfull!',
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timerProgressBar: true,
+                                        timer: 3000
+                                    }).then(() => {
 
-                                            window.location.href = "/placeOrder";
+                                        window.location.href = "/placeOrder";
 
-                                        });
+                                    });
 
-                                        return
+                                    return
 
-                                } else if (data.success&&selectedPaymentMethod === "razorPay") {
-
-                                  
-
-                                        const options = {
-
-                                            "key": data.RAZORPAY_ID_KEY,
-                                            "amount": data.amount * 100,
-                                            "currency": "INR",
-                                            "name": "axios watches",
-                                            "order_id": data.razorPayOrderPaymentId,
-                                            "handler": (response) => {
-
-                                                console.log("this is the response from the verify function", response)
-
-                                                verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
+                                } else if (data.success && selectedPaymentMethod === "razorPay") {
 
 
-                                            },
+
+                                    const options = {
+
+                                        "key": data.RAZORPAY_ID_KEY,
+                                        "amount": data.amount * 100,
+                                        "currency": "INR",
+                                        "name": "axios watches",
+                                        "order_id": data.razorPayOrderPaymentId,
+                                        "handler": (response) => {
+
+                                            console.log("this is the response from the verify function", response)
+
+                                            verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
 
 
-                                        }
-                                        let rzp = new Razorpay(options)
+                                        },
 
-                                        rzp.on("payment.failed", paymentFailure)
-                                        rzp.open()
 
-                                    } else {
-
-                                        Swal.fire({
-                                            icon: 'error',
-                                            text: `${data.message}`,
-                                            toast: true,
-                                            position: 'top-right',
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                            timer: 3000
-                                        })
                                     }
+                                    let rzp = new Razorpay(options)
 
-            
+                                    rzp.on("payment.failed", paymentFailure)
+                                    rzp.open()
+
+                                } else {
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: `${data.message}`,
+                                        toast: true,
+                                        position: 'top-right',
+                                        showConfirmButton: false,
+                                        timerProgressBar: true,
+                                        timer: 3000
+                                    })
+                                }
+
+
 
                             })
                             .catch((error) => {
@@ -1031,20 +1036,14 @@
 
                     }
 
-                           
-
-                        
-
-
-
                 });
 
-                
+
 
 
                 const verifyOnlinePayment = (paymentId, orderId, signature, amount) => {
 
-     
+
 
                     fetch('/verifyOnlinePayment', {
                         method: 'POST',
@@ -1238,7 +1237,7 @@
                     if (addressNameInput.value.trim() === '') {
                         editNameError.textContent = '* Name is required';
                         return false;
-                    } else if (!/^[a-zA-Z\s]+$/.test(addressNameInput.value.trim())) { 
+                    } else if (!/^[a-zA-Z\s]+$/.test(addressNameInput.value.trim())) {
                         editNameError.textContent = '* Name must contain only letters';
                         return false
                     } else if (addressNameInput.value.trim().length < 2) {
@@ -1282,14 +1281,14 @@
                     if (addressLocalityInput.value.trim() === '') {
                         editLocalityError.textContent = '* Locality is required';
                         return false;
-                    }else if (addressLocalityInput.value.trim().length < 5) {
+                    } else if (addressLocalityInput.value.trim().length < 5) {
                         editLocalityError.textContent = '* Locality must be at least 5 characters long';
                         return false;
-                    } else if (!/^[a-zA-Z\s]+$/.test(addressLocalityInput.value.trim())) { 
+                    } else if (!/^[a-zA-Z\s]+$/.test(addressLocalityInput.value.trim())) {
                         editLocalityError.textContent = '* Locality can only contain letters';
                         return false;
                     }
-                     else {
+                    else {
                         editLocalityError.textContent = '';
                         return true;
                     }
@@ -1302,7 +1301,7 @@
                     } else if (addressTextAreaInput.value.trim().length < 5) {
                         editAddressError.textContent = '* Address must be at least 5 characters long';
                         return false
-                    }else {
+                    } else {
                         editAddressError.textContent = '';
                         return true;
                     }
@@ -1442,7 +1441,7 @@
                             }).then((data) => {
 
 
-                     
+
 
                                 window.location.reload()
 

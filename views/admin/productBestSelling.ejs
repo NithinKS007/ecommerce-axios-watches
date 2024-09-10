@@ -34,9 +34,11 @@
                                     <img src="/productImages/<%= product.firstImage.filename %>" alt="<%= product.productName %>" width="50">
                                 </td>
                                 <td><b><%= product.productName %></b></td>
-                                <td>Rs <%= product.price %></td>
+                                <td>Rs <%= product.price.toFixed(2)  %></td>
+                
+                             
                                 <td><% if (product.productSalesPriceAfterOfferDiscount  && new Date(product.productOffer.offerExpiryDate) > new Date()&& product.productSalesPriceAfterOfferDiscount!==0 && product.productOffer.offerStatus) { %>
-                                    Rs <%= product.productSalesPriceAfterOfferDiscount %>
+                                    Rs <%= product.productSalesPriceAfterOfferDiscount.toFixed(2)  %>
                                   <% } else { %>
                                     N/A
                                   <% } %></td>

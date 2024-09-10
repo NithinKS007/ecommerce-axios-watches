@@ -9,5 +9,7 @@ const noCacheMiddleware = (req, res, next) => {
 }
 
 module.exports = {
+
     noCacheMiddleware
+    
 }

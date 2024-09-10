@@ -199,10 +199,10 @@
                                         <td><%= item.brandName %></td>
                                         <td><%= item.categoryName %></td>
                                         <td><%= item.quantity %></td>
-                                        <td>Rs<%= item.price %></td>
+                                        <td>Rs<%= item.price.toFixed(2)  %></td>
                                         <td>
                                             <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
-                                              Rs <%= item.productSalesPriceAfterOfferDiscount %>
+                                              Rs <%= item.productSalesPriceAfterOfferDiscount.toFixed(2) %>
                                             <% } else { %>
                                               N/A
                                             <% } %>
@@ -214,13 +214,16 @@
                                             N/A
                                         <% } %></td>
                                         <td>
-                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
-                                              Rs <%= item.productSalesPriceAfterOfferDiscount * item.quantity %>
-                                            <% } else { %>
-                                              Rs <%= item.price * item.quantity %>
+                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) {
+                                                const totalAfterDiscount = item.productSalesPriceAfterOfferDiscount * item.quantity;
+                                            %>
+                                                Rs <%= totalAfterDiscount.toFixed(2) %>
+                                            <% } else {
+                                                const totalWithoutDiscount = item.price * item.quantity;
+                                            %>
+                                                Rs <%= totalWithoutDiscount.toFixed(2) %>
                                             <% } %>
-                                            
-                                          </td>
+                                        </td>
                                           
                                         <td>
                                             <span class="badge rounded-pill 

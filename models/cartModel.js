@@ -40,6 +40,12 @@ const CartItemSchema = new mongoose.Schema({
       required: true
     },
     items: [CartItemSchema],
+
+    couponCode:{
+      
+      type:String,
+
+    },
     
   }, {
     timestamps: true

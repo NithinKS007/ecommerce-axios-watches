@@ -492,9 +492,9 @@
                         ${product.isBlocked || product.category?.isBlocked || product.brand?.isBlocked || product.stock === 0
                                 ? `<span style="color: red;">Currently Unavailable</span>`
                                 : (product.productSalesPriceAfterOfferDiscount && new Date(product.productOffer.offerExpiryDate) > new Date() && product.productSalesPriceAfterOfferDiscount !== 0 && product.productOffer.offerStatus
-                                    ? `<span>₹ ${product.productSalesPriceAfterOfferDiscount}</span>
-                                <span class="old-price">₹ ${product.salesPrice}</span>`
-                                    : `<span>₹ ${product.salesPrice}</span>`
+                                    ? `<span>₹ ${product.productSalesPriceAfterOfferDiscount.toFixed(2)}</span>
+                                <span class="old-price">₹ ${product.salesPrice.toFixed(2)}</span>`
+                                    : `<span>₹ ${product.salesPrice.toFixed(2)}</span>`
                                 )
                             }
                     </div>
