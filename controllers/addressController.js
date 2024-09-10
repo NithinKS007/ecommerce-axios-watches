@@ -43,7 +43,7 @@ const addAddress = async (req, res) => {
 
     const currentUser = req?.currentUser;
     try {
-        const newAddress = await new userAddress({
+        const newAddress = new userAddress({
             name: name,
             userId: currentUser?._id,
             phone: phone,

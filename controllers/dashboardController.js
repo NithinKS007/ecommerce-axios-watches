@@ -1,6 +1,4 @@
 const dayjs = require('dayjs');
-
-const users = require('../models/userModel')
 const products = require('../models/productModel')
 const orders = require('../models/orderModel')
 

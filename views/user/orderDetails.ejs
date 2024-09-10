@@ -439,11 +439,8 @@ function generatePDF(orderId) {
             await Swal.fire({
                 icon: 'error',
                 text: `Error: ${error.message}`,
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#000000',
             });
         }
     };
@@ -522,11 +519,8 @@ function generatePDF(orderId) {
                     Swal.fire({
                         icon: 'error',
                         text: `Error: ${error.message}`,
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#000000',
                     });
 
                 })
@@ -611,12 +605,9 @@ function generatePDF(orderId) {
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
                         text: `Error: ${error.message}`,
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timer: 3000
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#000000',
                     });
 
                 })

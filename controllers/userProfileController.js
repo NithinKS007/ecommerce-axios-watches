@@ -7,7 +7,7 @@ const loadUserProfile = async (req,res) =>{
 
         const currentUser = req.currentUser
 
-        const userData = await users.findById(currentUser._id)
+        const userData = await users.findById(currentUser?._id)
 
         if(!userData){
 

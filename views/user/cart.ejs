@@ -271,11 +271,8 @@ if (selectedItemsCount === 0) {
   Swal.fire({
     icon: 'warning',
     text: 'Select an item to apply a coupon',
-   toast: true,
-   position: 'top-right',
-   showConfirmButton: false,
-   timerProgressBar: true,
-   timer: 3000
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#000000', 
   });
   return; // Exit the function early if no items are selected
 }
@@ -337,11 +334,8 @@ if (selectedItemsCount === 0) {
     Swal.fire({
           icon: 'error',
           text: 'An error occurred while removing the coupon.',
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#000000', 
         });
 
   }
@@ -387,11 +381,8 @@ const applyCoupon= async () =>{
             Swal.fire({
                 icon: 'error',
                 text: data.message,
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#000000', 
             });
         }
     } catch (error) {
@@ -401,11 +392,8 @@ const applyCoupon= async () =>{
         Swal.fire({
           icon: 'error',
           text: 'An error occurred while applying the coupon.',
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
+         confirmButtonText: 'OK',
+         confirmButtonColor: '#000000', 
         });
 
     }
@@ -414,7 +402,7 @@ const applyCoupon= async () =>{
   const removeFromCart = (productId) =>{
 
     Swal.fire({
-      text: 'Are you sure ? ' + 'You want remove the item',
+      text: 'Are you sure ? ' + ' You want remove the item',
       showCancelButton: true,
       confirmButtonColor: '#000000',
       cancelButtonColor: '#ffffff',
@@ -515,11 +503,8 @@ const applyCoupon= async () =>{
       Swal.fire({
             icon: 'error',
             text: 'An error occurred while removing the item',
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#000000',
           });
        })
 
@@ -540,12 +525,9 @@ function updateQuantity(productId, newQuantity) {
   if (!checkbox.checked) {
     Swal.fire({
       icon: 'warning',
-      text: 'You can only update the quantity of selected products',
-      toast: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000
+      text: 'Please select a product',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000',
     });
     return;
   }
@@ -582,33 +564,24 @@ function updateQuantity(productId, newQuantity) {
         Swal.fire({
           icon: 'warning',
           text: 'Stock is insufficient',
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#000000', 
         });
       }
     }).catch(error => {
       Swal.fire({
         icon: 'error',
         text: `An error occurred: ${error.message}`,
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 3000
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#000000', 
       });
     });
   } else {
     Swal.fire({
       icon: 'warning',
       text: 'You can only select up to 5 items at a time',
-      toast: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000', 
     });
   }
 }
@@ -624,13 +597,10 @@ function handleQuantityChange(action, button) {
     updateQuantity(productId, newQuantity);
   } else {
     Swal.fire({
-  icon: 'info',
+  icon: 'warning',
   text: 'Quantity must be One to Five',
-  toast: true,
-  position: 'top-right',
-  showConfirmButton: false,
-  timerProgressBar: true,
-  timer: 3000
+  confirmButtonText: 'OK',
+  confirmButtonColor: '#000000', 
 });
 
   }
@@ -720,11 +690,8 @@ const sendToBackend = () => {
       icon: 'error',
       title: 'Error',
       text: `An error occurred: ${error.message}`,
-      toast: true,
-      position: 'top-right',
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#000000',
     });
 
     })
@@ -781,11 +748,8 @@ document.addEventListener("DOMContentLoaded", function() {
         Swal.fire({
         icon: 'warning',
         text: 'Please select at least one item before proceeding.',
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 3000
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#000000', 
       }); 
     }
 

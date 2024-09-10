@@ -49,24 +49,12 @@
                         <div class="col-md-8">
                             <div class="container mt-5">
                                 <h3 style="font-size: 24px; font-weight: bold; color: #333; ">MANAGE YOUR ADDRESS</h3>
-
-
                                 <br>
-                                
                                 <div class="d-flex justify-content-start mb-3">
                                     <a href="/addAddress" class="btn btn-outline-primary" style="text-decoration: none;">
                                         Add a New Address
                                     </a>
                                 </div>
-
-
-
-
-
-
-
-
-
 
                                 <div id="editAddressForm" style="display: none;">
                                     <form id="newAddressForm" >
@@ -165,15 +153,6 @@
                                         <button type="button" id="cancelEditAddressFormButton" class="btn btn-secondary">Cancel</button>
                                     </form>
                                 </div>
-
-
-
-
-
-
-
-
-
                                 <div id="mainContainer" style="margin-top: 20px;">
                                 <% if (!addressDetails || addressDetails.length === 0) { %>
                                     <p>No address available</p>
@@ -536,11 +515,8 @@
                 Swal.fire({
                         icon: 'error',
                         text: `An error occurred: ${error.message}`,
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#000000',
                     });
                 })
                 }
@@ -611,11 +587,8 @@
                 Swal.fire({
                     icon: 'error',
                     text: `An error occurred: ${error.message}`,
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
+                   confirmButtonText: 'OK',
+                   confirmButtonColor: '#000000', 
                 });
 
                 })

@@ -224,12 +224,9 @@
                         console.error('Error handling payment failure:', error.message);
                         Swal.fire({
                             icon: 'error',
-                            text: 'Error while canceling the order.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            text: 'Error while handling payment failure.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000',
                         });
 
 
@@ -262,16 +259,16 @@
                          
                             const options = {
 
-                                "key": data.RAZORPAY_ID_KEY,
-                                "amount": data.amount * 100,
+                                "key": data?.RAZORPAY_ID_KEY,
+                                "amount": data?.amount * 100,
                                 "currency": "INR",
                                 "name": "axios watches",
-                                "order_id": data.razorPayOrderPaymentId,
+                                "order_id": data?.razorPayOrderPaymentId,
                                 "handler": (response) => {
 
                                   
                                   
-                                    verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
+                                    verifyOnlinePayment(response?.razorpay_payment_id, response?.razorpay_order_id, response?.razorpay_signature, response?.amount)
 
 
                                 },
@@ -289,11 +286,8 @@
                             Swal.fire({
                                 icon: 'error',
                                 text: `${data.message}`,
-                                toast: true,
-                                position: 'top-right',
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#000000',
                             }).then(() => {
 
                                 window.location.href = "/paymentFailure";
@@ -307,11 +301,8 @@
                         Swal.fire({
                             icon: 'error',
                             text: `An error occurred: ${error.message}`,
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000',
                         });
 
                     });
@@ -352,11 +343,8 @@
                             Swal.fire({
                                 icon: 'error',
                                 text: 'Payment verification failed. Please contact support.',
-                                toast: true,
-                                position: 'top-right',
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#000000',
                             });
                         }
                     })
@@ -365,11 +353,8 @@
                         Swal.fire({
                             icon: 'error',
                             text: 'An error occurred during payment verification.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000',
                         });
                     });
             }

@@ -25,7 +25,7 @@ const registerAdmin = async (req,res) =>{
 
         const hashedPassword = await securePassword(password)
 
-        const regAdmin = await new admin({
+        const regAdmin = new admin({
 
             fname:fname,
             lname:lname,

@@ -173,8 +173,8 @@ const changeOrderStatus = async (req,res) =>{
 
                 const productsAmountThatHaventRefunded  = walletData.transactions
                       
-                     .filter(tx => tx.type==="credit"&&tx.orderId.equals(order._id))
-                     .reduce((acc,tx) => acc+tx.amount,0 )
+                     .filter(walletRecord => walletRecord.type==="credit"&&walletRecord.orderId.equals(order._id))
+                     .reduce((remainingRefundAmount,walletRecord) => remainingRefundAmount+walletRecord.amount,0)
 
                      const refundAmount = order.totalAmount - productsAmountThatHaventRefunded
 
@@ -226,7 +226,7 @@ const loadReturnedOrder = async (req, res) => {
         if (searchQuery) {
             const isValidObjectId = ObjectId.isValid(searchQuery);
             if (isValidObjectId) {
-                const searchObjectId = new ObjectId(searchQuery);
+                const searchObjectId = ObjectId.createFromHexString(searchQuery);
                 query.$or = [
                     { orderId: searchObjectId },
                     { userId: searchObjectId },

@@ -518,14 +518,10 @@
                                         console.log(`error received editing the data`);
 
                                         Swal.fire({
-                                            title: 'Error!',
                                             text: `Could not update the profile: ${error.message}`,
                                             icon: 'error',
-                                            toast: true,
-                                            position: 'top-right',
-                                            showConfirmButton: false,
-                                            timerProgressBar: true,
-                                            timer: 3000
+                                            confirmButtonText: 'OK',
+                                            confirmButtonColor: '#000000',
                                         });
 
                                     });
@@ -558,14 +554,10 @@
                     }
                     if (errorMessage) {
                         Swal.fire({
-                            title: "Error",
                             text: errorMessage,
                             icon: "error",
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000',
                         });
 
 

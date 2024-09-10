@@ -836,14 +836,7 @@
 
                         try {
 
-
-
-
-
-                            const { payment_id, order_id } = response.error.metadata
-
-
-
+                            const { payment_id, order_id } = response?.error?.metadata
 
                             const dataResponse = await fetch('/paymentFailure', {
                                 method: 'PATCH',
@@ -889,12 +882,9 @@
                             console.error('Error handling payment failure:', error.message);
                             Swal.fire({
                                 icon: 'error',
-                                text: 'Error while canceling the order.',
-                                toast: true,
-                                position: 'top-right',
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                                text: 'payment failure',
+                               confirmButtonText: 'OK',
+                               confirmButtonColor: '#000000', 
                             });
 
 
@@ -903,7 +893,6 @@
                     };
 
 
-                    let errorMessage = '';
                     const selectedPaymentMethod = getSelectedPaymentMethod();
                     const selectedAddressId = getSelectedAddressId()
                     const couponCode = document.getElementById('couponCode').value;
@@ -913,11 +902,8 @@
                         Swal.fire({
                             icon: 'warning',
                             text: 'Please select a payment method and address.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000', 
                         });
 
                     } else if (!selectedAddressId) {
@@ -925,11 +911,8 @@
                         Swal.fire({
                             icon: 'warning',
                             text: 'Please select an address.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000', 
                         });
 
                     } else if (!selectedPaymentMethod) {
@@ -937,13 +920,9 @@
                         Swal.fire({
                             icon: 'warning',
                             text: 'Please select a payment method.',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#000000', 
                         });
-
 
                     } else {
 
@@ -984,16 +963,16 @@
 
                                     const options = {
 
-                                        "key": data.RAZORPAY_ID_KEY,
-                                        "amount": data.amount * 100,
+                                        "key": data?.RAZORPAY_ID_KEY,
+                                        "amount": data?.amount * 100,
                                         "currency": "INR",
                                         "name": "axios watches",
-                                        "order_id": data.razorPayOrderPaymentId,
+                                        "order_id": data?.razorPayOrderPaymentId,
                                         "handler": (response) => {
 
-                                            console.log("this is the response from the verify function", response)
+                                         
 
-                                            verifyOnlinePayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, response.amount)
+                                            verifyOnlinePayment(response?.razorpay_payment_id, response?.razorpay_order_id, response?.razorpay_signature, response?.amount)
 
 
                                         },
@@ -1010,11 +989,8 @@
                                     Swal.fire({
                                         icon: 'error',
                                         text: `${data.message}`,
-                                        toast: true,
-                                        position: 'top-right',
-                                        showConfirmButton: false,
-                                        timerProgressBar: true,
-                                        timer: 3000
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#000000', 
                                     })
                                 }
 
@@ -1025,11 +1001,8 @@
                                 Swal.fire({
                                     icon: 'error',
                                     text: `An error occurred: ${error.message}`,
-                                    toast: true,
-                                    position: 'top-right',
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    timer: 3000
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#000000', 
                                 });
 
                             });
@@ -1073,11 +1046,8 @@
                                 Swal.fire({
                                     icon: 'error',
                                     text: 'Payment verification failed. Please contact support.',
-                                    toast: true,
-                                    position: 'top-right',
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    timer: 3000
+                                   confirmButtonText: 'OK',
+                                   confirmButtonColor: '#000000', 
                                 });
                             }
                         })
@@ -1086,11 +1056,8 @@
                             Swal.fire({
                                 icon: 'error',
                                 text: 'An error occurred during payment verification.',
-                                toast: true,
-                                position: 'top-right',
-                                showConfirmButton: false,
-                                timerProgressBar: true,
-                                timer: 3000
+                               confirmButtonText: 'OK',
+                               confirmButtonColor: '#000000', 
                             });
                         });
                 }
@@ -1143,7 +1110,8 @@
 
                     sessionStorage.removeItem('successMessage');
 
-                } const displayMessage = (icon, message) => {
+                } 
+                const displayMessage = (icon, message) => {
                     Swal.fire({
                         icon: icon,
                         text: message,
@@ -1453,11 +1421,8 @@
                                 Swal.fire({
                                     icon: 'error',
                                     text: `An error occurred: ${error.message}`,
-                                    toast: true,
-                                    position: 'top-right',
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    timer: 3000
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#000000', 
                                 });
 
                             })
