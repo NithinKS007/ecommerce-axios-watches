@@ -65,16 +65,18 @@
                 position: relative;
             }
         </style>
-        <div class="page-header breadcrumb-wrap">
-            <div class="container">
-                <div class="breadcrumb">
-                    <a href="/home" rel="nofollow">Home</a>
-                    <span></span><a href="/showcase?targetGroup=<%= targetGroup %>">
-                        <%= targetGroup %>
-                    </a>
-                </div>
+       <div class="page-header breadcrumb-wrap" style="background-color: transparent; padding: 15px 0; font-family: Arial, sans-serif;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+            <div class="breadcrumb" style="font-size: 16px; color: #6c757d;">
+                <a href="/" rel="nofollow" style="color: rgb(34, 33, 33); text-decoration: none; margin-right: 8px;">Home</a>
+                <span style="margin: 0 8px; color: #6c757d;"></span> <!-- More modern separator -->
+                <a href="/showcase?targetGroup=<%= targetGroup %>" style="color: rgb(34, 33, 33); text-decoration: none;">
+                    <%= targetGroup %>
+                </a>
             </div>
         </div>
+    </div>
+    
         <main class="main">
             <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
                 <div class="container">
@@ -182,13 +184,6 @@
                                                                     <img class="default-img"
                                                                         src="/productImages/<%= productsArray[i].images[0]?.filename %>"
                                                                         alt="">
-
-                                                                    <% for (let j=1; j < productsArray[i].images.length;
-                                                                        j++) { %>
-                                                                        <img class="hover-img"
-                                                                            src="/productImages/<%= productsArray[i].images[j]?.filename %>"
-                                                                            alt="Product Image">
-                                                                        <% } %>
                                                                 </a>
                                                             </div>
                                                             <!-- <div class="heart-icon" data-id="<%=productsArray[i]?._id%>">
@@ -464,7 +459,7 @@
                 if (data.length > 0) {
                     data.forEach(product => {
                         const productHTML = `
-                <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+                <div class="col-lg-4 col-md-4 col-12 col-sm-6" style="user-select: none;">
                     <div class="product-cart-wrap mb-30">
                         <div class="product-img-action-wrap">
                             <div class="product-img product-img-zoom">
@@ -476,7 +471,7 @@
                         </div>
                         <div class="product-content-wrap">
                             <div class="product-category">
-                                <a href="#">${product.brandData[0].name}</a>
+                                <a>${product.brandData[0].name}</a>
                             </div>
                             <h5 style="  overflow: hidden;
                         text-overflow: ellipsis;
