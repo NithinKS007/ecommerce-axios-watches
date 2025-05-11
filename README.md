@@ -249,6 +249,7 @@ AXIOS WATCHES
         └── wishList.ejs           # User wishlist page
 
 ```
+
 ## 🔗 API Endpoints
 
 ## API Routes Documentation
@@ -256,157 +257,174 @@ AXIOS WATCHES
 ### Admin Routes
 
 #### **Authentication**
-- **POST /signup**                         : Register a new admin user.
-- **GET /signin**                          : Load admin login page (GET request).
-- **POST /signin**                         : Admin login with credentials.
-- **GET /signout**                         : Log out the admin.
+
+- **POST /signup** : Register a new admin user.
+- **GET /signin** : Load admin login page (GET request).
+- **POST /signin** : Admin login with credentials.
+- **GET /signout** : Log out the admin.
 
 #### **Admin Dashboard & User Management**
-- **GET /dashboard**                       : Load admin dashboard.
-- **GET /customerlist**                    : Retrieve a list of customers.
-- **PATCH /customerlist**                  : Block or unblock a customer.
+
+- **GET /dashboard** : Load admin dashboard.
+- **GET /customerlist** : Retrieve a list of customers.
+- **PATCH /customerlist** : Block or unblock a customer.
 
 #### **Brand & Category Management**
-- **GET /brandCategoryManagement**         : View all categories and brands.
-- **PATCH /brandCategoryManagement**       : Soft delete a category or brand.
-- **PUT /brandCategoryManagement**         : Edit a category or brand.
-- **POST /brandCategoryManagement**        : Add a new category or brand.
-- **GET /brandCategoryExists**             : Check if a category or brand exists.
+
+- **GET /brandCategoryManagement** : View all categories and brands.
+- **PATCH /brandCategoryManagement** : Soft delete a category or brand.
+- **PUT /brandCategoryManagement** : Edit a category or brand.
+- **POST /brandCategoryManagement** : Add a new category or brand.
+- **GET /brandCategoryExists** : Check if a category or brand exists.
 
 #### **Product Management**
-- **GET /products**                        : List all products.
-- **POST /addProducts**                    : Add a new product.
-- **GET /editProduct**                     : Load product for editing.
-- **PUT /editProduct**                     : Update product details.
-- **DELETE /removeProductImage**           : Remove a product image.
+
+- **GET /products** : List all products.
+- **POST /addProducts** : Add a new product.
+- **GET /editProduct** : Load product for editing.
+- **PUT /editProduct** : Update product details.
+- **DELETE /removeProductImage** : Remove a product image.
 
 #### **Order Management**
-- **GET /orders**                          : List all orders.
-- **GET /orderDetailsPage**                : View order details.
-- **POST /orderDetailsPage**               : Update order status.
+
+- **GET /orders** : List all orders.
+- **GET /orderDetailsPage** : View order details.
+- **POST /orderDetailsPage** : Update order status.
 
 #### **Coupon Management**
-- **GET /couponManagement**                : View all coupons.
-- **POST /addCoupon**                      : Add a new coupon.
-- **PATCH /couponManagement**              : Activate or deactivate a coupon.
+
+- **GET /couponManagement** : View all coupons.
+- **POST /addCoupon** : Add a new coupon.
+- **PATCH /couponManagement** : Activate or deactivate a coupon.
 
 #### **Product Offer Management**
-- **GET /productOffer**                    : List all product offers.
-- **POST /addProductOffer**                : Add a new product offer.
-- **PATCH /productOffer**                  : Activate or deactivate a product offer.
-- **GET /editProductOffer**                : Edit a product offer.
-- **PUT /editProductOffer**                : Update a product offer.
+
+- **GET /productOffer** : List all product offers.
+- **POST /addProductOffer** : Add a new product offer.
+- **PATCH /productOffer** : Activate or deactivate a product offer.
+- **GET /editProductOffer** : Edit a product offer.
+- **PUT /editProductOffer** : Update a product offer.
 
 #### **Return & Refund Management**
-- **GET /updateReturnStatus**              : View return status of orders.
-- **PATCH /updateReturnStatus**            : Approve or reject return requests.
+
+- **GET /updateReturnStatus** : View return status of orders.
+- **PATCH /updateReturnStatus** : Approve or reject return requests.
 
 #### **Sales Reports**
-- **GET /salesReport**                     : Fetch sales report.
-- **GET /bestSellers**                     : View best-selling products.
+
+- **GET /salesReport** : Fetch sales report.
+- **GET /bestSellers** : View best-selling products.
 
 #### **Category Offer Management**
-- **GET /categoryOffer**                   : View all category offers.
-- **POST /addCategoryOffer**               : Add a new category offer.
-- **PATCH /categoryOffer**                 : Activate or deactivate a category offer.
-- **GET /editCategoryOffer**               : Edit a category offer.
-- **PUT /editCategoryOffer**               : Update a category offer.
 
+- **GET /categoryOffer** : View all category offers.
+- **POST /addCategoryOffer** : Add a new category offer.
+- **PATCH /categoryOffer** : Activate or deactivate a category offer.
+- **GET /editCategoryOffer** : Edit a category offer.
+- **PUT /editCategoryOffer** : Update a category offer.
 
 ---
 
 ### User Routes
 
 #### **Authentication**
-- **GET /signup**                          : Load user registration page.
-- **POST /signup**                         : Register a new user.
-- **POST /verifyOtp**                      : Verify OTP for user signup.
-- **GET /signin**                          : Load user login page.
-- **POST /signin**                         : User login with credentials.
-- **GET /signout**                         : Log out the user.
-- **GET /auth/google**                     : Google OAuth login.
-- **GET /google/callback**                 : Handle Google OAuth callback.
+
+- **GET /signup** : Load user registration page.
+- **POST /signup** : Register a new user.
+- **POST /verifyOtp** : Verify OTP for user signup.
+- **GET /signin** : Load user login page.
+- **POST /signin** : User login with credentials.
+- **GET /signout** : Log out the user.
+- **GET /auth/google** : Google OAuth login.
+- **GET /google/callback** : Handle Google OAuth callback.
 
 #### **Password Management**
-- **GET /forgotPassword**                  : Load forgot password page.
-- **PATCH /forgotPassword**                : Handle forgot password.
-- **GET /resetPassword**                   : Load reset password page.
-- **PATCH /resetPassword**                 : Reset user password.
+
+- **GET /forgotPassword** : Load forgot password page.
+- **PATCH /forgotPassword** : Handle forgot password.
+- **GET /resetPassword** : Load reset password page.
+- **PATCH /resetPassword** : Reset user password.
 
 #### **Home & Product Browsing**
-- **GET /home**                            : Load the homepage for logged-in users.
-- **GET /showcase**                        : View product showcase.
-- **GET /productDetails**                  : View detailed product info.
+
+- **GET /home** : Load the homepage for logged-in users.
+- **GET /showcase** : View product showcase.
+- **GET /productDetails** : View detailed product info.
 
 #### **Cart & Wishlist**
-- **POST /productDetails**                 : Add product to cart.
-- **GET /cart**                            : View items in cart.
-- **DELETE /cart**                         : Remove item from cart.
-- **PATCH /cart**                          : Update cart (quantity, selection).
-- **POST /cart/applyCoupon**               : Apply coupon to cart.
-- **DELETE /cart/removeCoupon**            : Remove coupon from cart.
-- **GET /wishList**                        : View wishlist.
-- **POST /wishList**                       : Add item to wishlist.
-- **DELETE /wishList**                     : Remove item from wishlist.
+
+- **POST /productDetails** : Add product to cart.
+- **GET /cart** : View items in cart.
+- **DELETE /cart** : Remove item from cart.
+- **PATCH /cart** : Update cart (quantity, selection).
+- **POST /cart/applyCoupon** : Apply coupon to cart.
+- **DELETE /cart/removeCoupon** : Remove coupon from cart.
+- **GET /wishList** : View wishlist.
+- **POST /wishList** : Add item to wishlist.
+- **DELETE /wishList** : Remove item from wishlist.
 
 #### **Checkout & Orders**
-- **GET /checkout**                        : View checkout page.
-- **POST /checkout/addAddress**            : Add a new address for checkout.
-- **POST /checkout**                       : Place an order.
-- **GET /orders**                          : View all orders.
-- **GET /orderDetails**                    : View order details.
-- **PATCH /orders**                        : Update order status (cancel a product).
-- **PUT /orders**                          : Cancel an entire order.
-- **PATCH /return**                        : Request product return.
+
+- **GET /checkout** : View checkout page.
+- **POST /checkout/addAddress** : Add a new address for checkout.
+- **POST /checkout** : Place an order.
+- **GET /orders** : View all orders.
+- **GET /orderDetails** : View order details.
+- **PATCH /orders** : Update order status (cancel a product).
+- **PUT /orders** : Cancel an entire order.
+- **PATCH /return** : Request product return.
 
 #### **Profile Management**
-- **GET /profile**                         : View user profile.
-- **PUT /profile**                         : Update user profile.
-- **PATCH /profile**                       : Change user password.
-- **GET /address**                         : View user addresses.
-- **POST /addAddress**                     : Add new address.
-- **PUT /editAddress**                     : Edit existing address.
-- **DELETE /address**                      : Delete an address.
+
+- **GET /profile** : View user profile.
+- **PUT /profile** : Update user profile.
+- **PATCH /profile** : Change user password.
+- **GET /address** : View user addresses.
+- **POST /addAddress** : Add new address.
+- **PUT /editAddress** : Edit existing address.
+- **DELETE /address** : Delete an address.
 
 #### **Payment & Wallet**
-- **POST /verifyOnlinePayment**            : Verify online payment status.
-- **GET /paymentFailure**                  : Handle payment failure page.
-- **PATCH /paymentFailure**                : Retry or handle payment failure.
-- **GET /wallet**                          : View wallet balance.
-- **PATCH /retryPayment**                  : Retry payment for failed transactions.
+
+- **POST /verifyOnlinePayment** : Verify online payment status.
+- **GET /paymentFailure** : Handle payment failure page.
+- **PATCH /paymentFailure** : Retry or handle payment failure.
+- **GET /wallet** : View wallet balance.
+- **PATCH /retryPayment** : Retry payment for failed transactions.
 
 #### **Advanced Search & Filters**
-- **GET /filter**                          : Apply advanced search filters for products.
+
+- **GET /filter** : Apply advanced search filters for products.
 
 ## 💾 Database Schema
 
-- **addressModel.js**            : //Defines the schema for storing user addresses.
+- **addressModel.js** : //Defines the schema for storing user addresses.
 
-- **adminModel.js**              : //Defines the schema for storing admin user details.
+- **adminModel.js** : //Defines the schema for storing admin user details.
 
-- **brandModel.js**              : //Defines the schema for storing brand information.
+- **brandModel.js** : //Defines the schema for storing brand information.
 
-- **cartModel.js**               : //Defines the schema for handling user cart data.
+- **cartModel.js** : //Defines the schema for handling user cart data.
 
-- **categoryModel.js**           : //Defines the schema for storing product categories.
+- **categoryModel.js** : //Defines the schema for storing product categories.
 
-- **couponModel.js**             : //Defines the schema for storing coupon details and redemption rules.
+- **couponModel.js** : //Defines the schema for storing coupon details and redemption rules.
 
-- **onlineTransactionModel.js**  : //Defines the schema for handling online transaction records.
+- **onlineTransactionModel.js** : //Defines the schema for handling online transaction records.
 
-- **orderModel.js**              : //Defines the schema for managing user orders and their status.
+- **orderModel.js** : //Defines the schema for managing user orders and their status.
 
-- **otpModel.js**                : //Defines the schema for one-time password (OTP) generation and validation.
+- **otpModel.js** : //Defines the schema for one-time password (OTP) generation and validation.
 
-- **productModel.js**            : //Defines the schema for storing product details.
+- **productModel.js** : //Defines the schema for storing product details.
 
-- **returnOrderModel.js**        : Defines the schema for managing return orders.
+- **returnOrderModel.js** : Defines the schema for managing return orders.
 
-- **userModel.js**               : Defines the schema for storing user details.
+- **userModel.js** : Defines the schema for storing user details.
 
-- **walletModel.js**             : Defines the schema for user wallet balance and transaction records.
+- **walletModel.js** : Defines the schema for user wallet balance and transaction records.
 
-- **wishListModel.js**           : Defines the schema for managing user wish list items.
+- **wishListModel.js** : Defines the schema for managing user wish list items.
 
 ## 🔒 Security
 
@@ -435,6 +453,7 @@ AXIOS WATCHES
 
 ### Required Packages (Keep)
 
+```json
 {
   "bcrypt": "^5.1.1", // Password hashing library
   "bcryptjs": "^2.4.3", // Alternative bcrypt implementation (lighter version)
@@ -458,12 +477,17 @@ AXIOS WATCHES
   "sweetalert2": "^11.12.1", // Library for creating beautiful, responsive alerts
   "uuid": "^10.0.0" // Library for generating universally unique identifiers (UUIDs)
 }
+```
 
 ## Development Dependencies (Keep)
+
+```json
 
 {
   "nodemon": "^3.1.10" // Development tool for automatic server restart on code changes
 }
+
+```
 
 ## 🤝 Contributing
 
