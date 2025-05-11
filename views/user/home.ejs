@@ -234,7 +234,7 @@
                     color: #0056b3;
                 }
             </style>
-            <!-- Main Content -->
+
             <div class="container my-5">
                 <div class="jumbotron text-center">
 
@@ -242,10 +242,11 @@
                 </div>
 
                 <section class="mb-5">
-                    <h2 class="section-title">Exclusive Product Offers</h2>
+                  
                     <div class="row">
                         <% activeProductOffers.forEach(product=> { %>
                             <% if (product.productOffer) { %>
+                             <h2 class="section-title">Exclusive Product Offers</h2>
                                 <div class="col-md-3 mb-4">
                                     <div class="card h-100 shadow-sm">
                                         <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none">
@@ -273,37 +274,38 @@
                 </section>
 
                 <div class="container my-5">
-                    <!-- Other content -->
+     
 
                     <section class="mb-5">
-                        <h2 class="section-title">Category Offers</h2>
+                      
                         <div class="row">
+                            
                             <% activeCategoryOffers.forEach(category=> { %>
                                 <% if (category.categoryOffer) { %>
+                                 <h2 class="section-title">Category Offers</h2>
                                     <div class="col-md-4 mb-4">
                                         <div class="card h-100 shadow-sm">
                                             <div class="card-body d-flex flex-column text-center p-4"
                                                 style="background-color: #f8f9fa; border-radius: 10px;">
 
-                                                <!-- Icon for Category -->
+                           
                                                 <div class="icon mb-3">
                                                     <i class="fas fa-tag fa-3x" style="color: #333;"></i>
                                                 </div>
 
-                                                <!-- Category Offer Name -->
+                                        
                                                 <h5 class="card-title"
                                                     style="color: #333; font-size: 1.8rem; font-weight: 700;">
                                                     <%= category.categoryOffer.offerName %>
                                                 </h5>
 
-                                                <!-- Offer Discount -->
+                            
                                                 <p class="card-text mt-3" style="color: #555; font-size: 1.4rem;">
                                                     <span class="fw-bold">
                                                         <%= category.categoryOffer.offerDiscountPercentage %>% OFF
                                                     </span>
                                                 </p>
 
-                                                <!-- Call to Action Button -->
                                                 <a  class="btn btn-dark mt-auto fw-bold"
                                                     style="border-radius: 25px; padding: 10px 20px;">
                                                     Explore Now

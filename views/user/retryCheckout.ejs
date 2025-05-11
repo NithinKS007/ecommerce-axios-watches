@@ -161,21 +161,12 @@
 
             retryPaymentButton.addEventListener("click", () => {
 
-               
-
                 const paymentFailure = async (response) => {
 
                     try {
 
-                    
-
-
-
                         const { payment_id, order_id } = response.error.metadata
                 
-
-
-
                         const dataResponse = await fetch("/paymentFailure", {
 
                             method: 'PATCH',

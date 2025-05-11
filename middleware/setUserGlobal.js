@@ -1,30 +1,19 @@
+const users = require("../models/userModel");
 
-const users = require("../models/userModel")
+const setUserGlobal = async (req, res, next) => {
+  if (req.user) {
+    req.currentUser = req.user;
+  } else if (req.session && req.session.userId) {
+    const user = await users.findById(req.session.userId);
 
-const setUserGlobal =async  (req, res, next) => {
+    req.currentUser = user;
+  } else {
+    req.currentUser = null;
+  }
 
-    if (req.user) {
-
-        req.currentUser  = req.user;
-        
-    } else if (req.session && req.session.userId) {
-
-        const user = await users.findById(req.session.userId)
-
-        req.currentUser  = user
-        
-    } else {
-
-        req.currentUser  = null;
-    }
-
-    next();
+  next();
 };
 
-
-
-module.exports = { 
-
-    setUserGlobal 
-  
-}
+module.exports = {
+  setUserGlobal,
+};

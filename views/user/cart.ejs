@@ -83,11 +83,13 @@
                      name="selectedCartItem"
                      <% if (item.isSelected) { %> checked <% } %>>
               <div class="row no-gutters">
+                <a href="/productDetails?id=<%= item.product?._id %>">
                 <div class="col-md-4 d-flex align-items-center justify-content-center">
                   <img src="/productImages/<%= item.product?.images[0]?.filename %>"
                        class="card-img"
                        style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 15px;"
                        alt="Product Image">
+                      </a>
                        <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date() && item?.product?.productOffer?.offerStatus && item?.product?.productSalesPriceAfterOfferDiscount) { %>
                         <div class="position-absolute bg-danger text-white p-1" style="top: 10px; right: 10px; font-size: 0.9em; border-radius: 3px;">
                             <%= item?.product?.productOffer?.offerDiscountPercentage %>% OFF
@@ -96,9 +98,10 @@
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
+                    <a href="/productDetails?id=<%= item.product?._id %>">
                     <h5 class="card-title text-truncate" style="max-width: 290px;"><%= item.product?.name %></h5>
 
-                  
+                  </a>
                     <% if (new Date(item?.product?.productOffer?.offerExpiryDate) > new Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount&&item?.product?.productOffer?.offerStatus) { %>
                   
                       <strong>Price:</strong> <%= item?.productSalesPriceAfterOfferDiscount.toFixed(2) %>

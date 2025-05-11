@@ -1,49 +1,53 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const offerSchema = new Schema({
-  offerName: {
+const offerSchema = new Schema(
+  {
+    offerName: {
       type: String,
-      required: true
-  },
-  offerDiscountPercentage: {
+      required: true,
+    },
+    offerDiscountPercentage: {
       type: Number,
       required: true,
       min: 0,
-      max: 100
-  },
-  offerStartDate: {
+      max: 100,
+    },
+    offerStartDate: {
       type: Date,
-      required: true
-  },
-  offerExpiryDate: {
+      required: true,
+    },
+    offerExpiryDate: {
       type: Date,
-      required: true
-  },
-  offerStatus: {
+      required: true,
+    },
+    offerStatus: {
       type: Boolean,
-      default:true
-  }
-},{ timestamps: true })
-
-const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
+      default: true,
+    },
   },
-  description: {  
-    type: String,
-    required: true
+  { timestamps: true }
+);
+
+const categorySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    categoryOffer: offerSchema,
   },
-  isBlocked: {
-    type: Boolean,
-    default: false
-  },
-  categoryOffer: offerSchema 
+  { timestamps: true }
+);
 
-}, { timestamps: true });  
+const categories = mongoose.model("category", categorySchema);
 
-
-const categories = mongoose.model('category', categorySchema);
-
-module.exports = categories
+module.exports = categories;

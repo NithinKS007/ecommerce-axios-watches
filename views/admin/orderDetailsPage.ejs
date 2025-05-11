@@ -432,25 +432,10 @@ const toggleAndUpdateStatus = () => {
                     editButton.style.display = "inline-block";
                     saveButton.style.display = "none";
                     disableRadioButtonsBasedOnStatus(selectedStatus);
-                    const rows = document.querySelectorAll('[data-productOrder-status]');
-                    rows.forEach(row => {
-                        const capitalizedStatus = selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1);
-                        row.innerText = capitalizedStatus;
-                        row.className = '';
-                        
-                        if (selectedStatus === 'pending') {
-                            row.classList.add('badge', 'rounded-pill', 'alert-warning');
-                        } else if (selectedStatus === 'shipped') {
-                            row.classList.add('badge', 'rounded-pill', 'alert-info');
-                        } else if (selectedStatus === 'delivered') {
-                            row.classList.add('badge', 'rounded-pill', 'alert-success');
-                        } else if (selectedStatus === 'cancelled') {
-                            row.classList.add('badge', 'rounded-pill', 'alert-danger');
-                        } else {
-                            row.classList.add('badge', 'rounded-pill', 'alert-secondary');
-                        }
-                    });
-
+            
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
 
                 })
                 .catch(error => {
