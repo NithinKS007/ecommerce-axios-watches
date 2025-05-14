@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  const uri = process.env.DATABASE_CONFIG;
+  const uri = process.env.ATLAS_DATABASE_CONFIG;
 
   try {
     await mongoose.connect(uri);
