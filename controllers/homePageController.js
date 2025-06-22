@@ -50,22 +50,20 @@ const loadHome = async (req, res) => {
     const successMessage = req.session.successMessage;
     req.session.successMessage = null;
 
-    return res
-      .status(200)
-      .render("user/home", {
-        productsArray,
-        successMessage,
-        totalPages,
-        currentPage: pageNumber,
-        bestSellers,
-        newArrivals,
-        activeProductOffers,
-        activeCategoryOffers,
-        categoryData,
-        popularBrand,
-        newArrivals,
-        topDeals,
-      });
+    return res.status(200).render("user/home", {
+      productsArray,
+      successMessage,
+      totalPages,
+      currentPage: pageNumber,
+      bestSellers,
+      newArrivals,
+      activeProductOffers,
+      activeCategoryOffers,
+      categoryData,
+      popularBrand,
+      newArrivals,
+      topDeals,
+    });
   } catch (error) {
     console.log(
       `error while loading the home page before logging in`,
@@ -299,6 +297,10 @@ const loadShowCase = async (req, res) => {
 const advancedSearch = async (req, res) => {
   const { categories, brands, sortby, targetGroup } = req.query;
 
+  const searchProduct = req.session.searchProduct || "";
+
+  console.log("Search Product:", searchProduct);
+
   const categoriesArray = categories
     ? categories.split(",").map((id) => ObjectId.createFromHexString(id))
     : [];
@@ -307,38 +309,52 @@ const advancedSearch = async (req, res) => {
     : [];
   const sortbyArray = sortby ? sortby.split(",") : [];
 
-  let arrayToAggregate = [];
-
-  const lookUpBrandsAndCategoriesData = () => {
-    arrayToAggregate.push({
+  const arrayToAggregate = [
+    {
       $lookup: {
         from: "brands",
         localField: "brand",
         foreignField: "_id",
         as: "brandData",
       },
-    });
-    arrayToAggregate.push({
+    },
+    {
       $lookup: {
         from: "categories",
         localField: "category",
         foreignField: "_id",
         as: "categoryData",
       },
-    });
-  };
+    },
+  ];
+
+  let matchConditions = { isBlocked: false }  
 
   if (categoriesArray.length > 0) {
-    arrayToAggregate.push({ $match: { category: { $in: categoriesArray } } });
-    lookUpBrandsAndCategoriesData();
+    matchConditions.category = { $in: categoriesArray };
   }
+
   if (brandsArray.length > 0) {
-    arrayToAggregate.push({ $match: { brand: { $in: brandsArray } } });
-    lookUpBrandsAndCategoriesData();
+    matchConditions.brand = { $in: brandsArray };
   }
+
   if (targetGroup) {
-    arrayToAggregate.push({ $match: { targetGroup: targetGroup } });
-    lookUpBrandsAndCategoriesData();
+    matchConditions.targetGroup = targetGroup;
+  }
+
+  if (searchProduct.trim()) {
+    matchConditions.$or = [
+      { name: { $regex: searchProduct, $options: "i" } },
+      { "brandData.name": { $regex: searchProduct, $options: "i" } },
+      { "categoryData.name": { $regex: searchProduct, $options: "i" } },
+      { "categoryData.description": { $regex: searchProduct, $options: "i" } },
+      { description: { $regex: searchProduct, $options: "i" } },
+      { dialShape: { $regex: searchProduct, $options: "i" } },
+      { displayType: { $regex: searchProduct, $options: "i" } },
+      { strapMaterial: { $regex: searchProduct, $options: "i" } },
+      { strapColor: { $regex: searchProduct, $options: "i" } },
+      { targetGroup: { $regex: searchProduct, $options: "i" } },
+    ];
   }
 
   if (sortbyArray.includes("priceLowHigh")) {
@@ -354,17 +370,16 @@ const advancedSearch = async (req, res) => {
   } else if (sortbyArray.includes("OutOfStock")) {
     arrayToAggregate.push({ $match: { stock: 0 } });
   }
-
-  arrayToAggregate.push({ $match: { isBlocked: false } });
-
+  arrayToAggregate.unshift({ $match: matchConditions });
   try {
     let filterResult;
-    if (arrayToAggregate.length > 0) {
+    if (arrayToAggregate.length >= 1) {
       filterResult = await products.aggregate(arrayToAggregate);
     } else {
       filterResult = await products.find({ isBlocked: false });
     }
 
+    console.log(filterResult, "fiiter");
     return res.status(200).json({
       message: "Data received for filtering",
       success: true,
@@ -381,7 +396,7 @@ const advancedSearch = async (req, res) => {
 
 const searchProducts = async (req, res) => {
   const { searchProduct = "", targetGroup } = req.query;
-
+  req.session.searchProduct = searchProduct;
   let pageNumber = parseInt(req.query.page) || 1;
   const perPageData = 9;
 
@@ -501,7 +516,7 @@ const loadProductDetails = async (req, res) => {
       .find({
         category: productDetails?.category,
         targetGroup: productDetails?.targetGroup,
-      })
+      }).limit(10)
       .populate("category")
       .populate("brand");
 
@@ -509,14 +524,12 @@ const loadProductDetails = async (req, res) => {
       return res.status(404).send("product not found");
     }
 
-    return res
-      .status(200)
-      .render("user/productDetails", {
-        productDetails,
-        relatedProducts,
-        existingCartItem,
-        productInWishList,
-      });
+    return res.status(200).render("user/productDetails", {
+      productDetails,
+      relatedProducts,
+      existingCartItem,
+      productInWishList,
+    });
   } catch (error) {
     console.log(`error while loading the product details page`, error.message);
 

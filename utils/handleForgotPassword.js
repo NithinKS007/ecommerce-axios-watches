@@ -15,8 +15,6 @@ const sendToEmailResetPassword = async (email, token) => {
   const productionUrl = `http://localhost:7000`;
   const resetURL = `${productionUrl}/resetPassword?token=${token}`;
 
-  console.log(resetURL);
-
   const subject = "Password Reset";
   const text =
     `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +

@@ -34,40 +34,85 @@
               <!-- Coupon Name -->
               <div class="mb-4">
                 <label for="couponName" class="form-label">Coupon Name</label>
-                <input type="text" name="couponName" placeholder="Type here" class="form-control" id="couponName" />
+                <input
+                  type="text"
+                  name="couponName"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="couponName"
+                />
                 <span id="couponNameError" class="error"></span>
               </div>
               <!-- Description -->
               <div class="mb-4">
                 <label class="form-label">Description</label>
-                <textarea name="couponDescription" id="couponDescription" placeholder="Type here" class="form-control" rows="4"></textarea>
+                <textarea
+                  name="couponDescription"
+                  id="couponDescription"
+                  placeholder="Type here"
+                  class="form-control"
+                  rows="4"
+                ></textarea>
                 <span id="couponDescriptionError" class="error"></span>
               </div>
               <!-- Coupon Code -->
               <div class="mb-4">
                 <label for="couponCode" class="form-label">Coupon Code</label>
-                <input type="text" name="couponCode" placeholder="Type here" class="form-control" id="couponCode" />
+                <input
+                  type="text"
+                  name="couponCode"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="couponCode"
+                />
                 <span id="couponCodeError" class="error"></span>
               </div>
               <!-- Discount Amount -->
-            <!-- Discount Amount -->
-            <div class="mb-4">
-              <label for="couponDiscount" class="form-label">Discount Percentage</label>
-              <input type="number" name="couponDiscount" placeholder="Percentage (0-100)" class="form-control" id="couponDiscount" min="0" max="100" />
-              <span id="couponDiscountError" class="error"></span>
-            </div>
+
+              <!-- Min Amount -->
+              <div class="mb-4">
+                <label for="minAmount" class="form-label"
+                  >Minimum Purchase Amount</label
+                >
+                <input
+                  type="number"
+                  name="minAmount"
+                  placeholder="Amount"
+                  class="form-control"
+                  id="minAmount"
+                />
+                <span id="minAmountError" class="error"></span>
+              </div>
+              <!-- Discount Amount -->
 
               <!-- Max Amount -->
               <div class="mb-4">
-                <label for="maxAmount" class="form-label">Maximum Discount Amount</label>
-                <input type="number" name="maxAmount" placeholder="Amount" class="form-control" id="maxAmount" />
+                <label for="maxAmount" class="form-label"
+                  >Maximum Discount Amount</label
+                >
+                <input
+                  type="number"
+                  name="maxAmount"
+                  placeholder="Amount"
+                  class="form-control"
+                  id="maxAmount"
+                />
                 <span id="maxAmountError" class="error"></span>
               </div>
-              <!-- Min Amount -->
               <div class="mb-4">
-                <label for="minAmount" class="form-label">Minimum Purchase Amount</label>
-                <input type="number" name="minAmount" placeholder="Amount" class="form-control" id="minAmount" />
-                <span id="minAmountError" class="error"></span>
+                <label for="couponDiscount" class="form-label"
+                  >Discount Percentage</label
+                >
+                <input
+                  type="number"
+                  name="couponDiscount"
+                  placeholder="Percentage (0-100)"
+                  class="form-control"
+                  id="couponDiscount"
+                  min="0"
+                  max="100"
+                />
+                <span id="couponDiscountError" class="error"></span>
               </div>
               <!-- Coupon Status -->
               <div class="mb-4">
@@ -77,8 +122,18 @@
                   <option value="false">Inactive</option>
                 </select>
               </div>
-              <div style="display: flex; justify-content: center; padding-top: 15px;">
-                <button class="btn btn-md rounded font-sm hover-up" id="submitForm" type="submit">
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  padding-top: 15px;
+                "
+              >
+                <button
+                  class="btn btn-md rounded font-sm hover-up"
+                  id="submitForm"
+                  type="submit"
+                >
                   Add Coupon
                 </button>
               </div>
@@ -92,133 +147,155 @@
 <%- include('../layouts/adminLayouts/footer') %>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Validation Functions
-  const validateField = (input, errorElement, errorMessage) => {
-    if (input.value.trim() === '') {
-      errorElement.textContent = errorMessage;
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+  document.addEventListener("DOMContentLoaded", () => {
+    // Validation Functions
+    const validateField = (input, errorElement, errorMessage) => {
+      if (input.value.trim() === "") {
+        errorElement.textContent = errorMessage;
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
-  const validateCouponName = () => {
-    const input = document.getElementById('couponName');
-    const errorElement = document.getElementById('couponNameError');
-    const value = input.value.trim();
-    if (value === '') {
-      errorElement.textContent = '* Coupon Name is required';
-      return false;
-    } else if (value.length < 3 || value.length > 50) {
-      errorElement.textContent = '* Coupon Name must be between 3 and 50 characters long';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+    const validateCouponName = () => {
+      const input = document.getElementById("couponName");
+      const errorElement = document.getElementById("couponNameError");
+      const value = input.value.trim();
+      if (value === "") {
+        errorElement.textContent = "* Coupon Name is required";
+        return false;
+      } else if (value.length < 3 || value.length > 50) {
+        errorElement.textContent =
+          "* Coupon Name must be between 3 and 50 characters long";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
-  const validateDescription = () => {
-    const input = document.getElementById('couponDescription');
-    const errorElement = document.getElementById('couponDescriptionError');
-    const value = input.value.trim();
-    if (value === '') {
-      errorElement.textContent = '* Description is required';
-      return false;
-    } else if (value.length > 200) {
-      errorElement.textContent = '* Description must not exceed 200 characters';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+    const validateDescription = () => {
+      const input = document.getElementById("couponDescription");
+      const errorElement = document.getElementById("couponDescriptionError");
+      const value = input.value.trim();
+      if (value === "") {
+        errorElement.textContent = "* Description is required";
+        return false;
+      } else if (value.length > 200) {
+        errorElement.textContent =
+          "* Description must not exceed 200 characters";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
-  const validateCouponCode = () => {
-    const input = document.getElementById('couponCode');
-    const errorElement = document.getElementById('couponCodeError');
-    const value = input.value.trim();
-    const regex = /^[A-Z0-9-_]{5,20}$/;
-    if (value === '') {
-      errorElement.textContent = '* Coupon Code is required';
-      return false;
-    } else if (!regex.test(value)) {
-      errorElement.textContent = '* Coupon Code must be 5-20 characters long and contain only uppercase letters, numbers, hyphens, or underscores';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+    const validateCouponCode = () => {
+      const input = document.getElementById("couponCode");
+      const errorElement = document.getElementById("couponCodeError");
+      const value = input.value.trim();
+      const regex = /^[A-Z0-9-_]{5,20}$/;
+      if (value === "") {
+        errorElement.textContent = "* Coupon Code is required";
+        return false;
+      } else if (!regex.test(value)) {
+        errorElement.textContent =
+          "* Coupon Code must be 5-20 characters long and contain only uppercase letters, numbers, hyphens, or underscores";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
-  const validateCouponDiscount = () => {
-    const input = document.getElementById('couponDiscount');
-    const errorElement = document.getElementById('couponDiscountError');
-    const value = parseFloat(input.value);
-    if (isNaN(value) || value < 0 || value > 100) {
-      errorElement.textContent = '* Discount Percentage must be between 0 and 100';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
-  const validateMaxAmount = () => {
-    const input = document.getElementById('maxAmount');
-    const errorElement = document.getElementById('maxAmountError');
-    const value = parseFloat(input.value);
-    if (isNaN(value) || value <= 0) {
-      errorElement.textContent = '* Maximum Discount Amount must be greater than zero';
-      return false;
-    } else if (minAmount && value > minAmount) {
-      errorElement.textContent = '* Maximum Discount Amount cannot exceed Minimum Purchase Amount';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+    const validateCouponDiscount = () => {
+      const input = document.getElementById("couponDiscount");
+      const errorElement = document.getElementById("couponDiscountError");
+      const value = parseFloat(input.value);
+      if (isNaN(value) || value < 0 || value > 100) {
+        errorElement.textContent =
+          "* Discount Percentage must be between 0 and 100";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
+    const validateMaxAmount = () => {
+      const input = document.getElementById("maxAmount");
+      const errorElement = document.getElementById("maxAmountError");
+      const value = parseFloat(input.value);
+      if (isNaN(value) || value <= 0) {
+        errorElement.textContent =
+          "* Maximum Discount Amount must be greater than zero";
+        return false;
+      } else if (minAmount && value > minAmount) {
+        errorElement.textContent =
+          "* Maximum Discount Amount cannot exceed Minimum Purchase Amount";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
-  const validateMinAmount = () => {
-    const input = document.getElementById('minAmount');
-    const errorElement = document.getElementById('minAmountError');
-    const value = parseFloat(input.value);
-    if (isNaN(value) || value < 0) {
-      errorElement.textContent = '* Minimum Purchase Amount must be zero or greater';
-      return false;
-    } else {
-      errorElement.textContent = '';
-      return true;
-    }
-  };
+    const validateMinAmount = () => {
+      const input = document.getElementById("minAmount");
+      const errorElement = document.getElementById("minAmountError");
+      const value = parseFloat(input.value);
+      if (isNaN(value) || value < 0) {
+        errorElement.textContent =
+          "* Minimum Purchase Amount must be zero or greater";
+        return false;
+      } else {
+        errorElement.textContent = "";
+        return true;
+      }
+    };
 
- 
-  document.getElementById('couponName').addEventListener('input', validateCouponName);
-  document.getElementById('couponDescription').addEventListener('input', validateDescription);
-  document.getElementById('couponCode').addEventListener('input', validateCouponCode);
-  document.getElementById('couponDiscount').addEventListener('input', validateCouponDiscount);
-  document.getElementById('maxAmount').addEventListener('input', validateMaxAmount);
-  document.getElementById('minAmount').addEventListener('input',()=>{
+    document
+      .getElementById("couponName")
+      .addEventListener("input", validateCouponName);
+    document
+      .getElementById("couponDescription")
+      .addEventListener("input", validateDescription);
+    document
+      .getElementById("couponCode")
+      .addEventListener("input", validateCouponCode);
+    document
+      .getElementById("couponDiscount")
+      .addEventListener("input", validateCouponDiscount);
+    document
+      .getElementById("maxAmount")
+      .addEventListener("input", validateMaxAmount);
+    document.getElementById("minAmount").addEventListener("input", () => {
+      validateMinAmount();
+      validateMaxAmount();
+    });
 
-    validateMinAmount()
-    validateMaxAmount()
+    // Form Submission Validation
+    const form = document.getElementById("couponForm");
+    form.addEventListener("submit", (event) => {
+      const isCouponNameValid = validateCouponName();
+      const isDescriptionValid = validateDescription();
+      const isCouponCodeValid = validateCouponCode();
+      const isCouponDiscountValid = validateCouponDiscount();
+      const isMaxAmountValid = validateMaxAmount();
+      const isMinAmountValid = validateMinAmount();
+
+      if (
+        !isCouponNameValid ||
+        !isDescriptionValid ||
+        !isCouponCodeValid ||
+        !isCouponDiscountValid ||
+        !isMaxAmountValid ||
+        !isMinAmountValid
+      ) {
+        event.preventDefault();
+      }
+    });
   });
-
-  // Form Submission Validation
-  const form = document.getElementById('couponForm');
-  form.addEventListener('submit', (event) => {
-    const isCouponNameValid = validateCouponName();
-    const isDescriptionValid = validateDescription();
-    const isCouponCodeValid = validateCouponCode();
-    const isCouponDiscountValid = validateCouponDiscount();
-    const isMaxAmountValid = validateMaxAmount();
-    const isMinAmountValid = validateMinAmount();
-
-    if (!isCouponNameValid || !isDescriptionValid || !isCouponCodeValid || !isCouponDiscountValid || !isMaxAmountValid || !isMinAmountValid) {
-      event.preventDefault();
-    }
-  });
-});
 </script>
