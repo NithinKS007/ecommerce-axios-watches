@@ -1,4 +1,5 @@
 const users = require("../models/userModel");
+const statusCode = require("../utils/statusCodes");
 
 const loadCustomer = async (req, res) => {
   const statusFilter = req.query.status;
@@ -48,7 +49,7 @@ const loadCustomer = async (req, res) => {
     const totalPages = Math.max(1, Math.ceil(totalUsers / perPageData));
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
-    return res.status(200).render("admin/customerList", {
+    return res.status(statusCode.OK).render("admin/customerList", {
       userData: userData,
       totalPages: totalPages,
       currentPage: pageNumber,
@@ -57,7 +58,7 @@ const loadCustomer = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while loading the customers:", error.message);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -67,7 +68,7 @@ const blockOrUnblockCustomer = async (req, res) => {
     const user = await users.findById(userId);
 
     if (!user) {
-      return res.status(404).render("user/404");
+      return res.status(statusCode.NOT_FOUND).render("user/404");
     }
     if (user.isBlocked) {
       const updatedUser = await users.findByIdAndUpdate(
@@ -75,10 +76,8 @@ const blockOrUnblockCustomer = async (req, res) => {
         { $set: { isBlocked: false } },
         { new: true }
       );
-      console.log(
-        `Unblocking happened for user from the backend isblocked to false`
-      );
-      return res.status(200).json({
+     
+      return res.status(statusCode.OK).json({
         success: true,
         message: "user successfully unblocked",
         userId: updatedUser,
@@ -89,10 +88,8 @@ const blockOrUnblockCustomer = async (req, res) => {
         { $set: { isBlocked: true } },
         { new: true }
       );
-      console.log(
-        `Blocking happened for user from the backend isblocked to true`
-      );
-      return res.status(200).json({
+      
+      return res.status(statusCode.OK).json({
         success: true,
         message: "user successfully blocked",
         userId: updatedUser,
@@ -104,7 +101,7 @@ const blockOrUnblockCustomer = async (req, res) => {
       error.message
     );
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while blocking or unblocking the customer",
     });

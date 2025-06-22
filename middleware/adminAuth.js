@@ -1,3 +1,5 @@
+const statusCode = require("../utils/statusCodes");
+
 const isAdminLogin = async (req, res, next) => {
   try {
     if (req.session.adminId) {
@@ -8,7 +10,7 @@ const isAdminLogin = async (req, res, next) => {
   } catch (error) {
     console.log("error from the admin isAdminLogin middleware", error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -22,7 +24,7 @@ const isAdminLogout = async (req, res, next) => {
   } catch (error) {
     console.error("Error from isAdminLogout middleware:", error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 

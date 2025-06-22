@@ -1,6 +1,7 @@
 const dayjs = require("dayjs");
 const products = require("../models/productModel");
 const orders = require("../models/orderModel");
+const statusCode = require("../utils/statusCodes")
 
 const loadDashboard = async (req, res) => {
   try {
@@ -46,7 +47,7 @@ const loadDashboard = async (req, res) => {
       tableTotalNetSales += sale.netSales || 0;
     });
 
-    return res.status(200).render("admin/dashboard", {
+    return res.status(statusCode.OK).render("admin/dashboard", {
       successMessage,
       totalOrders,
       totalProducts,
@@ -72,7 +73,7 @@ const loadDashboard = async (req, res) => {
       error.message
     );
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -102,7 +103,7 @@ const overAllDiscount = async () => {
     return totalDiscountAmount.toFixed(2);
   } catch (error) {
     console.log(`Error while calculating the discount: ${error.message}`);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -122,7 +123,7 @@ const overAllOrderAmount = async () => {
       error.message
     );
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -132,7 +133,7 @@ const totalSalesCount = async () => {
   } catch (error) {
     console.log(`error while calculating the sales count`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -142,7 +143,7 @@ const countTotalOrders = async () => {
   } catch (error) {
     console.log(`error while getting the total orders`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 const aggregateProductByCategory = async () => {
@@ -176,7 +177,7 @@ const aggregateProductByCategory = async () => {
   } catch (error) {
     console.log(`error while getting the total products`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -217,7 +218,7 @@ const monthlyAvg = async () => {
   } catch (error) {
     console.log(`error while getting the monthly average`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -252,7 +253,7 @@ const totalRevenue = async () => {
   } catch (error) {
     console.log(`error while calculating the total revenue`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -278,7 +279,7 @@ const fetchSalesReport = async (req, res) => {
         tableTotalNetSales += sale.netSales || 0;
       });
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: "sales data for the the given dates",
           salesData,
@@ -315,7 +316,7 @@ const fetchSalesReport = async (req, res) => {
       });
 
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: "sales data for the the given period of time",
           salesData,
@@ -329,7 +330,7 @@ const fetchSalesReport = async (req, res) => {
     console.error("Error while fetching sales data:", error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({
         success: false,
         message: "An error occurred while fetching sales data.",
@@ -421,7 +422,7 @@ const calculateSalesData = async (startDate, endDate) => {
     return salesData;
   } catch (error) {
     console.log(`error while calculating the sales report`, error.message);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 

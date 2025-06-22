@@ -1,4 +1,5 @@
 const passport = require("passport");
+const statusCode = require("../utils/statusCodes");
 const users = require("../models/userModel");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 require("dotenv").config();
@@ -13,8 +14,6 @@ passport.use(
     },
 
     async (request, accessToken, refreshToken, profile, cb) => {
-      console.log("Google OAuth function is working");
-
       try {
         let user = await users.findOne({ googleId: profile.id });
         if (!user) {
@@ -65,7 +64,7 @@ const isUserLogin = async (req, res, next) => {
     }
   } catch (error) {
     console.error("Error in isUserLogin middleware:", error.message);
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -79,7 +78,7 @@ const isUserLogout = async (req, res, next) => {
   } catch (error) {
     console.error("Error in isUserLogout middleware:", error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 

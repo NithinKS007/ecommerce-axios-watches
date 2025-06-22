@@ -1,4 +1,5 @@
 const orders = require("../models/orderModel");
+const statusCode = require("../utils/statusCodes")
 
 const bestSellers = async (req, res) => {
   try {
@@ -93,7 +94,7 @@ const bestSellers = async (req, res) => {
         { $limit: 10 },
       ]);
 
-      return res.render("admin/categoryBestSelling", {
+      return res.status(statusCode.OK).render("admin/categoryBestSelling", {
         topTenBestSellingCategory: topTenBestSellingCategory,
       });
     } else {
@@ -143,14 +144,14 @@ const bestSellers = async (req, res) => {
         { $limit: 10 },
       ]);
 
-      return res.render("admin/brandBestSelling", {
+      return res.status(statusCode.OK).render("admin/brandBestSelling", {
         topTenBestSellingBrand: topTenBestSellingBrand,
       });
     }
   } catch (error) {
     console.log(`error while finding the best sellers`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 

@@ -2,19 +2,22 @@ require("dotenv").config();
 
 const orders = require("../models/orderModel");
 const transaction = require("../models/onlineTransactionModel");
+const statusCode = require("../utils/statusCodes");
+
 const {
   createRazorPayOrder,
   verifyRazorPaySignature,
 } = require("../utils/razorpayService");
+
 const RAZORPAY_ID_KEY = process.env.RAZORPAY_ID_KEY;
 
 const loadPaymentFailure = async (req, res) => {
   try {
-    return res.status(200).render("user/paymentFailure");
+    return res.status(statusCode.OK).render("user/paymentFailure");
   } catch (error) {
     console.log(`error while loading the payment failure page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -31,19 +34,18 @@ const verifyOnlinePayment = async (req, res) => {
     if (isValidPayment) {
       await transaction.findOneAndUpdate(
         { onlinePaymentOrderId: orderId },
-        { $set: { paymentStatus: "paid" } }
+        { $set: { paymentStatus: "paid" } },
+        { new: true }
       );
       return res.json({
         success: true,
         message: "Online payment verifyed for razorpay",
       });
     } else {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Cannot verify online payment for razorpay",
-        });
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Cannot verify online payment for razorpay",
+      });
     }
   } catch (error) {
     console.log(
@@ -51,12 +53,10 @@ const verifyOnlinePayment = async (req, res) => {
       error.message
     );
 
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Cannot verify online payment for razorpay",
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Cannot verify online payment for razorpay",
+    });
   }
 };
 
@@ -71,16 +71,14 @@ const handleOnlinePaymentFailure = async (req, res) => {
     );
 
     if (!transactionsData) {
-      return res
-        .status(404)
-        .json({
-          message: "Cannot find transaction data for cancellation",
-          success: false,
-        });
+      return res.status(statusCode.NOT_FOUND).json({
+        message: "Cannot find transaction data for cancellation",
+        success: false,
+      });
     }
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ message: "Payment status updated to failed", success: true });
   } catch (error) {
     console.log(
@@ -88,12 +86,10 @@ const handleOnlinePaymentFailure = async (req, res) => {
       error.message
     );
 
-    return res
-      .status(500)
-      .json({
-        message: "Error while updating the onlinepayment status to failure`",
-        success: false,
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      message: "Error while updating the onlinepayment status to failure`",
+      success: false,
+    });
   }
 };
 const loadRetryOrderCheckout = async (req, res) => {
@@ -103,7 +99,7 @@ const loadRetryOrderCheckout = async (req, res) => {
     const orderData = await orders.findOne({ _id: orderId });
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .render("user/retryCheckout", { orderData: orderData });
   } catch (error) {
     console.log(
@@ -111,7 +107,7 @@ const loadRetryOrderCheckout = async (req, res) => {
       error.message
     );
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 const retryOrderPayment = async (req, res) => {
@@ -124,7 +120,7 @@ const retryOrderPayment = async (req, res) => {
     ]);
 
     if (!orderData || !transactionsDataOfTheOrder) {
-      return res.status(404).json({
+      return res.status(statusCode.NOT_FOUND).json({
         success: false,
         message: "Order or transaction not found",
       });
@@ -137,7 +133,7 @@ const retryOrderPayment = async (req, res) => {
       razorPayOrder = await createRazorPayOrder(totalAmount);
 
       if (!razorPayOrder || !razorPayOrder.id) {
-        return res.status(500).json({
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: "Failed to create Razorpay order",
         });
@@ -148,12 +144,12 @@ const retryOrderPayment = async (req, res) => {
       transactionsDataOfTheOrder.paymentStatus = "paid";
     }
 
-    const [changedOrderData, updatedTransactionData] = await Promise.all([
+    const [changedOrderData, _] = await Promise.all([
       orderData.save(),
       transactionsDataOfTheOrder.save(),
     ]);
 
-    return res.status(200).json({
+    return res.status(statusCode.OK).json({
       success: true,
       message: "Razor pay order created",
       RAZORPAY_ID_KEY: RAZORPAY_ID_KEY,
@@ -165,12 +161,10 @@ const retryOrderPayment = async (req, res) => {
       `error while changing the status of the payment on retry order`,
       error.message
     );
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to retry the payment through Razorpay",
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Failed to retry the payment through Razorpay",
+    });
   }
 };
 

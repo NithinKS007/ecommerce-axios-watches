@@ -3,6 +3,7 @@ const cart = require("../models/cartModel");
 const coupons = require("../models/couponModel");
 
 const priceSummary = require("../utils/priceSummary");
+const statusCode = require("../utils/statusCodes")
 
 const loadCart = async (req, res) => {
   try {
@@ -16,7 +17,7 @@ const loadCart = async (req, res) => {
       ]);
 
     if (!cartDetails) {
-      return res.status(404).render("user/404");
+      return res.status(statusCode.NOT_FOUND).render("user/404");
     }
     const usedCoupons = isAlreadyUsedCoupons.map((coupon) => coupon.couponCode);
 
@@ -38,7 +39,7 @@ const loadCart = async (req, res) => {
     ).length;
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .render("user/cart", {
         cartDetails,
         finalPrice,
@@ -49,7 +50,7 @@ const loadCart = async (req, res) => {
   } catch (error) {
     console.log(`error while loading the cart page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -70,7 +71,7 @@ const addToCart = async (req, res) => {
     ]);
 
     if (!productDetails) {
-      return res.status(404).json({
+      return res.status(statusCode.NOT_FOUND).json({
         success: false,
         message: "Product not found",
       });
@@ -93,14 +94,14 @@ const addToCart = async (req, res) => {
       const savedCartData = await cartItem.save();
 
       if (!savedCartData) {
-        return res.status(404).json({
+        return res.status(statusCode.NOT_FOUND).json({
           success: false,
 
           message: "Cannot save the cart data",
         });
       }
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message:
           "New cart created for the user and added the product to items array successfully",
@@ -120,7 +121,7 @@ const addToCart = async (req, res) => {
         }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message:
           "product added to items array for the existing cart successfully",
@@ -132,7 +133,7 @@ const addToCart = async (req, res) => {
       error.message
     );
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error while adding product to cart",
     });
@@ -167,7 +168,7 @@ const removeFromCart = async (req, res) => {
     const isEmpty = isCartEmpty.items.length === 0;
 
     if (deletedProductFromCart) {
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "Item deleted from the cart successfully",
         isEmpty: isEmpty,
@@ -179,7 +180,7 @@ const removeFromCart = async (req, res) => {
         couponCode,
       });
     } else {
-      return res.status(500).json({
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Something went wrong while deleting item from the cart",
       });
@@ -187,7 +188,7 @@ const removeFromCart = async (req, res) => {
   } catch (error) {
     console.log("Error while removing an item from the cart", error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Something went wrong while deleting item from the cart",
     });
@@ -206,14 +207,14 @@ const updateQuantityFromCart = async (req, res) => {
     );
 
     if (!productItem) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(statusCode.NOT_FOUND).json({ message: "Product not found" });
     }
 
     const productStock = productItem.stock;
 
     if (Number(quantity) > productStock) {
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: `Only ${productStock} is available`,
           quantity: false,
@@ -240,7 +241,7 @@ const updateQuantityFromCart = async (req, res) => {
     );
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({
         success: true,
         updatedItem,
@@ -249,7 +250,7 @@ const updateQuantityFromCart = async (req, res) => {
         discount: discount,
       });
   } catch (error) {
-    return res.status(500).json({ message: "Error updating quantity" });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Error updating quantity" });
   }
 };
 
@@ -263,7 +264,7 @@ const updatedSelectedItems = async (req, res) => {
 
     if (!cartDetails) {
       return res
-        .status(400)
+        .status(statusCode.BAD_REQUEST)
         .json({ message: "No selected items in the cart", success: false });
     }
 
@@ -289,7 +290,7 @@ const updatedSelectedItems = async (req, res) => {
     );
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({
         message: "Cart updated successfully",
         finalPrice: finalPrice,
@@ -301,7 +302,7 @@ const updatedSelectedItems = async (req, res) => {
     console.log(`error while updating the selection `, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: `Error while selecting items in the cart` });
   }
 };

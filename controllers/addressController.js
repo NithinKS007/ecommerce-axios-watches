@@ -1,31 +1,32 @@
 const users = require("../models/userModel");
 const userAddress = require("../models/addressModel");
+const statusCode = require("../utils/statusCodes");
 
 const loadAddress = async (req, res) => {
-  const currentUser = req?.currentUser;
-
-  const addressDetails = await userAddress
-    .find({ userId: currentUser?._id })
-    .sort({ createdAt: -1 });
-
   try {
-    return res.status(200).render("user/address", { addressDetails });
+    const currentUser = req?.currentUser;
+    const addressDetails = await userAddress
+      .find({ userId: currentUser?._id })
+      .sort({ createdAt: -1 });
+
+    return res.status(statusCode.OK).render("user/address", { addressDetails });
   } catch (error) {
     console.log(`error while loading the address page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
 const loadAddAddress = async (req, res) => {
   try {
-    return res.status(200).render("user/addAddress");
+    return res.status(statusCode.OK).render("user/addAddress");
   } catch (error) {
     console.log(`error while loading the address adding page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
+
 const addAddress = async (req, res) => {
   const {
     name,
@@ -39,6 +40,7 @@ const addAddress = async (req, res) => {
     altPhone,
     email,
     addressType,
+    sourcePage,
   } = req.body;
 
   const currentUser = req?.currentUser;
@@ -67,17 +69,12 @@ const addAddress = async (req, res) => {
     );
 
     if (addressData && pushAddressIntoUser) {
-      const sourcePage = req.body.sourcePage;
-      if (sourcePage === "checkout") {
-        return res.redirect("/checkout");
-      } else {
-        return res.redirect("/address");
-      }
+      return res.redirect(sourcePage === "checkout" ? "/checkout" : "/address");
     }
   } catch (error) {
     console.log(`error while adding the address`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -86,7 +83,7 @@ const editAddress = async (req, res) => {
 
   if (!updatedAddress || !id) {
     return res
-      .status(400)
+      .status(statusCode.BAD_REQUEST)
       .json({ success: false, message: "Address details are required" });
   }
   try {
@@ -94,7 +91,7 @@ const editAddress = async (req, res) => {
 
     if (!address) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "address not found" });
     }
 
@@ -104,7 +101,7 @@ const editAddress = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json({
+    return res.status(statusCode.OK).json({
       message: "Address edited successfully",
       success: true,
       updatedUserAddress: updatedUserAddress,
@@ -113,7 +110,7 @@ const editAddress = async (req, res) => {
     console.log(`error while editing the address`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Error while editing the address", success: false });
   }
 };
@@ -134,14 +131,14 @@ const removeAddress = async (req, res) => {
     });
 
     if (deletedAddressFromCollection) {
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "Item deleted from the address collection successfully",
         isAddressEmpty: isAddressEmpty,
         deletedAddressFromCollection: deletedAddressFromCollection,
       });
     } else {
-      return res.status(500).json({
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message:
           "Something went wrong while deleting item from the address collection",
@@ -150,7 +147,7 @@ const removeAddress = async (req, res) => {
   } catch (error) {
     console.log(`error while deleting the address`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message:
         "Something went wrong while deleting item from the address collection",

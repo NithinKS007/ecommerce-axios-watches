@@ -1,3 +1,5 @@
+const statusCode = require("../utils/statusCodes");
+
 module.exports = async (req, res, next) => {
   try {
     const currentUser = req.currentUser;
@@ -16,6 +18,6 @@ module.exports = async (req, res, next) => {
   } catch (error) {
     console.log(`Error while checking user status`, error.message);
 
-    res.status(500).send("Internal server error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };

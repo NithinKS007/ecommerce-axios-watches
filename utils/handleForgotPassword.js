@@ -1,10 +1,10 @@
 const crypto = require("crypto");
 const { sendEmail } = require("./emailService");
+require("dotenv").config();
 
 const secureToken = async (token) => {
   try {
-    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    return tokenHash;
+    return crypto.createHash("sha256").update(token).digest("hex");
   } catch (error) {
     console.log(`Error hashing the token:`, error.message);
     throw new Error("Token hashing failed");
@@ -12,7 +12,7 @@ const secureToken = async (token) => {
 };
 
 const sendToEmailResetPassword = async (email, token) => {
-  const productionUrl = `http://localhost:7000`;
+  const productionUrl = `${process.env.PRODUCTION_URL}`;
   const resetURL = `${productionUrl}/resetPassword?token=${token}`;
 
   const subject = "Password Reset";
@@ -25,7 +25,20 @@ const sendToEmailResetPassword = async (email, token) => {
   await sendEmail(email, subject, text);
 };
 
+const RandomTokenGen = async () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+const generateSignature = async (text, secret) => {
+  return crypto
+    .createHmac("sha256", secret)
+    .update(text)
+    .digest("hex");
+};
+
 module.exports = {
   sendToEmailResetPassword,
   secureToken,
+  RandomTokenGen,
+  generateSignature,
 };

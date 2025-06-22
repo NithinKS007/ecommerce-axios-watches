@@ -6,6 +6,7 @@ const categories = require("../models/categoryModel");
 const cart = require("../models/cartModel");
 const orders = require("../models/orderModel");
 const wishList = require("../models/wishList");
+const statusCode = require("../utils/statusCodes")
 
 const loadHome = async (req, res) => {
   let pageNumber = parseInt(req.query.page) || 1;
@@ -50,7 +51,7 @@ const loadHome = async (req, res) => {
     const successMessage = req.session.successMessage;
     req.session.successMessage = null;
 
-    return res.status(200).render("user/home", {
+    return res.status(statusCode.OK).render("user/home", {
       productsArray,
       successMessage,
       totalPages,
@@ -70,7 +71,7 @@ const loadHome = async (req, res) => {
       error.message
     );
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -278,7 +279,7 @@ const loadShowCase = async (req, res) => {
     const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
-    return res.status(200).render("user/showCase", {
+    return res.status(statusCode.OK).render("user/showCase", {
       categoriesArray,
       brandArray,
       productsArray,
@@ -290,7 +291,7 @@ const loadShowCase = async (req, res) => {
   } catch (error) {
     console.log(`error while loading mens page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -380,13 +381,13 @@ const advancedSearch = async (req, res) => {
     }
 
     console.log(filterResult, "fiiter");
-    return res.status(200).json({
+    return res.status(statusCode.OK).json({
       message: "Data received for filtering",
       success: true,
       data: filterResult,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       message: "Error occurred during search",
       success: false,
       error: error.message,
@@ -470,7 +471,7 @@ const searchProducts = async (req, res) => {
       .populate("brand")
       .populate("category");
 
-    return res.status(200).render("user/showCase", {
+    return res.status(statusCode.OK).render("user/showCase", {
       productsArray,
       categoriesArray,
       brandArray,
@@ -483,7 +484,7 @@ const searchProducts = async (req, res) => {
   } catch (error) {
     console.log(`Error while searching the products`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -521,10 +522,10 @@ const loadProductDetails = async (req, res) => {
       .populate("brand");
 
     if (!productDetails) {
-      return res.status(404).send("product not found");
+      return res.status(statusCode.NOT_FOUND).send("product not found");
     }
 
-    return res.status(200).render("user/productDetails", {
+    return res.status(statusCode.OK).render("user/productDetails", {
       productDetails,
       relatedProducts,
       existingCartItem,
@@ -533,7 +534,7 @@ const loadProductDetails = async (req, res) => {
   } catch (error) {
     console.log(`error while loading the product details page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 

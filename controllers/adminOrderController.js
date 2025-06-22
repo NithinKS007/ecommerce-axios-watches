@@ -8,6 +8,7 @@ const returnUserOrder = require("../models/returnOrderModel");
 const wallet = require("../models/walletModel");
 
 const getEnumValues = require("../utils/getEnumValues");
+const statusCode = require("../utils/statusCodes");
 
 const loadOrderList = async (req, res) => {
   const statusFilter = req.query.status || "";
@@ -69,7 +70,7 @@ const loadOrderList = async (req, res) => {
     const totalPages = Math.max(1, Math.ceil(totalOrders / perPageData));
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
-    return res.status(200).render("admin/orderList", {
+    return res.status(statusCode.OK).render("admin/orderList", {
       orderData: orderData,
       totalPages: totalPages,
       currentPage: pageNumber,
@@ -79,7 +80,7 @@ const loadOrderList = async (req, res) => {
   } catch (error) {
     console.log("Error while loading the orders:", error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -98,14 +99,14 @@ const loadOrderDetailsPage = async (req, res) => {
     const [userOrderDataDetails, transactionDetailsOftheOnlinePaymentOrder] =
       await Promise.all([userOrderDataPromise, transactionDetailsPromise]);
 
-    return res.render("admin/orderDetailsPage", {
+    return res.status(statusCode.OK).render("admin/orderDetailsPage", {
       userOrderDataDetails,
       transactionDetailsOftheOnlinePaymentOrder,
     });
   } catch (error) {
     console.log(`Error while rendering the order details page`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -116,13 +117,17 @@ const changeOrderStatus = async (req, res) => {
     const validStatuses = getEnumValues(orders.schema, "orderStatus");
 
     if (!validStatuses.includes(selectedStatus)) {
-      return res.status(400).json({ error: "Invalid order status" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ error: "Invalid order status" });
     }
 
     const order = await orders.findById(orderId);
 
     if (!order) {
-      return res.status(400).json({ message: "Order not found" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Order not found" });
     }
 
     const allItemsCancelled = order.items.every(
@@ -130,12 +135,10 @@ const changeOrderStatus = async (req, res) => {
     );
 
     if (allItemsCancelled) {
-      return res
-        .status(200)
-        .json({
-          message: "User cancelled all products",
-          adminCannotCancel: true,
-        });
+      return res.status(statusCode.OK).json({
+        message: "User cancelled all products",
+        adminCannotCancel: true,
+      });
     }
 
     order.items.forEach((item) => {
@@ -154,7 +157,9 @@ const changeOrderStatus = async (req, res) => {
     ]);
 
     if (!updatedStatusPerItem || !updatedOrder) {
-      return res.status(400).json({ message: "Failed to update order" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Failed to update order" });
     }
 
     if (
@@ -165,7 +170,7 @@ const changeOrderStatus = async (req, res) => {
 
       if (!walletData) {
         return res
-          .status(400)
+          .status(statusCode.BAD_REQUEST)
           .json({ message: "This user doesn't have any wallet" });
       }
 
@@ -200,26 +205,22 @@ const changeOrderStatus = async (req, res) => {
         { new: true }
       );
 
-      return res
-        .status(200)
-        .json({
-          message: "successfully changed the order status",
-          success: true,
-          updatedOrder: updatedOrder,
-        });
-    }
-
-    return res
-      .status(200)
-      .json({
+      return res.status(statusCode.OK).json({
         message: "successfully changed the order status",
         success: true,
         updatedOrder: updatedOrder,
       });
+    }
+
+    return res.status(statusCode.OK).json({
+      message: "successfully changed the order status",
+      success: true,
+      updatedOrder: updatedOrder,
+    });
   } catch (error) {
     console.log(`error while updating the order status`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       message: "error while updating the order status",
       success: false,
     });
@@ -237,8 +238,7 @@ const loadReturnedOrder = async (req, res) => {
     const query = {};
 
     if (searchQuery) {
-      const isValidObjectId = ObjectId.isValid(searchQuery);
-      if (isValidObjectId) {
+      if (ObjectId.isValid(searchQuery)) {
         const searchObjectId = ObjectId.createFromHexString(searchQuery);
         query.$or = [
           { orderId: searchObjectId },
@@ -277,7 +277,7 @@ const loadReturnedOrder = async (req, res) => {
     );
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
-    return res.status(200).render("admin/returnedOrder", {
+    return res.status(statusCode.OK).render("admin/returnedOrder", {
       returnedOrderData,
       totalPages,
       currentPage: pageNumber,
@@ -286,7 +286,7 @@ const loadReturnedOrder = async (req, res) => {
     });
   } catch (error) {
     console.log(`Error while loading returned orders:`, error.message);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -300,7 +300,7 @@ const approveReturn = async (req, res) => {
 
     if (!returnedOrderData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ message: "Return order not found", success: false });
     }
 
@@ -381,19 +381,17 @@ const approveReturn = async (req, res) => {
       );
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "Product return approved",
-        success: true,
-        returnApproved: true,
-        updatedStatus: returnedOrderData.returnProductStatus,
-      });
+    return res.status(statusCode.OK).json({
+      message: "Product return approved",
+      success: true,
+      returnApproved: true,
+      updatedStatus: returnedOrderData.returnProductStatus,
+    });
   } catch (error) {
     console.error(`error while updating the order`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal Server error", success: false });
   }
 };
@@ -408,7 +406,7 @@ const rejectReturn = async (req, res) => {
 
     if (!returnedOrderData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ message: "Return order not found", success: false });
     }
 
@@ -441,19 +439,17 @@ const rejectReturn = async (req, res) => {
 
     await orderData.save();
 
-    return res
-      .status(200)
-      .json({
-        message: "Product return rejected",
-        success: true,
-        returnApproved: false,
-        updatedStatus: returnedOrderData.returnProductStatus,
-      });
+    return res.status(statusCode.OK).json({
+      message: "Product return rejected",
+      success: true,
+      returnApproved: false,
+      updatedStatus: returnedOrderData.returnProductStatus,
+    });
   } catch (error) {
     console.log(`error while updating the order`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal server error", success: false });
   }
 };

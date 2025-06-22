@@ -1,15 +1,13 @@
-const bcrypt = require("bcrypt");
-
 const admin = require("../models/adminModel");
-const securePassword = require("../utils/hashPassword");
+const { securePassword, comparePassword } = require("../utils/hashPassword");
+const statusCode = require("../utils/statusCodes");
 
-const loadLogin = (req, res) => {
+const loadLogin = async (req, res) => {
   try {
-    return res.status(200).render("admin/signin");
+    return res.status(statusCode.OK).render("admin/signin");
   } catch (error) {
     console.log(`cannot load login page of the admin`, error.message);
-
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -31,7 +29,7 @@ const registerAdmin = async (req, res) => {
   } catch (error) {
     console.log(`error while registering admin`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -43,15 +41,15 @@ const verifyAdmin = async (req, res) => {
 
     if (!adminData) {
       return res
-        .status(401)
+        .status(statusCode.UNAUTHORIZED)
         .render("admin/signin", { message: "Admin does not exist" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, adminData.password);
+    const passwordMatch = await comparePassword(password, adminData.password);
 
     if (!passwordMatch) {
       return res
-        .status(401)
+        .status(statusCode.UNAUTHORIZED)
         .render("admin/signin", { message: "Email or password is incorrect" });
     }
 
@@ -59,11 +57,11 @@ const verifyAdmin = async (req, res) => {
 
     req.session.successMessage = "Login successful! Welcome back admin";
 
-    return res.status(200).redirect("/admin/dashboard");
+    return res.status(statusCode.OK).redirect("/admin/dashboard");
   } catch (error) {
     console.log(`error while verifying and finding the admin`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -71,11 +69,11 @@ const isSignout = async (req, res) => {
   try {
     req.session.destroy();
 
-    return res.status(200).redirect("/admin/signin");
+    return res.status(statusCode.OK).redirect("/admin/signin");
   } catch (error) {
     console.log(`error while using the logging out function`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 

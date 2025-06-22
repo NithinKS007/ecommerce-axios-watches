@@ -2,6 +2,7 @@ const categories = require("../models/categoryModel");
 const brands = require("../models/brandModel");
 
 const escapeRegExp = require("../utils/escapeSpecialChars");
+const statusCode = require("../utils/statusCodes");
 
 const loadCategoryBrand = async (req, res) => {
   try {
@@ -11,12 +12,12 @@ const loadCategoryBrand = async (req, res) => {
     ]);
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .render("admin/brandCategoryManagement", { categoriesData, brandsData });
   } catch (error) {
     console.log(`cannot load the category page`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -33,11 +34,13 @@ const addCategoryBrand = async (req, res) => {
 
       await category.save();
 
-      return res.redirect("/admin/brandCategoryManagement");
+      return res
+        .status(statusCode.CREATED)
+        .redirect("/admin/brandCategoryManagement");
     } catch (error) {
       console.log(`error adding the category`, error.message);
 
-      return res.status(500).render("admin/500");
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
     }
   } else if (bName) {
     try {
@@ -47,11 +50,13 @@ const addCategoryBrand = async (req, res) => {
 
       await brand.save();
 
-      return res.redirect("/admin/brandCategoryManagement");
+      return res
+        .status(statusCode.CREATED)
+        .redirect("/admin/brandCategoryManagement");
     } catch (error) {
       console.log(`error adding the brand`, error.message);
 
-      return res.status(500).render("admin/500");
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
     }
   }
 };
@@ -60,12 +65,10 @@ const editCategory = async (req, res) => {
   const { categoryId, name, description } = req.body;
 
   if (!categoryId || !name || !description) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Category ID, name, and description are required",
-      });
+    return res.status(statusCode.BAD_REQUEST).json({
+      success: false,
+      message: "Category id, name, description are required",
+    });
   }
 
   try {
@@ -73,17 +76,18 @@ const editCategory = async (req, res) => {
 
     if (!category) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "Category not found" });
     }
 
     const UpdatedCategory = await categories.findByIdAndUpdate(
       { _id: categoryId },
-      { $set: { name: name, description: description } }
+      { $set: { name: name, description: description } },
+      { new: true }
     );
 
     if (UpdatedCategory) {
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "category successfully edited",
         categoryDetails: UpdatedCategory,
@@ -92,7 +96,7 @@ const editCategory = async (req, res) => {
   } catch (error) {
     console.log(`error while editing the category`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while editing the category",
     });
@@ -104,8 +108,8 @@ const editBrand = async (req, res) => {
 
   if (!brandId || !name) {
     return res
-      .status(400)
-      .json({ success: false, message: "Brand ID and name are required" });
+      .status(statusCode.BAD_REQUEST)
+      .json({ success: false, message: "Brand id and name are required" });
   }
 
   try {
@@ -113,19 +117,18 @@ const editBrand = async (req, res) => {
 
     if (!brand) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "Brand not found" });
     }
 
     const updatedBrand = await brands.findByIdAndUpdate(
       { _id: brandId },
-      { $set: { name: name } }
+      { $set: { name: name } },
+      { new: true }
     );
 
     if (updatedBrand) {
-      console.log(`brand data edited function worked`);
-
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "brand successfully edited",
         brandDetails: updatedBrand,
@@ -134,7 +137,7 @@ const editBrand = async (req, res) => {
   } catch (error) {
     console.log(`error while editing the brand`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while editing the brand",
     });
@@ -149,7 +152,7 @@ const softDeleteCategory = async (req, res) => {
 
     if (!category) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "Category not found" });
     }
 
@@ -160,7 +163,7 @@ const softDeleteCategory = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "category successfully soft deleted",
         categoryId: UpdatedCategory,
@@ -172,7 +175,7 @@ const softDeleteCategory = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "undone category soft deletion",
         categoryId: UpdatedCategory,
@@ -181,7 +184,7 @@ const softDeleteCategory = async (req, res) => {
   } catch (error) {
     console.log(`error while deleting the category`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while  deleting the category",
     });
@@ -196,7 +199,7 @@ const softDeleteBrand = async (req, res) => {
 
     if (!brandData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "Brand not found" });
     }
 
@@ -207,7 +210,7 @@ const softDeleteBrand = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "brand successfully soft deleted",
         brandId: updatedBrand,
@@ -219,7 +222,7 @@ const softDeleteBrand = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "undone brand soft deletion",
         brandId: updatedBrand,
@@ -228,7 +231,7 @@ const softDeleteBrand = async (req, res) => {
   } catch (error) {
     console.log(`error while deleting the brand`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while deleting the brand",
     });
@@ -252,17 +255,19 @@ const categoryExists = async (req, res) => {
 
     if (exist) {
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({ message: "Category already exists", exists: true });
     }
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ message: "Category does not exist", exists: false });
   } catch (error) {
     console.log("Error while checking the existing category:", error.message);
 
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
   }
 };
 
@@ -282,17 +287,19 @@ const brandExists = async (req, res) => {
 
     if (exists) {
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({ message: "Brand already exists", exists: true });
     }
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ message: "Brand does not exist", exists: false });
   } catch (error) {
     console.log(`error while checking the existing brand`, error.message);
 
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
   }
 };
 

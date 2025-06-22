@@ -1,6 +1,7 @@
 const cart = require("../models/cartModel");
 const priceSummary = require("../utils/priceSummary");
 const coupons = require("../models/couponModel");
+const statusCode = require("../utils/statusCodes")
 
 const applyCoupon = async (req, res) => {
   try {
@@ -20,7 +21,7 @@ const applyCoupon = async (req, res) => {
 
       if (message) {
         return res
-          .status(400)
+          .status(statusCode.BAD_REQUEST)
           .json({ message, success: false, finalPrice, discount, subTotal });
       }
 
@@ -30,7 +31,7 @@ const applyCoupon = async (req, res) => {
       );
 
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: "coupon successfully added",
           success: true,
@@ -40,14 +41,14 @@ const applyCoupon = async (req, res) => {
         });
     } else {
       return res
-        .status(400)
+        .status(statusCode.BAD_REQUEST)
         .json({ message: "Invalid coupon code", success: false });
     }
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal Server error", success: false });
   }
 };
@@ -71,7 +72,7 @@ const removeCoupon = async (req, res) => {
       );
 
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: "coupon successfully removed",
           success: true,
@@ -80,13 +81,13 @@ const removeCoupon = async (req, res) => {
           subTotal,
         });
     } else {
-      return res.status(400).json({ message: "No cart found", success: false });
+      return res.status(statusCode.BAD_REQUEST).json({ message: "No cart found", success: false });
     }
   } catch (error) {
     console.log(`error while removing the coupon`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal Server error", success: false });
   }
 };
@@ -130,7 +131,7 @@ const loadCoupon = async (req, res) => {
     const totalPages = Math.max(1, Math.ceil(totalCoupons / perPageData));
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
-    return res.status(200).render("admin/couponList", {
+    return res.status(statusCode.OK).render("admin/couponList", {
       couponsData: couponsData,
       totalPages: totalPages,
       currentPage: pageNumber,
@@ -139,16 +140,16 @@ const loadCoupon = async (req, res) => {
     });
   } catch (error) {
     console.log("Error while loading the coupons:", error.message);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
 const loadAddCoupon = async (req, res) => {
   try {
-    return res.status(200).render("admin/addCoupon");
+    return res.status(statusCode.OK).render("admin/addCoupon");
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -176,14 +177,14 @@ const addCoupon = async (req, res) => {
 
     const couponData = coupon.save();
     if (couponData) {
-      return res.status(200).redirect("/admin/addCoupon");
+      return res.status(statusCode.OK).redirect("/admin/addCoupon");
     }
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
 
-    return res.status(500).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
@@ -195,7 +196,7 @@ const activateDeactivateCoupon = async (req, res) => {
 
     if (!couponData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ success: false, message: "Coupon not found" });
     }
 
@@ -206,7 +207,7 @@ const activateDeactivateCoupon = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "coupon status set to false",
         couponId: updatedCouponStatus,
@@ -218,7 +219,7 @@ const activateDeactivateCoupon = async (req, res) => {
         { new: true }
       );
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "coupon status set to true",
         couponId: updatedCouponStatus,
@@ -229,7 +230,7 @@ const activateDeactivateCoupon = async (req, res) => {
       `error while while blocking or unblocking the coupon`,
       error.message
     );
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "error while updating the coupon status",
     });

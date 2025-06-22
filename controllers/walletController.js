@@ -1,4 +1,5 @@
 const wallet = require("../models/walletModel");
+const statusCode = require("../utils/statusCodes");
 
 const loadWallet = async (req, res) => {
   let pageNumber = parseInt(req.query.page) || 1;
@@ -28,7 +29,7 @@ const loadWallet = async (req, res) => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(skip, skip + perPageData);
 
-    return res.status(200).render("user/wallet", {
+    return res.status(statusCode.OK).render("user/wallet", {
       walletData,
       transactionsData,
       totalPages,
@@ -37,7 +38,7 @@ const loadWallet = async (req, res) => {
   } catch (error) {
     console.log(`Error while loading the wallet page:`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 

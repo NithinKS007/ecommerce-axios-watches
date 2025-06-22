@@ -1,23 +1,24 @@
-const bcrypt = require("bcrypt");
 const otpManager = require("../utils/otpManager");
-const crypto = require("crypto");
 
 const users = require("../models/userModel");
 const OTP = require("../models/otpModel");
+const statusCode = require("../utils/statusCodes");
 
 const {
   sendToEmailResetPassword,
   secureToken,
+  RandomTokenGen,
 } = require("../utils/handleForgotPassword");
-const securePassword = require("../utils/hashPassword");
+
+const { securePassword, comparePassword } = require("../utils/hashPassword");
 
 const loadRegister = async (req, res) => {
   try {
-    return res.status(200).render("user/signup");
+    return res.status(statusCode.OK).render("user/signup");
   } catch (error) {
     console.log(`cannot render signup page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -28,11 +29,9 @@ const generateOtp = async (req, res) => {
   const existingUser = await users.findOne({ email: email });
 
   if (existingUser) {
-    return res
-      .status(200)
-      .render("user/signin", {
-        message: "This email already has an account on this website.",
-      });
+    return res.status(statusCode.OK).render("user/signin", {
+      message: "This email already has an account on this website.",
+    });
   }
 
   try {
@@ -46,14 +45,14 @@ const generateOtp = async (req, res) => {
 
     await otpManager.sendOtpEmail(email, otp);
 
-    return res.status(200).render("user/otpVerification");
+    return res.status(statusCode.OK).render("user/otpVerification");
   } catch (error) {
     console.log(
       `cannot render otpverification page or generate otp`,
       error.message
     );
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -62,7 +61,7 @@ const resendOtp = async (req, res) => {
 
   if (!email) {
     return res
-      .status(400)
+      .status(statusCode.BAD_REQUEST)
       .json({ success: false, message: "Email is required" });
   }
 
@@ -78,17 +77,15 @@ const resendOtp = async (req, res) => {
     await otpManager.sendOtpEmail(email, otp);
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ success: true, message: "OTP send to your email" });
   } catch (error) {
     console.log(`error while resending the otp`, error.message);
 
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error Resending OTP. Please try again",
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Error Resending OTP. Please try again",
+    });
   }
 };
 
@@ -117,39 +114,35 @@ const verifyOtp = async (req, res) => {
 
       if (userData) {
         return res
-          .status(200)
+          .status(statusCode.OK)
           .json({ success: true, message: "Registration successfull" });
       } else {
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Something went wrong while registering",
-          });
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: "Something went wrong while registering",
+        });
       }
     } else {
       return res
-        .status(401)
+        .status(statusCode.UNAUTHORIZED)
         .json({ success: false, message: "Invalid OTP or Expired" });
     }
   } catch (error) {
     console.log(`otp verification is not working`, error.message);
 
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error occured during OTP verification",
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Error occured during OTP verification",
+    });
   }
 };
 const loadsignin = async (req, res) => {
   try {
-    return res.status(200).render("user/signin");
+    return res.status(statusCode.OK).render("user/signin");
   } catch (error) {
     console.log(`error while loading the login page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -160,19 +153,17 @@ const verifySignin = async (req, res) => {
     const userData = await users.findOne({ email: email, isBlocked: false });
 
     if (!userData) {
-      return res
-        .status(401)
-        .render("user/signin", {
-          message: "No user found or you can't access",
-        });
+      return res.status(statusCode.UNAUTHORIZED).render("user/signin", {
+        message: "No user found or you can't access",
+      });
     }
 
     if (!userData?.password) {
       return res
-        .status(401)
+        .status(statusCode.UNAUTHORIZED)
         .render("user/signin", { message: "Try another login method" });
     }
-    const passwordMatch = await bcrypt.compare(password, userData?.password);
+    const passwordMatch = await comparePassword(password, userData?.password);
 
     if (!passwordMatch) {
       return res.render("user/signin", {
@@ -184,11 +175,11 @@ const verifySignin = async (req, res) => {
 
     req.session.successMessage = `Login successful! Welcome back, ${userData.fname}`;
 
-    return res.status(200).redirect("/home");
+    return res.status(statusCode.OK).redirect("/home");
   } catch (error) {
     console.log(`error in the signin function`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -198,25 +189,27 @@ const loadUserLogout = async (req, res) => {
       if (err) {
         console.log(`failed to destroy session`, err.message);
 
-        return res.status(500).send("failed to logout");
+        return res
+          .status(statusCode.INTERNAL_SERVER_ERROR)
+          .send("failed to logout");
       }
 
-      return res.status(200).redirect("/");
+      return res.status(statusCode.OK).redirect("/");
     });
   } catch (error) {
     console.log(`error while logging out`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
 const loadForgotPassword = async (req, res) => {
   try {
-    return res.status(200).render("user/forgotPassword");
+    return res.status(statusCode.OK).render("user/forgotPassword");
   } catch (error) {
     console.log(`error while resetting the password`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -230,16 +223,16 @@ const handleForgotPassword = async (req, res) => {
 
     if (!userData) {
       return res
-        .status(400)
+        .status(statusCode.BAD_REQUEST)
         .json({ message: "No user found with that email", success: false });
     }
     if (userData.googleId) {
       return res
-        .status(400)
+        .status(statusCode.BAD_REQUEST)
         .json({ message: "Try login using google", success: false });
     }
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = await RandomTokenGen()
     const hashedToken = await secureToken(token);
 
     userData.resetPasswordToken = hashedToken;
@@ -251,13 +244,13 @@ const handleForgotPassword = async (req, res) => {
     await sendToEmailResetPassword(userMail, token);
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ message: "Password reset email sent", success: true });
   } catch (error) {
     console.log(`error while changing the password`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal server error", success: false });
   }
 };
@@ -277,11 +270,11 @@ const loadResetPassword = async (req, res) => {
       return res.status(404).render("user/404");
     }
 
-    return res.status(200).render("user/resetPassword");
+    return res.status(statusCode.OK).render("user/resetPassword");
   } catch (error) {
     console.log(`error while loading the reset password page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -291,19 +284,17 @@ const ResetPassword = async (req, res) => {
 
     if (password !== confirmPassword) {
       return res
-        .status(400)
+        .status(statusCode.BAD_REQUEST)
         .json({ message: "Passwords do not match", success: false });
     }
 
     const email = req.session.forgotPasswordEmail;
 
     if (!email) {
-      return res
-        .status(400)
-        .json({
-          message: "Session has expired. Please request a new password reset.",
-          success: false,
-        });
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Session has expired. Please request a new password reset.",
+        success: false,
+      });
     }
 
     const hashedToken = await secureToken(token);
@@ -315,12 +306,10 @@ const ResetPassword = async (req, res) => {
     });
 
     if (!userData) {
-      return res
-        .status(400)
-        .json({
-          message: "Password reset token is invalid or has expired",
-          success: false,
-        });
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Password reset token is invalid or has expired",
+        success: false,
+      });
     }
 
     const newPasswordHash = await securePassword(password);
@@ -333,17 +322,15 @@ const ResetPassword = async (req, res) => {
 
     req.session.forgotPasswordEmail = undefined;
 
-    return res
-      .status(200)
-      .json({
-        message: "Your password has been reset successfully",
-        success: true,
-      });
+    return res.status(statusCode.OK).json({
+      message: "Your password has been reset successfully",
+      success: true,
+    });
   } catch (error) {
     console.log(`error while resetting the password`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Error while resetting the password", success: false });
   }
 };

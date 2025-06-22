@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const users = require("../models/userModel");
+const statusCode = require("../utils/statusCodes")
 
 const loadUserProfile = async (req, res) => {
   try {
@@ -8,14 +9,14 @@ const loadUserProfile = async (req, res) => {
     const userData = await users.findById(currentUser?._id);
 
     if (!userData) {
-      return res.status(404).render("user/404");
+      return res.status(statusCode.NOT_FOUND).render("user/404");
     }
 
-    return res.status(200).render("user/profile", { userData: userData });
+    return res.status(statusCode.OK).render("user/profile", { userData: userData });
   } catch (error) {
     console.log(`error while loading user profile`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 const editProfile = async (req, res) => {
@@ -26,7 +27,7 @@ const editProfile = async (req, res) => {
 
     if (!userData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ message: "User not found", success: false });
     }
 
@@ -45,13 +46,13 @@ const editProfile = async (req, res) => {
     );
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .json({ message: "Your profile edited successfully", success: true });
   } catch (error) {
     console.log(`Error while editing the user profile:`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({
         message: "An error occurred while editing your profile",
         success: false,
@@ -72,7 +73,7 @@ const editPassword = async (req, res) => {
 
     if (!userData) {
       return res
-        .status(404)
+        .status(statusCode.NOT_FOUND)
         .json({ message: "User not found", success: false });
     }
 
@@ -83,7 +84,7 @@ const editPassword = async (req, res) => {
 
     if (!passwordMatch) {
       return res
-        .status(401)
+        .status(statusCode.UNAUTHORIZED)
         .json({
           message: "Incorrect Current Password",
           success: false,
@@ -102,7 +103,7 @@ const editPassword = async (req, res) => {
 
     if (updatedPassword && hashedNewPassword) {
       return res
-        .status(200)
+        .status(statusCode.OK)
         .json({
           message: "Your password updated successfully",
           success: true,
@@ -113,7 +114,7 @@ const editPassword = async (req, res) => {
     console.log(`Error while editing the password`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "Error while updating the passoword", success: false });
   }
 };

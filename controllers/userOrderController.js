@@ -14,6 +14,7 @@ const wallet = require("../models/walletModel");
 const { createRazorPayOrder } = require("../utils/razorpayService");
 const priceSummary = require("../utils/priceSummary");
 const getEnumValues = require("../utils/getEnumValues");
+const statusCode = require("../utils/statusCodes");
 
 const RAZORPAY_ID_KEY = process.env.RAZORPAY_ID_KEY;
 
@@ -37,20 +38,18 @@ const loadCheckout = async (req, res) => {
       couponCode
     );
 
-    return res
-      .status(200)
-      .render("user/checkout", {
-        selectedItems,
-        address,
-        finalPrice,
-        subTotal,
-        discount,
-        couponCode,
-      });
+    return res.status(statusCode.OK).render("user/checkout", {
+      selectedItems,
+      address,
+      finalPrice,
+      subTotal,
+      discount,
+      couponCode,
+    });
   } catch (error) {
     console.log(`error while loading the checkout page`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -61,12 +60,12 @@ const loadPlaceOrder = async (req, res) => {
       .findOne({ user: currentUser._id })
       .sort({ createdAt: -1 });
     return res
-      .status(200)
+      .status(statusCode.OK)
       .render("user/placeOrder", { lastOrderPlacedId: lastOrderPlaced._id });
   } catch (error) {
     console.log(`Error while loading the place order page:`, error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -107,7 +106,7 @@ const loadOrders = async (req, res) => {
       };
     });
 
-    return res.status(200).render("user/orders", {
+    return res.status(statusCode.OK).render("user/orders", {
       orderData: orderDataWithTransactions,
       totalPages: totalPages,
       currentPage: pageNumber,
@@ -115,7 +114,7 @@ const loadOrders = async (req, res) => {
   } catch (error) {
     console.log("Error while loading the orders page:", error.message);
 
-    return res.status(500).render("user/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
 
@@ -124,7 +123,7 @@ const placeOrder = async (req, res) => {
     const currentUser = req.currentUser;
 
     if (!currentUser) {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "User not found",
       });
@@ -133,9 +132,9 @@ const placeOrder = async (req, res) => {
     const { paymentMethod, addressId, couponCode } = req.body;
 
     if (!addressId) {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
-        message: "Address ID is required",
+        message: "Address id is required",
       });
     }
 
@@ -158,14 +157,14 @@ const placeOrder = async (req, res) => {
       await priceSummary(cartData, couponCode);
 
     if (finalPrice > 1000 && paymentMethod === "cashOnDelivery") {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "Cash on delivery only available for upto 1000Rs purchase.",
       });
     }
 
     if (paymentMethod === "wallet" && walletBalance < finalPrice) {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "Insufficient wallet balance",
       });
@@ -174,14 +173,15 @@ const placeOrder = async (req, res) => {
     if (discount > 0 && couponCode) {
       await coupons.findOneAndUpdate(
         { couponCode },
-        { $addToSet: { userBy: currentUser._id } }
+        { $addToSet: { userBy: currentUser._id } },
+        { new: true }
       );
     }
     const isSelectedItemsOnly = cartData.items.filter((item) => {
       return item.isSelected;
     });
     if (isSelectedItemsOnly.length === 0 || finalPrice === 0) {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "Something went wrong please try again",
       });
@@ -239,7 +239,7 @@ const placeOrder = async (req, res) => {
       try {
         razorPayOrder = await createRazorPayOrder(finalPrice);
         if (!razorPayOrder || !razorPayOrder?.id) {
-          return res.status(500).json({
+          return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Failed to create Razorpay order",
           });
@@ -248,7 +248,7 @@ const placeOrder = async (req, res) => {
       } catch (error) {
         console.log(`Error creating Razorpay order: ${error.message}`);
         console.log(`Error creating Razorpay order: ${error}`);
-        return res.status(500).json({
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: "Failed to process payment through Razorpay",
         });
@@ -310,7 +310,7 @@ const placeOrder = async (req, res) => {
       ]);
 
       if (paymentMethod === "razorPay") {
-        return res.status(200).json({
+        return res.status(statusCode.OK).json({
           success: true,
           message: "Razor pay order created",
           RAZORPAY_ID_KEY: RAZORPAY_ID_KEY,
@@ -319,12 +319,12 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      return res.status(200).json({
+      return res.status(statusCode.OK).json({
         success: true,
         message: "Order placed successfully",
       });
     } else {
-      return res.status(500).json({
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to place order",
       });
@@ -332,7 +332,7 @@ const placeOrder = async (req, res) => {
   } catch (error) {
     console.log(`error while placing the order`, error.message);
 
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Something went wrong please try again",
     });
@@ -358,21 +358,19 @@ const cancelOrder = async (req, res) => {
     const validStatuses = getEnumValues(orders.schema, "orderStatus");
 
     if (!validStatuses.includes(orderStatus)) {
-      return res.status(400).json({ message: "Invalid order status" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Invalid order status" });
     }
 
     const orderIdOfTheOrder = ObjectId.createFromHexString(orderId);
 
-    const order = await orders.findOne({ _id: orderIdOfTheOrder });
+    const [order, walletData] = await Promise.all([
+      orders.findOne({ _id: orderIdOfTheOrder }),
+      wallet.findOne({ userId: currentUser._id }),
+    ]);
 
-    //Calculating the refund amount for the user's wallet by subtracting the discount from the total order value after canceling the entire order
-
-    const walletData = await wallet.findOne({ userId: currentUser._id });
-
-    const { totalAmount } = await orders.findOne(
-      { _id: orderIdOfTheOrder },
-      { _id: 0, totalAmount: 1 }
-    );
+    const { totalAmount } = order || {};
 
     const anyNotDelivered = order.items.some(
       (item) => item.orderProductStatus !== "delivered"
@@ -430,20 +428,20 @@ const cancelOrder = async (req, res) => {
         }
       }
 
-      return res
-        .status(200)
-        .json({
-          message: "order cancelled successfully",
-          orderNotDelivered: true,
-        });
+      return res.status(statusCode.OK).json({
+        message: "order cancelled successfully",
+        orderNotDelivered: true,
+      });
     }
 
-    return res.status(200).json({ message: "Order status is delivered" });
+    return res
+      .status(statusCode.OK)
+      .json({ message: "Order status is delivered" });
   } catch (error) {
     console.log(`Error while canceling the order`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: "error while canceling the whole order" });
   }
 };
@@ -452,7 +450,7 @@ const cancelOrderProduct = async (req, res) => {
   const currentUser = req.currentUser;
 
   if (!currentUser) {
-    return res.status(400).json({
+    return res.status(statusCode.BAD_REQUEST).json({
       success: false,
       message: "User not found",
     });
@@ -477,7 +475,9 @@ const cancelOrderProduct = async (req, res) => {
     );
 
     if (!validStatuses.includes(orderProductStatus)) {
-      return res.status(400).json({ message: "Invalid order product status" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Invalid order product status" });
     }
 
     const orderIdOfTheItem = ObjectId.createFromHexString(itemId);
@@ -492,7 +492,6 @@ const cancelOrderProduct = async (req, res) => {
       );
 
       if (updatedProductStatus.modifiedCount > 0) {
-        //Finding the data for adding money to the wallet when canceling each individual product
 
         const orderData = await orders.findById(orderIdOfTheCart);
         const { subTotalAmount, discountAmount, items } = orderData;
@@ -546,7 +545,6 @@ const cancelOrderProduct = async (req, res) => {
           );
         }
 
-        // Update stock quantity after canceling
         const orderDataOfTheProduct = await orders.aggregate([
           { $match: { _id: orderIdOfTheCart } },
           { $unwind: "$items" },
@@ -585,34 +583,30 @@ const cancelOrderProduct = async (req, res) => {
         );
 
         if (updateStockQuantityAfterCancel) {
-          return res
-            .status(200)
-            .json({
-              message: "product status updated successfully",
-              success: true,
-              updatedProductStatus: updatedProductStatus,
-              returnStatus: false,
-              allOrderCancelled: allOrderCancelled,
-            });
+          return res.status(statusCode.OK).json({
+            message: "product status updated successfully",
+            success: true,
+            updatedProductStatus: updatedProductStatus,
+            returnStatus: false,
+            allOrderCancelled: allOrderCancelled,
+          });
         }
       }
     } else if (orderProductStatus === "delivered") {
-      return res
-        .status(200)
-        .json({
-          message: "Product already delivered , return only",
-          returnStatus: true,
-        });
+      return res.status(statusCode.OK).json({
+        message: "Product already delivered , return only",
+        returnStatus: true,
+      });
     }
 
     return res
-      .status(400)
+      .status(statusCode.BAD_REQUEST)
       .json({ message: "cannot change status", success: false });
   } catch (error) {
     console.log(`Error while canceling the product`, error.message);
 
     return res
-      .status(500)
+      .status(statusCode.INTERNAL_SERVER_ERROR)
       .json({ message: `Error while canceling the product` });
   }
 };
@@ -621,7 +615,7 @@ const returnProductOrder = async (req, res) => {
   const currentUser = req.currentUser;
 
   if (!currentUser) {
-    return res.status(400).json({
+    return res.status(statusCode.BAD_REQUEST).json({
       success: false,
       message: "User not found",
     });
@@ -646,7 +640,9 @@ const returnProductOrder = async (req, res) => {
     );
 
     if (!validStatuses.includes(orderProductStatus)) {
-      return res.status(400).json({ error: "Invalid order product status" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ error: "Invalid order product status" });
     }
 
     let updatedProductStatus;
@@ -689,13 +685,10 @@ const returnProductOrder = async (req, res) => {
       const priceAfterEverything =
         itemTotalAmount - parseFloat(itemDiscount.toFixed(2));
 
-      // Check if all delivered items are returned
-
       allDeliveredItemsReturned = !orderData.items.some(
         (item) => item.orderProductStatus === "delivered"
       );
 
-      // Update the order status to "returnInitiated" only if all delivered items have been returned
       if (allDeliveredItemsReturned) {
         await orders.updateOne(
           { _id: orderId },
@@ -714,17 +707,17 @@ const returnProductOrder = async (req, res) => {
       await returnProductOrderData.save();
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "individual order status updated successfully",
-        success: true,
-        allDeliveredItemsReturned: allDeliveredItemsReturned,
-      });
+    return res.status(statusCode.OK).json({
+      message: "individual order status updated successfully",
+      success: true,
+      allDeliveredItemsReturned: allDeliveredItemsReturned,
+    });
   } catch (error) {
     console.log(`error while returning the whole order`, error.message);
 
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal Server Error" });
   }
 };
 
@@ -732,24 +725,21 @@ const loadOrderDetails = async (req, res) => {
   try {
     const { orderId } = req.query;
 
-    const orderData = await orders.findById(orderId).exec();
-
-    const transactions = await transaction
-      .findOne({ orderId: orderData._id })
-      .exec();
+    const [orderData, transactions] = await Promise.all([
+      orders.findById(orderId).exec(),
+      transaction.findOne({ orderId }).exec(),
+    ]);
 
     return res
-      .status(200)
+      .status(statusCode.OK)
       .render("user/orderDetails", { orderData, transactions });
   } catch (error) {
     console.log(`error while loading the order details page`, error.message);
 
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "error while loading the order details page",
-      });
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "error while loading the order details page",
+    });
   }
 };
 module.exports = {
