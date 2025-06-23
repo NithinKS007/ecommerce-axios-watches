@@ -1,130 +1,315 @@
-<%- include('../layouts/userLayouts/header') %>
-    <%- include('../layouts/userLayouts/navbar1') %>
+<%- include('../layouts/userLayouts/header') %><div class="bg-white sticky-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container">
+      <!-- Logo with Dummy Image -->
+      <a class="navbar-brand d-flex align-items-center" href="">
+        <span style="font-size: 32px; font-weight: bold; color: black"
+          >AXIOS</span
+        ><sup style="color: black">®</sup>
+      </a>
+      <!-- Search Form -->
+      <form
+        class="d-flex mx-auto w-50"
+        id="searchForm"
+        action="/showcase"
+        method="GET"
+      >
+        <input
+          class="form-control search-bar"
+          style="
+            border: none;
+            box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
 
-    <div class="container mt-5" id="mainContainer" style="height: auto;">
-        <div class="row">
-            <% if (productData.length === 0) { %>
-                <div class="col-12 text-center wishlistEmptyMessage" style="margin-top: 60px; ">
-                    <h2>Your wishlist is empty!</h2>
-                    <p>Add items to it now.</p>
-                    <a href="/home" class="btn btn-primary">Shop now</a>
-                </div>
-            <% } else { %>
-                <div class="col-12 d-flex flex-wrap justify-content-start" id="sendWishListItem" style="margin-top: 50px;">
-                    <% productData.forEach(product => { %>
-                        <div class="card shadow-sm mb-3" id="productContainer<%= product._id %>" style="width: 18rem; margin: 10px;">
-                            <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none" style="display: block;">
-                                <img src="/productImages/<%= product.images[0]?.filename %>" class="card-img-top"
-                                     style="width: 100%; height: 200px; object-fit: cover;" alt="Product Image">
-                            </a>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a href="/productDetails?id=<%= product._id %>" class="text-decoration-none" style="flex: 1 ; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        <h5 class="card-title" style="font-size: 13px; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">
-                                            <%= product.name %>
-                                        </h5>
-                                    </a>
-                                    <button class="btn btn-link btn-sm" style="text-decoration: none;" 
-                                        onclick="removeFromWishList('<%= product._id %>')">Remove</button>
-                                </div>
-                                <p class="card-text">
-                                    <% if (product?.productSalesPriceAfterOfferDiscount && new Date(product?.productOffer?.offerExpiryDate) > new Date() && product?.productSalesPriceAfterOfferDiscount !== 0 && product?.productOffer?.offerStatus) { %>
-                                        <strong>₹<%= product?.productSalesPriceAfterOfferDiscount.toFixed(2) %></strong>
-                                    <% } else { %>
-                                        <strong>₹<%= product?.salesPrice.toFixed(2) %></strong>
-                                    <% } %>
-                                </p>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-                
-                
-            <% } %>
-        </div>
+            padding: 20px 15px;
+            border-radius: 5px;
+            height: 48px;
+          "
+          type="search"
+          name="searchProduct"
+          placeholder="Search for items..."
+          aria-label="Search"
+          value="<%= searchProduct || '' %>"
+        />
+      </form>
+
+      <!-- Icons -->
+      <ul
+        style="margin-right: 10px"
+        class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center"
+      >
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/wishList"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-heart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/cart"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-shopping-cart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/profile"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-user"></i>
+          </a>
+        </li>
+      </ul>
     </div>
-    
-        <div id="preloader-active">
-            <div class="preloader d-flex align-items-center justify-content-center">
-                <div class="preloader-inner position-relative">
-                    <div class="text-center">
-                        <h5 class="mb-5">Now Loading</h5>
-                        <div class="loader">
-                            <div class="bar bar1"></div>
-                            <div class="bar bar2"></div>
-                            <div class="bar bar3"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  </nav>
+
+  <div class="container" style="height: 70px">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <ul style="user-select: none" class="list-inline">
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=men"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Mens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=women"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Womens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=kids"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Kids</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >About Us</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mt-5" id="mainContainer" style="height: auto">
+  <div class="row">
+    <% if (productData.length === 0) { %>
+    <div
+      class="col-12 text-center wishlistEmptyMessage"
+      style="margin-top: 60px"
+    >
+      <h2>Your wishlist is empty!</h2>
+      <p>Add items to it now.</p>
+      <a href="/home" class="btn btn-primary">Shop now</a>
+    </div>
+    <% } else { %>
+    <div
+      class="col-12 d-flex flex-wrap justify-content-start"
+      id="sendWishListItem"
+      style="margin-top: 50px"
+    >
+      <% productData.forEach(product => { %>
+      <div
+        class="card shadow-sm mb-3"
+        id="productContainer<%= product._id %>"
+        style="width: 18rem; margin: 10px"
+      >
+        <a
+          href="/productDetails?id=<%= product._id %>"
+          class="text-decoration-none"
+          style="display: block"
+        >
+          <img
+            src="/productImages/<%= product.images[0]?.filename %>"
+            class="card-img-top"
+            style="width: 100%; height: 200px; object-fit: cover"
+            alt="Product Image"
+          />
+        </a>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <a
+              href="/productDetails?id=<%= product._id %>"
+              class="text-decoration-none"
+              style="
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+            >
+              <h5
+                class="card-title"
+                style="
+                  font-size: 13px;
+                  margin-bottom: 0;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 100%;
+                "
+              >
+                <%= product.name %>
+              </h5>
+            </a>
+            <button
+              class="btn btn-link btn-sm"
+              style="text-decoration: none"
+              onclick="removeFromWishList('<%= product._id %>')"
+            >
+              Remove
+            </button>
           </div>
-          
+          <p class="card-text">
+            <% if (product?.productSalesPriceAfterOfferDiscount && new
+            Date(product?.productOffer?.offerExpiryDate) > new Date() &&
+            product?.productSalesPriceAfterOfferDiscount !== 0 &&
+            product?.productOffer?.offerStatus) { %>
+            <strong
+              >₹<%= product?.productSalesPriceAfterOfferDiscount.toFixed(2)
+              %></strong
+            >
+            <% } else { %>
+            <strong>₹<%= product?.salesPrice.toFixed(2) %></strong>
+            <% } %>
+          </p>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+
+    <% } %>
+  </div>
+</div>
+
+<div id="preloader-active">
+  <div class="preloader d-flex align-items-center justify-content-center">
+    <div class="preloader-inner position-relative">
+      <div class="text-center">
+        <h5 class="mb-5">Now Loading</h5>
+        <div class="loader">
+          <div class="bar bar1"></div>
+          <div class="bar bar2"></div>
+          <div class="bar bar3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-     const removeFromWishList = async (productId) => {
-                try {
-                    const response = await fetch(`/wishList`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ productId })
-                    });
+  const removeFromWishList = async (productId) => {
+    try {
+      const response = await fetch(`/wishList`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId }),
+      });
 
-                    if (!response.ok) {
+      if (!response.ok) {
+        throw new Error(
+          `Failed to remove product from wishlist: ${response.statusText}`
+        );
+      }
 
-                        throw new Error(`Failed to remove product from wishlist: ${response.statusText}`);
-                    }
+      const result = await response.json();
 
-                    const result = await response.json();
+      const productCard = document.getElementById(
+        `productContainer${productId}`
+      );
+      if (productCard) {
+        productCard.remove();
+        Swal.fire({
+          icon: "success",
+          text: "Product removed from wishlist successfully",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
 
-                 
+      const mainContainer = document.getElementById("mainContainer");
+      const productCards = mainContainer.querySelectorAll(".card");
 
-                    const productCard = document.getElementById(`productContainer${productId}`);
-                        if (productCard) {
+      if (productCards.length === 0) {
+        const existingMessage = document.querySelector(".wishlistEmptyMessage");
+        if (existingMessage) {
+          existingMessage.remove();
+        }
 
-                            productCard.remove();
-                            Swal.fire({
-                            icon: 'success',
-                            text: 'Product removed from wishlist successfully',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
-                        });
-                        }
-                       
-            const mainContainer = document.getElementById('mainContainer');
-            const productCards = mainContainer.querySelectorAll('.card');
-            
-            if (productCards.length === 0) {
-   
-                const existingMessage = document.querySelector('.wishlistEmptyMessage');
-                if (existingMessage) {
-                    existingMessage.remove();
-                }
-
-                const emptyWishlistMessage = document.createElement('div');
-                emptyWishlistMessage.className = 'col-12 text-center wishlistEmptyMessage';
-                emptyWishlistMessage.innerHTML = `
+        const emptyWishlistMessage = document.createElement("div");
+        emptyWishlistMessage.className =
+          "col-12 text-center wishlistEmptyMessage";
+        emptyWishlistMessage.innerHTML = `
                     <h2>Your wishlist is empty!</h2>
                     <p>Add items to it now.</p>
                     <a href="/home" class="btn btn-primary">Shop now</a>`;
-                mainContainer.querySelector('.row').appendChild(emptyWishlistMessage);
-            }
-                        
-                } catch (error) {
-                    console.log('Error removing product from wishlist:', error);
+        mainContainer.querySelector(".row").appendChild(emptyWishlistMessage);
+      }
+    } catch (error) {
+      console.log("Error removing product from wishlist:", error);
 
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Error removing product from wishlist',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#000000',
-                    });
-                }
-            };
-
+      Swal.fire({
+        icon: "error",
+        text: "Error removing product from wishlist",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#000000",
+      });
+    }
+  };
 </script>
 
   <!-- Vendor JS -->

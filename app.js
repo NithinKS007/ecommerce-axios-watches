@@ -25,6 +25,7 @@ app.use((req, res, next) => {
   res.locals.searchProduct = "";
   next();
 });
+
 //setting the viewengine
 app.set("view engine", "ejs");
 app.use(express.json());

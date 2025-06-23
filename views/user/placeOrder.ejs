@@ -1,5 +1,145 @@
 <%- include('../layouts/userLayouts/header') %>
-<%- include('../layouts/userLayouts/navbar1') %>
+<div class="bg-white sticky-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container">
+      <!-- Logo with Dummy Image -->
+      <a class="navbar-brand d-flex align-items-center" href="">
+        <span style="font-size: 32px; font-weight: bold; color: black"
+          >AXIOS</span
+        ><sup style="color: black">®</sup>
+      </a>
+      <!-- Search Form -->
+      <form
+        class="d-flex mx-auto w-50"
+        id="searchForm"
+        action="/showcase"
+        method="GET"
+      >
+        <input
+          class="form-control search-bar"
+          style="
+            border: none;
+            box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
+
+            padding: 20px 15px;
+            border-radius: 5px;
+            height: 48px;
+          "
+          type="search"
+          name="searchProduct"
+          placeholder="Search for items..."
+          aria-label="Search"
+          value="<%= searchProduct || '' %>"
+        />
+      </form>
+
+      <!-- Icons -->
+      <ul
+        style="margin-right: 10px"
+        class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center"
+      >
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/wishList"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-heart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/cart"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-shopping-cart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/profile"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-user"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="height: 70px">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <ul style="user-select: none" class="list-inline">
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=men"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Mens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=women"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Womens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=kids"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Kids</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >About Us</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section class="pt-50 pb-150 main-section" style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
     <div class="section-container" style="max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); text-align: center;">
         <h1 style="font-size: 2.5rem; color: #333; margin-bottom: 20px; font-weight: 600;">Thank You for Your Order!</h1>

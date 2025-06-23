@@ -17,7 +17,7 @@ const checkoutOnlinePaymentController = require("../controllers/checkoutOnlinePa
 //middlewares for the routes
 const userAuth = require("../middleware/userAuth");
 const handleCartUpdate = require("../middleware/handleCartUpdate");
-const handleSearch = require("../middleware/handleSearch");
+// const handleSearch = require("../middleware/handleSearch");
 const noCacheMid = require("../middleware/cacheClearMiddleWare");
 const isBlocked = require("../middleware/isBlocked");
 
@@ -365,10 +365,10 @@ userRoute.get(
 );
 
 // Advanced Search Filtering routes
-userRoute.get(
-  "/filter",
-  noCacheMid.noCacheMiddleware,
-  handleSearch.handleSearch
-);
+// userRoute.get(
+//   "/filter",
+//   noCacheMid.noCacheMiddleware,
+//   handleSearch.handleSearch
+// );
 
 module.exports = userRoute;

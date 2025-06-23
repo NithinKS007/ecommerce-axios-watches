@@ -1,5 +1,5 @@
 const admin = require("../models/adminModel");
-const { securePassword, comparePassword } = require("../utils/hashPassword");
+const { securePassword, comparePassword } = require("../utils/encryptionService");
 const statusCode = require("../utils/statusCodes");
 
 const loadLogin = async (req, res) => {

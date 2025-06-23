@@ -5,12 +5,12 @@ const OTP = require("../models/otpModel");
 const statusCode = require("../utils/statusCodes");
 
 const {
-  sendToEmailResetPassword,
   secureToken,
   RandomTokenGen,
-} = require("../utils/handleForgotPassword");
+} = require("../utils/hashService");
 
-const { securePassword, comparePassword } = require("../utils/hashPassword");
+const { securePassword, comparePassword } = require("../utils/encryptionService");
+const { sendToEmailResetPassword } = require("../utils/emailService");
 
 const loadRegister = async (req, res) => {
   try {

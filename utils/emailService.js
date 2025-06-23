@@ -9,6 +9,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const sendToEmailResetPassword = async (email, token) => {
+  const productionUrl = `${process.env.PRODUCTION_URL}`;
+  const resetURL = `${productionUrl}/resetPassword?token=${token}`;
+
+  const subject = "Password Reset";
+  const text =
+    `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+    `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+    `${resetURL}\n\n` +
+    `If you did not request this, please ignore this email and your password will remain unchanged.`;
+
+  await sendEmail(email, subject, text);
+};
+
 const sendEmail = async (email, subject, text) => {
   try {
     await transporter.sendMail({
@@ -26,4 +40,5 @@ const sendEmail = async (email, subject, text) => {
 
 module.exports = {
   sendEmail,
+  sendToEmailResetPassword,
 };

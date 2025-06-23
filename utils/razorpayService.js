@@ -1,8 +1,7 @@
 require("dotenv").config();
 const razorPayLib = require("razorpay");
-const crypto = require("crypto");
 const transaction = require("../models/onlineTransactionModel");
-const { generateSignature } = require("./handleForgotPassword");
+const { generateSignature } = require("./hashService");
 
 const RAZORPAY_SECRECT_KEY = process.env.RAZORPAY_SECRECT_KEY;
 const RAZORPAY_ID_KEY = process.env.RAZORPAY_ID_KEY;
@@ -36,19 +35,18 @@ const createRazorPayOrder = async (amount) => {
 const verifyRazorPaySignature = async (orderId, paymentId, signature) => {
   const text = orderId + "|" + paymentId;
 
-  const generateSignature = await generateSignature(text, RAZORPAY_SECRECT_KEY);
-  
+  const gs = await generateSignature(text, RAZORPAY_SECRECT_KEY);
   const transactionsData = await transaction.findOne({
     onlinePaymentOrderId: paymentId,
   });
 
-  if (generateSignature === signature) {
+  if (gs === signature) {
     transactionsData.paymentStatus = "paid";
 
     await transactionsData.save();
   }
 
-  return generateSignature === signature;
+  return gs === signature;
 };
 
 module.exports = { createRazorPayOrder, verifyRazorPaySignature };

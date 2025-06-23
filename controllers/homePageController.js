@@ -6,7 +6,7 @@ const categories = require("../models/categoryModel");
 const cart = require("../models/cartModel");
 const orders = require("../models/orderModel");
 const wishList = require("../models/wishList");
-const statusCode = require("../utils/statusCodes")
+const statusCode = require("../utils/statusCodes");
 
 const loadHome = async (req, res) => {
   let pageNumber = parseInt(req.query.page) || 1;
@@ -244,9 +244,84 @@ const getTopDeals = async (currentDate) => {
 };
 
 const loadShowCase = async (req, res) => {
-  const targetGroup = req.query.targetGroup;
+  const {
+    searchProduct = "",
+    targetGroup,
+    category: categoryData,
+    brand: brandsData,
+    sortby: sortbyData,
+  } = req.query;
+
+  console.log("query", req.query);
+
   let pageNumber = parseInt(req.query.page) || 1;
   const perPageData = 9;
+  let filter = {};
+  let sort = { createdAt: -1 };
+  let categoryList = [];
+  if (categoryData) {
+    categoryList = categoryData
+      ? Array.isArray(categoryData)
+        ? categoryData.map((id) => id)
+        : [categoryData]
+      : [];
+  }
+
+  let brandsList = [];
+  if (brandsData) {
+    brandsList = brandsData
+      ? Array.isArray(brandsData)
+        ? brandsData.map((id) => id)
+        : [brandsData]
+      : [];
+  }
+
+  let sortbyList = [];
+  if (sortbyData) {
+    sortbyList = sortbyData
+      ? Array.isArray(sortbyData)
+        ? sortbyData.map((sort) => sort)
+        : [sortbyData]
+      : [];
+  }
+
+  if (categoryList.length > 0) {
+    filter.category = { $in: categoryList };
+  }
+
+  if (brandsList.length > 0) {
+    filter.brand = { $in: brandsList };
+  }
+
+  if (targetGroup) {
+    filter.targetGroup = targetGroup;
+  }
+
+  if (sortbyList.includes("priceLowHigh")) {
+    sort = { salesPrice: 1 };
+  } else if (sortbyList.includes("priceHighLow")) {
+    sort = { salesPrice: -1 };
+  } else if (sortbyList.includes("newArrivals")) {
+    sort = { createdAt: -1 };
+  } else if (sortbyList.includes("aToZ")) {
+    sort = { name: 1 };
+  } else if (sortbyList.includes("zToA")) {
+    sort = { name: -1 };
+  } else if (sortbyList.includes("outOfStock")) {
+    filter.stock = 0; 
+  }
+
+  if (searchProduct) {
+    filter.$or = [
+      { name: { $regex: searchProduct, $options: "i" } },
+      { description: { $regex: searchProduct, $options: "i" } },
+      { dialShape: { $regex: searchProduct, $options: "i" } },
+      { displayType: { $regex: searchProduct, $options: "i" } },
+      { strapMaterial: { $regex: searchProduct, $options: "i" } },
+      { strapColor: { $regex: searchProduct, $options: "i" } },
+      { targetGroup: { $regex: searchProduct, $options: "i" } },
+    ];
+  }
 
   try {
     const [
@@ -258,17 +333,20 @@ const loadShowCase = async (req, res) => {
     ] = await Promise.all([
       categories.find({ isBlocked: false }).exec(),
       brands.find({ isBlocked: false }).exec(),
-      products.countDocuments({ targetGroup: targetGroup }).exec(),
       products
-        .find({ targetGroup: targetGroup })
+        .countDocuments({ isBlocked: false, ...filter })
+        .sort(sort)
+        .exec(),
+      products
+        .find({ isBlocked: false, ...filter })
         .populate("brand")
         .populate("category")
-        .sort({ createdAt: -1 })
+        .sort(sort)
         .skip((pageNumber - 1) * perPageData)
         .limit(perPageData)
         .exec(),
       products
-        .find({ targetGroup: targetGroup })
+        .find({ isBlocked: false })
         .populate("brand")
         .populate("category")
         .sort({ createdAt: -1 })
@@ -279,211 +357,23 @@ const loadShowCase = async (req, res) => {
     const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
     pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
 
+    console.log({ array: sortbyList });
     return res.status(statusCode.OK).render("user/showCase", {
+      searchProduct,
       categoriesArray,
       brandArray,
       productsArray,
       latestProducts,
       targetGroup,
       totalPages,
+      selectedCategories: categoryList,
+      selectedBrands: brandsList,
+      selectedSortList: sortbyList,
       currentPage: pageNumber,
     });
   } catch (error) {
     console.log(`error while loading mens page`, error.message);
-
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
-  }
-};
-
-const advancedSearch = async (req, res) => {
-  const { categories, brands, sortby, targetGroup } = req.query;
-
-  const searchProduct = req.session.searchProduct || "";
-
-  console.log("Search Product:", searchProduct);
-
-  const categoriesArray = categories
-    ? categories.split(",").map((id) => ObjectId.createFromHexString(id))
-    : [];
-  const brandsArray = brands
-    ? brands.split(",").map((id) => ObjectId.createFromHexString(id))
-    : [];
-  const sortbyArray = sortby ? sortby.split(",") : [];
-
-  const arrayToAggregate = [
-    {
-      $lookup: {
-        from: "brands",
-        localField: "brand",
-        foreignField: "_id",
-        as: "brandData",
-      },
-    },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "category",
-        foreignField: "_id",
-        as: "categoryData",
-      },
-    },
-  ];
-
-  let matchConditions = { isBlocked: false }  
-
-  if (categoriesArray.length > 0) {
-    matchConditions.category = { $in: categoriesArray };
-  }
-
-  if (brandsArray.length > 0) {
-    matchConditions.brand = { $in: brandsArray };
-  }
-
-  if (targetGroup) {
-    matchConditions.targetGroup = targetGroup;
-  }
-
-  if (searchProduct.trim()) {
-    matchConditions.$or = [
-      { name: { $regex: searchProduct, $options: "i" } },
-      { "brandData.name": { $regex: searchProduct, $options: "i" } },
-      { "categoryData.name": { $regex: searchProduct, $options: "i" } },
-      { "categoryData.description": { $regex: searchProduct, $options: "i" } },
-      { description: { $regex: searchProduct, $options: "i" } },
-      { dialShape: { $regex: searchProduct, $options: "i" } },
-      { displayType: { $regex: searchProduct, $options: "i" } },
-      { strapMaterial: { $regex: searchProduct, $options: "i" } },
-      { strapColor: { $regex: searchProduct, $options: "i" } },
-      { targetGroup: { $regex: searchProduct, $options: "i" } },
-    ];
-  }
-
-  if (sortbyArray.includes("priceLowHigh")) {
-    arrayToAggregate.push({ $sort: { salesPrice: 1 } });
-  } else if (sortbyArray.includes("priceHighLow")) {
-    arrayToAggregate.push({ $sort: { salesPrice: -1 } });
-  } else if (sortbyArray.includes("newArrivals")) {
-    arrayToAggregate.push({ $sort: { createdAt: -1 } });
-  } else if (sortbyArray.includes("aToZ")) {
-    arrayToAggregate.push({ $sort: { name: 1 } });
-  } else if (sortbyArray.includes("zToA")) {
-    arrayToAggregate.push({ $sort: { name: -1 } });
-  } else if (sortbyArray.includes("OutOfStock")) {
-    arrayToAggregate.push({ $match: { stock: 0 } });
-  }
-  arrayToAggregate.unshift({ $match: matchConditions });
-  try {
-    let filterResult;
-    if (arrayToAggregate.length >= 1) {
-      filterResult = await products.aggregate(arrayToAggregate);
-    } else {
-      filterResult = await products.find({ isBlocked: false });
-    }
-
-    console.log(filterResult, "fiiter");
-    return res.status(statusCode.OK).json({
-      message: "Data received for filtering",
-      success: true,
-      data: filterResult,
-    });
-  } catch (error) {
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
-      message: "Error occurred during search",
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
-const searchProducts = async (req, res) => {
-  const { searchProduct = "", targetGroup } = req.query;
-  req.session.searchProduct = searchProduct;
-  let pageNumber = parseInt(req.query.page) || 1;
-  const perPageData = 9;
-
-  try {
-    const categoriesArray = await categories.find({ isBlocked: false });
-    const brandArray = await brands.find({ isBlocked: false });
-
-    const arrayToAggregate = [];
-
-    if (searchProduct) {
-      arrayToAggregate.push({
-        $match: {
-          $or: [
-            { name: { $regex: searchProduct, $options: "i" } },
-            { description: { $regex: searchProduct, $options: "i" } },
-            { dialShape: { $regex: searchProduct, $options: "i" } },
-            { displayType: { $regex: searchProduct, $options: "i" } },
-            { strapMaterial: { $regex: searchProduct, $options: "i" } },
-            { strapColor: { $regex: searchProduct, $options: "i" } },
-            { targetGroup: { $regex: searchProduct, $options: "i" } },
-          ],
-        },
-      });
-    }
-
-    arrayToAggregate.push({
-      $lookup: {
-        from: "brands",
-        localField: "brand",
-        foreignField: "_id",
-        as: "brandData",
-      },
-    });
-    arrayToAggregate.push({
-      $lookup: {
-        from: "categories",
-        localField: "category",
-        foreignField: "_id",
-        as: "categoryData",
-      },
-    });
-
-    const query = targetGroup ? { targetGroup } : {};
-
-    const totalProducts = await products.countDocuments({
-      ...query,
-      ...(searchProduct ? { $or: arrayToAggregate[0].$match.$or } : {}),
-    });
-    const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
-
-    pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
-    const skip = (pageNumber - 1) * perPageData;
-
-    const productsArray = await products.aggregate([
-      ...arrayToAggregate,
-      {
-        $match: {
-          ...query,
-          ...(searchProduct ? { $or: arrayToAggregate[0].$match.$or } : {}),
-        },
-      },
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: perPageData },
-    ]);
-
-    const latestProducts = await products
-      .find(query)
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .populate("brand")
-      .populate("category");
-
-    return res.status(statusCode.OK).render("user/showCase", {
-      productsArray,
-      categoriesArray,
-      brandArray,
-      latestProducts,
-      targetGroup,
-      totalPages,
-      currentPage: pageNumber,
-      searchProduct,
-    });
-  } catch (error) {
-    console.log(`Error while searching the products`, error.message);
-
+    console.log("Error while loading men's page:", error.stack);
     return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
@@ -517,7 +407,8 @@ const loadProductDetails = async (req, res) => {
       .find({
         category: productDetails?.category,
         targetGroup: productDetails?.targetGroup,
-      }).limit(10)
+      })
+      .limit(10)
       .populate("category")
       .populate("brand");
 
@@ -541,7 +432,7 @@ const loadProductDetails = async (req, res) => {
 module.exports = {
   loadHome,
   loadShowCase,
-  advancedSearch,
-  searchProducts,
+  // advancedSearch,
+  // searchProducts,
   loadProductDetails,
 };
