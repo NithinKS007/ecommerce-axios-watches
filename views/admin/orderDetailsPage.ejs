@@ -1,478 +1,472 @@
 <%- include('../layouts/adminLayouts/header') %>
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
-<style>
-  
-.payment-status {
-    text-transform: capitalize;
-}
-
-.payment-status.failed {
-    color: red;
-}
-
-.payment-status.paid {
-    color: green;
-}
-
-.payment-status.pending {
-    color: orange; 
-}
-
-.payment-status.default {
-    color: gray;
-}
-
-.swal1-cancel {
-        width: 100% !important; 
-        margin: 5px 0!important;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
-    
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-    
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
-    }
-
-</style>
 <main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %>
-    <section class="content-main">
-        <div class="content-header">
-            <div>
-                <h2 class="content-title card-title">Order Details</h2>
-                <p>Dashboard > Order List > Order Details</p>
-            </div>
-        </div>
-       
-           
-        <div class="card mb-4">
-            <div class="card-body">
-                <div style="background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); border: 1px solid #ddd; border-radius: 8px; padding: 20px; font-family: Arial, sans-serif;">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-                        <div id="orderDetails" data-order-id="<%= userOrderDataDetails._id %>"> 
-                           <strong>Order Id: <%= userOrderDataDetails._id %></strong>
-                            <span id="orderStatusDisplay" style="padding: 2px 5px; border-radius: 3px; margin-left: 10px;">
-                                <%= userOrderDataDetails.orderStatus.charAt(0).toUpperCase() + userOrderDataDetails.orderStatus.slice(1) %>
-                            </span>
-                        </div>
-                        <div class="mt-3 mt-md-0">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="statusPending" name="orderStatus" value="pending"  <%= userOrderDataDetails.orderStatus === 'pending' ? 'checked' : '' %>>
-                                <label class="form-check-label" for="statusPending">Pending</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="statusShipped" name="orderStatus" value="shipped" <%= userOrderDataDetails.orderStatus === 'shipped' ? 'checked' : '' %>>
-                                <label class="form-check-label" for="statusShipped">Shipped</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="statusDelivered" name="orderStatus" value="delivered" <%= userOrderDataDetails.orderStatus === 'delivered' ? 'checked' : '' %>>
-                                <label class="form-check-label" for="statusDelivered">Delivered</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="statusCancelled" name="orderStatus" value="cancelled" <%= userOrderDataDetails.orderStatus === 'cancelled' ? 'checked' : '' %> >
-                                <label class="form-check-label" for="statusCancelled">Cancelled</label>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div class="text-muted mb-3">
-                        <%= new Date(userOrderDataDetails.orderDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) %> (India Standard Time)
-                    </div>
-        
-                    <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
-                        <h2 style="margin-top: 0; font-size: 20px; color: #333;">Update Details</h2>
-        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <strong>Customer Name:</strong> <%= userOrderDataDetails.shippingAddress.name %>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Mobile No:</strong> <%= userOrderDataDetails.shippingAddress.phone %>
-                            </div>
-                        </div>
-        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <p class="mb-2"><strong>Payment Method:</strong> <%= userOrderDataDetails.paymentMethod %></p>
-                                    <p class="mb-2">
-                                        <strong>Payment Status:</strong>
-                                        <span class="payment-status">
-                                            <%= transactionDetailsOftheOnlinePaymentOrder?.paymentStatus || 'N/A' %>
-                                        </span>
-                                    </p>
-                                    <p><strong>Online Payment Order ID:</strong> <%= userOrderDataDetails?.onlinePaymentOrderId || 'N/A' %></p>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <strong>Delivery date:</strong> 
-                                <%= new Date(new Date(userOrderDataDetails.orderDate).setDate(new Date(userOrderDataDetails.orderDate).getDate() + 5)).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) %> 
-                            </div>
-                        </div>
-        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <strong>Shipping Cost:</strong> ₹40 free
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Total Amount:</strong> ₹<%= userOrderDataDetails.totalAmount %>
-                            </div>
-                        </div>
-        
-                        <div class="mb-3">
-                            <strong>Shipping Address:</strong> <%= userOrderDataDetails.shippingAddress.address %>, <%= userOrderDataDetails.shippingAddress.locality %>, <%= userOrderDataDetails.shippingAddress.cityDistTown %>, <%= userOrderDataDetails.shippingAddress.state %><br>
-                            Pin: <%= userOrderDataDetails.shippingAddress.pincode %>
-                        </div>
-        
-                        <button id="editButton" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="toggleAndUpdateStatus()">Edit Order Status</button>
-                        <button id="saveButton" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; display: none;" onclick="toggleAndUpdateStatus()">Save Order Status</button>
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Order Details</h2>
+        <p>Dashboard > Order List > Order Details</p>
+      </div>
+    </div>
 
-                    </div>
+    <div class="card mb-4">
+      <div class="card-body">
+        <div
+          style="
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+              0 1px 2px rgba(0, 0, 0, 0.24);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+          "
+        >
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3"
+          >
+            <div
+              id="orderDetails"
+              data-order-id="<%= userOrderDataDetails._id %>"
+            >
+              <strong>Order Id: <%= userOrderDataDetails?._id %></strong>
+              <span
+                id="orderStatusDisplay"
+                style="padding: 2px 5px; border-radius: 3px; margin-left: 10px"
+              >
+                <%= userOrderDataDetails.orderStatus ?
+                userOrderDataDetails.orderStatus.charAt(0).toUpperCase() +
+                userOrderDataDetails.orderStatus.slice(1) : 'N/A' %>
+              </span>
+            </div>
+            <div class="mt-3 mt-md-0">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="statusPending"
+                name="orderStatus" value="pending" <%=
+                userOrderDataDetails.orderStatus === 'pending' ? 'checked' : ''
+                %>>
+                <label class="form-check-label" for="statusPending"
+                  >Pending</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="statusShipped"
+                name="orderStatus" value="shipped" <%=
+                userOrderDataDetails.orderStatus === 'shipped' ? 'checked' : ''
+                %>>
+                <label class="form-check-label" for="statusShipped"
+                  >Shipped</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio"
+                id="statusDelivered" name="orderStatus" value="delivered" <%=
+                userOrderDataDetails.orderStatus === 'delivered' ? 'checked' :
+                '' %>>
+                <label class="form-check-label" for="statusDelivered"
+                  >Delivered</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio"
+                id="statusCancelled" name="orderStatus" value="cancelled" <%=
+                userOrderDataDetails.orderStatus === 'cancelled' ? 'checked' :
+                '' %> >
+                <label class="form-check-label" for="statusCancelled"
+                  >Cancelled</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="text-muted mb-3">
+            <%= userOrderDataDetails.orderDate ? new
+            Date(userOrderDataDetails.orderDate).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata' }) : 'N/A' %> (India Standard Time)
+          </div>
+
+          <div
+            style="background-color: #f9f9f9; padding: 20px; border-radius: 5px"
+          >
+            <h2 style="margin-top: 0; font-size: 20px; color: #333">
+              Update Details
+            </h2>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <strong>Customer Name:</strong> <%=
+                userOrderDataDetails?.shippingAddress?.name || 'N/A'%>
+              </div>
+              <div class="col-md-6">
+                <strong>Mobile No:</strong> <%=
+                userOrderDataDetails?.shippingAddress?.phone || 'N/A' %>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <div class="d-flex flex-column">
+                  <p class="mb-2">
+                    <strong>Payment Method:</strong> <%=
+                    userOrderDataDetails?.paymentMethod || 'N/A' %>
+                  </p>
+                  <p class="mb-2">
+                    <strong>Payment Status:</strong>
+                    <span class="payment-status">
+                      <%=
+                      transactionDetailsOftheOnlinePaymentOrder?.paymentStatus
+                      || 'N/A' %>
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Online Payment Order ID:</strong> <%=
+                    userOrderDataDetails?.onlinePaymentOrderId || 'N/A' %>
+                  </p>
                 </div>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Delivery date:</strong>
+                <%= userOrderDataDetails.orderDate ? new Date(new
+                Date(userOrderDataDetails.orderDate).setDate(new
+                Date(userOrderDataDetails.orderDate).getDate() +
+                5)).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) :
+                'N/A' %>
+              </div>
             </div>
-        </div>
 
-
-        <div class="card mb-4">
-            <!-- table content starts -->
-            <div class="card-body">
-                
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th scope="col">Image</th>
-                                <th scope="col">Product Name</th>
-                                <th scope="col">Brand</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Offer Price</th>
-                                <th scope="col">Offer Percentage</th>
-                                <th scope="col">Total</th>
-                                <th scope="col">Order Product Status</th>
-                                <th scope="col">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        
-                            <% 
-                         
-                            userOrderDataDetails.items.forEach(item => {
-                                  
-                            %>
-                                    <tr>
-                                        <td><%= item.product %></td>
-                                        <td>
-                                            <% if (item.images && item.images.length > 0) { %>
-                                                <% 
-                                                const fullPath = item.images[0];
-                                                const filename = fullPath.split('\\').pop().split('/').pop();
-                                                %>
-                                                <img src="/productImages/<%= filename %>" alt="<%= item.productName %>" style="width: 50px; height: 50px;">
-                                            <% } else { %>
-                                                <span>No image available</span>
-                                            <% } %>
-                                        </td>
-                                        <td><%= item.productName %></td>
-                                        <td><%= item.brandName %></td>
-                                        <td><%= item.categoryName %></td>
-                                        <td><%= item.quantity %></td>
-                                        <td>Rs<%= item.price.toFixed(2)  %></td>
-                                        <td>
-                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
-                                              Rs <%= item.productSalesPriceAfterOfferDiscount.toFixed(2) %>
-                                            <% } else { %>
-                                              N/A
-                                            <% } %>
-                                          </td>
-                                          <td>  <% if (item.productSalesPriceAfterOfferDiscount > 0) {
-                                            const offerPercentage = ((item.price - item.productSalesPriceAfterOfferDiscount) / item.price) * 100 %>
-                                            <%= offerPercentage.toFixed(2) %>%
-                                        <% } else { %>
-                                            N/A
-                                        <% } %></td>
-                                        <td>
-                                            <% if (item.productSalesPriceAfterOfferDiscount > 0) {
-                                                const totalAfterDiscount = item.productSalesPriceAfterOfferDiscount * item.quantity;
-                                            %>
-                                                Rs <%= totalAfterDiscount.toFixed(2) %>
-                                            <% } else {
-                                                const totalWithoutDiscount = item.price * item.quantity;
-                                            %>
-                                                Rs <%= totalWithoutDiscount.toFixed(2) %>
-                                            <% } %>
-                                        </td>
-                                          
-                                        <td>
-                                            <span class="badge rounded-pill 
-                                            <%= item.orderProductStatus === 'pending' ? 'alert-warning' : '' %>
-                                            <%= item.orderProductStatus === 'shipped' ? 'alert-info' : '' %>
-                                            <%= item.orderProductStatus === 'delivered' ? 'alert-success' : '' %>
-                                            <%= item.orderProductStatus === 'cancelled' ? 'alert-danger' : '' %>
-                                            <%= (item.orderProductStatus !== 'pending' && item.orderProductStatus !== 'shipped' && item.orderProductStatus !== 'delivered' && item.orderProductStatus !== 'cancelled') ? 'alert-secondary' : '' %>"
-                                            data-productOrder-status="<%= item.orderProductStatus %>">
-                                            <%= item.orderProductStatus.replace(/([a-z])([A-Z])/g, '$1 $2')
-                                            .split(' ')
-                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                                            .join(' ') %>
-                                            </span>
-                                        </td>
-                                        
-                                        <td><%= new Date(item.createdAt).toLocaleString() %></td>
-                                    </tr>
-                                    <% 
-                                });
-                                %>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <strong>Shipping Cost:</strong> ₹40 free
+              </div>
+              <div class="col-md-6">
+                <strong>Total Amount:</strong> ₹<%=
+                userOrderDataDetails.totalAmount || '0' %>
+              </div>
             </div>
-        </div>
 
-
-        
-
-
-
-
-
-
-
-
-
-        <div class="row">
-            <div class="col-md-6 offset-md-6">
-                <div class="card">
-                    <div class="card-body" style="padding: 1rem;">
-                        <ul class="list-unstyled" style="margin-bottom: 0;">
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                <strong style="flex: 1;">Subtotal:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.subTotalAmount %></span>
-                            </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                <strong style="flex: 1;">Coupon Discount:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.discountAmount%></span>
-                            </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                <strong style="flex: 1;">Total Items:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;"> <%= userOrderDataDetails.totalItems %></span>
-                            </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                
-                                <strong style="flex: 1;">Shipping:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Free</span>
-                            </li>
-                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                                <strong style="flex: 1;">Grand total:</strong>
-                                <span style="flex: 0 0 auto; min-width: 100px; text-align: right;">Rs <%= userOrderDataDetails.totalAmount %></span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="mb-3">
+              <strong>Shipping Address:</strong> <%=
+              userOrderDataDetails.shippingAddress.address %>, <%=
+              userOrderDataDetails.shippingAddress.locality %>, <%=
+              userOrderDataDetails.shippingAddress.cityDistTown %>, <%=
+              userOrderDataDetails.shippingAddress.state %><br />
+              Pin: <%= userOrderDataDetails.shippingAddress.pincode %>
             </div>
+
+            <button
+              id="editButton"
+              style="
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+              "
+              onclick="toggleAndUpdateStatus()"
+            >
+              Edit Order Status
+            </button>
+            <button
+              id="saveButton"
+              style="
+                background-color: #f44336;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                display: none;
+              "
+              onclick="toggleAndUpdateStatus()"
+            >
+              Save Order Status
+            </button>
+          </div>
         </div>
-    </section> <!-- content-main end// -->
+      </div>
+    </div>
+
+    <div class="card mb-4">
+  <!-- table content starts -->
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th scope="col">Image</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Brand</th>
+            <th scope="col">Category</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+            <th scope="col">Offer Price</th>
+            <th scope="col">Offer Percentage</th>
+            <th scope="col">Total</th>
+            <th scope="col">Order Product Status</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (userOrderDataDetails.items && Array.isArray(userOrderDataDetails.items) && userOrderDataDetails.items.length > 0) { %>
+            <% userOrderDataDetails.items.forEach(item => { %>
+              <tr>
+                <td><%= item?.product || 'N/A' %></td>
+                <td>
+                  <% if (item.images && item.images.length > 0) { %>
+                    <% const fullPath = item.images[0]; const filename = fullPath.split('\\').pop().split('/').pop(); %>
+                    <img src="/productImages/<%= filename %>" alt="<%= item.productName || 'Product' %>" style="width: 50px; height: 50px" />
+                  <% } else { %>
+                    <span>No image available</span>
+                  <% } %>
+                </td>
+                <td><%= item.productName || 'N/A' %></td>
+                <td><%= item.brandName || 'N/A' %></td>
+                <td><%= item.categoryName || 'N/A' %></td>
+                <td><%= item.quantity || 'N/A' %></td>
+                <td>Rs <%= item.price ? item.price.toFixed(2) : '0.00' %></td>
+                <td>
+                  <% if (item.productSalesPriceAfterOfferDiscount > 0) { %>
+                    Rs <%= item.productSalesPriceAfterOfferDiscount.toFixed(2) %>
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
+                <td>
+                  <% if (item.productSalesPriceAfterOfferDiscount > 0 && item.price > 0) { 
+                    const offerPercentage = ((item.price - item.productSalesPriceAfterOfferDiscount) / item.price) * 100;
+                  %>
+                    <%= offerPercentage.toFixed(2) %>%
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
+                <td>
+                  <% if (item.productSalesPriceAfterOfferDiscount > 0) { 
+                    const totalAfterDiscount = item.productSalesPriceAfterOfferDiscount * item.quantity;
+                  %>
+                    Rs <%= totalAfterDiscount.toFixed(2) %>
+                  <% } else { 
+                    const totalWithoutDiscount = item.price * item.quantity;
+                  %>
+                    Rs <%= totalWithoutDiscount.toFixed(2) %>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="badge rounded-pill 
+                    <%= item.orderProductStatus === 'pending' ? 'alert-warning' : '' %>
+                    <%= item.orderProductStatus === 'shipped' ? 'alert-info' : '' %>
+                    <%= item.orderProductStatus === 'delivered' ? 'alert-success' : '' %>
+                    <%= item.orderProductStatus === 'cancelled' ? 'alert-danger' : '' %>
+                    <%= (item.orderProductStatus !== 'pending' && item.orderProductStatus !== 'shipped' && item.orderProductStatus !== 'delivered' && item.orderProductStatus !== 'cancelled') ? 'alert-secondary' : '' %>"
+                    data-productOrder-status="<%= item.orderProductStatus || 'N/A' %>"
+                  >
+                    <%= (item.orderProductStatus || 'N/A').replace(/([a-z])([A-Z])/g, '$1 $2').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ') %>
+                  </span>
+                </td>
+                <td><%= item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A' %></td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr><td colspan="12">No items available</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+    <div class="row">
+      <div class="col-md-6 offset-md-6">
+        <div class="card">
+          <div class="card-body" style="padding: 1rem">
+            <ul class="list-unstyled" style="margin-bottom: 0">
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 0.5rem 0;
+                "
+              >
+                <strong style="flex: 1">Subtotal:</strong>
+                <span
+                  style="flex: 0 0 auto; min-width: 100px; text-align: right"
+                  >Rs <%= userOrderDataDetails.subTotalAmount %></span
+                >
+              </li>
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 0.5rem 0;
+                "
+              >
+                <strong style="flex: 1">Coupon Discount:</strong>
+                <span
+                  style="flex: 0 0 auto; min-width: 100px; text-align: right"
+                  >Rs <%= userOrderDataDetails.discountAmount%></span
+                >
+              </li>
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 0.5rem 0;
+                "
+              >
+                <strong style="flex: 1">Total Items:</strong>
+                <span
+                  style="flex: 0 0 auto; min-width: 100px; text-align: right"
+                >
+                  <%= userOrderDataDetails.totalItems %></span
+                >
+              </li>
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 0.5rem 0;
+                "
+              >
+                <strong style="flex: 1">Shipping:</strong>
+                <span
+                  style="flex: 0 0 auto; min-width: 100px; text-align: right"
+                  >Free</span
+                >
+              </li>
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 0.5rem 0;
+                "
+              >
+                <strong style="flex: 1">Grand total:</strong>
+                <span
+                  style="flex: 0 0 auto; min-width: 100px; text-align: right"
+                  >Rs <%= userOrderDataDetails.totalAmount %></span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- content-main end// -->
 </main>
 <script>
+  const applySwalButtonStyles = () => {
+    const confirmButton = Swal.getConfirmButton();
+    const cancelButton = Swal.getCancelButton();
 
-const disableRadioButtonsBasedOnStatus = (status) => {
-    const radioButtons = document.querySelectorAll('input[name="orderStatus"]');
-    const editButton = document.getElementById('editButton');
-    const saveButton = document.getElementById('saveButton');
+    confirmButton.style.width = '100%';
+    confirmButton.style.margin = '5px 0';
+    confirmButton.style.border = '1px solid #000';
+    confirmButton.style.borderRadius = '0.25rem';
+    confirmButton.style.backgroundColor = '#000';
+    confirmButton.style.color = '#fff';
 
-    let disableAll = false;
-    let disablePending = false;
+    cancelButton.style.width = '100%';
+    cancelButton.style.margin = '5px 0';
+    cancelButton.style.border = '1px solid #000';
+    cancelButton.style.borderRadius = '0.25rem';
+    cancelButton.style.color = '#000';
 
-    if (status === 'delivered' || status === 'cancelled'||status==='returnInitiated'||status==='returnApproved'||status==='returnRejected') {
-        disableAll = true;
-        
-    } else if (status === 'shipped') {
-        disablePending = true;
+    if (window.innerWidth <= 768) {
+        confirmButton.style.width = '100%';
+        cancelButton.style.width = '100%';
+    } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = '150px';
+        cancelButton.style.width = '150px';
     }
-
-    radioButtons.forEach(radio => {
-        if (disableAll) {
-            radio.disabled = true;
-        } else if (disablePending && radio.value === 'pending') {
-            radio.disabled = true;
-        } else {
-            radio.disabled = false;
-        }
-    });
-
-    if (disableAll) {
-        editButton.disabled = true;
-        saveButton.disabled = true;
-        editButton.style.backgroundColor = '#d3d3d3'; 
-        saveButton.style.backgroundColor = '#d3d3d3'; 
-        editButton.style.cursor = 'not-allowed';
-        saveButton.style.cursor = 'not-allowed';
-    } else {
-        editButton.disabled = false;
-        saveButton.disabled = false;
-        editButton.style.backgroundColor = '#4CAF50';
-        saveButton.style.backgroundColor = '#f44336';
-        editButton.style.cursor = 'pointer';
-        saveButton.style.cursor = 'pointer';
-    }
-
-
-    const orderStatusDisplay = document.getElementById('orderStatusDisplay');
-   
-    if (orderStatusDisplay) {
-        let statusColor = '';
-
-        if (status === 'pending') {
-            statusColor = '#ffd700'; 
-        } else if (status === 'shipped') {
-            statusColor = '#2196f3';
-        } else if (status === 'delivered') {
-            statusColor = '#4caf50'; 
-        } else if (status === 'cancelled') {
-            statusColor = '#f44336';
-        } else {
-            statusColor = '#ffffff'; 
-        }
-
-        orderStatusDisplay.style.backgroundColor = statusColor;
-        orderStatusDisplay.style.color = 'white'; 
-        orderStatusDisplay.style.padding = '2px 5px'; 
-        orderStatusDisplay.style.borderRadius = '3px'; 
-        orderStatusDisplay.innerText = status.charAt(0).toUpperCase() + status.slice(1);
-    }
-
 };
 
-const toggleAndUpdateStatus = () => {
+  const toggleAndUpdateStatus = () => {
     const editButton = document.getElementById("editButton");
     const saveButton = document.getElementById("saveButton");
-   
+
     if (editButton.style.display === "none") {
-        console.log("Save action");
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#ffffff',
-            confirmButtonText: 'Yes, save it!',
-            customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#ffffff",
+        confirmButtonText: "Yes, save it!",
+         didOpen: () => {
+          applySwalButtonStyles();
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+           const selectedStatus = 
+           document.querySelector('input[name="orderStatus"]:checked').value;
+          const orderId = document
+            .getElementById("orderDetails")
+            .getAttribute("data-order-id");
 
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-                const selectedStatus = getOrderStatus();
-                const orderId = document.getElementById('orderDetails').getAttribute('data-order-id');
-
-                fetch('/admin/orderDetailsPage', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ selectedStatus:selectedStatus, orderId })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.adminCannotCancel) {
-                        Swal.fire({
-                            text: 'Sorry, the user has already canceled the order.',
-                            icon: 'error',
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000,
-                        });
-                       
-                        editButton.style.display = "inline-block";
-                        saveButton.style.display = "none";
-                        return;
-                    }
-
-                    Swal.fire({
-                        text: 'Order status has been updated.',
-                        icon: 'success',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000,
-                    });
-                    editButton.style.display = "inline-block";
-                    saveButton.style.display = "none";
-                    disableRadioButtonsBasedOnStatus(selectedStatus);
-            
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 3000);
-
-                })
-                .catch(error => {
-                    console.error('Error updating order status:', error);
-                    Swal.fire({
-                        text: 'Failed to update order status.',
-                        icon: 'error',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000,
-                    });
+          fetch("/admin/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ selectedStatus: selectedStatus, orderId }),
+          })
+            .then((response) => {
+                if (!response.ok) {
+                return response.json().then((data) => {
+                  const errorMessage = data.message || "An error occurred"; 
+                  throw new Error(errorMessage); 
                 });
-            }
-        });
+              }
+              return response.json();
+            })
+            .then((data) => {
+              Swal.fire({
+                text: "Order status has been updated.",
+                icon: "success",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+              editButton.style.display = "inline-block";
+              saveButton.style.display = "none";
+
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            })
+            .catch((error) => {
+              console.error("Error updating order status:", error);
+              Swal.fire({
+                text: `${error.message}`,
+                icon: "error",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+            });
+        }
+      });
     } else {
-
-        editButton.style.display = "none";
-        saveButton.style.display = "inline-block";
+      editButton.style.display = "none";
+      saveButton.style.display = "inline-block";
     }
-};
-    
-    // Function to get selected order status
-    const getOrderStatus = () => {
-        const selectedStatus = document.querySelector('input[name="orderStatus"]:checked').value;
-        return selectedStatus;
-    };
-
-    document.addEventListener("DOMContentLoaded", () => {
-
-    const initialStatus = '<%= userOrderDataDetails.orderStatus %>';
-    const items =  '<%= userOrderDataDetails.orderProductStatus%>'
-
-    disableRadioButtonsBasedOnStatus(initialStatus);
-    
-
-});
-    </script>
+  };
+</script>
 <%- include('../layouts/adminLayouts/footer') %>

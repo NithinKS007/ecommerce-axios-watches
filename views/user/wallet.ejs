@@ -1,23 +1,4 @@
 <%- include('../layouts/userLayouts/header') %>
-<style>
-    .body {
-        background-color: #f8f9fa;
-        color: #212529;
-        margin-top: 100px;
-    }
-    .card {
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-    }
-    .table {
-        color: #212529;
-    }
-  
-    .text-primary {
-        color: #000 !important;
-    }
-</style>
-
 <div class="bg-white sticky-top">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -61,7 +42,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -159,100 +140,107 @@
   </div>
 </div>
 
-        <main class="main">
-            <section class="pt-150 pb-150">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-10 m-auto">
-                            <div class="row">
-                                <%- include('../layouts/userLayouts/sidebar') %>
-                                <div class="col-md-8">
-                                    <h2 class="mb-4">Your Wallet</h2>
-                                    <div class="card mb-4 shadow-sm">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Wallet Balance</h5>
-                                            <h2 class="card-text text-primary">₹ <%= walletData?.balance?.toFixed(2) %></h2>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="card shadow-sm">
-                                        <div class="card-body">
-                                            <h5 class="card-title mb-3">Recent Transactions</h5>
-                                            <div class="table-responsive">
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Transaction ID</th>
-                                                            <th scope="col">Amount</th>
-                                                            <th scope="col">Date</th>
-                                                            <th scope="col">Type</th>
-                                                            <th scope="col">Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <% if (transactionsData.length > 0) { %>
-                                                            <% transactionsData.forEach(transaction => { %>
-                                                                <tr>
-                                                                    <td><%= transaction._id %></td>
-                                                                    <td>₹<%= transaction.amount.toFixed(2) %></td>
-                                                                    <td><%= transaction.createdAt.toISOString().split('T')[0] %></td>
-                                                                    <td><%= transaction.type %></td>
-                                                                    <td><%= transaction.walletTransactionStatus %></td>
-                                                                </tr>
-                                                            <% }) %>
-                                                        <% } else { %>
-                                                            <tr>
-                                                                <td colspan="5" class="text-center">No transactions available</td>
-                                                            </tr>
-                                                        <% } %>
-                                                </table>
-
-                                                <div class="pagination-area mt-30 mb-50">
-                                                    <nav aria-label="Page navigation example">
-                                                        <ul class="pagination justify-content-start">
-                                                            <% if (currentPage > 1) { %>
-                                                                <li class="page-item">
-                                                                    <a class="page-link" href="/wallet?page=<%= currentPage - 1 %>">
-                                                                        <strong>&lt;</strong>
-                                                                    </a>
-                                                                </li>
-                                                            <% } %>
-                                                            
-                                                            <% 
-                                                            let startPage = Math.max(1, currentPage - 2);
-                                                            let endPage = Math.min(totalPages, startPage + 4);
-                                                            if (endPage - startPage < 4) {
-                                                                startPage = Math.max(1, endPage - 4);
-                                                            }
-                                                            %>
-                                                            
-                                                            <% for (let i = startPage; i <= endPage; i++) { %>
-                                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                                                    <a class="page-link" href="/wallet?page=<%= i %>"><strong><%= i %></strong></a>
-                                                                </li>
-                                                            <% } %>
-                                                            
-                                                            <% if (currentPage < totalPages) { %>
-                                                                <li class="page-item">
-                                                                    <a class="page-link" href="/wallet?page=<%= currentPage + 1 %>">
-                                                                        <strong>&gt;</strong>
-                                                                    </a>
-                                                                </li>
-                                                            <% } %>
-                                                        </ul>
-                                                    </nav>
-                                                </div>
-                                               
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
+<main class="main">
+  <section class="pt-150 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 m-auto">
+          <div class="row">
+            <%- include('../layouts/userLayouts/sidebar') %>
+            <div class="col-md-8">
+              <h2 class="mb-4">Your Wallet</h2>
+              <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">Wallet Balance</h5>
+                  <h2 class="card-text text-primary">
+                    ₹ <%= walletData?.balance?.toFixed(2) %>
+                  </h2>
                 </div>
-            </section>
-        </main>
+              </div>
 
-        <%- include('../layouts/userLayouts/footer') %>
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Recent Transactions</h5>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col">Transaction ID</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Type</th>
+                          <th scope="col">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% if (transactionsData.length > 0) { %> <%
+                        transactionsData.forEach(transaction => { %>
+                        <tr>
+                          <td><%= transaction._id %></td>
+                          <td>₹<%= transaction.amount.toFixed(2) %></td>
+                          <td>
+                            <%=
+                            transaction.createdAt.toISOString().split('T')[0] %>
+                          </td>
+                          <td><%= transaction.type %></td>
+                          <td><%= transaction.walletTransactionStatus %></td>
+                        </tr>
+                        <% }) %> <% } else { %>
+                        <tr>
+                          <td colspan="5" class="text-center">
+                            No transactions available
+                          </td>
+                        </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+
+                    <div class="pagination-area mt-30 mb-50">
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                          <% if (currentPage > 1) { %>
+                          <li class="page-item">
+                            <a
+                              class="page-link"
+                              href="/wallet?page=<%= currentPage - 1 %>"
+                            >
+                              <strong>&lt;</strong>
+                            </a>
+                          </li>
+                          <% } %> <% let startPage = Math.max(1, currentPage -
+                          2); let endPage = Math.min(totalPages, startPage + 4);
+                          if (endPage - startPage < 4) { startPage = Math.max(1,
+                          endPage - 4); } %> <% for (let i = startPage; i <=
+                          endPage; i++) { %>
+                          <li
+                            class="page-item <%= i === currentPage ? 'active' : '' %>"
+                          >
+                            <a class="page-link" href="/wallet?page=<%= i %>"
+                              ><strong><%= i %></strong></a
+                            >
+                          </li>
+                          <% } %> <% if (currentPage < totalPages) { %>
+                          <li class="page-item">
+                            <a
+                              class="page-link"
+                              href="/wallet?page=<%= currentPage + 1 %>"
+                            >
+                              <strong>&gt;</strong>
+                            </a>
+                          </li>
+                          <% } %>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../layouts/userLayouts/footer') %>

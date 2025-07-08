@@ -2,16 +2,6 @@
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
 <main class="main-wrap">
-  <style>
-    .error {
-      font-size: 0.8em;
-      color: red;
-    }
-    .small-text {
-      font-size: 0.8em;
-      line-height: 1.2;
-    }
-  </style>
   <%- include('../layouts/adminLayouts/searchbar') %>
 
   <section class="content-main">
@@ -30,7 +20,7 @@
             <h4>Coupon Details</h4>
           </div>
           <div class="card-body">
-            <form method="post" action="/admin/addCoupon" id="couponForm">
+            <form method="post" action="/admin/coupons" id="couponForm">
               <!-- Coupon Name -->
               <div class="mb-4">
                 <label for="couponName" class="form-label">Coupon Name</label>
@@ -41,7 +31,11 @@
                   class="form-control"
                   id="couponName"
                 />
-                <span id="couponNameError" class="error"></span>
+                <span
+                  id="couponNameError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
               <!-- Description -->
               <div class="mb-4">
@@ -53,7 +47,11 @@
                   class="form-control"
                   rows="4"
                 ></textarea>
-                <span id="couponDescriptionError" class="error"></span>
+                <span
+                  id="couponDescriptionError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
               <!-- Coupon Code -->
               <div class="mb-4">
@@ -65,7 +63,32 @@
                   class="form-control"
                   id="couponCode"
                 />
-                <span id="couponCodeError" class="error"></span>
+                <span
+                  id="couponCodeError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
+              </div>
+
+              <!-- Discount Amount -->
+              <div class="mb-4">
+                <label for="couponDiscount" class="form-label"
+                  >Discount Percentage</label
+                >
+                <input
+                  type="number"
+                  name="couponDiscount"
+                  placeholder="Percentage (0-100)"
+                  class="form-control"
+                  id="couponDiscount"
+                  min="0"
+                  max="100"
+                />
+                <span
+                  id="couponDiscountError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
               <!-- Discount Amount -->
 
@@ -81,9 +104,12 @@
                   class="form-control"
                   id="minAmount"
                 />
-                <span id="minAmountError" class="error"></span>
+                <span
+                  id="minAmountError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
-              <!-- Discount Amount -->
 
               <!-- Max Amount -->
               <div class="mb-4">
@@ -97,23 +123,13 @@
                   class="form-control"
                   id="maxAmount"
                 />
-                <span id="maxAmountError" class="error"></span>
+                <span
+                  id="maxAmountError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
-              <div class="mb-4">
-                <label for="couponDiscount" class="form-label"
-                  >Discount Percentage</label
-                >
-                <input
-                  type="number"
-                  name="couponDiscount"
-                  placeholder="Percentage (0-100)"
-                  class="form-control"
-                  id="couponDiscount"
-                  min="0"
-                  max="100"
-                />
-                <span id="couponDiscountError" class="error"></span>
-              </div>
+
               <!-- Coupon Status -->
               <div class="mb-4">
                 <label class="form-label">Status</label>
@@ -122,6 +138,23 @@
                   <option value="false">Inactive</option>
                 </select>
               </div>
+              <% if (message) { %>
+              <div
+                class="error"
+                style="
+                  font-size: 1.5em;
+                  color: red;
+                  text-align: center;
+                  font-weight: bold;
+                  padding: 10px 15px;
+                  font-size: 0.8em;
+                  margin-top: 10px;
+                "
+              >
+                <%= message %>
+              </div>
+              <% } %>
+
               <div
                 style="
                   display: flex;
@@ -148,7 +181,11 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // Validation Functions
+    const clearError = (input, errorElement) => {
+      input.addEventListener("focus", () => {
+        errorElement.textContent = "";
+      });
+    };
     const validateField = (input, errorElement, errorMessage) => {
       if (input.value.trim() === "") {
         errorElement.textContent = errorMessage;
@@ -215,9 +252,9 @@
       const input = document.getElementById("couponDiscount");
       const errorElement = document.getElementById("couponDiscountError");
       const value = parseFloat(input.value);
-      if (isNaN(value) || value < 0 || value > 100) {
+      if (isNaN(value) || value < 0 || value > 70) {
         errorElement.textContent =
-          "* Discount Percentage must be between 0 and 100";
+          "* Discount Percentage must be between 0 and 70";
         return false;
       } else {
         errorElement.textContent = "";
@@ -225,16 +262,24 @@
       }
     };
     const validateMaxAmount = () => {
-      const input = document.getElementById("maxAmount");
+      const maxInput = document.getElementById("maxAmount");
+      const minInput = document.getElementById("minAmount");
       const errorElement = document.getElementById("maxAmountError");
-      const value = parseFloat(input.value);
-      if (isNaN(value) || value <= 0) {
+      const maxValue = parseFloat(maxInput.value);
+      const minValue = parseFloat(minInput.value);
+      const couponDiscountPercentInput =
+        document.getElementById("couponDiscount");
+
+      const calculatedMax = Math.floor(
+        minValue * Number(couponDiscountPercentInput.value / 100)
+      );
+
+      if (isNaN(maxValue) || maxValue <= 0) {
         errorElement.textContent =
           "* Maximum Discount Amount must be greater than zero";
         return false;
-      } else if (minAmount && value > minAmount) {
-        errorElement.textContent =
-          "* Maximum Discount Amount cannot exceed Minimum Purchase Amount";
+      } else if (Number(maxValue) <= calculatedMax) {
+        errorElement.textContent = `* Maximum Discount Amount cannot be less than the calculated maximum discount of ${calculatedMax}`;
         return false;
       } else {
         errorElement.textContent = "";
@@ -243,10 +288,12 @@
     };
 
     const validateMinAmount = () => {
-      const input = document.getElementById("minAmount");
+      const maxInput = document.getElementById("maxAmount");
+      const minInput = document.getElementById("minAmount");
       const errorElement = document.getElementById("minAmountError");
-      const value = parseFloat(input.value);
-      if (isNaN(value) || value < 0) {
+      const maxValue = parseFloat(maxInput.value);
+      const minValue = parseFloat(minInput.value);
+      if (isNaN(minValue) || minValue < 0) {
         errorElement.textContent =
           "* Minimum Purchase Amount must be zero or greater";
         return false;
@@ -268,13 +315,39 @@
     document
       .getElementById("couponDiscount")
       .addEventListener("input", validateCouponDiscount);
-    document
-      .getElementById("maxAmount")
-      .addEventListener("input", validateMaxAmount);
     document.getElementById("minAmount").addEventListener("input", () => {
       validateMinAmount();
       validateMaxAmount();
     });
+    document.getElementById("maxAmount").addEventListener("input", () => {
+      validateMinAmount();
+      validateMaxAmount();
+    });
+
+    clearError(
+      document.getElementById("couponName"),
+      document.getElementById("couponNameError")
+    );
+    clearError(
+      document.getElementById("couponDescription"),
+      document.getElementById("couponDescriptionError")
+    );
+    clearError(
+      document.getElementById("couponCode"),
+      document.getElementById("couponCodeError")
+    );
+    clearError(
+      document.getElementById("couponDiscount"),
+      document.getElementById("couponDiscountError")
+    );
+    clearError(
+      document.getElementById("minAmount"),
+      document.getElementById("minAmountError")
+    );
+    clearError(
+      document.getElementById("maxAmount"),
+      document.getElementById("maxAmountError")
+    );
 
     // Form Submission Validation
     const form = document.getElementById("couponForm");

@@ -42,7 +42,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -140,110 +140,170 @@
   </div>
 </div>
 
-<div class="page-header breadcrumb-wrap" style="background-color: transparent; padding: 15px 0; font-family: Arial, sans-serif;">
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="breadcrumb" style="font-size: 16px; color: #6c757d;">
-            <a href="/" rel="nofollow" style="color: rgb(34, 33, 33); text-decoration: none; margin-right: 8px;">Home</a>
-            <span style="margin: 0 8px; color: #6c757d;"></span> <!-- More modern separator -->
-            <a href="/orders" style="color: rgb(34, 33, 33); text-decoration: none;">
-               Orders
-            </a>
-        </div>
+<div
+  class="page-header breadcrumb-wrap"
+  style="
+    background-color: transparent;
+    padding: 15px 0;
+    font-family: Arial, sans-serif;
+  "
+>
+  <div class="container" style="max-width: 1200px; margin: 0 auto">
+    <div class="breadcrumb" style="font-size: 16px; color: #6c757d">
+      <a
+        href="/"
+        rel="nofollow"
+        style="color: rgb(34, 33, 33); text-decoration: none; margin-right: 8px"
+        >Home</a
+      >
+      <span style="margin: 0 8px; color: #6c757d"></span>
+      <!-- More modern separator -->
+      <a href="/orders" style="color: rgb(34, 33, 33); text-decoration: none">
+        Orders
+      </a>
     </div>
+  </div>
 </div>
 <main class="main">
-    <section style="padding-top: 100px; padding-bottom: 100px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 m-auto">
-                    <div class="row">
-                        <%- include('../layouts/userLayouts/sidebar') %>
-                        <div class="col-md-8">
-                            <div class="container mt-3">
-                                <h2 class="h2" style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 1rem;">MANAGE YOUR ORDERS</h2>
-                                
-                                <% if (orderData && orderData.length > 0) { %>
-                                    <% orderData.forEach(order => { %>
-                                        <div class="order-card card mb-3" style="border-radius: 10px;" data-order-id="<%= order._id %>">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-12 col-md-6">
-                                                        <p class="mb-1"><strong>Order Number:</strong> #<%= order._id %></p>
-                                                        <p class="mb-1"><strong>Total:</strong> Rs <%= order.totalAmount %></p>
-                                                        <p class="mb-1"><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
-                                                        <p class="mb-1"><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                                                        <p class="mb-1"><strong>Online Payment Status:</strong> <%= order.transaction.paymentStatus || 'N/A' %></p>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 text-md-right text-warning my-2">
-                                                        <strong><%= order.orderStatus.toUpperCase() %></strong>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 text-md-right">
-                                                        <% if (order.transaction.paymentStatus === 'failed' || order.transaction.paymentStatus === 'pending') { %>
-                                                            <form action="/retryPayment" method="GET" class="d-inline">
-                                                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                                <button type="submit" class="btn btn-primary btn-sm mb-2">
-                                                                    Retry
-                                                                </button>
-                                                            </form>
-                                                        <% } %>
-                                                        <!-- Form for viewing order details -->
-                                                        <form method="get" action="/orderDetails" class="d-inline">
-                                                            <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                            <button type="submit" class="btn btn-secondary btn-sm">
-                                                                View Details
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <% }) %>   
-                                <% } else { %>
-                                    <p>No orders found.</p>
-                                <% } %>
-                            </div>
+  <section style="padding-top: 100px; padding-bottom: 100px">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 m-auto">
+          <div class="row">
+            <%- include('../layouts/userLayouts/sidebar') %>
+            <div class="col-md-8">
+              <div class="container mt-3">
+                <h2
+                  class="h2"
+                  style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  MANAGE YOUR ORDERS
+                </h2>
 
-                            <div class="pagination-area mt-30 mb-50">
-                                <nav aria-label="Page navigation example">
-                                    <ul class="pagination justify-content-start">
-                                        <% if (currentPage > 1) { %>
-                                            <li class="page-item">
-                                                <a class="page-link" href="/orders?page=<%= currentPage - 1 %>">
-                                                    <strong>&lt;</strong>
-                                                </a>
-                                            </li>
-                                        <% } %>
-                                        
-                                        <% 
-                                        let startPage = Math.max(1, currentPage - 2);
-                                        let endPage = Math.min(totalPages, startPage + 4);
-                                        if (endPage - startPage < 4) {
-                                            startPage = Math.max(1, endPage - 4);
-                                        }
-                                        %>
-                                        
-                                        <% for (let i = startPage; i <= endPage; i++) { %>
-                                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                                <a class="page-link" href="/orders?page=<%= i %>"><strong><%= i %></strong></a>
-                                            </li>
-                                        <% } %>
-                                        
-                                        <% if (currentPage < totalPages) { %>
-                                            <li class="page-item">
-                                                <a class="page-link" href="/orders?page=<%= currentPage + 1 %>">
-                                                    <strong>&gt;</strong>
-                                                </a>
-                                            </li>
-                                        <% } %>
-                                    </ul>
-                                </nav>
-                            </div>
-                            
-                        </div>
+                <% if (orderData && orderData.length > 0) { %> <%
+                orderData.forEach(order => { %>
+                <div
+                  class="order-card card mb-3"
+                  style="border-radius: 10px"
+                  data-order-id="<%= order._id %>"
+                >
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <p class="mb-1">
+                          <strong>Order Number:</strong> #<%= order._id %>
+                        </p>
+                        <p class="mb-1">
+                          <strong>Total:</strong> Rs <%= order.totalAmount %>
+                        </p>
+                        <p class="mb-1">
+                          <strong>Order Date:</strong> <%= new
+                          Date(order.orderDate).toLocaleDateString() %>
+                        </p>
+                        <p class="mb-1">
+                          <strong>Payment Method:</strong> <%=
+                          order.paymentMethod %>
+                        </p>
+                        <p class="mb-1">
+                          <strong>Online Payment Status:</strong> <%=
+                          order.transaction.paymentStatus || 'N/A' %>
+                        </p>
+                      </div>
+                      <div
+                        class="col-12 col-md-3 text-md-right text-warning my-2"
+                      >
+                        <strong><%= order.orderStatus.toUpperCase() %></strong>
+                      </div>
+                      <div class="col-12 col-md-3 text-md-right">
+                        <% if (order.transaction.paymentStatus === 'failed' ||
+                        order.transaction.paymentStatus === 'pending') { %>
+                        <form
+                          action="/retryPayment"
+                          method="GET"
+                          class="d-inline"
+                        >
+                          <input
+                            type="hidden"
+                            name="orderId"
+                            value="<%= order._id %>"
+                          />
+                          <button
+                            type="submit"
+                            class="btn btn-primary btn-sm mb-2"
+                          >
+                            Retry
+                          </button>
+                        </form>
+                        <% } %>
+                        <!-- Form for viewing order details -->
+                        <a
+                          href="/orders/<%= order._id %>?view=details"
+                          class="d-inline"
+                        >
+                          <button
+                            type="button"
+                            class="btn btn-secondary btn-sm"
+                          >
+                            View Details
+                          </button>
+                        </a>
+                      </div>
                     </div>
+                  </div>
                 </div>
+                <% }) %> <% } else { %>
+                <p>No orders found.</p>
+                <% } %>
+              </div>
+
+              <div class="pagination-area mt-30 mb-50">
+                <nav aria-label="Page navigation example">
+                  <ul class="pagination justify-content-start">
+                    <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="/orders?view=orders&page=<%= currentPage - 1 %>"
+                      >
+                        <strong>&lt;</strong>
+                      </a>
+                    </li>
+                    <% } %> <% let startPage = Math.max(1, currentPage - 2); let
+                    endPage = Math.min(totalPages, startPage + 4); if (endPage -
+                    startPage < 4) { startPage = Math.max(1, endPage - 4); } %>
+                    <% for (let i = startPage; i <= endPage; i++) { %>
+                    <li
+                      class="page-item <%= i === currentPage ? 'active' : '' %>"
+                    >
+                      <a
+                        class="page-link"
+                        href="/orders?view=orders&page=<%= i %>"
+                        ><strong><%= i %></strong></a
+                      >
+                    </li>
+                    <% } %> <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="/orders?view=orders&page=<%= currentPage + 1 %>"
+                      >
+                        <strong>&gt;</strong>
+                      </a>
+                    </li>
+                    <% } %>
+                  </ul>
+                </nav>
+              </div>
             </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </main>
 <%- include('../layouts/userLayouts/footer') %>

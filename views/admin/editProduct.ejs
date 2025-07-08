@@ -1,891 +1,926 @@
 <%- include('../layouts/adminLayouts/header') %>
-    <div class="screen-overlay"></div>
-    <%- include('../layouts/adminLayouts/sidebar') %>
-        <main class="main-wrap">
-            <style>
-                .error {
-                    font-size: 0.8em;
-                    color: red;
-                }
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <!--  modal section starts-->
+  <button
+    type="button"
+    style="display: none"
+    id="openCropperModalBtn"
+    data-bs-toggle="modal"
+    data-bs-target="#cropperModal"
+  ></button>
 
-                .small-text {
-                    font-size: 0.8em;
-                    line-height: 1.2;
-                }
-                .swal1-cancel {
-        width: 100% !important; 
-        margin: 5px 0!important;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
-    
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-    
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
-    }
-
-            </style>
-            <%- include('../layouts/adminLayouts/searchbar') %>
-                <!--  modal section starts-->
-                <button type="button" style="display: none" id="openCropperModalBtn" data-bs-toggle="modal"
-                    data-bs-target="#cropperModal"></button>
-
-                <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body" style="
+  <div
+    class="modal fade"
+    id="cropperModal"
+    tabindex="-1"
+    aria-labelledby="cropperModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div
+          class="modal-body"
+          style="
             width: 100%;
             height: 400px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-          ">
-                                <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Close
-                                </button>
-                                <button type="button" id="cropAndSave" class="btn btn-primary">
-                                    Crop and Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+          "
+        >
+          <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" id="cropAndSave" class="btn btn-primary">
+            Crop and Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  modal section  ends-->
+
+  <section class="content-main">
+    <div class="row">
+      <!-- Content Header -->
+      <div class="col-12 mb-3">
+        <div class="content-header">
+          <h2 class="content-title">Edit Product</h2>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h4>Product Details</h4>
+          </div>
+          <div class="card-body">
+            <form id="productForm" enctype="multipart/form-data">
+              <!-- Product Name -->
+              <div class="mb-4">
+                <input
+                  type="hidden"
+                  name="hiddenInput"
+                  id="idOfProduct"
+                  value="<%= productDataToEdit?._id %>"
+                />
+
+                <label for="product_name" class="form-label"
+                  >Product Name</label
+                >
+                <input
+                  type="text"
+                  name="name"
+                  value="<%= productDataToEdit?.name %>"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="productName"
+                />
+                <span id="productNameError" class="error" style=" font-size: 0.8em; color: red;"></span>
+              </div>
+              <!-- Description -->
+              <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                  name="description"
+                  id="productDescription"
+                  placeholder="Type here"
+                  class="form-control"
+                  rows="4"
+                >
+               <%= productDataToEdit?.description %></textarea
+                >
+                <span id="productDescriptionError" class="error" style=" font-size: 0.8em; color: red;"></span>
+              </div>
+              <!-- Prices and Attributes -->
+              <div class="row">
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Sales Price</label>
+                  <input
+                    name="salesPrice"
+                    value="<%= productDataToEdit?.salesPrice %>"
+                    id="salesPrice"
+                    type="text"
+                    placeholder="RS"
+                    class="form-control"
+                  />
+                  <span id="salesPriceError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Dial Shape</label>
+                  <input
+                    name="dialShape"
+                    value="<%= productDataToEdit?.dialShape %>"
+                    id="dialShape"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="dialShapeError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Display Type</label>
+                  <input
+                    name="displayType"
+                    value="<%= productDataToEdit?.displayType %>"
+                    id="displayType"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="displayTypeError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Strap Material</label>
+                  <input
+                    name="strapMaterial"
+                    value="<%= productDataToEdit?.strapMaterial %>"
+                    id="strapMaterial"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="strapMaterialError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+                <div class="col-lg-4 mb-4">
+                  <label class="form-label">Strap Color</label>
+                  <input
+                    name="strapColor"
+                    value="<%= productDataToEdit?.strapColor %>"
+                    id="strapColor"
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                  />
+                  <span id="strapColorError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+              </div>
+              <!-- Stock Quantity -->
+              <div class="mb-4">
+                <label for="stock" class="form-label">Stock Quantity</label>
+                <input
+                  type="text"
+                  id="stock"
+                  name="stock"
+                  value="<%= productDataToEdit?.stock%>"
+                  class="form-control"
+                />
+                <span id="stockError" class="error" style=" font-size: 0.8em; color: red;"></span>
+              </div>
+              <!-- Category and Brand -->
+            <div class="mb-4">
+            <label class="form-label">Category</label>
+            <select class="form-select" name="category">
+                <% if (categoriesData.length> 0) { %>
+                    <% categoriesData.forEach(category=> { %>
+                        <option value="<%= category?._id %>"
+                                <%=(productDataToEdit?.category?._id.toString()===category?._id.toString())
+                                ? 'selected' : '' %>>
+                                <%= category.name %>
+                                        </option>
+                                    <% }) %>
+                               <% } else { %>
+                            <option>No Category Found</option>
+                         <% } %>
+                     </select>
                 </div>
 
-                <!--  modal section  ends-->
+                <div class="mb-4">
+                    <label class="form-label">Brands</label>
+                    <select class="form-select" name="brand">
+                        <% if (brandsData.length> 0) { %>
+                            <% brandsData.forEach(brand=> { %>
+                                <option value="<%= brand?._id %>"
+                                    <%=(productDataToEdit?.brand?._id.toString()===brand?._id.toString())
+                                    ? 'selected' : '' %>>
+                                    <%= brand.name %>
+                                  </option>
+                               <% }) %>
+                           <% } else { %>
+                         <option>No Brand Found</option>
+                      <% } %>
+                    </select>
+                </div>
+              <div class="container mt-4">
+                <div class="mb-3">
+                  <label class="form-label">Select Target Group:</label><br />
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" id="men"
+                    name="targetGroup" value="men"
+                    <%=productDataToEdit?.targetGroup==='men' ? 'checked' : ''
+                    %> />
+                    <label class="form-check-label" for="men">Men</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" id="women"
+                    name="targetGroup" value="women"
+                    <%=productDataToEdit?.targetGroup==='women' ? 'checked' : ''
+                    %> />
+                    <label class="form-check-label" for="women">Women</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" id="kids"
+                    name="targetGroup" value="kids"
+                    <%=productDataToEdit?.targetGroup==='kids' ? 'checked' : ''
+                    %> />
+                    <label class="form-check-label" for="kids">Kids</label>
+                  </div>
+                  <span id="targetGroupError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                </div>
+              </div>
 
+              <div class="input-upload">
+                <span id="fileAccessError" class="error" style=" font-size: 0.8em; color: red;"></span>
+                <input
+                  class="form-control"
+                  id="fileAccess"
+                  accept="image/*"
+                  type="file"
+                  name="productimages"
+                  multiple
+                />
 
-
-
-                <section class="content-main">
-                    <div class="row">
-                        <!-- Content Header -->
-                        <div class="col-12 mb-3">
-                            <div class="content-header">
-                                <h2 class="content-title">Edit Product</h2>
-                            </div>
-                        </div>
-
-                        <!-- Main Content -->
-                        <div class="col-lg-9">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h4>Product Details</h4>
-                                </div>
-                                <div class="card-body">
-                                    <form id="productForm" enctype="multipart/form-data">
-                                        <!-- Product Name -->
-                                        <div class="mb-4">
-
-                                            <input type="hidden" name="hiddenInput" id="idOfProduct" value="<%= productDataToEdit?._id %>">
-
-                                            <label for="product_name" class="form-label">Product Name</label>
-                                            <input type="text" name="name" value="<%= productDataToEdit?.name %>"
-                                                placeholder="Type here" class="form-control" id="productName" />
-                                            <span id="productNameError" class="error"></span>
-                                        </div>
-                                        <!-- Description -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Description</label>
-                                            <textarea name="description" id="productDescription" placeholder="Type here"
-                                                class="form-control"
-                                                rows="4"><%= productDataToEdit?.description %></textarea>
-                                            <span id="productDescriptionError" class="error"></span>
-                                        </div>
-                                        <!-- Prices and Attributes -->
-                                        <div class="row">
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Sales Price</label>
-                                                <input name="salesPrice" value="<%= productDataToEdit?.salesPrice %>"
-                                                    id="salesPrice" type="text" placeholder="RS" class="form-control" />
-                                                <span id="salesPriceError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Dial Shape</label>
-                                                <input name="dialShape" value="<%= productDataToEdit?.dialShape %>"
-                                                    id="dialShape" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                <span id="dialShapeError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Display Type</label>
-                                                <input name="displayType" value="<%= productDataToEdit?.displayType %>"
-                                                    id="displayType" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                <span id="displayTypeError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Strap Material</label>
-                                                <input name="strapMaterial"
-                                                    value="<%= productDataToEdit?.strapMaterial %>" id="strapMaterial"
-                                                    type="text" placeholder="Type here" class="form-control" />
-                                                <span id="strapMaterialError" class="error"></span>
-                                            </div>
-                                            <div class="col-lg-4 mb-4">
-                                                <label class="form-label">Strap Color</label>
-                                                <input name="strapColor" value="<%= productDataToEdit?.strapColor %>"
-                                                    id="strapColor" type="text" placeholder="Type here"
-                                                    class="form-control" />
-                                                <span id="strapColorError" class="error"></span>
-                                            </div>
-                                        </div>
-                                        <!-- Stock Quantity -->
-                                        <div class="mb-4">
-                                            <label for="stock" class="form-label">Stock Quantity</label>
-                                            <input type="text" id="stock" name="stock"
-                                                value="<%= productDataToEdit?.stock%>" class="form-control" />
-                                            <span id="stockError" class="error"></span>
-                                        </div>
-                                        <!-- Category and Brand -->
-                                        <div class="mb-4">
-                                            <label class="form-label">Category</label>
-                                            <select class="form-select" name="category">
-                                                <% if (categoriesData.length> 0) { %>
-                                                    <% categoriesData.forEach(category=> { %>
-                                                        <option value="<%= category?._id %>"
-                                                            <%=(productDataToEdit?.category?._id.toString()===category?._id.toString())
-                                                            ? 'selected' : '' %>>
-                                                            <%= category.name %>
-                                                        </option>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <option>No Category Found</option>
-                                                                <% } %>
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label class="form-label">Brands</label>
-                                            <select class="form-select" name="brand">
-                                                <% if (brandsData.length> 0) { %>
-                                                    <% brandsData.forEach(brand=> { %>
-                                                        <option value="<%= brand?._id %>"
-                                                            <%=(productDataToEdit?.brand?._id.toString()===brand?._id.toString())
-                                                            ? 'selected' : '' %>>
-                                                            <%= brand.name %>
-                                                        </option>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <option>No Brand Found</option>
-                                                                <% } %>
-                                            </select>
-                                        </div>
-
-                                        <div class="container mt-4">
-                                            <div class="mb-3">
-                                                <label class="form-label">Select Target Group:</label><br />
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="men"
-                                                        name="targetGroup" value="men"
-                                                        <%=productDataToEdit?.targetGroup==='men' ? 'checked' : '' %> />
-                                                    <label class="form-check-label" for="men">Men</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="women"
-                                                        name="targetGroup" value="women"
-                                                        <%=productDataToEdit?.targetGroup==='women' ? 'checked' : '' %>
-                                                    />
-                                                    <label class="form-check-label" for="women">Women</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" id="kids"
-                                                        name="targetGroup" value="kids"
-                                                        <%=productDataToEdit?.targetGroup==='kids' ? 'checked' : '' %>
-                                                    />
-                                                    <label class="form-check-label" for="kids">Kids</label>
-                                                </div>
-                                                <span id="targetGroupError" class="error"></span>
-                                            </div>
-                                        </div>
-
-                                        <div class="input-upload">
-                                            <span id="fileAccessError" class="error"></span>
-                                            <input class="form-control" id="fileAccess" accept="image/*" type="file"
-                                                name="productimages" multiple />
-
-                                            <div class="container" style="width: 100%">
-                                                <h4 style="padding-top: 5px">Image Preview</h4>
-                                                <div id="imagePreview" style="
+                <div class="container" style="width: 100%">
+                  <h4 style="padding-top: 5px">Image Preview</h4>
+                  <div
+                    id="imagePreview"
+                    style="
                       width: 100%;
                       overflow: auto;
                       border: 1px solid #ddd;
                       padding: 10px;
-                    "></div>
-                                            </div>
-                                        </div>
+                    "
+                  ></div>
+                </div>
+              </div>
 
-                                        <div style="
+              <div
+                style="
                   display: flex;
                   justify-content: center;
                   padding-top: 15px;
-                ">
-                                            <input type="hidden" name="productId" value="<%= productDataToEdit?._id %>"
-                                                id="productId" />
-                                            <button class="btn btn-md rounded font-sm hover-up" id="submitForm"
-                                                type="submit">
-                                                Update Product
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    <!-- displaying the existing images starts -->
-
-                                    <div id="existingImages" style="margin-bottom: 20px;">
-                                        <h4>Existing Images</h4>
-                                        <% if(productDataToEdit?.images && productDataToEdit?.images.length> 0) { %>
-                                            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                                                <% productDataToEdit?.images.forEach((image)=> { %>
-                                                    <div class="existing-image-container"
-                                                        style="display: flex; flex-direction: column; align-items: center; width: 120px;">
-                                                        <img src="/productImages/<%= image?.filename %>"
-                                                            data-image-name="<%= image?.filename %>"
-                                                            style="width: 100px; height: 100px; object-fit: cover; margin-bottom: 5px;">
-                                                        <button type="button"
-                                                            class="btn btn-danger btn-sm remove-existing-image"
-                                                            style="width: 100%; font-size: 0.8rem; padding: 2px 5px;">Remove</button>
-                                                    </div>
-                                                    <% }) %>
-                                            </div>
-                                            <% } else { %>
-                                                <p>No existing images</p>
-                                                <% } %>
-                                    </div>
-
-                                    <!-- displaying the existing images ends -->
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Media Container -->
-                    </div>
-                </section>
-        </main>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-
-                const form = document.getElementById("productForm");
-                const imageInput = document.getElementById("fileAccess");
-                const imagePreview = document.getElementById("imagePreview");
-                const openCropperModalBtn = document.getElementById("openCropperModalBtn");
-                const imageToCrop = document.getElementById("imageToCrop");
-                const cropAndSave = document.getElementById("cropAndSave");
-                const cropperModalElement = document.getElementById("cropperModal");
-                const formSubmitButton = document.getElementById("submitForm");
-                const fileAccessError = document.getElementById("fileAccessError");
-
-                const productNameInput = document.getElementById("productName");
-                const productDescriptionInput = document.getElementById("productDescription");
-                const salesPriceInput = document.getElementById("salesPrice");
-                const dialShapeInput = document.getElementById("dialShape");
-                const displayTypeInput = document.getElementById("displayType");
-                const strapMaterialInput = document.getElementById("strapMaterial");
-                const strapColorInput = document.getElementById("strapColor");
-                const stockInput = document.getElementById("stock");
-                const menRadio = document.getElementById("men");
-                const womenRadio = document.getElementById("women");
-                const kidsRadio = document.getElementById("kids");
-
-                const productNameError = document.getElementById("productNameError");
-                const productDescriptionError = document.getElementById("productDescriptionError");
-                const salesPriceError = document.getElementById("salesPriceError");
-                const dialShapeError = document.getElementById("dialShapeError");
-                const displayTypeError = document.getElementById("displayTypeError");
-                const strapMaterialError = document.getElementById("strapMaterialError");
-                const strapColorError = document.getElementById("strapColorError");
-                const stockError = document.getElementById("stockError");
-                const targetGroupError = document.getElementById("targetGroupError");
-
-
-
-                let cropper; //hold the cropper js instance
-                let currentImage;
-                let originalImageBlobs = [];
-
-                imageInput.addEventListener("change", (event) => {
-                    const files = event.target.files;
-
-                    Array.from(files).forEach((file) => {
-
-                        if (!validateImage(file)) {
-
-
-                            return;
-                        }
-                        const reader = new FileReader();
-
-                        reader.onload = (event) => {
-                            const imageContainer = document.createElement("div");
-                            imageContainer.style.position = "relative";
-                            imageContainer.style.marginBottom = "10px";
-                            imageContainer.style.display = "flex";
-                            imageContainer.style.alignItems = "center";
-                            imageContainer.style.justifyContent = "space-between";
-
-                            const img = document.createElement("img");
-                            img.src = event.target.result;
-                            img.className = "imagePreview";
-                            img.style.maxWidth = "280px";
-                            img.style.maxHeight = "280px";
-                            img.style.marginRight = "10px";
-                            img.style.objectFit = "cover";
-
-                            const buttonContainer = document.createElement("div");
-                            buttonContainer.style.display = "flex";
-                            buttonContainer.style.flexDirection = "column";
-
-                            const deleteButton = document.createElement("button");
-                            deleteButton.className = "btn btn-danger btn-sm mb-2";
-                            deleteButton.innerText = "Remove";
-                            deleteButton.addEventListener("click", () => {
-                                imageContainer.remove(); //Removes the image container from the DOM
-                                originalImageBlobs = originalImageBlobs.filter(
-                                    (item) => item.id !== img.src
-                                ); //filters out the removed image from the array
-                                updateFileInput(); //Updates the file input with the current images
-                            });
-
-                            buttonContainer.appendChild(deleteButton);
-                            imageContainer.appendChild(img);
-                            imageContainer.appendChild(buttonContainer);
-                            imagePreview.appendChild(imageContainer);
-
-                            img.addEventListener("click", () => {
-                                imageToCrop.src = img.src;
-                                currentImage = img;
-                                openCropperModalBtn.click();
-                            });
-
-                            const originalFile = new File([file], file.name, { type: file.type });
-                            originalImageBlobs.push({
-                                id: event.target.result,
-                                blob: originalFile,
-                            });
-                            updateFileInput();
-                        };
-
-                        reader.readAsDataURL(file);
-                    });
-                });
-
-                cropperModalElement.addEventListener("shown.bs.modal", () => {
-                    cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1,
-                        viewMode: 2,
-                        autoCropArea: 1,
-                    });
-                });
-
-                cropperModalElement.addEventListener("hidden.bs.modal", () => {
-                    if (cropper) {
-                        cropper.destroy();
-                        cropper = null;
-                    }
-                });
-
-                cropAndSave.addEventListener("click", () => {
-                    if (cropper) {
-                        const canvas = cropper.getCroppedCanvas();
-
-                        canvas.toBlob((blob) => {
-                            const url = URL.createObjectURL(blob);
-
-                            currentImage.src = url;
-
-                            // Create a new File object from the blob
-                            const croppedFile = new File(
-                                [blob],
-                                `croppedImage_${Date.now()}.jpg`,
-                                { type: "image/jpeg" }
-                            );
-
-                            // Replace the original blob with the cropped blob
-                            originalImageBlobs = originalImageBlobs.map((item) => {
-                                if (item.id === imageToCrop.src) {
-                                    return { id: url, blob: croppedFile };
-                                }
-                                return item;
-                            });
-
-                            updateFileInput();
-
-                            $("#cropperModal").modal("hide");
-                        }, "image/jpeg");
-                    }
-                });
-
-                function updateFileInput() {
-                    const dataTransfer = new DataTransfer();
-                    originalImageBlobs.forEach((item) => {
-                        dataTransfer.items.add(item.blob);
-                    });
-                    imageInput.files = dataTransfer.files;
-                }
-
-
-                formSubmitButton.addEventListener("click", async (event) => {
-
-            
-                    event.preventDefault()
-                    const isValidProductName = validateProductName()
-                    const isValidateProductDescription = validateProductDescription()
-                    const isValidateSalesPrice = validateSalesPrice()
-                    const isValidateDialShape = validateDialShape()
-                    const isValidateDisplayType = validateDisplayType()
-                    const isValidateStrapMaterial = validateStrapMaterial()
-                    const isValidateStrapColor = validateStrapColor()
-                    const isValidateStock = validateStock()
-                    const isValidateTargetGroup = validateTargetGroup()
-                    const isValidateImage = Array.from(imageInput.files).every(validateImage)
-                    
-
-                    const productNameE = productNameInput.value
-                    const id = document.getElementById("idOfProduct").value
-
-                    if (!(isValidProductName && isValidateProductDescription && isValidateSalesPrice && isValidateDialShape && isValidateDisplayType && isValidateStrapMaterial && isValidateStrapColor && isValidateStock && isValidateTargetGroup && isValidateImage)) {
-
-                        return;
-
-                    }
-
-
-
-                    try {
-
-                    const pExists = await productExists(id,productNameE)
-
-                    if (pExists) {
-
-           
-
-                        Swal.fire({
-                            title: "Product Exists!",
-                            text: "A Product with this name already exists.",
-                            icon: "warning",
-                            toast: true,
-                            position: 'top-right',
-                            showConfirmButton: false,
-                            timerProgressBar: true,
-                            timer: 3000
-                        });
-
-                        return
-
-                    }
-
-               
-
-                    const formData = new FormData();
-                    const formElements = document.getElementById("productForm").elements;
-
-
-                    for (let element of formElements) {
-                        if (element.name) {
-                            if (element.type === "radio") {
-                                if (element.checked) {
-                                    formData.append(element.name, element.value);
-                                }
-                            } else if (element.type !== "file") {
-                                formData.append(element.name, element.value);
-                            }
-                        }
-                    }
-
-
-                    // Add all files from the file input
-                    Array.from(imageInput.files).forEach((file, index) => {
-                        formData.append(`productimages`, file, file.name);
-                    });
-
-
-                    console.log('Target Group before sending:', formData.get('targetGroup'));
-
-                    fetch("/admin/editProduct", {
-                        method: "PUT",
-                        body: formData,
-                    })
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error("Network response was not ok");
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-
-                            if (data.success) {
-
-
-                                // Store the message in sessionStorage
-                                sessionStorage.setItem('successMessage', `Successfully updated product ${data.updatedProductName} details`);
-                            }
-                            // Redirect to the same page
-                            window.location.href = `/admin/products`;
-                        })
-
-                        .catch((error) => {
-                            console.error(
-                                "There was a problem with the fetch operation:",
-                                error
-                            );
-                        });
-
-                        } catch (error) {
-
-                       console.error("There was a problem with the fetch operation:", error)
-
-                     }
-
-
-                });
-
-
-
-                // New code for handling existing image removal
-                const removeExistingImageButtons = document.querySelectorAll('.remove-existing-image');
-
-                const handleExistingImageRemoval = async (event) => {
-                    const button = event.target;
-                    const imageElement = button.closest('.existing-image-container').querySelector('img');
-                    const imageName = imageElement.getAttribute('data-image-name');
-
-                    const remainingImages = document.querySelectorAll('.existing-image-container').length;
-                    if (remainingImages <= 4) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'You need to have at least four images!',
-                        });
-
-                        return;
-                    }
-                    if (imageName) {
-
-                      const result = await Swal.fire({
-                            title: 'Are you sure?',
-                            text: 'Do you want to remove this image?',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#ffffff',
-                            confirmButtonText: 'Yes, remove it!',
-                            customClass: {
-                                confirmButton: 'swal1-confirm',
-                                cancelButton: 'swal1-cancel'
-                            },
-                        });
-
-                        if (result.isConfirmed) {
-
-                            sendImageNameToBackend(imageName);
-
-                            button.closest('.existing-image-container').remove();
-
-                            Swal.fire(
-                                'Removed!',
-                                'The image has been removed.',
-                                'success'
-                            );
-                        }
-                    } else {
-
-                        console.error("Image name not found");
-                    }
-                };
-
-                removeExistingImageButtons.forEach(button => {
-
-                    button.addEventListener('click', handleExistingImageRemoval);
-
-                });
-
-                // Function to send image name to backend
-                function sendImageNameToBackend(imageName) {
-
-                    fetch('/admin/removeProductImage', {
-
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            imageName: imageName,
-                            productId: document.getElementById('productId').value
-                        }),
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
-                }
-
-
-
-
-
-
-
-
-
-                //Form validation starts
-
-                const validateImage = (file) => {
-                    const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
-                    const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
-
-                    if (
-                        !allowedExtensions.test(file.name) ||
-                        !allowedMimeTypes.includes(file.type)
-                    ) {
-
-                        fileAccessError.textContent =
-                            "* Please upload a valid image file (jpg, jpeg, png, gif)";
-                        return false;
-                    }
-                    fileAccessError.textContent = "";
-                    return true;
-
-                };
-
-
-
-                const validateProductName = () => {
-
-                    if (productNameInput.value.trim() === "") {
-                        productNameError.textContent = "* Product Name is required";
-                        return false;
-                    }
-
-                    productNameError.textContent = "";
-                    return true;
-                };
-
-                productNameInput.addEventListener("input", validateProductName);
-
-                //form validation for product description
-
-
-                const validateProductDescription = () => {
-                    if (productDescriptionInput.value.trim() === "") {
-                        productDescriptionError.textContent = "* Product Description required";
-
-                        return false;
-                    } else if (productDescriptionInput.value.trim().length < 5) {
-                        productDescriptionError.textContent =
-                            "* Description should be atleast 5 charactors";
-
-                        return false;
-                    }
-                    productDescriptionError.textContent = "";
-
-                    return true;
-
-                };
-
-                productDescriptionInput.addEventListener("input", validateProductDescription);
-
-                //form validation for product sales price
-
-                const validateSalesPrice = () => {
-                    if (salesPriceInput.value.trim() === "") {
-                        salesPriceError.textContent = "* Sales Price is required";
-                        return false;
-                    } else if (isNaN(salesPriceInput.value.trim())) {
-                        salesPriceError.textContent = "* Sales Price must be a number";
-                        return false;
-                    } else if (!/^[1-9]\d*$/.test(salesPriceInput.value.trim())) {
-                        salesPriceError.textContent = "* Sales Price must be a positive number";
-                        return false;
-                    }
-                    salesPriceError.textContent = "";
-                    return true;
-
-
-                };
-
-                salesPriceInput.addEventListener("input", validateSalesPrice);
-
-                //form validation for product display shape
-
-
-                const validateDialShape = () => {
-                    if (dialShapeInput.value.trim() === "") {
-                        dialShapeError.textContent = "* Dial Shape is required";
-                        return false;
-                    } else if (!/^[A-Za-z\s-]*$/.test(dialShapeInput.value.trim())) {
-                        dialShapeError.textContent =
-                            "* Dial Shape must contain only letters,spaces";
-                        return false;
-                    }
-                    dialShapeError.textContent = "";
-                    return true;
-
-                };
-
-                dialShapeInput.addEventListener("input", validateDialShape);
-
-                //form validation for product display type
-
-
-                const validateDisplayType = () => {
-                    if (displayTypeInput.value.trim() === "") {
-                        displayTypeError.textContent = "* Display Type is required";
-                        return false;
-                    } else if (!/^[A-Za-z\s-]*$/.test(displayTypeInput.value.trim())) {
-                        displayTypeError.textContent = "* Display Type must contain only letters,spaces";
-                        return false;
-                    }
-                    displayTypeError.textContent = "";
-                    return true;
-
-                };
-
-                displayTypeInput.addEventListener("input", validateDisplayType);
-
-                //form validation for product strap material
-
-
-                const validateStrapMaterial = () => {
-                    if (strapMaterialInput.value.trim() === "") {
-                        strapMaterialError.textContent = "* strap material is required";
-                        return false;
-                    } else if (!/^[A-Za-z\s-]*$/.test(strapMaterialInput.value.trim())) {
-                        strapMaterialError.textContent =
-                            "* strap material must contain only letters";
-                        return false;
-                    }
-                    strapMaterialError.textContent = "";
-                    return true;
-
-                };
-
-                strapMaterialInput.addEventListener("input", validateStrapMaterial);
-
-                //form validation for product display type
-
-
-                const validateStrapColor = () => {
-                    if (strapColorInput.value.trim() === "") {
-                        strapColorError.textContent = "* strap color is required";
-                        return false;
-                    } else if (!/^[A-Za-z\s-]*$/.test(strapColorInput.value.trim())) {
-                        strapColorError.textContent = "* strap color must contain only letters";
-                        return false;
-                    }
-                    strapColorError.textContent = "";
-                    return true;
-
-                };
-
-                strapColorInput.addEventListener("input", validateStrapColor);
-
-                //form validation for product stock
-
-                const validateStock = () => {
-                    if (stockInput.value.trim() === "") {
-                        stockError.textContent = "* Stock is required";
-                        return false;
-                    } else if (!/^[1-9]\d*$/.test(stockInput.value.trim())) {
-                        stockError.textContent = "* Stock must be a positive integer";
-                        return false;
-                    }
-                    stockError.textContent = "";
-                    return true;
-
-                };
-
-                stockInput.addEventListener("input", validateStock);
-
-                //form validation for product target group
-
-                const validateTargetGroup = () => {
-                    if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
-                        targetGroupError.textContent = "";
-                        return true;
-                    }
-                    targetGroupError.textContent = "* Please select a target group";
-                    return false;
-
-                };
-
-                menRadio.addEventListener("change", validateTargetGroup);
-                womenRadio.addEventListener("change", validateTargetGroup);
-                kidsRadio.addEventListener("change", validateTargetGroup);
-
-                //Form validation stops
-
-                //checking for existing product
-                const productExists = async (id,productName) => {
-
-                    try {
-
-                        const encodedPName = encodeURIComponent(productName)
-
-                        const response = await fetch(`/admin/productExists?encodedPName=${encodedPName}${id?`&productId=${id}`:''}`, {
-
-                            method: "GET",
-
-                            headers: {
-
-
-                                'Content-Type': 'application/json',
-
-                            }
-
-                        })
-
-                        if (!response.ok) {
-
-                            throw new Error("Network response was not ok")
-
-                        }
-
-                        const data = await response.json()
-
-                        return data.exists
-
-                    } catch (error) {
-
-
-                        console.log(`error while checking the category existence`, error.message);
-
-                        throw error;
-
-                    }
-
-
-                }
-
-
-            });
-
-        </script>
-        <%- include('../layouts/adminLayouts/footer') %>
+                "
+              >
+                <input
+                  type="hidden"
+                  name="productId"
+                  value="<%= productDataToEdit?._id %>"
+                  id="productId"
+                />
+                <button
+                  class="btn btn-md rounded font-sm hover-up"
+                  id="submitForm"
+                  type="submit"
+                >
+                  Update Product
+                </button>
+              </div>
+            </form>
+
+            <!-- displaying the existing images starts -->
+
+            <div id="existingImages" style="margin-bottom: 20px">
+              <h4>Existing Images</h4>
+              <% if(productDataToEdit?.images &&
+              productDataToEdit?.images.length> 0) { %>
+              <div style="display: flex; flex-wrap: wrap; gap: 15px">
+                <% productDataToEdit?.images.forEach((image)=> { %>
+                <div
+                  class="existing-image-container"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: 120px;
+                  "
+                >
+                  <img
+                    src="/productImages/<%= image?.filename %>"
+                    data-image-name="<%= image?.filename %>"
+                    style="
+                      width: 100px;
+                      height: 100px;
+                      object-fit: cover;
+                      margin-bottom: 5px;
+                    "
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm remove-existing-image"
+                    style="width: 100%; font-size: 0.8rem; padding: 2px 5px"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <% }) %>
+              </div>
+              <% } else { %>
+              <p>No existing images</p>
+              <% } %>
+            </div>
+
+            <!-- displaying the existing images ends -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Media Container -->
+    </div>
+  </section>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("productForm");
+    const imageInput = document.getElementById("fileAccess");
+    const imagePreview = document.getElementById("imagePreview");
+    const openCropperModalBtn = document.getElementById("openCropperModalBtn");
+    const imageToCrop = document.getElementById("imageToCrop");
+    const cropAndSave = document.getElementById("cropAndSave");
+    const cropperModalElement = document.getElementById("cropperModal");
+    const formSubmitButton = document.getElementById("submitForm");
+    const fileAccessError = document.getElementById("fileAccessError");
+
+    const productNameInput = document.getElementById("productName");
+    const productDescriptionInput =
+      document.getElementById("productDescription");
+    const salesPriceInput = document.getElementById("salesPrice");
+    const dialShapeInput = document.getElementById("dialShape");
+    const displayTypeInput = document.getElementById("displayType");
+    const strapMaterialInput = document.getElementById("strapMaterial");
+    const strapColorInput = document.getElementById("strapColor");
+    const stockInput = document.getElementById("stock");
+    const menRadio = document.getElementById("men");
+    const womenRadio = document.getElementById("women");
+    const kidsRadio = document.getElementById("kids");
+
+    const productNameError = document.getElementById("productNameError");
+    const productDescriptionError = document.getElementById(
+      "productDescriptionError"
+    );
+    const salesPriceError = document.getElementById("salesPriceError");
+    const dialShapeError = document.getElementById("dialShapeError");
+    const displayTypeError = document.getElementById("displayTypeError");
+    const strapMaterialError = document.getElementById("strapMaterialError");
+    const strapColorError = document.getElementById("strapColorError");
+    const stockError = document.getElementById("stockError");
+    const targetGroupError = document.getElementById("targetGroupError");
+
+    let cropper; //hold the cropper js instance
+    let currentImage;
+    let originalImageBlobs = [];
+
+    imageInput.addEventListener("change", (event) => {
+      const files = event.target.files;
+
+      Array.from(files).forEach((file) => {
+        if (!validateImage(file)) {
+          return;
+        }
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          const imageContainer = document.createElement("div");
+          imageContainer.style.position = "relative";
+          imageContainer.style.marginBottom = "10px";
+          imageContainer.style.display = "flex";
+          imageContainer.style.alignItems = "center";
+          imageContainer.style.justifyContent = "space-between";
+
+          const img = document.createElement("img");
+          img.src = event.target.result;
+          img.className = "imagePreview";
+          img.style.maxWidth = "280px";
+          img.style.maxHeight = "280px";
+          img.style.marginRight = "10px";
+          img.style.objectFit = "cover";
+
+          const buttonContainer = document.createElement("div");
+          buttonContainer.style.display = "flex";
+          buttonContainer.style.flexDirection = "column";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn btn-danger btn-sm mb-2";
+          deleteButton.innerText = "Remove";
+          deleteButton.addEventListener("click", () => {
+            imageContainer.remove(); //Removes the image container from the DOM
+            originalImageBlobs = originalImageBlobs.filter(
+              (item) => item.id !== img.src
+            ); //filters out the removed image from the array
+            updateFileInput(); //Updates the file input with the current images
+          });
+
+          buttonContainer.appendChild(deleteButton);
+          imageContainer.appendChild(img);
+          imageContainer.appendChild(buttonContainer);
+          imagePreview.appendChild(imageContainer);
+
+          img.addEventListener("click", () => {
+            imageToCrop.src = img.src;
+            currentImage = img;
+            openCropperModalBtn.click();
+          });
+
+          const originalFile = new File([file], file.name, { type: file.type });
+          originalImageBlobs.push({
+            id: event.target.result,
+            blob: originalFile,
+          });
+          updateFileInput();
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+
+    cropperModalElement.addEventListener("shown.bs.modal", () => {
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: 1,
+        viewMode: 2,
+        autoCropArea: 1,
+      });
+    });
+
+    cropperModalElement.addEventListener("hidden.bs.modal", () => {
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    });
+
+    cropAndSave.addEventListener("click", () => {
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas();
+
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+
+          currentImage.src = url;
+
+          // Create a new File object from the blob
+          const croppedFile = new File(
+            [blob],
+            `croppedImage_${Date.now()}.jpg`,
+            { type: "image/jpeg" }
+          );
+
+          // Replace the original blob with the cropped blob
+          originalImageBlobs = originalImageBlobs.map((item) => {
+            if (item.id === imageToCrop.src) {
+              return { id: url, blob: croppedFile };
+            }
+            return item;
+          });
+
+          updateFileInput();
+
+          $("#cropperModal").modal("hide");
+        }, "image/jpeg");
+      }
+    });
+
+    const applySwalButtonStyles = () => {
+    const confirmButton = Swal.getConfirmButton();
+    const cancelButton = Swal.getCancelButton();
+
+    confirmButton.style.width = '100%';
+    confirmButton.style.margin = '5px 0';
+    confirmButton.style.border = '1px solid #000';
+    confirmButton.style.borderRadius = '0.25rem';
+    confirmButton.style.backgroundColor = '#000';
+    confirmButton.style.color = '#fff';
+
+    cancelButton.style.width = '100%';
+    cancelButton.style.margin = '5px 0';
+    cancelButton.style.border = '1px solid #000';
+    cancelButton.style.borderRadius = '0.25rem';
+    cancelButton.style.color = '#000';
+
+    if (window.innerWidth <= 768) {
+        confirmButton.style.width = '100%';
+        cancelButton.style.width = '100%';
+    } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = '150px';
+        cancelButton.style.width = '150px';
+    }
+  };
+
+    function updateFileInput() {
+      const dataTransfer = new DataTransfer();
+      originalImageBlobs.forEach((item) => {
+        dataTransfer.items.add(item.blob);
+      });
+      imageInput.files = dataTransfer.files;
+    }
+
+    formSubmitButton.addEventListener("click", async (event) => {
+      event.preventDefault();
+      const isValidProductName = validateProductName();
+      const isValidateProductDescription = validateProductDescription();
+      const isValidateSalesPrice = validateSalesPrice();
+      const isValidateDialShape = validateDialShape();
+      const isValidateDisplayType = validateDisplayType();
+      const isValidateStrapMaterial = validateStrapMaterial();
+      const isValidateStrapColor = validateStrapColor();
+      const isValidateStock = validateStock();
+      const isValidateTargetGroup = validateTargetGroup();
+      const isValidateImage = Array.from(imageInput.files).every(validateImage);
+
+      const productNameE = productNameInput.value;
+      const id = document.getElementById("idOfProduct").value;
+
+      if (
+        !(
+          isValidProductName &&
+          isValidateProductDescription &&
+          isValidateSalesPrice &&
+          isValidateDialShape &&
+          isValidateDisplayType &&
+          isValidateStrapMaterial &&
+          isValidateStrapColor &&
+          isValidateStock &&
+          isValidateTargetGroup &&
+          isValidateImage
+        )
+      ) {
+        return;
+      }
+
+      try {
+        const pExists = await productExists(id, productNameE);
+
+        if (pExists) {
+          Swal.fire({
+            title: "Product Exists!",
+            text: "A Product with this name already exists.",
+            icon: "warning",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+
+          return;
+        }
+
+        const formData = new FormData();
+        const formElements = document.getElementById("productForm").elements;
+
+        for (let element of formElements) {
+          if (element.name) {
+            if (element.type === "radio") {
+              if (element.checked) {
+                formData.append(element.name, element.value);
+              }
+            } else if (element.type !== "file") {
+              formData.append(element.name, element.value);
+            }
+          }
+        }
+
+        // Add all files from the file input
+        Array.from(imageInput.files).forEach((file, index) => {
+          formData.append(`productimages`, file, file.name);
+        });
+
+        console.log(
+          "Target Group before sending:",
+          formData.get("targetGroup")
+        );
+
+        fetch("/admin/editProduct", {
+          method: "PUT",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              // Store the message in sessionStorage
+              sessionStorage.setItem(
+                "successMessage",
+                `Successfully updated product ${data.updatedProductName} details`
+              );
+            }
+            // Redirect to the same page
+            window.location.href = `/admin/products`;
+          })
+
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
+    });
+
+    // New code for handling existing image removal
+    const removeExistingImageButtons = document.querySelectorAll(
+      ".remove-existing-image"
+    );
+
+    const handleExistingImageRemoval = async (event) => {
+      const button = event.target;
+      const imageElement = button
+        .closest(".existing-image-container")
+        .querySelector("img");
+      const imageName = imageElement.getAttribute("data-image-name");
+
+      const remainingImages = document.querySelectorAll(
+        ".existing-image-container"
+      ).length;
+      if (remainingImages <= 4) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "You need to have at least four images!",
+        });
+
+        return;
+      }
+      if (imageName) {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to remove this image?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          confirmButtonText: "Yes, remove it!",
+          didOpen: () => {
+              applySwalButtonStyles();
+           }
+        })
+        if (result.isConfirmed) {
+          sendImageNameToBackend(imageName);
+
+          button.closest(".existing-image-container").remove();
+
+          Swal.fire("Removed!", "The image has been removed.", "success");
+        }
+      } else {
+        console.error("Image name not found");
+      }
+    };
+
+    removeExistingImageButtons.forEach((button) => {
+      button.addEventListener("click", handleExistingImageRemoval);
+    });
+
+    // Function to send image name to backend
+    function sendImageNameToBackend(imageName) {
+      fetch("/admin/removeProductImage", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageName: imageName,
+          productId: document.getElementById("productId").value,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {})
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    //Form validation starts
+
+    const validateImage = (file) => {
+      const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+      const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+
+      if (
+        !allowedExtensions.test(file.name) ||
+        !allowedMimeTypes.includes(file.type)
+      ) {
+        fileAccessError.textContent =
+          "* Please upload a valid image file (jpg, jpeg, png, gif)";
+        return false;
+      }
+      fileAccessError.textContent = "";
+      return true;
+    };
+
+    const validateProductName = () => {
+      if (productNameInput.value.trim() === "") {
+        productNameError.textContent = "* Product Name is required";
+        return false;
+      }
+
+      productNameError.textContent = "";
+      return true;
+    };
+
+    productNameInput.addEventListener("input", validateProductName);
+
+    //form validation for product description
+
+    const validateProductDescription = () => {
+      if (productDescriptionInput.value.trim() === "") {
+        productDescriptionError.textContent = "* Product Description required";
+
+        return false;
+      } else if (productDescriptionInput.value.trim().length < 5) {
+        productDescriptionError.textContent =
+          "* Description should be atleast 5 charactors";
+
+        return false;
+      }
+      productDescriptionError.textContent = "";
+
+      return true;
+    };
+
+    productDescriptionInput.addEventListener(
+      "input",
+      validateProductDescription
+    );
+
+    //form validation for product sales price
+
+    const validateSalesPrice = () => {
+      if (salesPriceInput.value.trim() === "") {
+        salesPriceError.textContent = "* Sales Price is required";
+        return false;
+      } else if (isNaN(salesPriceInput.value.trim())) {
+        salesPriceError.textContent = "* Sales Price must be a number";
+        return false;
+      } else if (!/^[1-9]\d*$/.test(salesPriceInput.value.trim())) {
+        salesPriceError.textContent = "* Sales Price must be a positive number";
+        return false;
+      }
+      salesPriceError.textContent = "";
+      return true;
+    };
+
+    salesPriceInput.addEventListener("input", validateSalesPrice);
+
+    //form validation for product display shape
+
+    const validateDialShape = () => {
+      if (dialShapeInput.value.trim() === "") {
+        dialShapeError.textContent = "* Dial Shape is required";
+        return false;
+      } else if (!/^[A-Za-z\s-]*$/.test(dialShapeInput.value.trim())) {
+        dialShapeError.textContent =
+          "* Dial Shape must contain only letters,spaces";
+        return false;
+      }
+      dialShapeError.textContent = "";
+      return true;
+    };
+
+    dialShapeInput.addEventListener("input", validateDialShape);
+
+    //form validation for product display type
+
+    const validateDisplayType = () => {
+      if (displayTypeInput.value.trim() === "") {
+        displayTypeError.textContent = "* Display Type is required";
+        return false;
+      } else if (!/^[A-Za-z\s-]*$/.test(displayTypeInput.value.trim())) {
+        displayTypeError.textContent =
+          "* Display Type must contain only letters,spaces";
+        return false;
+      }
+      displayTypeError.textContent = "";
+      return true;
+    };
+
+    displayTypeInput.addEventListener("input", validateDisplayType);
+
+    //form validation for product strap material
+
+    const validateStrapMaterial = () => {
+      if (strapMaterialInput.value.trim() === "") {
+        strapMaterialError.textContent = "* strap material is required";
+        return false;
+      } else if (!/^[A-Za-z\s-]*$/.test(strapMaterialInput.value.trim())) {
+        strapMaterialError.textContent =
+          "* strap material must contain only letters";
+        return false;
+      }
+      strapMaterialError.textContent = "";
+      return true;
+    };
+
+    strapMaterialInput.addEventListener("input", validateStrapMaterial);
+
+    //form validation for product display type
+
+    const validateStrapColor = () => {
+      if (strapColorInput.value.trim() === "") {
+        strapColorError.textContent = "* strap color is required";
+        return false;
+      } else if (!/^[A-Za-z\s-]*$/.test(strapColorInput.value.trim())) {
+        strapColorError.textContent = "* strap color must contain only letters";
+        return false;
+      }
+      strapColorError.textContent = "";
+      return true;
+    };
+
+    strapColorInput.addEventListener("input", validateStrapColor);
+
+    //form validation for product stock
+
+    const validateStock = () => {
+      if (stockInput.value.trim() === "") {
+        stockError.textContent = "* Stock is required";
+        return false;
+      } else if (!/^[1-9]\d*$/.test(stockInput.value.trim())) {
+        stockError.textContent = "* Stock must be a positive integer";
+        return false;
+      }
+      stockError.textContent = "";
+      return true;
+    };
+
+    stockInput.addEventListener("input", validateStock);
+
+    //form validation for product target group
+
+    const validateTargetGroup = () => {
+      if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
+        targetGroupError.textContent = "";
+        return true;
+      }
+      targetGroupError.textContent = "* Please select a target group";
+      return false;
+    };
+
+    menRadio.addEventListener("change", validateTargetGroup);
+    womenRadio.addEventListener("change", validateTargetGroup);
+    kidsRadio.addEventListener("change", validateTargetGroup);
+
+    //Form validation stops
+
+    //checking for existing product
+    const productExists = async (id, productName) => {
+      try {
+        const encodedPName = encodeURIComponent(productName);
+
+        const response = await fetch(
+          `/admin/productExists?encodedPName=${encodedPName}${
+            id ? `&productId=${id}` : ""
+          }`,
+          {
+            method: "GET",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+
+        return data.exists;
+      } catch (error) {
+        console.log(
+          `error while checking the category existence`,
+          error.message
+        );
+
+        throw error;
+      }
+    };
+  });
+</script>
+<%- include('../layouts/adminLayouts/footer') %>

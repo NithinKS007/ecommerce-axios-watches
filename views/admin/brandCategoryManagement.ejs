@@ -1,1026 +1,1153 @@
 <%- include('../layouts/adminLayouts/header') %>
-  <div class="screen-overlay"></div>
-  <%- include('../layouts/adminLayouts/sidebar') %>
-    <main class="main-wrap">
-      <%- include('../layouts/adminLayouts/searchbar') %>
-        <style>
-          .error {
-            font-size: 0.8em;
-            color: red;
-          }
-          .small-text {
-            font-size: 0.8em;
-            line-height: 1.2;
-          }
-        
-        .table-wrapper {
-          max-height: 400px; 
-          overflow-y: auto;
-          position: relative; 
-        }
-        .table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        .table thead {
-          position: sticky;
-          top: 0;
-        }
-        .table-responsive .btn {
-    width: 120px !important;
-    height: 40px !important;
-    font-size: 14px !important;
-    padding: 0.5rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  .swal1-cancel {
-        width: 100% !important; 
-        margin: 5px 0!important;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
-    
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-    
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
-    }
-
-        </style>
-
-        <section class="content-main">
-          <div class="content-header">
-            <div>
-              <h2 class="content-title card-title">Categories</h2>
-              <p>Dashboard > Category & Brand</p>
-              <p>Add, edit or delete a category</p>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-3">
-                  <form action="/admin/brandCategoryManagement" id="formDataCreateCategory" method="post">
-                    <div class="mb-4">
-                      <label for="categoryName" class="form-label">Name</label>
-                      <input type="text" name="cName" placeholder="Type here" class="form-control" id="categoryName" />
-                      <span id="categoryNameError" class="error"></span>
-                    </div>
-                    <div class="mb-4">
-                      <label class="form-label">Description</label>
-                      <textarea name="cDescription" id="categoryDescription" placeholder="Type here"
-                        class="form-control"></textarea>
-                      <span id="categoryDescriptionError" class="error"></span>
-                    </div>
-                    <div class="d-grid">
-                      <button type="submit" id="createCategoryFormButton" class="btn btn-primary">
-                        Create category
-                      </button>
-                      <button type="button" id="saveChangesCategoryFormButton" class="btn btn-primary"
-                        style="display: none;">
-                        Save Changes
-                      </button>
-                      <button type="button" id="cancelChangesCategoryFormButton" class="btn btn-secondary" style="display: none;margin-top: 10px;">
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-                <div class="col-md-9">
-                  <div class="table-responsive table-wrapper">
-                    <table id="categories-table" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th class="text-center">No</th>
-
-                          <th>Name</th>
-                          <th>Description</th>
-                          <th class="text-center">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody id="categoriesTbody">
-                        <%if(categoriesData.length>0){ %> <% for(let i=0; i < categoriesData.length ; i++) {%>
-                            <tr id="categoryRow<%= categoriesData[i]._id %>">
-                              <td class="text-center">
-                                <%= [i +1] %>
-                              </td>
-
-
-                              <td class="cName">
-                                <%= categoriesData[i].name %>
-                              </td>
-                              <td class="cDes">
-                                <%= categoriesData[i].description %>
-                              </td>
-
-                              <td class="text-end">
-                                <div class="d-flex justify-content-end">
-                                  <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;"
-                                    onclick="editCategory('<%= categoriesData[i]._id %>','<%= categoriesData[i].name %>','<%= categoriesData[i].description %>')"
-                                    id="editCategoryButton" type="button"
-                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory">
-                                    Edit info
-                                  </button>
-
-                                  <% if(categoriesData[i].isBlocked) { %>
-
-                                    <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
-                                      id="softDeleteButton<%= categoriesData[i]._id %>"
-                                      class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
-                                      List
-                                    </button>
-
-                                    <% } else { %>
-
-                                      <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
-                                        id="softDeleteButton<%= categoriesData[i]._id %>"
-                                        class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">
-                                        Unlist
-                                      </button>
-
-                                      <% } %>
-                                </div>
-                              </td>
-                            </tr>
-                            <%}%>
-                              <%} else { %>
-                                <tr></tr>
-                                <tr>
-                                  <td colspan="5">No Categories Found</td>
-                                </tr>
-                                <%}%>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <!-- .col// -->
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Categories</h2>
+        <p>Dashboard > Category & Brand</p>
+        <p>Add, edit or delete a category</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <form
+              action="/admin/categories-brands"
+              id="formDataCreateCategory"
+              method="post"
+            >
+              <div class="mb-4">
+                <label for="categoryName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  name="cName"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="categoryName"
+                />
+                <span
+                  id="categoryNameError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
-              <!-- .row // -->
-            </div>
-            <!-- card body .// -->
-          </div>
-
-          <!-- card .// -->
-          <div class="content-header">
-            <div>
-              <h2 class="content-title card-title">Brands</h2>
-              <p>Add, edit or delete a brand</p>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-3">
-                  <form action="/admin/brandCategoryManagement" id="formDataCreateBrand" method="post">
-                    <div class="mb-4">
-                      <label for="brandName" class="form-label">Name</label>
-                      <input type="text" name="bName" placeholder="Type here" class="form-control" id="brandName" />
-                      <span id="brandNameError" class="error"></span>
-                    </div>
-                    <div class="d-grid">
-                      <button type="submit" id="createBrandFormButton" class="btn btn-primary">
-                        Create brand
-                      </button>
-                      <button type="button" id="saveChangesBrandFormButton" class="btn btn-primary"
-                        style="display: none;">
-                        Save Changes
-                      </button>
-                      <button type="button" id="cancelChangesBrandFormButton" class="btn btn-secondary" style="display: none;margin-top: 10px;">
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-                <div class="col-md-9">
-                  <div class="table-responsive table-wrapper">
-                    <table id="brands-table" class="table table-striped table-bordered">
-                      <thead>
-                        <tr>
-                          <th class="text-center">No</th>
-                       
-                          <th>Name</th>
-                          <th class="text-center">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody id="brandsTbody">
-                        <%if(brandsData.length>0){ %> <% for(let i=0; i < brandsData.length ; i++) {%>
-                            <tr id="brandRow<%= brandsData[i]._id %>">
-                              <td class="text-center">
-                                <%= [i +1] %>
-                              </td>
-                           
-                              <td class="bName">
-                                <%= brandsData[i].name %>
-                              </td>
-                              <td class="text-end">
-                                <div class="d-flex justify-content-end">
-                                  <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="editBrand('<%= brandsData[i]._id %>','<%= brandsData[i].name %>')"
-                                    id="editBrandButton" type="button"
-                                    class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand">
-                                    Edit info
-                                  </button>
-                                  <% if(brandsData[i].isBlocked) { %>
-
-                                    <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
-                                      id="softDeleteButton<%=  brandsData[i]._id %>"
-                                      class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">
-                                      List
-                                    </button>
-
-                                    <% } else { %>
-
-                                      <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
-                                        id="softDeleteButton<%=  brandsData[i]._id %>"
-                                        class="btn btn-danger  rounded btn-sm font-sm flex-fill mx-1">
-                                        Unlist
-                                      </button>
-
-                                      <% } %>
-                                </div>
-                              </td>
-                            </tr>
-                            <%}%>
-                              <%} else { %>
-                                <tr></tr>
-                                <tr>
-                                  <td colspan="5">No brands Found</td>
-                                </tr>
-                                <%}%>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <!-- .col// -->
+              <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                  name="cDescription"
+                  id="categoryDescription"
+                  placeholder="Type here"
+                  class="form-control"
+                ></textarea>
+                <span
+                  id="categoryDescriptionError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
-              <!-- .row // -->
-            </div>
-            <!-- card body .// -->
+              <div class="d-grid">
+                <button
+                  type="submit"
+                  id="createCategoryFormButton"
+                  class="btn btn-primary"
+                >
+                  Create category
+                </button>
+                <button
+                  type="button"
+                  id="saveChangesCategoryFormButton"
+                  class="btn btn-primary"
+                  style="display: none"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  id="cancelChangesCategoryFormButton"
+                  class="btn btn-secondary"
+                  style="display: none; margin-top: 10px"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-          <!-- card .// -->
-          
-        </section>
-        <!-- content-main end// -->
+          <div class="col-md-9">
+            <div class="table-responsive table-wrapper">
+              <table
+                id="categories-table"
+                class="table table-striped table-bordered"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">No</th>
 
-        <script>
-          //soft deleting the categories
-          const softDeleteCategory = (categoryId) => {
-            const deleteButton = document.getElementById(
-              `softDeleteButton${categoryId}`
-            );
-            const isDeleting = deleteButton.classList.contains("btn-danger");
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="categoriesTbody">
+                  <%if(categoriesData.length>0){ %> <% for(let i=0; i <
+                  categoriesData.length ; i++) {%>
+                  <tr id="categoryRow<%= categoriesData[i]._id %>">
+                    <td class="text-center"><%= [i +1] %></td>
 
-            Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'
-                } this category?`,
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#d33",
-              cancelButtonColor: '#ffffff',
-              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
-              customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                fetch(
-                  `/admin/brandCategoryManagement/?categoryId=${categoryId}`,
-                  {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  }
-                )
-                  .then((response) => {
-                    if (response.status !== 200) {
-                      throw new Error("Network response was not ok");
-                    }
+                    <td class="cName"><%= categoriesData[i].name %></td>
+                    <td class="cDes"><%= categoriesData[i].description %></td>
 
-                    return response.json();
-                  })
-                  .then((data) => {
-                    const deleteButton = document.getElementById(
-                      `softDeleteButton${categoryId}`
-                    );
+                    <td class="text-end">
+                      <div class="d-flex justify-content-end">
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="editCategory('<%= categoriesData[i]._id %>','<%= categoriesData[i].name %>','<%= categoriesData[i].description %>')"
+                          id="editCategoryButton"
+                          type="button"
+                          class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editCategory"
+                        >
+                          Edit info
+                        </button>
 
-                    if (data.categoryId.isBlocked) {
-                      deleteButton.classList.remove("btn-danger");
-                      deleteButton.classList.add("btn-success");
-                      deleteButton.textContent = "List";
-                      Swal.fire({
-                        icon: 'success',
-                        title: 'Unlist!',
-                        text: 'Successfully deleted category',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
-                    } else {
-                      deleteButton.classList.remove("btn-success");
-                      deleteButton.classList.add("btn-danger");
-                      deleteButton.textContent = "Unlist";
-                      Swal.fire({
-                        title: 'Retrieved!',
-                        text: 'Category has been retrieved.',
-                        icon: 'success',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
+                        <% if(categoriesData[i].isBlocked) { %>
 
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(`There is a problem with the fetch operation`, error);
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
+                          id="softDeleteButton<%= categoriesData[i]._id %>"
+                          class="btn btn-success rounded btn-sm font-sm flex-fill mx-1"
+                        >
+                          List
+                        </button>
 
-                    Swal.fire({
-                      title: "Error!",
-                      text: "There was a problem deleting the category.",
-                      icon: "error",
-                      toast: true,
-                      position: "top-right",
-                      showConfirmButton: false,
-                      timerProgressBar: true,
-                      timer: 3000
-                    });
+                        <% } else { %>
 
-                  });
-              }
-            });
-          };
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="softDeleteCategory('<%= categoriesData[i]._id %>')"
+                          id="softDeleteButton<%= categoriesData[i]._id %>"
+                          class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1"
+                        >
+                          Unlist
+                        </button>
 
-          //soft deleting brand
+                        <% } %>
+                      </div>
+                    </td>
+                  </tr>
+                  <%}%> <%} else { %>
+                  <tr></tr>
+                  <tr>
+                    <td colspan="5">No Categories Found</td>
+                  </tr>
+                  <%}%>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination-area mt-30 mb-50">
+              <nav
+                aria-label="Category page navigation"
+                style="display: flex; justify-content: end"
+              >
+                <ul class="pagination justify-content-start">
+                  <% if (categoryCurrentPage > 1) { %>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="/admin/categories-brands?categoryPage=<%= categoryCurrentPage - 1 %>&brandPage=<%= brandCurrentPage %>"
+                    >
+                      <strong><</strong>
+                    </a>
+                  </li>
+                  <% } %> <% let startPageCategory = Math.max(1,
+                  categoryCurrentPage - 2); %> <% let endPageCategory =
+                  Math.min(categoryTotalPages, startPageCategory + 4); %> <% if
+                  (endPageCategory - startPageCategory < 4 && startPageCategory
+                  > 1) { %> <% startPageCategory = Math.max(1, endPageCategory -
+                  4); %> <% } %> <% for (let i = startPageCategory; i <=
+                  endPageCategory; i++) { %>
+                  <li
+                    class="page-item <%= i === categoryCurrentPage ? 'active' : '' %>"
+                  >
+                    <a
+                      class="page-link"
+                      href="/admin/categories-brands?categoryPage=<%= i %>&brandPage=<%= brandCurrentPage %>"
+                    >
+                      <strong><%= i %></strong>
+                    </a>
+                  </li>
+                  <% } %> <% if (categoryCurrentPage < categoryTotalPages) { %>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="/admin/categories-brands?categoryPage=<%= categoryCurrentPage + 1 %>&brandPage=<%= brandCurrentPage %>"
+                    >
+                      <strong>></strong>
+                    </a>
+                  </li>
+                  <% } %>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <!-- .col// -->
+      </div>
+      <!-- .row // -->
+    </div>
+    <!-- card body .// -->
 
-          const softDeleteBrand = (brandId) => {
-            const deleteButton = document.getElementById(
-              `softDeleteButton${brandId}`
-            );
-            const isDeleting = deleteButton.classList.contains("btn-danger");
+    <!-- card .// -->
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Brands</h2>
+        <p>Add, edit or delete a brand</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <form
+              action="/admin/categories-brands"
+              id="formDataCreateBrand"
+              method="post"
+            >
+              <div class="mb-4">
+                <label for="brandName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  name="bName"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="brandName"
+                />
+                <span
+                  id="brandNameError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
+              </div>
+              <div class="d-grid">
+                <button
+                  type="submit"
+                  id="createBrandFormButton"
+                  class="btn btn-primary"
+                >
+                  Create brand
+                </button>
+                <button
+                  type="button"
+                  id="saveChangesBrandFormButton"
+                  class="btn btn-primary"
+                  style="display: none"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  id="cancelChangesBrandFormButton"
+                  class="btn btn-secondary"
+                  style="display: none; margin-top: 10px"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-9">
+            <div class="table-responsive table-wrapper">
+              <table
+                id="brands-table"
+                class="table table-striped table-bordered"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">No</th>
 
-            Swal.fire({
-              title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'} this Brand ?`,
+                    <th>Name</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="brandsTbody">
+                  <%if(brandsData.length>0){ %> <% for(let i=0; i <
+                  brandsData.length ; i++) {%>
+                  <tr id="brandRow<%= brandsData[i]._id %>">
+                    <td class="text-center"><%= [i +1] %></td>
 
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#d33",
-              cancelButtonColor: '#ffffff',
-              confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
-              customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                fetch(
-                  `/admin/brandCategoryManagement/?brandId=${brandId}`,
-                  {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  }
-                )
-                  .then((response) => {
-                    if (response.status != 200) {
-                      throw new Error("Network response was not ok");
-                    }
+                    <td class="bName"><%= brandsData[i].name %></td>
+                    <td class="text-end">
+                      <div class="d-flex justify-content-end">
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="editBrand('<%= brandsData[i]._id %>','<%= brandsData[i].name %>')"
+                          id="editBrandButton"
+                          type="button"
+                          class="btn btn-light rounded btn-sm font-sm flex-fill mx-1 editBrand"
+                        >
+                          Edit info
+                        </button>
+                        <% if(brandsData[i].isBlocked) { %>
 
-                    return response.json();
-                  })
-                  .then((data) => {
-                    const deleteButton = document.getElementById(
-                      `softDeleteButton${brandId}`
-                    );
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
+                          id="softDeleteButton<%=  brandsData[i]._id %>"
+                          class="btn btn-success rounded btn-sm font-sm flex-fill mx-1"
+                        >
+                          List
+                        </button>
 
-                    if (data.brandId.isBlocked) {
-                      deleteButton.classList.remove("btn-danger");
-                      deleteButton.classList.add("btn-success");
-                      deleteButton.textContent = "List";
+                        <% } else { %>
 
-                      Swal.fire({
-                        title: "Deleted!",
-                        text: "Successfully deleted Brand",
-                        icon: "success",
-                        toast: true,
-                        position: "top-right",
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
+                        <button
+                          style="
+                            width: 120px;
+                            height: 40px;
+                            font-size: 14px;
+                            padding: 0.5rem;
+                          "
+                          onclick="softDeleteBrand('<%=  brandsData[i]._id %>')"
+                          id="softDeleteButton<%=  brandsData[i]._id %>"
+                          class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1"
+                        >
+                          Unlist
+                        </button>
 
-                    } else {
-                      deleteButton.classList.remove("btn-success");
-                      deleteButton.classList.add("btn-danger");
-                      deleteButton.textContent = "Unlist";
-                      Swal.fire({
-                        title: "Retrieved!",
-                        text: "Brand has been retrieved.",
-                        icon: "success",
-                        toast: true,
-                        position: "top-right",
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(`There is a problem with the fetch operation`, error);
-                    Swal.fire({
-                      title: "Error!",
-                      text: "There was a problem deleting the Brand.",
-                      icon: "error",
-                      toast: true,
-                      position: "top-right",
-                      showConfirmButton: false,
-                      timerProgressBar: true,
-                      timer: 3000
-                    });
+                        <% } %>
+                      </div>
+                    </td>
+                  </tr>
+                  <%}%> <%} else { %>
+                  <tr></tr>
+                  <tr>
+                    <td colspan="5">No brands Found</td>
+                  </tr>
+                  <%}%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pagination-area mt-30 mb-50">
+            <nav
+              aria-label="Brand page navigation"
+              style="display: flex; justify-content: end"
+            >
+              <ul class="pagination justify-content-start">
+                <% if (brandCurrentPage > 1) { %>
+                <li class="page-item">
+                  <a
+                    class="page-link"
+                    href="/admin/categories-brands?categoryPage=<%= categoryCurrentPage %>&brandPage=<%= brandCurrentPage - 1 %>"
+                  >
+                    <strong><</strong>
+                  </a>
+                </li>
+                <% } %> <% let startPageBrand = Math.max(1, brandCurrentPage -
+                2); %> <% let endPageBrand = Math.min(brandTotalPages,
+                startPageBrand + 4); %> <% if (endPageBrand - startPageBrand < 4
+                && startPageBrand > 1) { %> <% startPageBrand = Math.max(1,
+                endPageBrand - 4); %> <% } %> <% for (let i = startPageBrand; i
+                <= endPageBrand; i++) { %>
+                <li
+                  class="page-item <%= i === brandCurrentPage ? 'active' : '' %>"
+                >
+                  <a
+                    class="page-link"
+                    href="/admin/categories-brands?categoryPage=<%= categoryCurrentPage %>&brandPage=<%= i %>"
+                  >
+                    <strong><%= i %></strong>
+                  </a>
+                </li>
+                <% } %> <% if (brandCurrentPage < brandTotalPages) { %>
+                <li class="page-item">
+                  <a
+                    class="page-link"
+                    href="/admin/categories-brands?categoryPage=<%= categoryCurrentPage %>&brandPage=<%= brandCurrentPage + 1 %>"
+                  >
+                    <strong>></strong>
+                  </a>
+                </li>
+                <% } %>
+              </ul>
+            </nav>
+          </div>
+          <!-- .col// -->
+        </div>
+        <!-- .row // -->
+      </div>
+      <!-- card body .// -->
+    </div>
+    <!-- card .// -->
+  </section>
+  <!-- content-main end// -->
 
-                  });
-              }
-            });
-          };
+  <script>
+    const applySwalButtonStyles = () => {
+      const confirmButton = Swal.getConfirmButton();
+      const cancelButton = Swal.getCancelButton();
 
-const categoryNameInput = document.getElementById('categoryName');
-const categoryNameError = document.getElementById("categoryNameError");
-const categoryDescriptionInput = document.getElementById('categoryDescription');
-const categoryDescriptionError = document.getElementById("categoryDescriptionError");
-const createCategoryFormButton = document.getElementById('createCategoryFormButton');
-const formDataCreateCategory = document.getElementById("formDataCreateCategory");
-const saveChangesCategoryFormButton = document.getElementById('saveChangesCategoryFormButton');  
-const cancelChangesCategoryFormButton = document.getElementById('cancelChangesCategoryFormButton');
+      confirmButton.style.width = "100%";
+      confirmButton.style.margin = "5px 0";
+      confirmButton.style.border = "1px solid #000";
+      confirmButton.style.borderRadius = "0.25rem";
+      confirmButton.style.backgroundColor = "#000";
+      confirmButton.style.color = "#fff";
 
-const brandNameInput = document.getElementById('brandName');
-const brandNameError = document.getElementById("brandNameError");
-const createBrandFormButton = document.getElementById('createBrandFormButton');
-const formDataCreateBrand = document.getElementById("formDataCreateBrand");
-const saveChangesBrandFormButton = document.getElementById('saveChangesBrandFormButton');
-const cancelChangesBrandFormButton = document.getElementById('cancelChangesBrandFormButton');
+      cancelButton.style.width = "100%";
+      cancelButton.style.margin = "5px 0";
+      cancelButton.style.border = "1px solid #000";
+      cancelButton.style.borderRadius = "0.25rem";
+      cancelButton.style.color = "#000";
 
-const editCategory = async (id, categoryName, categoryDescription) => {
-
-  categoryNameInput.value = categoryName;
-  categoryDescriptionInput.value = categoryDescription;
-
-  createCategoryFormButton.style.display = 'none';
-  saveChangesCategoryFormButton.style.display = 'block';
-  cancelChangesCategoryFormButton.style.display = 'block';
-
-
-  saveChangesCategoryFormButton.addEventListener("click", async (event) => {
-
-    
-    event.preventDefault();
-
-const isValidateCategoryName = validateCategoryName()
-const isValidateCategoryDescription = validateCategoryDescription()
-
-const categoryName = categoryNameInput.value.trim();
-
-if(!(isValidateCategoryName&&isValidateCategoryDescription)){
-
-
-  
-  return
-
-}
-    const result = await Swal.fire({
-      title: 'Confirm Changes',
-      text: 'Are you sure you want to save these changes? This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, save changes',
-      cancelButtonText: 'No, cancel',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#ffffff',
-      customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-    });
-    const cExists = await categoryExists(categoryName,id);
-
-    if (result.isConfirmed) {
-      if (cExists) {
-        Swal.fire({
-        title: "Category Exists!",
-        text: "A category with this name already exists.",
-        icon: "warning",
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 3000
-      });
-        return;
+      if (window.innerWidth <= 768) {
+        confirmButton.style.width = "100%";
+        cancelButton.style.width = "100%";
+      } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = "150px";
+        cancelButton.style.width = "150px";
       }
-      const name = categoryNameInput.value;
-      const description = categoryDescriptionInput.value;
-      const categoryId = id;
-
-      try {
-        const response = await fetch(`/admin/brandCategoryManagement/`, {
-          method: "PUT",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, description, categoryId })
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-
-
-  
-        if (data.categoryDetails) {
-
-          sessionStorage.setItem('successMessage', 'Category has been updated successfully!');
-          sessionStorage.setItem('categoryName', name);
-
-          categoryNameInput.value = '';
-          categoryDescriptionInput.value = '';
-          createCategoryFormButton.style.display = 'block';
-          saveChangesCategoryFormButton.style.display = 'none';
-
-          cancelChangesCategoryFormButton.style.display = 'none';
-
-          window.location.reload()
-      
-        }
-      } catch (error) {
-        console.error('Error:', error.message);
-
-        await Swal.fire({
-          title: 'Error!',
-          text: `There was a problem updating the category: ${error.message}`,
-          icon: 'error',
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
-        });
-      }
-    }
-  });
-
-  cancelChangesCategoryFormButton.addEventListener("click", () => {
-        categoryNameInput.value = '';
-        categoryDescriptionInput.value = '';
-        createCategoryFormButton.style.display = 'block';
-        saveChangesCategoryFormButton.style.display = 'none';
-        cancelChangesCategoryFormButton.style.display = 'none';  
-      });
     };
-;
 
+    const softDeleteCategory = (categoryId) => {
+      const deleteButton = document.getElementById(
+        `softDeleteButton${categoryId}`
+      );
+      const isDeleting = deleteButton.classList.contains("btn-danger");
 
-
-
-const editBrand = async(id, brandName) => {
-
-brandNameInput.value = brandName;
-
-createBrandFormButton.style.display = 'none';
-saveChangesBrandFormButton.style.display = 'block';
-cancelChangesBrandFormButton.style.display = 'block'; 
-
-saveChangesBrandFormButton.addEventListener("click", async (event) => {
-  event.preventDefault()
-
-const isValidateBrandName = validateBrandName()
-const brandName = brandNameInput.value.trim();
-
-if (!(isValidateBrandName)) {
-
-
-
-  return
-
-}
-        const result = await Swal.fire({
-          title: 'Confirm Changes',
-          text: 'Are you sure you want to save these changes? This action cannot be undone.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, save changes',
-          cancelButtonText: 'No, cancel',
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#ffffff',
-          customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-        });
-        const bExists = await brandExists(brandName,id)
-
-             
-
-      if (result.isConfirmed) {
-      try {
-        if (bExists) {
-
-          Swal.fire({
-          title: "Brand Exists!",
-          text: "A brand with this name already exists.",
-          icon: "warning",
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
-          });
-          return
-
-          }
-        const name = brandNameInput.value;
-        const brandId = id;
-
-        const response = await fetch(`/admin/brandCategoryManagement/`, {
-          method: "PUT",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, brandId })
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-  
-
-      
-        if (data.brandDetails) {
-    
-          sessionStorage.setItem('successMessage', 'Brand has been updated successfully!');
-          sessionStorage.setItem('brandName', name);
-
-          brandNameInput.value = '';
-          createBrandFormButton.style.display = 'block';
-          saveChangesBrandFormButton.style.display = 'none';
-          cancelChangesBrandFormButton.style.display = 'none'; 
-
-          window.location.reload();
-         
-        }else {
-          Swal.fire({
-            title: 'Error!',
-            text: data.errorMessage || 'There was a problem updating the brand.',
-            icon: 'error',
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000
-          });
-        }
-
-      } catch (error) {
-        Swal.fire({
-          title: 'Error!',
-          text: `There was a problem updating the brand: ${error.message}`,
-          icon: 'error',
-          toast: true,
-          position: 'top-right',
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000
-        });
-      }
-    }
-
-  });
-  cancelChangesBrandFormButton.addEventListener("click", () => {
-        brandNameInput.value = '';
-        createBrandFormButton.style.display = 'block';
-        saveChangesBrandFormButton.style.display = 'none';
-        cancelChangesBrandFormButton.style.display = 'none'; 
-      });
-    
-}
-
-
-
-     
-
-        
-  
-          const validateCategoryName = () => {
-            if (categoryNameInput.value.trim() === "") {
-              categoryNameError.textContent = "* Category Name is required";
-              return false;
-            }
-            categoryNameError.textContent = "";
-            return true;
-
-          };
-
-          categoryNameInput.addEventListener("input", validateCategoryName);
-
-        
-     
-
-          const validateCategoryDescription = () => {
-            if (categoryDescriptionInput.value.trim() === "") {
-              categoryDescriptionError.textContent = "* Category is Description required";
-              return false
-            } else if (categoryDescriptionInput.value.trim().length < 5) {
-              categoryDescriptionError.textContent ="* Description should be atleast 5 charactors";
-              return false
-            }
-            categoryDescriptionError.textContent = "";
-            return true
-
-          }
-
-          categoryDescriptionInput.addEventListener("input",validateCategoryDescription);
-
-
-            //form validation for adding new brand
-            const validateBrandName = () => {
-            if (brandNameInput.value.trim() === "") {
-              brandNameError.textContent = "* Brand Name is required";
-              return false;
-            } else if (brandNameInput.value.trim().length < 2) {
-              brandNameError.textContent = "* Name should be atleast 2 charactors";
-              return false
-            } else {
-              brandNameError.textContent = "";
-              return true
-            }
-          };
-
-          brandNameInput.addEventListener("input", validateBrandName);
-
-          //checking for existing category 
-          const categoryExists = async (categoryName,id) => {
-
-
-
-            try {
-
-              const encodedCName = encodeURIComponent(categoryName);
-
-
-            
-
-              const response = await fetch(`/admin/brandCategoryExists?encodedCName=${encodedCName}${id?`&categoryId=${id}`:''}`, {
-
-                method: "GET",
-                headers: {
-
-                  'Content-Type': 'application/json',
-
-                }
-
-              });
-
-              if (!response.ok) {
-
+      Swal.fire({
+        title: `Are you sure you want to ${
+          isDeleting ? "Unlist" : "List"
+        } this category?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#ffffff",
+        confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
+        didOpen: () => {
+          applySwalButtonStyles();
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/categories-brands/?categoryId=${categoryId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => {
+              if (response.status !== 200) {
                 throw new Error("Network response was not ok");
-
               }
-              const data = await response.json();
 
-              return data.exists;
+              return response.json();
+            })
+            .then((data) => {
+              const deleteButton = document.getElementById(
+                `softDeleteButton${categoryId}`
+              );
 
-            } catch (error) {
-
-              console.log(`error while checking the category existence`, error.message);
-
-              throw error;
-
-            }
-          };
-
-
-
-
-          formDataCreateCategory.addEventListener("submit", async (event) => {
-
-            event.preventDefault();
-
-            const isValidateCategoryName = validateCategoryName()
-            const isValidateCategoryDescription = validateCategoryDescription()
-
-            const categoryName = categoryNameInput.value.trim();
-
- 
-            
-            if(!(isValidateCategoryName&&isValidateCategoryDescription)){
-
-
-              
-              return
-
-            }
-
-            try {
-              const cExists = await categoryExists(categoryName);
-
-              if (cExists) {
+              if (data.categoryId.isBlocked) {
+                deleteButton.classList.remove("btn-danger");
+                deleteButton.classList.add("btn-success");
+                deleteButton.textContent = "List";
                 Swal.fire({
-                title: "Category Exists!",
-                text: "A category with this name already exists.",
-                icon: "warning",
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000
-              });
-                return;
+                  icon: "success",
+                  title: "Unlist!",
+                  text: "Successfully deleted category",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
+              } else {
+                deleteButton.classList.remove("btn-success");
+                deleteButton.classList.add("btn-danger");
+                deleteButton.textContent = "Unlist";
+                Swal.fire({
+                  title: "Retrieved!",
+                  text: "Category has been retrieved.",
+                  icon: "success",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
               }
-
-
-              formDataCreateCategory.submit();
-
-            } catch (error) {
-
-              console.error("error checking category existence:", error);
+            })
+            .catch((error) => {
+              console.log(`There is a problem with the fetch operation`, error);
 
               Swal.fire({
-              title: "Error",
-              text: "An error occurred while checking the category. Please try again.",
-              icon: "error",
-              toast: true,
-              position: 'top-right',
-              showConfirmButton: false,
-              timerProgressBar: true,
-              timer: 3000
-             });
-            }
-          });
-
-
-
-        
-
-
-          //checking for existing brand
-
-          const brandExists = async (brandName,id) => {
-
-            try {
-
-              const encodedBName = encodeURIComponent(brandName);
-
-              const response = await fetch(`/admin/brandCategoryExists?encodedBName=${encodedBName}${id ? `&brandId=${id}` : ''}`, {
-
-                method: "GET",
-                headers: {
-
-                  'Content-Type': 'application/json',
-
-                }
-
+                title: "Error!",
+                text: "There was a problem deleting the category.",
+                icon: "error",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
               });
+            });
+        }
+      });
+    };
 
-              if (!response.ok) {
+    //soft deleting brand
 
+    const softDeleteBrand = (brandId) => {
+      const deleteButton = document.getElementById(
+        `softDeleteButton${brandId}`
+      );
+      const isDeleting = deleteButton.classList.contains("btn-danger");
+
+      Swal.fire({
+        title: `Are you sure you want to ${
+          isDeleting ? "Unlist" : "List"
+        } this Brand ?`,
+
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#ffffff",
+        confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
+        didOpen: () => {
+          applySwalButtonStyles();
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/categories-brands/?brandId=${brandId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => {
+              if (response.status != 200) {
                 throw new Error("Network response was not ok");
-
               }
 
-              const data = await response.json();
+              return response.json();
+            })
+            .then((data) => {
+              const deleteButton = document.getElementById(
+                `softDeleteButton${brandId}`
+              );
 
-              return data.exists;
-
-            } catch (error) {
-
-              console.log(`error while checking the category existence`, error.message);
-
-              throw error;
-
-            }
-
-          };
-
-        
-          formDataCreateBrand.addEventListener("submit", async (event) => {
-
-            event.preventDefault()
-
-            const isValidateBrandName = validateBrandName()
-            const brandName = brandNameInput.value.trim();
-
-            if (!(isValidateBrandName)) {
-
-
-              return
-
-            }
-
-            try {
-
-              const bExists = await brandExists(brandName)
-
-              if (bExists) {
+              if (data.brandId.isBlocked) {
+                deleteButton.classList.remove("btn-danger");
+                deleteButton.classList.add("btn-success");
+                deleteButton.textContent = "List";
 
                 Swal.fire({
+                  title: "Deleted!",
+                  text: "Successfully deleted Brand",
+                  icon: "success",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
+              } else {
+                deleteButton.classList.remove("btn-success");
+                deleteButton.classList.add("btn-danger");
+                deleteButton.textContent = "Unlist";
+                Swal.fire({
+                  title: "Retrieved!",
+                  text: "Brand has been retrieved.",
+                  icon: "success",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
+              }
+            })
+            .catch((error) => {
+              console.log(`There is a problem with the fetch operation`, error);
+              Swal.fire({
+                title: "Error!",
+                text: "There was a problem deleting the Brand.",
+                icon: "error",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+            });
+        }
+      });
+    };
+
+    const categoryNameInput = document.getElementById("categoryName");
+    const categoryNameError = document.getElementById("categoryNameError");
+    const categoryDescriptionInput = document.getElementById(
+      "categoryDescription"
+    );
+    const categoryDescriptionError = document.getElementById(
+      "categoryDescriptionError"
+    );
+    const createCategoryFormButton = document.getElementById(
+      "createCategoryFormButton"
+    );
+    const formDataCreateCategory = document.getElementById(
+      "formDataCreateCategory"
+    );
+    const saveChangesCategoryFormButton = document.getElementById(
+      "saveChangesCategoryFormButton"
+    );
+    const cancelChangesCategoryFormButton = document.getElementById(
+      "cancelChangesCategoryFormButton"
+    );
+
+    const brandNameInput = document.getElementById("brandName");
+    const brandNameError = document.getElementById("brandNameError");
+    const createBrandFormButton = document.getElementById(
+      "createBrandFormButton"
+    );
+    const formDataCreateBrand = document.getElementById("formDataCreateBrand");
+    const saveChangesBrandFormButton = document.getElementById(
+      "saveChangesBrandFormButton"
+    );
+    const cancelChangesBrandFormButton = document.getElementById(
+      "cancelChangesBrandFormButton"
+    );
+
+    const editCategory = async (id, categoryName, categoryDescription) => {
+      categoryNameInput.value = categoryName;
+      categoryDescriptionInput.value = categoryDescription;
+
+      createCategoryFormButton.style.display = "none";
+      saveChangesCategoryFormButton.style.display = "block";
+      cancelChangesCategoryFormButton.style.display = "block";
+
+      saveChangesCategoryFormButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const isValidateCategoryName = validateCategoryName();
+        const isValidateCategoryDescription = validateCategoryDescription();
+
+        const categoryName = categoryNameInput.value.trim();
+
+        if (!(isValidateCategoryName && isValidateCategoryDescription)) {
+          return;
+        }
+        const result = await Swal.fire({
+          title: "Confirm Changes",
+          text: "Are you sure you want to save these changes? This action cannot be undone.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, save changes",
+          cancelButtonText: "No, cancel",
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          didOpen: () => {
+            const confirmButton = Swal.getConfirmButton();
+            const cancelButton = Swal.getCancelButton();
+
+            confirmButton.style.width = "100%";
+            confirmButton.style.margin = "5px 0";
+            confirmButton.style.border = "1px solid #000";
+            confirmButton.style.borderRadius = "0.25rem";
+            confirmButton.style.backgroundColor = "#000";
+            confirmButton.style.color = "#fff";
+
+            cancelButton.style.width = "100%";
+            cancelButton.style.margin = "5px 0";
+            cancelButton.style.border = "1px solid #000";
+            cancelButton.style.borderRadius = "0.25rem";
+            cancelButton.style.color = "#000";
+
+            if (window.innerWidth <= 768) {
+              confirmButton.style.width = "100%";
+              cancelButton.style.width = "100%";
+            } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+              confirmButton.style.width = "150px";
+              cancelButton.style.width = "150px";
+            }
+          },
+        });
+        const cExists = await categoryExists(categoryName, id);
+
+        if (result.isConfirmed) {
+          if (cExists) {
+            Swal.fire({
+              title: "Category Exists!",
+              text: "A category with this name already exists.",
+              icon: "warning",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
+            });
+            return;
+          }
+          const name = categoryNameInput.value;
+          const description = categoryDescriptionInput.value;
+          const categoryId = id;
+
+          try {
+            const response = await fetch(`/admin/categories-brands`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, description, categoryId }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+
+            if (data.categoryDetails) {
+              sessionStorage.setItem(
+                "successMessage",
+                "Category has been updated successfully!"
+              );
+              sessionStorage.setItem("categoryName", name);
+
+              categoryNameInput.value = "";
+              categoryDescriptionInput.value = "";
+              createCategoryFormButton.style.display = "block";
+              saveChangesCategoryFormButton.style.display = "none";
+
+              cancelChangesCategoryFormButton.style.display = "none";
+
+              window.location.reload();
+            }
+          } catch (error) {
+            console.error("Error:", error.message);
+
+            await Swal.fire({
+              title: "Error!",
+              text: `There was a problem updating the category: ${error.message}`,
+              icon: "error",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
+            });
+          }
+        }
+      });
+
+      cancelChangesCategoryFormButton.addEventListener("click", () => {
+        categoryNameInput.value = "";
+        categoryDescriptionInput.value = "";
+        createCategoryFormButton.style.display = "block";
+        saveChangesCategoryFormButton.style.display = "none";
+        cancelChangesCategoryFormButton.style.display = "none";
+      });
+    };
+    const editBrand = async (id, brandName) => {
+      brandNameInput.value = brandName;
+
+      createBrandFormButton.style.display = "none";
+      saveChangesBrandFormButton.style.display = "block";
+      cancelChangesBrandFormButton.style.display = "block";
+
+      saveChangesBrandFormButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const isValidateBrandName = validateBrandName();
+        const brandName = brandNameInput.value.trim();
+
+        if (!isValidateBrandName) {
+          return;
+        }
+        const result = await Swal.fire({
+          title: "Confirm Changes",
+          text: "Are you sure you want to save these changes? This action cannot be undone.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, save changes",
+          cancelButtonText: "No, cancel",
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          didOpen: () => {
+            const confirmButton = Swal.getConfirmButton();
+            const cancelButton = Swal.getCancelButton();
+
+            confirmButton.style.width = "100%";
+            confirmButton.style.margin = "5px 0";
+            confirmButton.style.border = "1px solid #000";
+            confirmButton.style.borderRadius = "0.25rem";
+            confirmButton.style.backgroundColor = "#000";
+            confirmButton.style.color = "#fff";
+
+            cancelButton.style.width = "100%";
+            cancelButton.style.margin = "5px 0";
+            cancelButton.style.border = "1px solid #000";
+            cancelButton.style.borderRadius = "0.25rem";
+            cancelButton.style.color = "#000";
+
+            if (window.innerWidth <= 768) {
+              confirmButton.style.width = "100%";
+              cancelButton.style.width = "100%";
+            } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+              confirmButton.style.width = "150px";
+              cancelButton.style.width = "150px";
+            }
+          },
+        });
+        const bExists = await brandExists(brandName, id);
+
+        if (result.isConfirmed) {
+          try {
+            if (bExists) {
+              Swal.fire({
                 title: "Brand Exists!",
                 text: "A brand with this name already exists.",
                 icon: "warning",
                 toast: true,
-                position: 'top-right',
+                position: "top-right",
                 showConfirmButton: false,
                 timerProgressBar: true,
-                timer: 3000
+                timer: 3000,
               });
-                return
+              return;
+            }
+            const name = brandNameInput.value;
+            const brandId = id;
 
-              }
+            const response = await fetch(`/admin/categories-brands`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, brandId }),
+            });
 
-              formDataCreateBrand.submit()
-
-            } catch (error) {
-
-              console.log(`error checking brand existence:`, error);
-
-              Swal.fire({
-                  title: "Error",
-                  text: "An error occurred while checking the brand. Please try again.",
-                  icon: "error",
-                  toast: true,
-                  position: 'top-right',
-                  showConfirmButton: false,
-                  timerProgressBar: true,
-                  timer: 3000
-                })
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
             }
 
-          });
+            const data = await response.json();
 
-       
-        document.addEventListener('DOMContentLoaded', () => {
-          const successMessage = sessionStorage.getItem('successMessage');
-          const brandName = sessionStorage.getItem('brandName');
-          const categoryName = sessionStorage.getItem('categoryName');
+            if (data.brandDetails) {
+              sessionStorage.setItem(
+                "successMessage",
+                "Brand has been updated successfully!"
+              );
+              sessionStorage.setItem("brandName", name);
 
-          if (successMessage && brandName) {
+              brandNameInput.value = "";
+              createBrandFormButton.style.display = "block";
+              saveChangesBrandFormButton.style.display = "none";
+              cancelChangesBrandFormButton.style.display = "none";
+
+              window.location.reload();
+            } else {
+              Swal.fire({
+                title: "Error!",
+                text:
+                  data.errorMessage ||
+                  "There was a problem updating the brand.",
+                icon: "error",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+            }
+          } catch (error) {
             Swal.fire({
-              text: `${successMessage} for ${brandName}`,
-              icon: 'success',
+              title: "Error!",
+              text: `There was a problem updating the brand: ${error.message}`,
+              icon: "error",
               toast: true,
-              position: 'top-right',
+              position: "top-right",
               showConfirmButton: false,
               timerProgressBar: true,
-              timer: 3000
+              timer: 3000,
             });
-      
-            // Clear the message after displaying
-            sessionStorage.removeItem('successMessage');
-            sessionStorage.removeItem('brandName');
           }
-      
-          if (successMessage && categoryName) {
+        }
+      });
+      cancelChangesBrandFormButton.addEventListener("click", () => {
+        brandNameInput.value = "";
+        createBrandFormButton.style.display = "block";
+        saveChangesBrandFormButton.style.display = "none";
+        cancelChangesBrandFormButton.style.display = "none";
+      });
+    };
+
+    const validateCategoryName = () => {
+      if (categoryNameInput.value.trim() === "") {
+        categoryNameError.textContent = "* Category Name is required";
+        return false;
+      }
+      categoryNameError.textContent = "";
+      return true;
+    };
+
+    categoryNameInput.addEventListener("input", validateCategoryName);
+
+    const validateCategoryDescription = () => {
+      if (categoryDescriptionInput.value.trim() === "") {
+        categoryDescriptionError.textContent =
+          "* Category is Description required";
+        return false;
+      } else if (categoryDescriptionInput.value.trim().length < 5) {
+        categoryDescriptionError.textContent =
+          "* Description should be atleast 5 charactors";
+        return false;
+      }
+      categoryDescriptionError.textContent = "";
+      return true;
+    };
+
+    categoryDescriptionInput.addEventListener(
+      "input",
+      validateCategoryDescription
+    );
+
+    //form validation for adding new brand
+    const validateBrandName = () => {
+      if (brandNameInput.value.trim() === "") {
+        brandNameError.textContent = "* Brand Name is required";
+        return false;
+      } else if (brandNameInput.value.trim().length < 2) {
+        brandNameError.textContent = "* Name should be atleast 2 charactors";
+        return false;
+      } else {
+        brandNameError.textContent = "";
+        return true;
+      }
+    };
+
+    brandNameInput.addEventListener("input", validateBrandName);
+
+    //checking for existing category
+    const categoryExists = async (categoryName, id) => {
+      try {
+        const encodedCName = encodeURIComponent(categoryName);
+
+        const response = await fetch(
+          `/admin/brandCategoryExists?encodedCName=${encodedCName}${
+            id ? `&categoryId=${id}` : ""
+          }`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+
+        return data.exists;
+      } catch (error) {
+        console.log(
+          `error while checking the category existence`,
+          error.message
+        );
+
+        throw error;
+      }
+    };
+
+    formDataCreateCategory.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const isValidateCategoryName = validateCategoryName();
+      const isValidateCategoryDescription = validateCategoryDescription();
+
+      const categoryName = categoryNameInput.value.trim();
+
+      if (!(isValidateCategoryName && isValidateCategoryDescription)) {
+        return;
+      }
+
+      try {
+        const cExists = await categoryExists(categoryName);
+
+        if (cExists) {
           Swal.fire({
-            title: successMessage,
-            text: `${successMessage} for ${categoryName}`,
-            icon: 'success',
+            title: "Category Exists!",
+            text: "A category with this name already exists.",
+            icon: "warning",
             toast: true,
-            position: 'top-right',
+            position: "top-right",
             showConfirmButton: false,
             timerProgressBar: true,
-            timer: 3000
+            timer: 3000,
           });
+          return;
+        }
 
-      // Clear session storage
-        sessionStorage.removeItem('successMessage');
-        sessionStorage.removeItem('categoryName');
-       }
-      });
-      </script>
-      
-        
-        <%- include('../layouts/adminLayouts/footer') %>
-    </main>
+        formDataCreateCategory.submit();
+      } catch (error) {
+        console.error("error checking category existence:", error);
+
+        Swal.fire({
+          title: "Error",
+          text: "An error occurred while checking the category. Please try again.",
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
+    });
+
+    //checking for existing brand
+
+    const brandExists = async (brandName, id) => {
+      try {
+        const encodedBName = encodeURIComponent(brandName);
+
+        const response = await fetch(
+          `/admin/brandCategoryExists?encodedBName=${encodedBName}${
+            id ? `&brandId=${id}` : ""
+          }`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        return data.exists;
+      } catch (error) {
+        console.log(
+          `error while checking the category existence`,
+          error.message
+        );
+
+        throw error;
+      }
+    };
+
+    formDataCreateBrand.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const isValidateBrandName = validateBrandName();
+      const brandName = brandNameInput.value.trim();
+
+      if (!isValidateBrandName) {
+        return;
+      }
+      try {
+        const bExists = await brandExists(brandName);
+
+        if (bExists) {
+          Swal.fire({
+            title: "Brand Exists!",
+            text: "A brand with this name already exists.",
+            icon: "warning",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+          return;
+        }
+
+        formDataCreateBrand.submit();
+      } catch (error) {
+        console.log(`error checking brand existence:`, error);
+
+        Swal.fire({
+          title: "Error",
+          text: "An error occurred while checking the brand. Please try again.",
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const successMessage = sessionStorage.getItem("successMessage");
+      const brandName = sessionStorage.getItem("brandName");
+      const categoryName = sessionStorage.getItem("categoryName");
+
+      if (successMessage && brandName) {
+        Swal.fire({
+          text: `${successMessage} for ${brandName}`,
+          icon: "success",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+
+        // Clear the message after displaying
+        sessionStorage.removeItem("successMessage");
+        sessionStorage.removeItem("brandName");
+      }
+
+      if (successMessage && categoryName) {
+        Swal.fire({
+          title: successMessage,
+          text: `${successMessage} for ${categoryName}`,
+          icon: "success",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+
+        // Clear session storage
+        sessionStorage.removeItem("successMessage");
+        sessionStorage.removeItem("categoryName");
+      }
+    });
+  </script>
+
+  <%- include('../layouts/adminLayouts/footer') %>
+</main>

@@ -1,400 +1,345 @@
 <%- include('../layouts/adminLayouts/header') %>
-<style>
-        .table-responsive .btn {
-    width: 120px !important;
-    height: 40px !important;
-    font-size: 14px !important;
-    padding: 0.5rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  .swal1-cancel {
-        width: 100% !important; 
-        margin: 5px 0!important;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
+<div class="screen-overlay"></div>
+<%- include('../layouts/adminLayouts/sidebar') %>
+<main class="main-wrap">
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Products List</h2>
+        <p>Dashboard > Products</p>
+      </div>
+      <div>
+        <a href="/admin/addProducts" class="btn btn-primary btn-sm rounded"
+          >Add Product</a
+        >
+      </div>
+    </div>
+    <div class="card mb-4">
+        <form id="filterForm" action="/admin/products" method="GET" style="margin-top: 20px; margin-left: 20px;">
+        <div class="row align-items-center">
+            <!-- Category Filter -->
+            <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
+                <select class="form-select" id="categoryFilter" name="category">
+                    <option value="">All Categories</option>
+                    <% if (categoriesData.length > 0) { %>
+                        <% categoriesData.forEach(category => { %>
+                            <option value="<%= category._id %>" <%= categoryFilter === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
+                        <% }) %>
+                    <% } else { %>
+                        <option value="">No Category Found</option>
+                    <% } %>
+                </select>
+            </div>
     
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
+            <!-- Brand Filter -->
+            <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
+                <select class="form-select" id="brandFilter" name="brand">
+                    <option value="">All Brands</option>
+                    <% if (brandsData.length > 0) { %>
+                        <% brandsData.forEach(brand => { %>
+                            <option value="<%= brand._id %>" <%= brandFilter === brand._id.toString() ? 'selected' : '' %>><%= brand.name %></option>
+                        <% }) %>
+                    <% } else { %>
+                        <option value="">No Brand Found</option>
+                    <% } %>
+                </select>
+            </div>
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
+            <!-- Status Filter -->
+            <div class="col-md-2 col-6">
+                
+            </div>
+    
+            <!-- Search Term -->
+            <div class="col-md-3">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search term" value="<%= searchTerm %>">
+            </div>
+    
+            <!-- Submit Button -->
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover" id="productTable">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Product Image</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Normal Price</th>
+                <th scope="col">Offer Price</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-center">Update</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody">
+              <% if (productData.length> 0) { %> <% for (let i=0; i <
+              productData.length; i++) { %>
+              <tr>
+                <td class="text-center"><%= i + 1 %></td>
+                <td>
+                  <img
+                    class="img-sm img-thumbnail"
+                    src="/productImages/<%= productData[i]?.images[0]?.filename%>"
+                    alt=""
+                  />
+                </td>
+
+                <td><%= productData[i].name %></td>
+                <td><%= productData[i].category.name %></td>
+                <td><%= productData[i].brand.name %></td>
+                <td><%= productData[i].salesPrice %></td>
+
+                <td>
+                  <% if (productData[i]?.productSalesPriceAfterOfferDiscount
+                  &&new Date(productData[i]?.productOffer?.offerExpiryDate) >
+                  new Date()&&
+                  productData[i]?.productSalesPriceAfterOfferDiscount!==0 &&
+                  productData[i]?.productOffer?.offerStatus) { %> <%=
+                  productData[i]?.productSalesPriceAfterOfferDiscount.toFixed(2)
+                  %> <% } else { %> N/A <% } %>
+                </td>
+
+                <td><%= productData[i].stock %></td>
+                <td>
+                  <% if (productData[i].stock > 0) { %>
+                  <span class="text-success mx-2">In Stock</span>
+                  <% } else { %>
+                  <span class="text-danger mx-2">Out of Stock</span>
+                  <% } %>
+                </td>
+                <td>
+                  <div class="d-flex justify-content-end">
+                    <a
+                      href="/admin/editProduct/?productId=<%= productData[i]._id %>"
+                      style="
+                        width: 120px;
+                        height: 40px;
+                        font-size: 14px;
+                        padding: 0.5rem;
+                      "
+                      class="btn btn-light rounded btn-sm font-sm flex-fill mx-1"
+                    >
+                      Edit info
+                    </a>
+
+                    <% if(productData[i].isBlocked) { %>
+
+                    <button
+                      style="
+                        width: 120px;
+                        height: 40px;
+                        font-size: 14px;
+                        padding: 0.5rem;
+                      "
+                      onclick="softDeleteProduct('<%= productData[i]._id %>')"
+                      id="softDeleteButton<%= productData[i]._id %>"
+                      class="btn btn-success rounded btn-sm font-sm flex-fill mx-1"
+                    >
+                      List
+                    </button>
+
+                    <% } else { %>
+
+                    <button
+                      style="
+                        width: 120px;
+                        height: 40px;
+                        font-size: 14px;
+                        padding: 0.5rem;
+                      "
+                      onclick="softDeleteProduct('<%= productData[i]._id %>')"
+                      id="softDeleteButton<%= productData[i]._id %>"
+                      class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1"
+                    >
+                      Unlist
+                    </button>
+
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+              <% } %> <% } else { %>
+              <tr>
+                <td colspan="9">No Products Found Yet</td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-area mt-30 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <% if (currentPage > 1) { %>
+              <li class="page-item">
+                <a
+                  class="page-link"
+                  href="/admin/products?page=<%= currentPage - 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>"
+                >
+                  <strong>&lt;</strong>
+                </a>
+              </li>
+              <% } %> <% let startPage = Math.max(1, currentPage - 2); let
+              endPage = Math.min(totalPages, startPage + 4); if (endPage -
+              startPage < 4) { startPage = Math.max(1, endPage - 4); } %> <% for
+              (let i = startPage; i <= endPage; i++) { %>
+              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a
+                  class="page-link"
+                  href="/admin/products?page=<%= i %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>"
+                  ><strong><%= i %></strong></a
+                >
+              </li>
+              <% } %> <% if (currentPage < totalPages) { %>
+              <li class="page-item">
+                <a
+                  class="page-link"
+                  href="/admin/products?page=<%= currentPage + 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>"
+                >
+                  <strong>&gt;</strong>
+                </a>
+              </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <script>
+   const applySwalButtonStyles = () => {
+    const confirmButton = Swal.getConfirmButton();
+    const cancelButton = Swal.getCancelButton();
+
+    confirmButton.style.width = '100%';
+    confirmButton.style.margin = '5px 0';
+    confirmButton.style.border = '1px solid #000';
+    confirmButton.style.borderRadius = '0.25rem';
+    confirmButton.style.backgroundColor = '#000';
+    confirmButton.style.color = '#fff';
+
+    cancelButton.style.width = '100%';
+    cancelButton.style.margin = '5px 0';
+    cancelButton.style.border = '1px solid #000';
+    cancelButton.style.borderRadius = '0.25rem';
+    cancelButton.style.color = '#000';
+
+    if (window.innerWidth <= 768) {
+        confirmButton.style.width = '100%';
+        cancelButton.style.width = '100%';
+    } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = '150px';
+        cancelButton.style.width = '150px';
     }
-</style>
-    <div class="screen-overlay"></div>
-    <%- include('../layouts/adminLayouts/sidebar') %>
-        <main class="main-wrap">
-            <%- include('../layouts/adminLayouts/searchbar') %>
-                <section class="content-main">
-                    <div class="content-header">
-                        <div>
-                            <h2 class="content-title card-title">Products List</h2>
-                            <p>Dashboard > Products</p>
-                        </div>
-                        <div>
-                            <a href="/admin/addProducts" class="btn btn-primary btn-sm rounded">Add Product</a>
-                        </div>
-                    </div>
-                    <div class="card mb-4">
-        
-                        <form id="filterForm" action="/admin/products" method="GET" style="margin-top: 20px; margin-left: 20px;">
-                            <div class="row align-items-center">
-                                <!-- Category Filter -->
-                                <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
-                                    <select class="form-select" id="categoryFilter" name="category">
-                                        <option value="">All Categories</option>
-                                        <% if (categoriesData.length > 0) { %>
-                                            <% categoriesData.forEach(category => { %>
-                                                <option value="<%= category._id %>" <%= categoryFilter === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <option value="">No Category Found</option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                        
-                                <!-- Brand Filter -->
-                                <div class="col-md-2 col-12 me-auto mb-md-0 mb-3">
-                                    <select class="form-select" id="brandFilter" name="brand">
-                                        <option value="">All Brands</option>
-                                        <% if (brandsData.length > 0) { %>
-                                            <% brandsData.forEach(brand => { %>
-                                                <option value="<%= brand._id %>" <%= brandFilter === brand._id.toString() ? 'selected' : '' %>><%= brand.name %></option>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <option value="">No Brand Found</option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                        
-                                <!-- Status Filter -->
-                                <div class="col-md-2 col-6">
-                                    <select class="form-select" id="statusFilter" name="status">
-                                        <option value="">All Statuses</option>
-                                        <option value="inStock" <%= statusFilter === 'inStock' ? 'selected' : '' %>>In Stock</option>
-                                        <option value="unListed" <%= statusFilter === 'unListed' ? 'selected' : '' %>>Unlisted</option>
-                                        <option value="outOfStock" <%= statusFilter === 'outOfStock' ? 'selected' : '' %>>Out of Stock</option>
-                                    </select>
-                                </div>
-                        
-                                <!-- Search Term -->
-                                <div class="col-md-3">
-                                    <input type="text" name="searchTerm" class="form-control" placeholder="Search term" value="<%= searchTerm %>">
-                                </div>
-                        
-                                <!-- Submit Button -->
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary">Search</button>
-                                </div>
-                            </div>
-                        </form>
-                        
-                        
-                        
-                        
-                        <div class="card-body">
-                            <div class="table-responsive " >
-                                <table class="table table-hover " id="productTable">
-                                    <thead >
-                                        <tr>
-                                            <th scope="col">No</th>
-                                            <th scope="col">Product Image</th>
-                                            <th scope="col">Product Name</th>
-                                            <th scope="col">Category</th>
-                                            <th scope="col">Brand</th>
-                                            <th scope="col">Normal Price</th>
-                                            <th scope="col">Offer Price</th>
-                                            <th scope="col">Stock</th>
-                                            <th scope="col" >Status</th>
-                                            <th scope="col" class="text-center">Update</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="productTableBody" >
-                                        <% if (productData.length> 0) { %>
-                                            <% for (let i=0; i < productData.length; i++) { %>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <%= i + 1 %> 
-                                                    </td>
-                                                    <td>
-                                                        <img class="img-sm img-thumbnail"
-                                                            src="/productImages/<%= productData[i]?.images[0]?.filename%>"
-                                                            alt="">
-                                                    </td>
-                                                   
-                                                    <td>
-                                                        <%= productData[i].name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= productData[i].category.name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= productData[i].brand.name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= productData[i].salesPrice %>
-                                                    </td>
+ };
 
-                                                    <td>
-                                                        <% if (productData[i]?.productSalesPriceAfterOfferDiscount &&new Date(productData[i]?.productOffer?.offerExpiryDate) > new Date()&& productData[i]?.productSalesPriceAfterOfferDiscount!==0 && productData[i]?.productOffer?.offerStatus) { %>
-                                                            <%= productData[i]?.productSalesPriceAfterOfferDiscount.toFixed(2) %>
-                                                        <% } else { %>
-                                                            N/A
-                                                        <% } %>
-                                                    </td>
-                                                    
-                                                    <td>
-                                                        <%= productData[i].stock %>
-                                                    </td>
-                                                    <td>
-                                                        <% if (productData[i].stock > 0) { %>
-                                                            <span class="text-success mx-2">In Stock</span>
-                                                        <% } else { %>
-                                                            <span class="text-danger mx-2">Out of Stock</span>
-                                                        <% } %>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex justify-content-end">
-                                                            <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="editProduct('<%= productData[i]._id %>')"
-                                                                
-                                                                class="btn btn-light rounded btn-sm font-sm flex-fill mx-1">Edit
-                                                                info</button>
+        const softDeleteProduct = (productId) => {
+          const deleteButton = document.getElementById(
+            `softDeleteButton${productId}`
+          );
+          const isDeleting = deleteButton.classList.contains("btn-danger");
 
-                                                            <% if(productData[i].isBlocked) { %>
-
-                                                                <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;"
-                                                                    onclick="softDeleteProduct('<%= productData[i]._id %>')"
-                                                                    id="softDeleteButton<%= productData[i]._id %>"
-                                                                    class="btn btn-success rounded btn-sm font-sm flex-fill mx-1">List</button>
-
-                                                                <% } else { %>
-
-                                                                    <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;"
-                                                                        onclick="softDeleteProduct('<%= productData[i]._id %>')"
-                                                                        id="softDeleteButton<%= productData[i]._id %>"
-                                                                        class="btn  btn-danger rounded btn-sm font-sm flex-fill mx-1">Unlist</button>
-
-                                                                    <% } %>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <% } %>
-                                                    <% } else { %>
-                                                        <tr>
-                                                            <td colspan="9">No Products Found Yet</td>
-                                                        </tr>
-                                                        <% } %>
-
-                                    </tbody>
-
-                                </table>
-                            </div>
-                            
-                            <div class="pagination-area mt-30 mb-50">
-                                <nav aria-label="Page navigation example">
-                                    <ul class="pagination justify-content-start">
-                                        <% if (currentPage > 1) { %>
-                                            <li class="page-item">
-                                                <a class="page-link" href="/admin/products?page=<%= currentPage - 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>">
-                                                    <strong>&lt;</strong>
-                                                </a>
-                                            </li>
-                                        <% } %>
-                            
-                                        <% 
-                                        let startPage = Math.max(1, currentPage - 2);
-                                        let endPage = Math.min(totalPages, startPage + 4);
-                                        if (endPage - startPage < 4) {
-                                            startPage = Math.max(1, endPage - 4);
-                                        }
-                                        %>
-                            
-                                        <% for (let i = startPage; i <= endPage; i++) { %>
-                                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                                <a class="page-link" href="/admin/products?page=<%= i %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>"><strong><%= i %></strong></a>
-                                            </li>
-                                        <% } %>
-                            
-                                        <% if (currentPage < totalPages) { %>
-                                            <li class="page-item">
-                                                <a class="page-link" href="/admin/products?page=<%= currentPage + 1 %>&category=<%= categoryFilter %>&brand=<%= brandFilter %>&status=<%= statusFilter %>&searchTerm=<%= searchTerm %>">
-                                                    <strong>&gt;</strong>
-                                                </a>
-                                            </li>
-                                        <% } %>
-                                    </ul>
-                                </nav>
-                            </div>
-                            
-                            
-                        </div>
-
-                    
-
-
-                        
-
-
-
-
-
-
-
-                </section> <!-- content-main end// -->
-
-                <script>
-
-                    const softDeleteProduct = (productId) => {
-                        const deleteButton = document.getElementById(`softDeleteButton${productId}`)
-                        const isDeleting = deleteButton.classList.contains('btn-danger')
-
-                Swal.fire({
-                    title: `Are you sure you want to ${isDeleting ? 'Unlist' : 'List'} this product ?`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: '#ffffff',
-                    confirmButtonText: `Yes, ${isDeleting ? 'Unlist' : 'List'}`,
-                    customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
+          Swal.fire({
+            title: `Are you sure you want to ${
+              isDeleting ? "Unlist" : "List"
+            } this product ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#ffffff",
+            confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
+            didOpen: () => {
+                applySwalButtonStyles(); 
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/admin/products/?productId=${productId}`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
                 },
-                        }).then((result) => {
+              })
+                .then((response) => {
+                  if (response.status != 200) {
+                    throw new Error("Network response was not ok");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  if (data.productId.isBlocked) {
+                    deleteButton.classList.remove("btn-danger");
+                    deleteButton.classList.add("btn-success");
+                    deleteButton.textContent = "List";
+                    Swal.fire({
+                      title: "Unlisted!",
+                      text: "This product is no longer available.",
+                      icon: "success",
+                      toast: true,
+                      position: "top-right",
+                      showConfirmButton: false,
+                      timerProgressBar: true,
+                      timer: 3000,
+                    });
+                  } else {
+                    deleteButton.classList.remove("btn-success");
+                    deleteButton.classList.add("btn-danger");
+                    deleteButton.textContent = "Unlist";
 
-                            if (result.isConfirmed) {
-
-
-                                fetch(`/admin/products/?productId=${productId}`, {
-
-                                    method: 'PATCH',
-                                    headers: {
-
-                                        'Content-Type': 'application/json'
-                                    },
-
-                                }).then(response => {
-
-                                    if (response.status != 200) {
-
-                                        throw new Error('Network response was not ok')
-                                    }
-
-                                    return response.json()
-
-                                }).then(data => {
-
-                                    if (data.productId.isBlocked) {
-
-                                        deleteButton.classList.remove('btn-danger');
-                                        deleteButton.classList.add('btn-success');
-                                        deleteButton.textContent = 'List'
-                                        Swal.fire({
-                                        title: 'Unlisted!',
-                                        text: 'This product is no longer available.',
-                                        icon: 'success',
-                                        toast: true,
-                                        position: 'top-right',
-                                        showConfirmButton: false,
-                                        timerProgressBar: true,
-                                        timer: 3000
-                                    });
-
-                                    } else {
-
-                                        deleteButton.classList.remove('btn-success');
-                                        deleteButton.classList.add('btn-danger');
-                                        deleteButton.textContent = 'Unlist'
-
-                                     Swal.fire({
-                                        title: 'Listed!',
-                                        text: 'This product is now available.',
-                                        icon: 'success',
-                                        toast: true,
-                                        position: 'top-right',
-                                        showConfirmButton: false,
-                                        timerProgressBar: true,
-                                        timer: 3000
-                                    });
-
-
-
-                                    }
-                                   
-                                }).catch(error => {
-
-                                    console.log(`There is a problem with the fetch operation`, error)
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: 'There was a problem updating the product.',
-                                        icon: 'error',
-                                        toast: true,
-                                        position: 'top-right',
-                                        showConfirmButton: false,
-                                        timerProgressBar: true,
-                                        timer: 3000
-                                    });
-
-
-                                })
-
-                            }
-
-                        })
-
-                    }
-                                   
-
-//product editing
-const editProduct = (productId) =>{
-
-    if(!productId){
-
-
-        return
-    }else{
-
-        window.location.href = `/admin/editProduct/?productId=${productId}`
-
-    }
-}
-
-//after editing the product detiails this message will display
-window.addEventListener('DOMContentLoaded', (event) => {
-    // Retrieve message from sessionStorage
-    let successMessage = sessionStorage.getItem('successMessage');
-
-    if (successMessage) {
-        Swal.fire({
-                title: 'Success!',
-                text: successMessage,
-                icon: 'success',
-                toast: true,
-                position: 'top-right',
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 5000
+                    Swal.fire({
+                      title: "Listed!",
+                      text: "This product is now available.",
+                      icon: "success",
+                      toast: true,
+                      position: "top-right",
+                      showConfirmButton: false,
+                      timerProgressBar: true,
+                      timer: 3000,
+                    });
+                  }
+                })
+                .catch((error) => {
+                  console.log(
+                    `There is a problem with the fetch operation`,
+                    error
+                  );
+                  Swal.fire({
+                    title: "Error!",
+                    text: "There was a problem updating the product.",
+                    icon: "error",
+                    toast: true,
+                    position: "top-right",
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 3000,
+                  });
+                });
+            }
+          });
+        };
+        window.addEventListener("DOMContentLoaded", (event) => {
+          const successMessage = sessionStorage.getItem("successMessage");
+          if (successMessage) {
+            Swal.fire({
+              title: "Success!",
+              text: successMessage,
+              icon: "success",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 5000,
             });
-        // Clear the message from sessionStorage
-        sessionStorage.removeItem('successMessage');
-    }
-});
-
-                </script>
-                <%- include('../layouts/adminLayouts/footer') %>
+            sessionStorage.removeItem("successMessage");
+          }
+        });
+      </script>
+      <%- include('../layouts/adminLayouts/footer') %>
+    </div>
+  </section>
+</main>

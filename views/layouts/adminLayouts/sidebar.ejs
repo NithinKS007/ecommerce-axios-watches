@@ -1,108 +1,144 @@
-
-
 <div class="screen-overlay"></div>
 <aside class="navbar-aside" id="offcanvas_aside">
-    <div class="aside-top">
-        <a href="#" class="brand-wrap">
-            <p class="text" style="
-            font-family: 'Helvetica Neue', sans-serif;
-             font-size: 20px;
-              margin-left: 49px;
-            color: #2c3e50; /* Dark gray-blue color */
-          
-            text-transform: uppercase;
-           
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        ">Axios Watches</p>
-        </a>
-    
-    
-        <div>
-            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i>
-            </button>
-        </div>
+  <div class="aside-top">
+    <a href="#" class="brand-wrap">
+      <p
+        class="text"
+        style="
+          font-family: 'Helvetica Neue', sans-serif;
+          font-size: 20px;
+          margin-left: 49px;
+          color: #2c3e50; /* Dark gray-blue color */
+
+          text-transform: uppercase;
+
+          font-weight: bold;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        "
+      >
+        Axios Watches
+      </p>
+    </a>
+
+    <div>
+      <button class="btn btn-icon btn-aside-minimize">
+        <i class="text-muted material-icons md-menu_open"></i>
+      </button>
     </div>
-    <nav>
-        <ul class="menu-aside">
-            <li class="menu-item ">
-                <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
-                    <span class="text">Dashboard</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
-                    <span class="text">Products</span>
-                </a>
-            </li>
-            <li class="menu-item dropdown">
-                <a class="menu-link dropdown-toggle" id="bestSellersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="icon material-icons md-trending_up"></i>
-                    <span class="text">Best Sellers</span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="bestSellersDropdown">
-                    <li><a class="dropdown-item" href="/admin/bestSellers?type=product">Best 10 Selling Products</a></li>
-                    <li><a class="dropdown-item" href="/admin/bestSellers?type=category">Best 10 Selling Categories</a></li>
-                    <li><a class="dropdown-item" href="/admin/bestSellers?type=brand">Best 10 Selling Brands</a></li>
-                </ul>
-            </li>
-            
-            <li class="menu-item">
-                <a class="menu-link" href="/admin/customerlist"> <i class="icon material-icons md-store"></i>
-                    <span class="text">customers</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a class="menu-link" href="/admin/couponManagement">
-                  <i class="icon material-icons md-card_giftcard"></i>
-                  <span class="text">Coupon Management</span>
-                </a>
-              </li>
-              
-              <li class="menu-item">
-                <a class="menu-link" href="/admin/updateReturnStatus">
-                    <i class="icon material-icons md-receipt"></i>
-                    <span class="text">Return Details</span>
-                </a>
-            </li>
-            
-            <li class="menu-item dropdown">
-                <a class="menu-link dropdown-toggle" id="OfferManagementDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="icon material-icons md-trending_up"></i>
-                    <span class="text">Offer</span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="OfferManagementDropdown">
-                    <li><a class="dropdown-item" href="/admin/categoryOffer">Category</a></li>
-                    <li><a class="dropdown-item" href="/admin/productOffer">Product</a></li>
-                </ul>
-            </li>
-            <li class="menu-item">
-                <a class="menu-link" disabled href="/admin/brandCategoryManagement"> <i
-                        class="icon material-icons md-pie_chart"></i>
-                    <span class="text">Category & Brand </span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
-                    <span class="text">Orders</span>
-                </a>
-            </li>
+  </div>
+  <nav>
+    <ul class="menu-aside">
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/dashboard">
+          <i class="icon material-icons md-home"></i>
+          <span class="text">Dashboard</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/products">
+          <i class="icon material-icons md-shopping_bag"></i>
+          <span class="text">Products</span>
+        </a>
+      </li>
+      <li class="menu-item dropdown">
+        <a
+          class="menu-link dropdown-toggle"
+          id="bestSellersDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="icon material-icons md-trending_up"></i>
+          <span class="text">Best Sellers</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="bestSellersDropdown">
+          <li>
+            <a class="dropdown-item" href="/admin/best-sellers?type=product"
+              >Best 10 Selling Products</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/best-sellers?type=category"
+              >Best 10 Selling Categories</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/best-sellers?type=brand"
+              >Best 10 Selling Brands</a
+            >
+          </li>
         </ul>
-        <hr>
-        <ul class="menu-aside">
-            <li class="menu-item">
-                <a class="menu-link"> <i class="icon material-icons md-settings"></i>
-                    <span class="text">Settings</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a class="menu-link" disabled href="/admin/signout"> <i
-                        class="icon material-icons md-exit_to_app"></i>
-                    <span class="text">Logout</span>
-                </a>
-            </li>
+      </li>
+
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/customerlist">
+          <i class="icon material-icons md-store"></i>
+          <span class="text">customers</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/coupons?view=list">
+          <i class="icon material-icons md-card_giftcard"></i>
+          <span class="text">Coupon Management</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/orders/return?view=return">
+          <i class="icon material-icons md-receipt"></i>
+          <span class="text">Return Details</span>
+        </a>
+      </li>
+
+      <li class="menu-item dropdown">
+        <a
+          class="menu-link dropdown-toggle"
+          id="OfferManagementDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="icon material-icons md-trending_up"></i>
+          <span class="text">Offer</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="OfferManagementDropdown">
+          <li>
+            <a class="dropdown-item" href="/admin/categories/offer?view=offers">Category</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/products/offers?view=offers"
+              >Product</a
+            >
+          </li>
         </ul>
-        <br>
-        <br>
-    </nav>
+      </li>
+      <li class="menu-item">
+        <a class="menu-link" disabled href="/admin/categories-brands">
+          <i class="icon material-icons md-pie_chart"></i>
+          <span class="text">Category & Brand </span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-link" href="/admin/orders?view=orders">
+          <i class="icon material-icons md-shopping_cart"></i>
+          <span class="text">Orders</span>
+        </a>
+      </li>
+    </ul>
+    <hr />
+    <ul class="menu-aside">
+      <li class="menu-item">
+        <a class="menu-link">
+          <i class="icon material-icons md-settings"></i>
+          <span class="text">Settings</span>
+        </a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-link" disabled href="/admin/signout">
+          <i class="icon material-icons md-exit_to_app"></i>
+          <span class="text">Logout</span>
+        </a>
+      </li>
+    </ul>
+    <br />
+    <br />
+  </nav>
 </aside>

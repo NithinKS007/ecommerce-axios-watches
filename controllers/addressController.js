@@ -4,6 +4,9 @@ const statusCode = require("../utils/statusCodes");
 
 const loadAddress = async (req, res) => {
   try {
+    if (req.query.view === "addnew") {
+      return res.status(statusCode.OK).render("user/addAddress");
+    }
     const currentUser = req?.currentUser;
     const addressDetails = await userAddress
       .find({ userId: currentUser?._id })
@@ -12,16 +15,6 @@ const loadAddress = async (req, res) => {
     return res.status(statusCode.OK).render("user/address", { addressDetails });
   } catch (error) {
     console.log(`error while loading the address page`, error.message);
-
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
-  }
-};
-
-const loadAddAddress = async (req, res) => {
-  try {
-    return res.status(statusCode.OK).render("user/addAddress");
-  } catch (error) {
-    console.log(`error while loading the address adding page`, error.message);
 
     return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
@@ -79,7 +72,8 @@ const addAddress = async (req, res) => {
 };
 
 const editAddress = async (req, res) => {
-  const { id, updatedAddress } = req.body;
+  const { id } = req.params;
+  const { updatedAddress } = req.body;
 
   if (!updatedAddress || !id) {
     return res
@@ -117,13 +111,13 @@ const editAddress = async (req, res) => {
 
 const removeAddress = async (req, res) => {
   try {
-    const { addressId } = req.body;
+    const { id } = req.params;
 
     const currentUser = req?.currentUser;
 
     const deletedAddressFromCollection = await userAddress.deleteOne({
       userId: currentUser?._id,
-      _id: addressId,
+      _id: id,
     });
 
     const isAddressEmpty = await userAddress.countDocuments({
@@ -157,7 +151,6 @@ const removeAddress = async (req, res) => {
 
 module.exports = {
   loadAddress,
-  loadAddAddress,
   addAddress,
   removeAddress,
   editAddress,

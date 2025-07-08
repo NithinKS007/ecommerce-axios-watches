@@ -1,138 +1,138 @@
 <%- include('../layouts/adminLayouts/header') %>
 
-    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
-    <main class="d-flex align-items-center justify-content-center vh-100">
-        <style>
-            .error {
-            font-size: 0.9rem;
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+<main class="d-flex align-items-center justify-content-center vh-100">
+  <section class="content-main" style="width: 100%; max-width: 1200px">
+    <div
+      class="card mx-auto card-login"
+      style="
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        padding: 5px;
+      "
+    >
+      <div class="card-body">
+        <h5 class="card-title mb-4 text-center">Welcome Admin</h5>
+
+        <% if (typeof message !='undefined' ) { %>
+
+        <p
+          style="
             color: red;
-        }
-        .small-text {
-            font-size: 0.9rem;
-            line-height: 1.2;
-        }
-        .card-login {
-            width: 100%; 
-            max-width: 400px; 
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-            padding: 5px;
-           
-        }
-        </style>
-        <section class="content-main" style="width: 100%; max-width: 1200px;">
-            <div class="card mx-auto card-login">
-                <div class="card-body">
-                    <h5 class="card-title mb-4 text-center">Welcome Admin</h5>
+            text-align: center;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <%= message %>
+        </p>
 
-                    <% if (typeof message !='undefined' ) { %>
+        <% } %>
+        <form method="post" id="formData" action="/admin/signin">
+          <div class="mb-3">
+            <input
+              class="form-control"
+              id="email"
+              name="email"
+              placeholder="Email"
+              type="text"
+            />
+            <span
+              id="emailError"
+              class="error"
+              style="font-size: 0.9rem; color: red"
+            ></span>
+          </div>
 
-                        <p style="color: red; text-align: center; font-size: 0.8rem; display: flex; justify-content: center; align-items: center;">
-                            <%= message %>
-                        </p>
+          <div class="mb-3">
+            <input
+              class="form-control"
+              id="password"
+              name="password"
+              placeholder="Password"
+              type="password"
+            />
+            <span
+              id="passwordError"
+              class="error"
+              style="font-size: 0.9rem; color: red"
+            ></span>
+          </div>
 
-                        <% } %>
-                            <form method="post" id="formData" action="/admin/signin">
+          <div class="mb-3"></div>
 
-                                <div class="mb-3">
+          <div class="mb-4">
+            <button type="submit" name="signin" class="btn btn-primary w-100">
+              Login
+            </button>
+          </div>
+        </form>
+        <p class="text-center mb-4"><a href="/">Go Back</a></p>
+      </div>
+    </div>
+  </section>
+</main>
 
-                                    <input class="form-control" id="email" name="email" placeholder="Email" type="text">
-                                    <span id="emailError" class="error"></span>
-                                </div>
+<!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
 
-                                <div class="mb-3">
-                                    <input class="form-control" id="password" name="password" placeholder="Password" type="password">
-                                    <span id="passwordError" class="error"></span>
-                                </div>
+<script>
+  //email validaton
+  let isEmailValid = false;
+  const emailInput = document.getElementById("email");
+  const emailError = document.getElementById("emailError");
 
-                                <div class="mb-3">
-                                </div>
+  const validateEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-                                <div class="mb-4">
-                                    <button type="submit" name="signin" class="btn btn-primary w-100">Login</button>
-                                </div>
-                            </form>
-                            <p class="text-center mb-4"><a href="/">Go Back</a></p>
-                </div>
-            </div>
-        </section>
-    </main>
+    if (emailInput.value.trim() === "") {
+      emailError.textContent = "* Email is required";
+      isEmailValid = false;
+    } else if (!emailRegex.test(emailInput.value.trim())) {
+      emailError.textContent = "* Enter a valid email";
+      isEmailValid = false;
+    } else {
+      emailError.textContent = "";
+      isEmailValid = true;
+    }
+  };
 
-    <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
+  emailInput.addEventListener("input", validateEmail);
 
-    <script>
+  //password validaton
+  let isPasswordValid = false;
+  const passwordInput = document.getElementById("password");
+  const passwordError = document.getElementById("passwordError");
 
-        //email validaton
-        let isEmailValid = false;
-        const emailInput = document.getElementById('email');
-        const emailError = document.getElementById('emailError');
-        
-        const validateEmail = () =>{
-        
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-            if (emailInput.value.trim() === '') {
-                emailError.textContent = '* Email is required';
-                isEmailValid = false;
-            }else if( !emailRegex.test(emailInput.value.trim()) ){
-        
-                emailError.textContent = '* Enter a valid email';
-                isEmailValid = false;
-        
-            }else {
-                emailError.textContent = '';
-                isEmailValid = true;
-            }
-        }
-        
-        emailInput.addEventListener('input', validateEmail);
-        
-        
-        //password validaton
-        let isPasswordValid = false;
-        const passwordInput = document.getElementById('password');
-        const passwordError = document.getElementById('passwordError');
-        
-        const validatePassword = () =>{
-        
-            if (passwordInput.value.trim() === '') {
-                passwordError.textContent = '* Password is required';
-                isPasswordValid = false;
-            }else if(passwordInput.value.trim().length < 5){
-        
-                passwordError.textContent = '* Password should be atleast 5 charactors';
-                isPasswordValid = false;
-        
-            }else {
-                passwordError.textContent = '';
-                isPasswordValid = true;
-            }
-        }
-        
-        passwordInput.addEventListener('input', validatePassword);
-        
-        
-        
-        
-        document.addEventListener('DOMContentLoaded', () => {
-        
-        const form = document.getElementById('formData');
-        
-        form.addEventListener('submit', (event) => {
-        
-        
-            validateEmail()
-            validatePassword()
-        
-            
-            if (!isEmailValid||!isPasswordValid) {
-        
-                event.preventDefault();
-        
-            }
-        });
-        });
-        
-        
-        </script>
-        
-    <%- include('../layouts/adminLayouts/footer') %>
+  const validatePassword = () => {
+    if (passwordInput.value.trim() === "") {
+      passwordError.textContent = "* Password is required";
+      isPasswordValid = false;
+    } else if (passwordInput.value.trim().length < 5) {
+      passwordError.textContent = "* Password should be atleast 5 charactors";
+      isPasswordValid = false;
+    } else {
+      passwordError.textContent = "";
+      isPasswordValid = true;
+    }
+  };
+
+  passwordInput.addEventListener("input", validatePassword);
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("formData");
+
+    form.addEventListener("submit", (event) => {
+      validateEmail();
+      validatePassword();
+
+      if (!isEmailValid || !isPasswordValid) {
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+
+<%- include('../layouts/adminLayouts/footer') %>

@@ -89,6 +89,25 @@ const addCategoryOffer = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Discount percentage must be between 0 and 100.",
+      });
+    }
+
+    if (new Date(startDate) < new Date()) {
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ success: false, message: "Start date cannot be in the past." });
+    }
+    if (expiryDate && new Date(expiryDate) <= new Date(startDate)) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Expiry date must be after the start date.",
+      });
+    }
+
     const categoryId = ObjectId.createFromHexString(category);
 
     const categoryData = await categories.findById(categoryId);
@@ -245,6 +264,19 @@ const editCategoryOffer = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Discount percentage must be between 0 and 100",
+      });
+    }
+
+    if (expiryDate <= new Date()) {
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ success: false, message: "Expiry date must be in the future" });
+    }
+
     const categoryData = await categories.findById(categoryId);
 
     if (!categoryData) {
@@ -384,6 +416,26 @@ const addProductOffer = async (req, res) => {
         .status(statusCode.BAD_REQUEST)
         .json({ success: false, message: "All fields are required" });
     }
+
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Discount percentage must be between 0 and 100.",
+      });
+    }
+
+    if (new Date(startDate) < new Date()) {
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ success: false, message: "Start date cannot be in the past." });
+    }
+    if (expiryDate && new Date(expiryDate) <= new Date(startDate)) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Expiry date must be after the start date.",
+      });
+    }
+
     const productId = ObjectId.createFromHexString(product);
 
     const productData = await products.findById(productId);
@@ -521,6 +573,19 @@ const editProductOffer = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Discount percentage must be between 0 and 100",
+      });
+    }
+
+    if (expiryDate <= new Date()) {
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ success: false, message: "Expiry date must be in the future" });
+    }
+    
     const productGivenId = ObjectId.createFromHexString(productId);
 
     const productData = await products.findById(productGivenId);

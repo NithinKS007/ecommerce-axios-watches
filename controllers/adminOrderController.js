@@ -86,7 +86,7 @@ const loadOrderList = async (req, res) => {
 
 const loadOrderDetailsPage = async (req, res) => {
   try {
-    const { orderId } = req.query;
+    const { id:orderId } = req.params
 
     const userOrderDataPromise = orders
       .findOne({ _id: orderId })
@@ -130,14 +130,30 @@ const changeOrderStatus = async (req, res) => {
         .json({ message: "Order not found" });
     }
 
-    const allItemsCancelled = order.items.every(
-      (item) => item.orderProductStatus === "cancelled"
-    );
+    if (
+      order.orderStatus == "delivered" &&
+      (selectedStatus === "pending" ||
+        selectedStatus === "shipped" ||
+        selectedStatus === "cancelled")
+    ) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Order has already been delievered",
+      });
+    }
 
-    if (allItemsCancelled) {
-      return res.status(statusCode.OK).json({
-        message: "User cancelled all products",
-        adminCannotCancel: true,
+    if (order.orderStatus === "shipped" && selectedStatus === "pending") {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Order has already been shipped",
+      });
+    }
+
+    const alreadyCanceled =
+      order.items.every((item) => item.orderProductStatus === "cancelled") &&
+      order.orderStatus === "cancelled";
+
+    if (alreadyCanceled) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "The order has already been canceled",
       });
     }
 

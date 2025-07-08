@@ -42,7 +42,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -140,57 +140,58 @@
   </div>
 </div>
 
-
-<section class="pt-50 pb-150 main-section" style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4;">
-    <div class="section-container" style="max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); text-align: center;">
-        <h1 style="font-size: 2.5rem; color: #e74c3c; margin-bottom: 20px; font-weight: 600;">Payment Failed</h1>
-        <p style="font-size: 1.1rem; color: #555; margin-bottom: 20px;">We encountered an issue while processing your payment. Please try again.</p>
-        <p style="font-size: 1.1rem; color: #555; margin-bottom: 30px;">If the issue persists, please contact our customer support team.</p>
-        <a href="/orders" class="retry-btn" style="display: inline-block; padding: 12px 25px; font-size: 1.1rem; color: #fff; background-color: #e74c3c; border: none; border-radius: 4px; text-decoration: none; transition: background-color 0.3s, box-shadow 0.3s; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">Retry Payment</a>
-
-    </div>
+<section
+  class="pt-50 pb-150 main-section"
+  style="
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f4f4f4;
+  "
+>
+  <div
+    class="section-container"
+    style="
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    "
+  >
+    <h1
+      style="
+        font-size: 2.5rem;
+        color: #e74c3c;
+        margin-bottom: 20px;
+        font-weight: 600;
+      "
+    >
+      Payment Failed
+    </h1>
+    <p style="font-size: 1.1rem; color: #555; margin-bottom: 20px">
+      We encountered an issue while processing your payment. Please try again.
+    </p>
+    <p style="font-size: 1.1rem; color: #555; margin-bottom: 30px">
+      If the issue persists, please contact our customer support team.
+    </p>
+    <a
+      href="/orders"
+      class="retry-btn"
+      style="
+        display: inline-block;
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        color: #fff;
+        background-color: #e74c3c;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      "
+      >Retry Payment</a
+    >
+  </div>
 </section>
-
-<div id="preloader-active">
-    <div class="preloader d-flex align-items-center justify-content-center">
-        <div class="preloader-inner position-relative">
-            <div class="text-center">
-                <h5 class="mb-5">Now Loading</h5>
-                <div class="loader">
-                    <div class="bar bar1"></div>
-                    <div class="bar bar2"></div>
-                    <div class="bar bar3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
-<script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-<script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-<script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-<script src="assets/js/plugins/slick.js"></script>
-<script src="assets/js/plugins/jquery.syotimer.min.js"></script>
-<script src="assets/js/plugins/wow.js"></script>
-<script src="assets/js/plugins/jquery-ui.js"></script>
-<script src="assets/js/plugins/perfect-scrollbar.js"></script>
-<script src="assets/js/plugins/magnific-popup.js"></script>
-<script src="assets/js/plugins/select2.min.js"></script>
-<script src="assets/js/plugins/waypoints.js"></script>
-<script src="assets/js/plugins/counterup.js"></script>
-<script src="assets/js/plugins/jquery.countdown.min.js"></script>
-<script src="assets/js/plugins/images-loaded.js"></script>
-<script src="assets/js/plugins/isotope.js"></script>
-<script src="assets/js/plugins/scrollup.js"></script>
-<script src="assets/js/plugins/jquery.vticker-min.js"></script>
-<script src="assets/js/plugins/jquery.theia.sticky.js"></script>
-<!-- Template JS -->
-<script src="./assets/js/main.js?v=3.4"></script>
-<script src="./assets/js/shop.js?v=3.4"></script>
-
-<!-- SweetAlert2 JS -->
-<script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
-
-</body>
-</html>
+<%- include('../layouts/userLayouts/footer') %>

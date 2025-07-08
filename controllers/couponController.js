@@ -1,7 +1,7 @@
 const cart = require("../models/cartModel");
 const priceSummary = require("../utils/priceSummary");
 const coupons = require("../models/couponModel");
-const statusCode = require("../utils/statusCodes")
+const statusCode = require("../utils/statusCodes");
 
 const applyCoupon = async (req, res) => {
   try {
@@ -30,15 +30,13 @@ const applyCoupon = async (req, res) => {
         { $set: { couponCode } }
       );
 
-      return res
-        .status(statusCode.OK)
-        .json({
-          message: "coupon successfully added",
-          success: true,
-          finalPrice,
-          discount,
-          subTotal,
-        });
+      return res.status(statusCode.OK).json({
+        message: "coupon successfully added",
+        success: true,
+        finalPrice,
+        discount,
+        subTotal,
+      });
     } else {
       return res
         .status(statusCode.BAD_REQUEST)
@@ -71,17 +69,17 @@ const removeCoupon = async (req, res) => {
         { $unset: { couponCode: "" } }
       );
 
-      return res
-        .status(statusCode.OK)
-        .json({
-          message: "coupon successfully removed",
-          success: true,
-          finalPrice,
-          discount,
-          subTotal,
-        });
+      return res.status(statusCode.OK).json({
+        message: "coupon successfully removed",
+        success: true,
+        finalPrice,
+        discount,
+        subTotal,
+      });
     } else {
-      return res.status(statusCode.BAD_REQUEST).json({ message: "No cart found", success: false });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "No cart found", success: false });
     }
   } catch (error) {
     console.log(`error while removing the coupon`, error.message);
@@ -146,7 +144,7 @@ const loadCoupon = async (req, res) => {
 
 const loadAddCoupon = async (req, res) => {
   try {
-    return res.status(statusCode.OK).render("admin/addCoupon");
+    return res.status(statusCode.OK).render("admin/addCoupon", { message: "" });
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
     return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
@@ -164,6 +162,35 @@ const addCoupon = async (req, res) => {
       minAmount,
       couponStatus,
     } = req.body;
+
+    const calculatedMax = Math.floor(
+      Number(minAmount) * Number(couponDiscount / 100)
+    );
+    
+    if (Number(maxAmount) <= calculatedMax) {
+      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+        message: `Maximum Discount Amount cannot be less than the calculated maximum discount of ${calculatedMax}`,
+      });
+    }
+    const existingCouponName = await coupons.findOne({
+      couponName: couponName,
+    });
+
+    if (existingCouponName) {
+      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+        message:
+          "Coupon name already exists. Please choose a different coupon name.",
+      });
+    }
+    const existingCouponCode = await coupons.findOne({
+      couponCode: couponCode,
+    });
+
+    if (existingCouponCode) {
+      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+        message: "Coupon code already exists. Please choose a different code.",
+      });
+    }
 
     const coupon = new coupons({
       couponName: couponName,

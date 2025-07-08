@@ -2,156 +2,144 @@
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
 <main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %>
-    <section class="content-main">
-        <div class="content-header">
-            <div>
-                <h2 class="content-title card-title">Orders List</h2>
-                <p>Dashboard > Order list</p>
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Orders List</h2>
+        <p>Dashboard > Order list</p>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <header class="card-header">
+        <form action="/admin/orders" method="GET" class="row gx-3">
+         <input type="hidden" name="view" value="orders">
+          <div class="col-lg-4 col-md-6 me-auto">
+            <input
+              type="text"
+              name="search"
+              placeholder="Search..."
+              class="form-control"
+              value="<%= search %>"
+            />
+          </div>
+          <div class="col-lg-2 col-6 col-md-3">
+            <select name="status" class="form-select" onchange="this.form.submit();">
+            <option value="">All Status</option>
+            <option value="pending" <%= statusFilter === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="shipped" <%= statusFilter === 'shipped' ? 'selected' : '' %>>Shipped</option>
+            <option value="delivered" <%= statusFilter === 'delivered' ? 'selected' : '' %>>Delivered</option>
+            <option value="cancelled" <%= statusFilter === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            <option value="returnInitiated" <%= statusFilter === 'returnInitiated' ? 'selected' : '' %>>returnInitiated</option>
+            <option value="returnApproved" <%= statusFilter === 'returnApproved' ? 'selected' : '' %>>returnApproved</option>
+            <option value="returnRejected" <%= statusFilter === 'returnRejected' ? 'selected' : '' %>>returnRejected</option>
+            </select>
             </div>
-        </div>
-        <div class="card mb-4">
-            <header class="card-header">
-                <form action="/admin/orders" method="GET" class="row gx-3">
-                    <div class="col-lg-4 col-md-6 me-auto">
-                        <input type="text" name="search" placeholder="Search..." class="form-control" value="<%= search %>">
-                    </div>
-                    <div class="col-lg-2 col-6 col-md-3">
-                        <select name="status" class="form-select" onchange="this.form.submit();">
-                            <option value="">All Status</option>
-                            <option value="pending" <%= statusFilter === 'pending' ? 'selected' : '' %>>Pending</option>
-                            <option value="shipped" <%= statusFilter === 'shipped' ? 'selected' : '' %>>Shipped</option>
-                            <option value="delivered" <%= statusFilter === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                            <option value="cancelled" <%= statusFilter === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
-                            <option value="returnInitiated" <%= statusFilter === 'returnInitiated' ? 'selected' : '' %>>returnInitiated</option>
-                            <option value="returnApproved" <%= statusFilter === 'returnApproved' ? 'selected' : '' %>>returnApproved</option>
-                            <option value="returnRejected" <%= statusFilter === 'returnRejected' ? 'selected' : '' %>>returnRejected</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </div>
-                </form>
-                
-            </header>
-            <!-- table content starts -->
-            <div class="card-body">
-                <% if (orderData.length === 0) { %>
-                    <p class="text-center">No orders available</p>
-                <% } else { %>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Shipping Address</th>
-                                <th scope="col">Total</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Date</th>
-                                <th scope="col" class="text-end">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% orderData.forEach(order => { %>
-                            <tr>
-                                <td><%= order._id %></td>
-                                <td><b><%= order.user.fname %> <%= order.user.lname %></b></td>
-                                <td><%= order.user.email %></td>
-                                <td>
-                                    <%= order.shippingAddress.name %><br>
-                                    <%= order.shippingAddress.phone %><br>
-                                    <%= order.shippingAddress.locality %>, <%= order.shippingAddress.address %>, <%= order.shippingAddress.cityDistTown %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.pincode %><br>
-                                    <%= order.shippingAddress.landMark %>
-                                </td>
-                                <td>Rs <%= order.totalAmount %></td>
-                                <td>
-                                    <span class="badge rounded-pill 
-                                        <% if (order.orderStatus === 'pending') { %>
-                                            alert-warning
-                                        <% } else if (order.orderStatus === 'shipped') { %>
-                                            alert-info
-                                        <% } else if (order.orderStatus === 'delivered') { %>
-                                            alert-success
-                                        <% } else if (order.orderStatus === 'cancelled') { %>
-                                            alert-danger
-                                        <% } else { %>
-                                            alert-secondary
-                                        <% } %>
-                                    ">
-                                    <%= order.orderStatus.replace(/([a-z])([A-Z])/g, '$1 $2')
-                                    .split(' ')
-                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                                    .join(' ') %>
-                                    </span>
-                                </td>
-                                
-                                <td><%= new Date(order.orderDate).toLocaleString() %></td>
-                                <td class="text-end">
-                                    <a class="btn btn-md rounded font-sm" onclick="getOrderDetails('<%= order._id %>')">Detail</a>
-                                </td>
-                            </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-                <% } %>
-            </div>
-        </div>
+          <div class="col-lg-2 col-md-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </form>
+      </header>
+      <!-- table content starts -->
+      <div class="card-body">
+        <% if (orderData.length === 0) { %>
+        <p class="text-center">No orders available</p>
+        <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>#ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Shipping Address</th>
+                <th scope="col">Total</th>
+                <th scope="col">Status</th>
+                <th scope="col">Date</th>
+                <th scope="col" class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% orderData.forEach(order => { %>
+              <tr>
+                <td><%= order._id %></td>
+                <td><b><%= order.user.fname %> <%= order.user.lname %></b></td>
+                <td><%= order.user.email %></td>
+                <td>
+                  <%= order.shippingAddress.name %><br />
+                  <%= order.shippingAddress.phone %><br />
+                  <%= order.shippingAddress.locality %>, <%=
+                  order.shippingAddress.address %>, <%=
+                  order.shippingAddress.cityDistTown %>, <%=
+                  order.shippingAddress.state %> - <%=
+                  order.shippingAddress.pincode %><br />
+                  <%= order.shippingAddress.landMark %>
+                </td>
+                <td>Rs <%= order.totalAmount %></td>
+                <td>
+                  <span
+                    class="badge rounded-pill <% if (order.orderStatus === 'pending') { %> alert-warning <% } else if (order.orderStatus === 'shipped') { %> alert-info <% } else if (order.orderStatus === 'delivered') { %> alert-success <% } else if (order.orderStatus === 'cancelled') { %> alert-danger <% } else { %> alert-secondary <% } %>"
+                  >
+                    <%= order.orderStatus.replace(/([a-z])([A-Z])/g, '$1 $2')
+                    .split(' ') .map(word => word.charAt(0).toUpperCase() +
+                    word.slice(1).toLowerCase()) .join(' ') %>
+                  </span>
+                </td>
 
-        <div class="pagination-area mt-30 mb-50">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-start">
-                    <% if (currentPage > 1) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= statusFilter %>">
-                                <strong>&lt;</strong>
-                            </a>
-                        </li>
-                    <% } %>
-                    
-                    <% 
-                    let startPage = Math.max(1, currentPage - 2);
-                    let endPage = Math.min(totalPages, startPage + 4);
-                    if (endPage - startPage < 4) {
-                        startPage = Math.max(1, endPage - 4);
-                    }
-                    %>
-                    
-                    <% for (let i = startPage; i <= endPage; i++) { %>
-                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/admin/orders?page=<%= i %>&search=<%= search %>&status=<%= statusFilter %>"><strong><%= i %></strong></a>
-                        </li>
-                    <% } %>
-                    
-                    <% if (currentPage < totalPages) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= statusFilter %>">
-                                <strong>&gt;</strong>
-                            </a>
-                        </li>
-                    <% } %>
-                </ul>
-            </nav>
+                <td><%= new Date(order.orderDate).toLocaleString() %></td>
+                <td class="text-end">
+                  <a
+                    class="btn btn-md rounded font-sm"
+                    href="/admin/orders/<%= order._id %>?view=details"
+                    >Detail</a
+                  >
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
         </div>
-    </section> <!-- content-main end// -->
+        <% } %>
+      </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start">
+          <% if (currentPage > 1) { %>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/orders?view=orders&page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= statusFilter %>"
+            >
+              <strong>&lt;</strong>
+            </a>
+          </li>
+          <% } %> <% let startPage = Math.max(1, currentPage - 2); let endPage =
+          Math.min(totalPages, startPage + 4); if (endPage - startPage < 4) {
+          startPage = Math.max(1, endPage - 4); } %> <% for (let i = startPage;
+          i <= endPage; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a
+              class="page-link"
+              href="/admin/orders?view=orders&page=<%= i %>&search=<%= search %>&status=<%= statusFilter %>"
+              ><strong><%= i %></strong></a
+            >
+          </li>
+          <% } %> <% if (currentPage < totalPages) { %>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/orders?view=orders&page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= statusFilter %>"
+            >
+              <strong>&gt;</strong>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </section>
+  <!-- content-main end// -->
 </main>
-<script>
-const getOrderDetails = (orderId) => {
-
-    console.log(orderId);
-
-    if (!orderId) {
-
-        return;
-    }else{
-
-          window.location.href = `/admin/orderDetailsPage/?orderId=${orderId}`
-    }
-
-  
-
-};
-</script>
 <%- include('../layouts/adminLayouts/footer') %>

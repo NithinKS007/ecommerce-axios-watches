@@ -395,7 +395,11 @@ const cancelOrder = async (req, res) => {
           )
           .reduce((acc, tx) => acc + tx.amount, 0);
 
-        const refundAmount = totalAmount - productsAmountThatHaventRefunded;
+        const refundAmount = Math.max(
+          totalAmount - productsAmountThatHaventRefunded,
+          0
+        );
+        
         const newWalletTransaction = {
           orderId: orderIdOfTheOrder,
           amount: refundAmount,
@@ -492,7 +496,6 @@ const cancelOrderProduct = async (req, res) => {
       );
 
       if (updatedProductStatus.modifiedCount > 0) {
-
         const orderData = await orders.findById(orderIdOfTheCart);
         const { subTotalAmount, discountAmount, items } = orderData;
         const canceledItem = items.find((item) =>
@@ -504,6 +507,7 @@ const cancelOrderProduct = async (req, res) => {
             .status(404)
             .json({ message: "Item not found in the order" });
         }
+        
 
         let itemTotalAmount, itemDiscount;
         if (canceledItem.productSalesPriceAfterOfferDiscount !== 0) {
@@ -516,7 +520,7 @@ const cancelOrderProduct = async (req, res) => {
         const itemProportion = itemTotalAmount / subTotalAmount;
         itemDiscount = itemProportion * discountAmount;
         const priceAfterEverything =
-          itemTotalAmount - parseFloat(itemDiscount.toFixed(3));
+          itemTotalAmount - parseFloat(itemDiscount);
 
         const walletData = await wallet.findOne({ userId: currentUser._id });
 
@@ -723,8 +727,8 @@ const returnProductOrder = async (req, res) => {
 
 const loadOrderDetails = async (req, res) => {
   try {
-    const { orderId } = req.query;
-
+    const { id:orderId } = req.params;
+    console.log(orderId)
     const [orderData, transactions] = await Promise.all([
       orders.findById(orderId).exec(),
       transaction.findOne({ orderId }).exec(),

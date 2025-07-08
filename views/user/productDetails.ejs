@@ -42,7 +42,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -326,7 +326,7 @@
                       <% } else { %>
                       <button
                         type="submit"
-                        onclick="goToCart()"
+                        onclick="window.location.href = '/cart';"
                         id="goToCart"
                         class="button button-add-to-cart"
                       >
@@ -458,7 +458,7 @@
                       <div class="product-img-action-wrap">
                         <div class="product-img product-img-zoom">
                           <a
-                            href="/productDetails?id=<%= relatedProducts[i]._id %>"
+                            href="/products/<%= relatedProducts[i]._id %>"
                             tabindex="0"
                           >
                             <img
@@ -483,7 +483,7 @@
                           "
                         >
                           <a
-                            href="/productDetails?id=<%= relatedProducts[i]._id %>"
+                            href="/products/<%= relatedProducts[i]._id %>"
                             tabindex="0"
                           >
                             <%= relatedProducts[i].name %>
@@ -585,12 +585,11 @@
   //add to wishlist
   const addToWishList = async (productId) => {
     try {
-      const response = await fetch(`/wishList`, {
+      const response = await fetch(`/wishlist/${productId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productId }),
       });
 
       if (!response.ok) {
@@ -625,12 +624,11 @@
   //removing product from wishlist
   const removeFromWishList = async (productId) => {
     try {
-      const response = await fetch(`/wishList`, {
+      const response = await fetch(`/wishlist/${productId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productId }),
       });
 
       if (!response.ok) {
@@ -672,13 +670,11 @@
   const addToCart = (productId) => {
     const addToCartButton = document.getElementById("addToCart");
 
-    fetch(`/productDetails/`, {
+    fetch(`/products/${productId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-
-      body: JSON.stringify({ productId }),
     })
       .then((response) => {
         if (!response.ok) {
@@ -711,10 +707,6 @@
 
         window.location.href = "/signin";
       });
-  };
-
-  const goToCart = () => {
-    window.location.href = "/cart";
   };
 </script>
 

@@ -42,7 +42,6 @@ const calculateSubTotal = (selectedItems) => {
   }, 0);
 };
 
-
 const priceSummary = async (cartData, couponCode) => {
   try {
     if (!cartData?.items?.length) {
@@ -63,10 +62,8 @@ const priceSummary = async (cartData, couponCode) => {
       if (coupon && coupon.couponStatus) {
         if (finalPrice >= coupon.minAmount) {
           discount = (finalPrice * coupon.couponDiscount) / 100;
-          if (discount > coupon.maxAmount) {
-            discount = coupon.maxAmount;
-          }
-          finalPrice -= discount;
+          finalPrice -= Math.min(discount, coupon.maxAmount);
+          discount = Math.min(discount,coupon.maxAmount)
         } else {
           return generateResponse(
             "Minimum amount for coupon is not met",

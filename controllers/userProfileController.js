@@ -1,6 +1,7 @@
-const bcrypt = require("bcrypt");
 const users = require("../models/userModel");
-const statusCode = require("../utils/statusCodes")
+const statusCode = require("../utils/statusCodes");
+const { securePassword } = require("./userAuthController");
+const { comparePassword } = require("../utils/encryptionService");
 
 const loadUserProfile = async (req, res) => {
   try {
@@ -77,7 +78,7 @@ const editPassword = async (req, res) => {
         .json({ message: "User not found", success: false });
     }
 
-    const passwordMatch = await bcrypt.compare(
+    const passwordMatch = comparePassword(
       updatedPasswordDetails.existingPassword,
       userData.password
     );

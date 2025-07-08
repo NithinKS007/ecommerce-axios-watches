@@ -2,33 +2,17 @@
 
 <!-- used adminlayouts in the registration page for the user its done purposefully because its assets are in that folder so dont change -->
 <main>
-  <style>
-    .content-main {
+  <section
+    class="content-main"
+    style="
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 5px 0;
-    }
-    .card-login {
-      width: 100%;
-      max-width: 450px;
-    }
-    .form-control {
-      margin-bottom: 10px;
-    }
-    .error {
-      font-size: 0.9rem;
-      color: red;
-    }
-    .small-text {
-      font-size: 0.9rem;
-      line-height: 1.2;
-    }
-  </style>
-
-  <section class="content-main">
-    <div class="card card-login">
+    "
+  >
+    <div class="card card-login" style="width: 100%; max-width: 450px">
       <div class="card-body">
         <h4 class="card-title mb-3 text-center" style="font-size: 20px">
           Create an Account
@@ -40,8 +24,13 @@
             name="fname"
             placeholder="First Name"
             type="text"
+            style="margin-bottom: 10px"
           />
-          <span id="fnameError" class="error"></span>
+          <span
+            id="fnameError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <input
             class="form-control"
@@ -49,8 +38,13 @@
             name="lname"
             placeholder="Last Name"
             type="text"
+            style="margin-bottom: 10px"
           />
-          <span id="lnameError" class="error"></span>
+          <span
+            id="lnameError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <input
             class="form-control"
@@ -58,8 +52,13 @@
             name="email"
             placeholder="Email"
             type="text"
+            style="margin-bottom: 10px"
           />
-          <span id="emailError" class="error"></span>
+          <span
+            id="emailError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <input
             class="form-control"
@@ -67,8 +66,13 @@
             name="phone"
             placeholder="Mobile"
             type="text"
+            style="margin-bottom: 10px"
           />
-          <span id="phoneError" class="error"></span>
+          <span
+            id="phoneError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <input
             class="form-control"
@@ -76,8 +80,13 @@
             name="password"
             type="password"
             placeholder="Password"
+            style="margin-bottom: 10px"
           />
-          <span id="passwordError" class="error"></span>
+          <span
+            id="passwordError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <input
             class="form-control"
@@ -85,8 +94,13 @@
             name="cPassword"
             type="password"
             placeholder="Confirm Password"
+            style="margin-bottom: 10px"
           />
-          <span id="cPasswordError" class="error"></span>
+          <span
+            id="cPasswordError"
+            class="error"
+            style="font-size: 0.9rem; color: red"
+          ></span>
 
           <button
             type="submit"

@@ -1,4 +1,5 @@
-<%- include('../layouts/userLayouts/header') %> <div class="bg-white sticky-top">
+<%- include('../layouts/userLayouts/header') %>
+<div class="bg-white sticky-top">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container">
@@ -41,7 +42,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -139,61 +140,7 @@
   </div>
 </div>
 
-
 <main class="container my-5">
-  <style>
-    .error {
-      font-size: 0.9rem;
-      color: red;
-    }
-
-    .small-text {
-      font-size: 0.9rem;
-      line-height: 1.2;
-    }
-
-    .alert-message,
-    .order-summary,
-    .payment-methods,
-    .order-details,
-    .customer-info,
-    .troubleshooting-tips {
-      background-color: #f5f5f5;
-      padding: 20px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-
-    .alert-message {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    .order-summary {
-      background-color: #fff;
-    }
-
-    .payment-methods {
-      background-color: #fff;
-    }
-
-    .btn-retry {
-      background-color: black;
-      color: #fff;
-      font-size: 16px;
-      padding: 12px 20px;
-      width: 390px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .customer-info p,
-    .troubleshooting-tips p {
-      margin: 0;
-    }
-  </style>
   <h1
     style="
       font-family: 'Roboto', sans-serif;
@@ -211,7 +158,15 @@
   <div class="row">
     <div class="col-lg-8">
       <!-- Order Details Section -->
-      <div class="order-details">
+      <div
+        class="order-details"
+        style="
+          background-color: #f5f5f5;
+          padding: 20px;
+          border-radius: 4px;
+          margin-bottom: 20px;
+        "
+      >
         <h5 class="mb-4">Order Details</h5>
 
         <% orderData.items.slice(0, 2).forEach(item=> { %> <% if (item.images &&
@@ -238,9 +193,17 @@
       </div>
 
       <!-- Customer Information Section -->
-      <div class="customer-info">
+      <div
+        class="customer-info"
+        style="
+          background-color: #f5f5f5;
+          padding: 20px;
+          border-radius: 4px;
+          margin-bottom: 20px;
+        "
+      >
         <h5 class="mb-4">Customer Information</h5>
-        <p>
+        <p style="margin: 0">
           <strong>Delivery Address:</strong>
           <%= orderData.shippingAddress.address %>, <%=
           orderData.shippingAddress.locality %>, <%=
@@ -255,9 +218,17 @@
       </div>
 
       <!-- Troubleshooting Tips -->
-      <div class="troubleshooting-tips">
+      <div
+        class="troubleshooting-tips"
+        style="
+          background-color: #f5f5f5;
+          padding: 20px;
+          border-radius: 4px;
+          margin-bottom: 20px;
+        "
+      >
         <h5 class="mb-4">Troubleshooting Tips</h5>
-        <p>
+        <p style="margin: 0">
           If you encounter any issues with the payment, please refer to our
           <a href="/faq">FAQ page</a> or contact our
           <a href="/support">support team</a>.
@@ -267,7 +238,15 @@
 
     <div class="col-lg-4">
       <!-- Order Summary Section -->
-      <div class="order-summary">
+      <div
+        class="order-summary"
+        style="
+          background-color: #f5f5f5;
+          padding: 20px;
+          border-radius: 4px;
+          margin-bottom: 20px;
+        "
+      >
         <h5 class="mb-4">Order Summary</h5>
         <p class="d-flex justify-content-between">
           <span>SubTotal Amount</span>
@@ -296,22 +275,6 @@
   </div>
 </main>
 
-<!-- Preloader Start -->
-<div id="preloader-active">
-  <div class="preloader d-flex align-items-center justify-content-center">
-    <div class="preloader-inner position-relative">
-      <div class="text-center">
-        <h5 class="mb-5">Now Loading</h5>
-        <div class="loader">
-          <div class="bar bar1"></div>
-          <div class="bar bar2"></div>
-          <div class="bar bar3"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
   const retryPaymentButton = document.getElementById("retryPayment");
   const orderId = retryPaymentButton.getAttribute("data-order-id");
@@ -321,7 +284,7 @@
       try {
         const { payment_id, order_id } = response.error.metadata;
 
-        const dataResponse = await fetch("/paymentFailure", {
+        const dataResponse = await fetch("/payments/failure", {
           method: "PATCH",
 
           headers: {
@@ -349,7 +312,7 @@
             timerProgressBar: true,
             timer: 3000,
           }).then(() => {
-            window.location.href = "/paymentFailure";
+            window.location.href = "/payments/failure";
           });
         }
       } catch (error) {
@@ -402,7 +365,7 @@
             confirmButtonText: "OK",
             confirmButtonColor: "#000000",
           }).then(() => {
-            window.location.href = "/paymentFailure";
+            window.location.href = "/payments/failure";
           });
         }
       })
@@ -417,7 +380,7 @@
   });
 
   const verifyOnlinePayment = (paymentId, orderId, signature, amount) => {
-    fetch("/verifyOnlinePayment", {
+    fetch("/payments/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -436,7 +399,7 @@
             timerProgressBar: true,
             timer: 3000,
           }).then(() => {
-            window.location.href = "/placeOrder";
+            window.location.href = "/orders/confirmation?view=confirmation";
           });
         } else {
           Swal.fire({
@@ -457,35 +420,5 @@
         });
       });
   };
-        </script>
-        <!-- JavaScript Files -->
-        <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
-        <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-        <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-        <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-        <script src="assets/js/plugins/slick.js"></script>
-        <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
-        <script src="assets/js/plugins/wow.js"></script>
-        <script src="assets/js/plugins/jquery-ui.js"></script>
-        <script src="assets/js/plugins/perfect-scrollbar.js"></script>
-        <script src="assets/js/plugins/magnific-popup.js"></script>
-        <script src="assets/js/plugins/select2.min.js"></script>
-        <script src="assets/js/plugins/waypoints.js"></script>
-        <script src="assets/js/plugins/counterup.js"></script>
-        <script src="assets/js/plugins/jquery.countdown.min.js"></script>
-        <script src="assets/js/plugins/images-loaded.js"></script>
-        <script src="assets/js/plugins/isotope.js"></script>
-        <script src="assets/js/plugins/scrollup.js"></script>
-        <script src="assets/js/plugins/jquery.vticker-min.js"></script>
-        <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
-        <!-- Template JS -->
-        <script src="./assets/js/main.js?v=3.4"></script>
-        <script src="./assets/js/shop.js?v=3.4"></script>
-
-        <!-- SweetAlert2 JS -->
-        <script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
-
-        <!-- Custom JS -->
-        </body>
-
-        </html>
+</script>
+<%- include('../layouts/userLayouts/footer') %>

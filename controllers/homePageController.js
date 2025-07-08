@@ -308,7 +308,7 @@ const loadShowCase = async (req, res) => {
   } else if (sortbyList.includes("zToA")) {
     sort = { name: -1 };
   } else if (sortbyList.includes("outOfStock")) {
-    filter.stock = 0; 
+    filter.stock = 0;
   }
 
   if (searchProduct) {
@@ -380,7 +380,7 @@ const loadShowCase = async (req, res) => {
 
 const loadProductDetails = async (req, res) => {
   try {
-    const productId = req.query.id;
+    const productId = req.params.id;
 
     const currentUser = req?.currentUser;
 
@@ -388,7 +388,7 @@ const loadProductDetails = async (req, res) => {
       await Promise.all([
         cart.findOne({
           user: currentUser?._id,
-          items: { $elemMatch: { product: productId } },
+          "items.product": productId,
         }),
 
         products
@@ -432,7 +432,5 @@ const loadProductDetails = async (req, res) => {
 module.exports = {
   loadHome,
   loadShowCase,
-  // advancedSearch,
-  // searchProducts,
   loadProductDetails,
 };

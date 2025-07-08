@@ -41,7 +41,7 @@
         <li class="nav-item me-3">
           <a
             class="nav-link"
-            href="/wishList"
+            href="/wishlist"
             style="color: black; font-weight: bold; font-size: 24px"
           >
             <i class="fi-rs-heart"></i>
@@ -186,7 +186,7 @@
                 <br />
                 <div class="d-flex justify-content-start mb-3">
                   <a
-                    href="/addAddress"
+                    href="/address?view=addnew"
                     class="btn btn-outline-primary"
                     style="text-decoration: none"
                   >
@@ -516,7 +516,7 @@
   </section>
 </main>
 <script>
-  //for showing the add address button
+ 
   const editAddress = (
     id,
     addressType,
@@ -799,7 +799,7 @@
             email: addressEmailInput.value,
           };
 
-          fetch(`/editAddress`, {
+          fetch(`/address/${id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -858,12 +858,11 @@
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`/address`, {
+        fetch(`/address/${addressId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ addressId }),
         })
           .then((response) => {
             if (!response.ok) {

@@ -1,6 +1,6 @@
 const products = require("../models/productModel");
 const wishList = require("../models/wishList");
-const statusCode = require("../utils/statusCodes")
+const statusCode = require("../utils/statusCodes");
 
 const loadWishList = async (req, res) => {
   try {
@@ -34,11 +34,12 @@ const loadWishList = async (req, res) => {
 const addToWishList = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-
-    const { productId } = req.body;
+    const { id:productId } = req.params
 
     if (!productId) {
-      return res.status(statusCode.BAD_REQUEST).json({ message: "Product id is required" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Product id is required" });
     }
 
     const findExistingWishListForUser = await wishList
@@ -92,18 +93,21 @@ const addToWishList = async (req, res) => {
   } catch (error) {
     console.log(`Error while adding product to wishlist`, error.message);
 
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
   }
 };
 
 const removeFromWishList = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-
-    const { productId } = req.body;
+    const { id:productId } = req.params;
 
     if (!productId) {
-      return res.status(statusCode.BAD_REQUEST).json({ message: "Product ID is required" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "Product ID is required" });
     }
 
     const findExistingWishListForUser = await wishList
@@ -111,7 +115,9 @@ const removeFromWishList = async (req, res) => {
       .exec();
 
     if (!findExistingWishListForUser) {
-      return res.status(statusCode.BAD_REQUEST).json({ message: "User wishlist is not found" });
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .json({ message: "User wishlist is not found" });
     } else {
       await wishList.updateOne(
         { userId: currentUser?._id },
@@ -129,7 +135,9 @@ const removeFromWishList = async (req, res) => {
       error.message
     );
 
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
   }
 };
 

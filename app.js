@@ -4,7 +4,7 @@ const connectDB = require("./config/databaseConfig");
 const sessionConfig = require("./config/sessionConfig");
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
-const { setUserGlobal } = require("./middleware/setUserGlobal");
+const { setUserGlobal } = require("./middleware/setUserGlobalMiddleware");
 const morgan = require("morgan");
 
 const passport = require("passport");
@@ -14,13 +14,12 @@ const app = express();
 
 const PORT = process.env.PORT;
 
-//this required here because of google authentication
-require("./middleware/userAuth");
+//required here because of google authentication
+require("./middleware/userAuthMiddleware");
 
 //connecting to mongodb
 connectDB();
 
-//for searching the product
 app.use((req, res, next) => {
   res.locals.searchProduct = "";
   next();

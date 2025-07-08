@@ -2,55 +2,62 @@
 <div class="screen-overlay"></div>
 <%- include('../layouts/adminLayouts/sidebar') %>
 <main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %>
-    <section class="content-main">
-        <div class="content-header">
-            <div>
-                <h2 class="content-title card-title">Top 10 Best Selling Products</h2>
-                <p>Dashboard > Best Sellers > Top 10 Best Selling Products</p>
-            </div>
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Top 10 Best Selling Products</h2>
+        <p>Dashboard > Best Sellers > Top 10 Best Selling Products</p>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <!-- table content starts -->
+      <div class="card-body">
+        <% if (topTenBestSellingProducts.length === 0) { %>
+        <p>No Orders available</p>
+        <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Product Price</th>
+                <th scope="col">Product Offer Price</th>
+                <th scope="col">Total Units Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% topTenBestSellingProducts.forEach(product => { %>
+              <tr>
+                <td>
+                  <img
+                    src="/productImages/<%= product.firstImage.filename %>"
+                    alt="<%= product.productName %>"
+                    width="50"
+                  />
+                </td>
+                <td><b><%= product.productName %></b></td>
+                <td>Rs <%= product.price.toFixed(2) %></td>
+
+                <td>
+                  <% if (product.productSalesPriceAfterOfferDiscount && new
+                  Date(product.productOffer.offerExpiryDate) > new Date()&&
+                  product.productSalesPriceAfterOfferDiscount!==0 &&
+                  product.productOffer.offerStatus) { %> Rs <%=
+                  product.productSalesPriceAfterOfferDiscount.toFixed(2) %> <% }
+                  else { %> N/A <% } %>
+                </td>
+                <td><%= product.totalSold %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
         </div>
-        <div class="card mb-4">
-            <!-- table content starts -->
-            <div class="card-body">
-                <% if (topTenBestSellingProducts.length === 0) { %>
-                    <p>No Orders available</p>
-                <% } else { %>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th scope="col">Product Name</th>
-                                <th scope="col">Product Price</th>
-                                <th scope="col">Product Offer Price</th>
-                                <th scope="col">Total Units Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% topTenBestSellingProducts.forEach(product => { %>
-                            <tr>
-                                <td>
-                                    <img src="/productImages/<%= product.firstImage.filename %>" alt="<%= product.productName %>" width="50">
-                                </td>
-                                <td><b><%= product.productName %></b></td>
-                                <td>Rs <%= product.price.toFixed(2)  %></td>
-                
-                             
-                                <td><% if (product.productSalesPriceAfterOfferDiscount  && new Date(product.productOffer.offerExpiryDate) > new Date()&& product.productSalesPriceAfterOfferDiscount!==0 && product.productOffer.offerStatus) { %>
-                                    Rs <%= product.productSalesPriceAfterOfferDiscount.toFixed(2)  %>
-                                  <% } else { %>
-                                    N/A
-                                  <% } %></td>
-                                <td><%= product.totalSold %></td>
-                            </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-                <% } %>
-            </div>
-        </div>
-    </section> <!-- content-main end// -->
+        <% } %>
+      </div>
+    </div>
+  </section>
+  <!-- content-main end// -->
 </main>
 <%- include('../layouts/adminLayouts/footer') %>

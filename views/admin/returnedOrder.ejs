@@ -1,326 +1,332 @@
 <%- include('../layouts/adminLayouts/header') %>
 <div class="screen-overlay"></div>
-
-<style>
-    .swal1-cancel {
-        width: 100% !important; 
-        margin: 5px 0!important;
-        color: #000 !important; 
-        border: 1px solid #000  !important; 
-        border-radius: 0.25rem  !important; 
-    }
-    
-    .swal1-confirm {
-        background-color: #000;
-        color: #fff;
-        width: 100%;
-        margin: 5px 0;
-        border: 1px solid #000;
-        border-radius: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-    
-    @media (min-width: 769px) and (max-width: 992px) {
-        .swal1-confirm, .swal1-cancel {
-            width: 150px;
-        }
-    }
-
-</style>
 <%- include('../layouts/adminLayouts/sidebar') %>
 <main class="main-wrap">
-    <%- include('../layouts/adminLayouts/searchbar') %>
-    <section class="content-main">
-        <div class="content-header">
-            <div>
-                <h2 class="content-title card-title">Return Details</h2>
-                <p>Dashboard > Return Details</p>
+  <%- include('../layouts/adminLayouts/searchbar') %>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Return Details</h2>
+        <p>Dashboard > Return Details</p>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <header class="card-header">
+        <form action="/admin/orders/return" method="GET" class="px-3 py-2">
+          <div class="row gx-3 align-items-center">
+            <!-- Search Input with Button -->
+            <div class="col-lg-4 col-md-6 mb-2">
+              <div class="input-group w-100">
+                <input
+                  type="text"
+                  name="search"
+                  class="form-control"
+                  placeholder="Search..."
+                  value="<%= search %>"
+                />
+                <button type="submit" class="btn btn-primary ms-2">
+                  Search
+                </button>
+              </div>
             </div>
-        </div>
-        <div class="card mb-4">
-            <header class="card-header">
-                <form action="/admin/updateReturnStatus" method="GET" class="px-3 py-2">
-                    <div class="row gx-3 align-items-center">
-                        <!-- Search Input with Button -->
-                        <div class="col-lg-4 col-md-6 mb-2">
-                            <div class="input-group w-100">
-                                <input type="text" name="search" class="form-control" placeholder="Search..." value="<%= search %>">
-                                <button type="submit" class="btn btn-primary ms-2">Search</button>
-                            </div>
-                        </div>
-            
-                        <!-- Status Filter Dropdown -->
-                        <div class="col-lg-2 col-md-3 mb-2">
-                            <select name="statusFilter" class="form-select" onchange="this.form.submit()">
-                                <option value="">Status</option>
-                                <option value="initiated" <%= statusFilter === 'initiated' ? 'selected' : '' %>>Initiated</option>
-                                <option value="approved" <%= statusFilter === 'approved' ? 'selected' : '' %>>Approved</option>
-                                <option value="rejected" <%= statusFilter === 'rejected' ? 'selected' : '' %>>Rejected</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </header>
-            
-            
-            <!-- table content starts -->
-            <div class="card-body">
-                <div class="table-responsive">
-                    <% if (returnedOrderData.length > 0) { %>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Email</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Product ID</th>
-                                <th scope="col">Product Refund Amount</th>
-                                <th scope="col">Product Return Reason</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Date</th>
-                                <th scope="col" class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% returnedOrderData.forEach(returnedOrder => { %>
-                                <tr>
-                                    <td><%= returnedOrder.userId.email %></td>
-                                    <td><b><%= returnedOrder.userId.fname %> <%= returnedOrder.userId.lname %></b></td>
-                                    <td><%= returnedOrder.orderId.toString() %></td>
-                                    <td><%= returnedOrder.productId.toString() %></td>
-                                    <td><%= returnedOrder.productRefundAmount %></td>
-                                    <td><%= returnedOrder.productReturnReason %></td>
-                                    <td id="statusUpdate<%= returnedOrder._id %>">
-                                        <span class="badge rounded-pill alert-warning">
-                                          <%= returnedOrder.returnProductStatus.charAt(0).toUpperCase() + returnedOrder.returnProductStatus.slice(1) %>
-                                        </span>
-                                      </td>
-                                      
-                                    <td><%= new Date(returnedOrder.productReturnDate).toLocaleString() %></td>
-                                    <td id="statusContainer<%= returnedOrder._id %>">
-                                        <% if (returnedOrder.returnProductStatus === "approved") { %>
-                                            <p style="width: 240px; text-align: center; margin: 0 auto;">Return approved</p>
-                                        <% } else if (returnedOrder.returnProductStatus === "rejected") { %>
-                                            <p style="width: 240px; text-align: center; margin: 0 auto;">Return rejected</p>
-                                        <% } else { %>
-                                            <div id="buttonsContainer<%= returnedOrder._id %>" style="display: inline-flex; gap: 5px; width: 100%;">
-                                                <a class="btn btn-md rounded font-sm btn-success" 
-                                                   style="background-color: #28a745; border-color: #28a745; flex: 1; text-align: center; width: 120px;" 
-                                                   onclick="approved('<%= returnedOrder._id %>')">
-                                                   Approve
-                                                </a>
-                                                <a class="btn btn-md rounded font-sm btn-danger" 
-                                                   style="background-color: #dc3545; border-color: #dc3545; flex: 1; text-align: center; width: 120px;" 
-                                                   onclick="rejected('<%= returnedOrder._id %>')">
-                                                   Reject
-                                                </a>
-                                            </div>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                    <% } else { %>
-                        <p class="text-center">No returned products to show</p>
-                    <% } %>
-                </div>
+
+            <!-- Status Filter Dropdown -->
+            <div class="col-lg-2 col-md-3 mb-2">
+                 <select name="statusFilter" class="form-select" onchange="this.form.submit()">
+                <option value="">Status</option>
+                <option value="initiated" <%= statusFilter === 'initiated' ? 'selected' : '' %>>Initiated</option>
+                <option value="approved" <%= statusFilter === 'approved' ? 'selected' : '' %>>Approved</option>
+                <option value="rejected" <%= statusFilter === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                </select>
             </div>
+          </div>
+          <input type="hidden" name="view" value="return">
+        </form>
+      </header>
+
+      <!-- table content starts -->
+      <div class="card-body">
+        <div class="table-responsive">
+          <% if (returnedOrderData.length > 0) { %>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Order ID</th>
+                <th scope="col">Product ID</th>
+                <th scope="col">Product Refund Amount</th>
+                <th scope="col">Product Return Reason</th>
+                <th scope="col">Status</th>
+                <th scope="col">Date</th>
+                <th scope="col" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% returnedOrderData.forEach(returnedOrder => { %>
+              <tr>
+                <td><%= returnedOrder.userId.email %></td>
+                <td>
+                  <b
+                    ><%= returnedOrder.userId.fname %> <%=
+                    returnedOrder.userId.lname %></b
+                  >
+                </td>
+                <td><%= returnedOrder.orderId.toString() %></td>
+                <td><%= returnedOrder.productId.toString() %></td>
+                <td><%= returnedOrder.productRefundAmount %></td>
+                <td><%= returnedOrder.productReturnReason %></td>
+                <td id="statusUpdate<%= returnedOrder._id %>">
+                  <span class="badge rounded-pill alert-warning">
+                    <%=
+                    returnedOrder.returnProductStatus.charAt(0).toUpperCase() +
+                    returnedOrder.returnProductStatus.slice(1) %>
+                  </span>
+                </td>
+
+                <td>
+                  <%= new Date(returnedOrder.productReturnDate).toLocaleString()
+                  %>
+                </td>
+                <td id="statusContainer<%= returnedOrder._id %>">
+                  <% if (returnedOrder.returnProductStatus === "approved") { %>
+                  <p style="width: 240px; text-align: center; margin: 0 auto">
+                    Return approved
+                  </p>
+                  <% } else if (returnedOrder.returnProductStatus ===
+                  "rejected") { %>
+                  <p style="width: 240px; text-align: center; margin: 0 auto">
+                    Return rejected
+                  </p>
+                  <% } else { %>
+                  <div
+                    id="buttonsContainer<%= returnedOrder._id %>"
+                    style="display: inline-flex; gap: 5px; width: 100%"
+                  >
+                    <a
+                      class="btn btn-md rounded font-sm btn-success"
+                      style="
+                        background-color: #28a745;
+                        border-color: #28a745;
+                        flex: 1;
+                        text-align: center;
+                        width: 120px;
+                      "
+                      onclick="approved('<%= returnedOrder._id %>')"
+                    >
+                      Approve
+                    </a>
+                    <a
+                      class="btn btn-md rounded font-sm btn-danger"
+                      style="
+                        background-color: #dc3545;
+                        border-color: #dc3545;
+                        flex: 1;
+                        text-align: center;
+                        width: 120px;
+                      "
+                      onclick="rejected('<%= returnedOrder._id %>')"
+                    >
+                      Reject
+                    </a>
+                  </div>
+                  <% } %>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <p class="text-center">No returned products to show</p>
+          <% } %>
         </div>
-        <div class="pagination-area mt-30 mb-50">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-start">
-                    <% if (currentPage > 1) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/admin/updateReturnStatus?page=<%= currentPage - 1 %>&search=<%= search %>&statusFilter=<%= statusFilter %>">
-                                <strong>&lt;</strong>
-                            </a>
-                        </li>
-                    <% } %>
-        
-                    <% 
-                    let startPage = Math.max(1, currentPage - 2);
-                    let endPage = Math.min(totalPages, startPage + 4);
-                    if (endPage - startPage < 4) {
-                        startPage = Math.max(1, endPage - 4);
-                    }
-                    %>
-        
-                    <% for (let i = startPage; i <= endPage; i++) { %>
-                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/admin/updateReturnStatus?page=<%= i %>&search=<%= search %>&statusFilter=<%= statusFilter %>">
-                                <strong><%= i %></strong>
-                            </a>
-                        </li>
-                    <% } %>
-        
-                    <% if (currentPage < totalPages) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/admin/updateReturnStatus?page=<%= currentPage + 1 %>&search=<%= search %>&statusFilter=<%= statusFilter %>">
-                                <strong>&gt;</strong>
-                            </a>
-                        </li>
-                    <% } %>
-                </ul>
-            </nav>
-        </div>
-    </section> <!-- content-main end// -->
+      </div>
+    </div>
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start">
+          <% if (currentPage > 1) { %>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/orders/return?view=return&page=<%= currentPage - 1 %>&search=<%= search %>&statusFilter=<%= statusFilter %>"
+            >
+              <strong>&lt;</strong>
+            </a>
+          </li>
+          <% } %> <% let startPage = Math.max(1, currentPage - 2); let endPage =
+          Math.min(totalPages, startPage + 4); if (endPage - startPage < 4) {
+          startPage = Math.max(1, endPage - 4); } %> <% for (let i = startPage;
+          i <= endPage; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a
+              class="page-link"
+              href="/admin/orders/return?view=return&page=<%= i %>&search=<%= search %>&statusFilter=<%= statusFilter %>"
+            >
+              <strong><%= i %></strong>
+            </a>
+          </li>
+          <% } %> <% if (currentPage < totalPages) { %>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/orders/return?view=return&page=<%= currentPage + 1 %>&search=<%= search %>&statusFilter=<%= statusFilter %>"
+            >
+              <strong>&gt;</strong>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </section>
+  <!-- content-main end// -->
 </main>
 
 <script>
-const changeReturnStatus = (returnOrderDocId, status ,addToInventory) => {
-   
+  const applySwalButtonStyles = () => {
+    const confirmButton = Swal.getConfirmButton();
+    const cancelButton = Swal.getCancelButton();
+
+    confirmButton.style.width = "100%";
+    confirmButton.style.margin = "5px 0";
+    confirmButton.style.border = "1px solid #000";
+    confirmButton.style.borderRadius = "0.25rem";
+    confirmButton.style.backgroundColor = "#000";
+    confirmButton.style.color = "#fff";
+
+    cancelButton.style.width = "100%";
+    cancelButton.style.margin = "5px 0";
+    cancelButton.style.border = "1px solid #000";
+    cancelButton.style.borderRadius = "0.25rem";
+    cancelButton.style.color = "#000";
+
+    if (window.innerWidth <= 768) {
+      confirmButton.style.width = "100%";
+      cancelButton.style.width = "100%";
+    } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+      confirmButton.style.width = "150px";
+      cancelButton.style.width = "150px";
+    }
+  };
+
+  const changeReturnStatus = (returnOrderDocId, status, addToInventory) => {
     Swal.fire({
-        title: 'Are you sure?',
-        text: "You are about to change the return status of this product.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: '#ffffff',
-        confirmButtonText: 'Yes, change it!',
-        customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
+      title: "Are you sure?",
+      text: "You are about to change the return status of this product.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#ffffff",
+      confirmButtonText: "Yes, change it!",
+      didOpen: () => {
+        applySwalButtonStyles();
+      },
     }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/admin/updateReturnStatus', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ returnOrderDocId, status,addToInventory }),
-            }).then((response) => {
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.error || "Network response was not ok");
-                    });
-                }
-                return response.json();
-            }).then((data) => {
-            
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        text: 'The return status has been updated successfully.',
-                        toast: true,
-                        position: 'top-right',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 3000
-                    });
-
-                    const statusContainer = document.getElementById(`statusContainer${returnOrderDocId}`);
-                    const buttonsContainer = document.getElementById(`buttonsContainer${returnOrderDocId}`);
-                    const statusElement = document.getElementById(`statusUpdate${returnOrderDocId}`);
-
-                    if (data.returnApproved) {
-                        if (statusContainer) {
-                            statusContainer.innerHTML = `<p style="width: 240px; text-align: center">Return approved</p>`;
-                        }
-                        if (buttonsContainer) {
-                            buttonsContainer.style.display = 'none';
-                        }
-                        if (statusElement) {
-                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus.charAt(0).toUpperCase() +data.updatedStatus.slice(1) }</span>`;
-                        }
-                    } else {
-                        if (statusContainer) {
-                            statusContainer.innerHTML = `<p style="width: 240px; text-align: center">Return rejected</p>`;
-                        }
-                        if (buttonsContainer) {
-                            buttonsContainer.style.display = 'none';
-                        }
-                        if (statusElement) {
-                            statusElement.innerHTML = `<span class="badge rounded-pill alert-warning">${data.updatedStatus.charAt(0).toUpperCase() +data.updatedStatus.slice(1)}</span>`
-                        }
-                    }
-                }
-                    
-              
-            }).catch((error) => {
-                console.log(`Error while updating return status:`, error.message);
-                Swal.fire({
-                    icon: 'error',
-                    text: `Error: ${error.message}`,
-                    toast: true,
-                    position: 'top-right',
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    timer: 3000
-                });
-            });
-        }
-    });
-};
-
-const approved = async (returnOrderDocId) => {
-
-    Swal.fire({
-        title: 'Approve Return?',
-        text: 'Do you want to approve this return?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: '#ffffff',
-        confirmButtonText: 'Yes, approve it!',
-        customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-    }).then((result) => {
-        if (result.isConfirmed) {
+      if (result.isConfirmed) {
+        fetch("/admin/orders/return", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ returnOrderDocId, status, addToInventory }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((errorData) => {
+                throw new Error(
+                  errorData.error || "Network response was not ok"
+                );
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              Swal.fire({
+                icon: "success",
+                text: "The return status has been updated successfully.",
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+              setTimeout(() => {
+                window.location.reload();
+              }, 5000);
+            }
+          })
+          .catch((error) => {
+            console.log(`Error while updating return status:`, error.message);
             Swal.fire({
-                title: 'Add to Inventory?',
-                text: 'Do you want to add this product to inventory?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: '#ffffff',
-                confirmButtonText: 'Yes, add it!',
-                cancelButtonText: 'No, do not add',
-                customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    changeReturnStatus(returnOrderDocId, "approved", true);
-                } else {
-                    changeReturnStatus(returnOrderDocId, "approved", false);
-                }
+              icon: "error",
+              text: `Error: ${error.message}`,
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
             });
-        }
+          });
+      }
     });
-};
+  };
 
-const rejected = async (returnOrderDocId) => {
-   
-
+  const approved = async (returnOrderDocId) => {
     Swal.fire({
-        title: 'Reject Return?',
-        text: 'Are you sure you want to reject this return?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: '#ffffff',
-        confirmButtonText: 'Yes, reject it!',
-        customClass: {
-                    confirmButton: 'swal1-confirm',
-                    cancelButton: 'swal1-cancel'
-                },
+      title: "Approve Return?",
+      text: "Do you want to approve this return?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#ffffff",
+      confirmButtonText: "Yes, approve it!",
+      didOpen: () => {
+        applySwalButtonStyles();
+      },
     }).then((result) => {
-        if (result.isConfirmed) {
-
-            changeReturnStatus(returnOrderDocId, "rejected", false);
-        }
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Add to Inventory?",
+          text: "Do you want to add this product to inventory?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          confirmButtonText: "Yes, add it!",
+          cancelButtonText: "No, do not add",
+          didOpen: () => {
+            applySwalButtonStyles();
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            changeReturnStatus(returnOrderDocId, "approved", true);
+          } else {
+            changeReturnStatus(returnOrderDocId, "approved", false);
+          }
+        });
+      }
     });
-};
+  };
 
+  const rejected = async (returnOrderDocId) => {
+    Swal.fire({
+      title: "Reject Return?",
+      text: "Are you sure you want to reject this return?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#ffffff",
+      confirmButtonText: "Yes, reject it!",
+      didOpen: () => {
+        applySwalButtonStyles();
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        changeReturnStatus(returnOrderDocId, "rejected", false);
+      }
+    });
+  };
 </script>
 <%- include('../layouts/adminLayouts/footer') %>

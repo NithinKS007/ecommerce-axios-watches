@@ -6,18 +6,49 @@ const statusCode = require("../utils/statusCodes");
 
 const loadCategoryBrand = async (req, res) => {
   try {
-    const [categoriesData, brandsData] = await Promise.all([
-      categories.find({}).sort({ createdAt: -1 }).exec(),
-      brands.find({}).sort({ createdAt: -1 }).exec(),
-    ]);
+    const categoryPage = Math.max(1, parseInt(req.query.categoryPage) || 1);
+    const brandPage = Math.max(1, parseInt(req.query.brandPage) || 1);
+    const perPageData = 5;
 
-    return res
-      .status(statusCode.OK)
-      .render("admin/brandCategoryManagement", { categoriesData, brandsData });
+    const categorySkip = (categoryPage - 1) * perPageData;
+    const categoriesData = await categories
+      .find({})
+      .skip(categorySkip)
+      .limit(perPageData)
+      .sort({ createdAt: -1 })
+      .exec();
+    const categoryTotal = await categories.countDocuments();
+    const categoryTotalPages = Math.max(
+      1,
+      Math.ceil(categoryTotal / perPageData)
+    );
+    const categoryCurrentPage = Math.max(
+      1,
+      Math.min(categoryPage, categoryTotalPages)
+    );
+
+    const brandSkip = (brandPage - 1) * perPageData;
+    const brandsData = await brands
+      .find({})
+      .skip(brandSkip)
+      .limit(perPageData)
+      .sort({ createdAt: -1 })
+      .exec();
+    const brandTotal = await brands.countDocuments();
+    const brandTotalPages = Math.max(1, Math.ceil(brandTotal / perPageData));
+    const brandCurrentPage = Math.max(1, Math.min(brandPage, brandTotalPages));
+
+    return res.status(200).render("admin/brandCategoryManagement", {
+      categoriesData,
+      brandsData,
+      categoryTotalPages,
+      brandTotalPages,
+      categoryCurrentPage,
+      brandCurrentPage,
+    });
   } catch (error) {
-    console.log(`cannot load the category page`, error.message);
-
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
+    console.log(`Cannot load the category/brand page`, error.message);
+    return res.status(500).render("admin/500");
   }
 };
 
@@ -36,7 +67,7 @@ const addCategoryBrand = async (req, res) => {
 
       return res
         .status(statusCode.CREATED)
-        .redirect("/admin/brandCategoryManagement");
+        .redirect("/admin/categories-brands");
     } catch (error) {
       console.log(`error adding the category`, error.message);
 
@@ -52,7 +83,7 @@ const addCategoryBrand = async (req, res) => {
 
       return res
         .status(statusCode.CREATED)
-        .redirect("/admin/brandCategoryManagement");
+        .redirect("/admin/categories-brands");
     } catch (error) {
       console.log(`error adding the brand`, error.message);
 

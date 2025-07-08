@@ -3,7 +3,7 @@ const cart = require("../models/cartModel");
 const coupons = require("../models/couponModel");
 
 const priceSummary = require("../utils/priceSummary");
-const statusCode = require("../utils/statusCodes")
+const statusCode = require("../utils/statusCodes");
 
 const loadCart = async (req, res) => {
   try {
@@ -38,15 +38,13 @@ const loadCart = async (req, res) => {
       (item) => item?.isSelected
     ).length;
 
-    return res
-      .status(statusCode.OK)
-      .render("user/cart", {
-        cartDetails,
-        finalPrice,
-        subTotal,
-        selectedItemsCount,
-        availableCoupons,
-      });
+    return res.status(statusCode.OK).render("user/cart", {
+      cartDetails,
+      finalPrice,
+      subTotal,
+      selectedItemsCount,
+      availableCoupons,
+    });
   } catch (error) {
     console.log(`error while loading the cart page`, error.message);
 
@@ -55,8 +53,7 @@ const loadCart = async (req, res) => {
 };
 
 const addToCart = async (req, res) => {
-  const { productId } = req.body;
-
+  const productId = req.params.id;
   const currentUser = req?.currentUser;
 
   try {
@@ -207,18 +204,18 @@ const updateQuantityFromCart = async (req, res) => {
     );
 
     if (!productItem) {
-      return res.status(statusCode.NOT_FOUND).json({ message: "Product not found" });
+      return res
+        .status(statusCode.NOT_FOUND)
+        .json({ message: "Product not found" });
     }
 
     const productStock = productItem.stock;
 
     if (Number(quantity) > productStock) {
-      return res
-        .status(statusCode.OK)
-        .json({
-          message: `Only ${productStock} is available`,
-          quantity: false,
-        });
+      return res.status(statusCode.OK).json({
+        message: `Only ${productStock} is available`,
+        quantity: false,
+      });
     }
 
     if (quantity < 1 || quantity > 5) {
@@ -240,17 +237,17 @@ const updateQuantityFromCart = async (req, res) => {
       couponCode
     );
 
-    return res
-      .status(statusCode.OK)
-      .json({
-        success: true,
-        updatedItem,
-        finalPrice: finalPrice,
-        subTotal: subTotal,
-        discount: discount,
-      });
+    return res.status(statusCode.OK).json({
+      success: true,
+      updatedItem,
+      finalPrice: finalPrice,
+      subTotal: subTotal,
+      discount: discount,
+    });
   } catch (error) {
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Error updating quantity" });
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .json({ message: "Error updating quantity" });
   }
 };
 
@@ -289,15 +286,13 @@ const updatedSelectedItems = async (req, res) => {
       couponCode
     );
 
-    return res
-      .status(statusCode.OK)
-      .json({
-        message: "Cart updated successfully",
-        finalPrice: finalPrice,
-        cartDetails: cartDetails,
-        subTotal: subTotal,
-        discount: discount,
-      });
+    return res.status(statusCode.OK).json({
+      message: "Cart updated successfully",
+      finalPrice: finalPrice,
+      cartDetails: cartDetails,
+      subTotal: subTotal,
+      discount: discount,
+    });
   } catch (error) {
     console.log(`error while updating the selection `, error.message);
 
