@@ -5,6 +5,9 @@ const statusCode = require("../utils/statusCodes");
 const loadWishList = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 8;
+    const skip = (pageNumber - 1) * perPageData;
 
     let userWishList = await wishList.findOne({ userId: currentUser?._id });
 
@@ -12,18 +15,31 @@ const loadWishList = async (req, res) => {
       const newWishList = new wishList({
         userId: currentUser?._id,
       });
-
       await newWishList.save();
-
       userWishList = newWishList;
     }
 
     const productIds = userWishList?.productIds || [];
-    const productData = await products
-      .find({ _id: { $in: productIds } })
-      .populate("category");
 
-    return res.status(statusCode.OK).render("user/wishList", { productData });
+    const [productData, totalProducts] = await Promise.all([
+      products
+        .find({ _id: { $in: productIds } })
+        .populate("category")
+        .skip(skip)
+        .limit(perPageData)
+        .exec(),
+
+      products.countDocuments({ _id: { $in: productIds } }),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(totalProducts / perPageData));
+    pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+
+    return res.status(statusCode.OK).render("user/wishList", {
+      productData: productData,
+      totalPages: totalPages,
+      currentPage: pageNumber,
+    });
   } catch (error) {
     console.log(`Error while loading the wishlist:`, error);
 
@@ -34,7 +50,7 @@ const loadWishList = async (req, res) => {
 const addToWishList = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-    const { id:productId } = req.params
+    const { id: productId } = req.params;
 
     if (!productId) {
       return res
@@ -102,7 +118,7 @@ const addToWishList = async (req, res) => {
 const removeFromWishList = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-    const { id:productId } = req.params;
+    const { id: productId } = req.params;
 
     if (!productId) {
       return res

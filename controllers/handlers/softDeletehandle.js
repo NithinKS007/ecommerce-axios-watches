@@ -5,6 +5,8 @@ const handleSoftDelete = (req, res) => {
     return categoryBrandController.softDeleteCategory(req, res);
   } else if (req.query.brandId) {
     return categoryBrandController.softDeleteBrand(req, res);
+  } else {
+    return res.status(400).send("Invalid Query Params");
   }
 };
 

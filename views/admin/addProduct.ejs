@@ -762,7 +762,7 @@
       try {
         const encodedPName = encodeURIComponent(productName);
         const response = await fetch(
-          `/admin/productExists?encodedPName=${encodedPName}`,
+          `/admin/products?view=exist&encodedPName=${encodedPName}`,
           {
             method: "GET",
             headers: {

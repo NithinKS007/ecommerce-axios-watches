@@ -6,15 +6,15 @@
   <section class="content-main">
     <div class="content-header">
       <div>
-        <h2 class="content-title card-title">Customers List</h2>
-        <p>Dashboard> customerslist</p>
+        <h2 class="content-title card-title">Customers</h2>
+        <p>Dashboard> customers</p>
       </div>
     </div>
 
     <div class="card mb-4">
       <header class="card-header">
         <form
-          action="/admin/customerlist"
+          action="/admin/customers"
           method="get"
           style="padding-left: 20px; padding-right: 20px"
         >
@@ -137,7 +137,7 @@
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/customerlist?page=<%= currentPage - 1 %>"
+              href="/admin/customers?page=<%= currentPage - 1 %>"
             >
               <strong>&lt;</strong>
             </a>
@@ -147,7 +147,7 @@
           startPage = Math.max(1, endPage - 4); } %> <% for (let i = startPage;
           i <= endPage; i++) { %>
           <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-            <a class="page-link" href="/admin/customerlist?page=<%= i %>"
+            <a class="page-link" href="/admin/customers?page=<%= i %>"
               ><strong><%= i %></strong></a
             >
           </li>
@@ -155,7 +155,7 @@
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/customerlist?page=<%= currentPage + 1 %>"
+              href="/admin/customers?page=<%= currentPage + 1 %>"
             >
               <strong>&gt;</strong>
             </a>
@@ -195,81 +195,89 @@
     }
   };
 
-  const softDeleteUser = (userId) => {
-    const deleteButton = document.getElementById(`softDeleteButton${userId}`);
-    const isBlocking = deleteButton.classList.contains("btn-danger");
-    Swal.fire({
-      title: `Are you sure you want to ${
-        isBlocking ? "block" : "unblock"
-      } this person?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#ffffff",
-      confirmButtonText: `Yes, ${isBlocking ? "block" : "unblock"}`,
-       didOpen: () => {
-        applySwalButtonStyles(); 
-    }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`/admin/customerlist/?userId=${userId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (response.status != 200) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.userId.isBlocked) {
-              deleteButton.classList.remove("btn-danger");
-              deleteButton.classList.add("btn-success");
-              deleteButton.textContent = "Unblock";
-              Swal.fire({
-                title: "Blocked!",
-                text: "This person no longer has access.",
-                icon: "success",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
-            } else {
-              deleteButton.classList.remove("btn-success");
-              deleteButton.classList.add("btn-danger");
-              deleteButton.textContent = "Block";
-              Swal.fire({
-                title: "Unblocked!",
-                text: "This person now has access.",
-                icon: "success",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
-            }
-          })
-          .catch((error) => {
-            console.log(`There is a problem with the fetch operation`, error);
-            Swal.fire({
-              title: "Error!",
-              text: "There was a problem blocking/unblocking the person.",
-              icon: "error",
-              toast: true,
-              position: "top-right",
-              showConfirmButton: false,
-              timerProgressBar: true,
-              timer: 3000,
-            });
-          });
+ const softDeleteUser = async (userId) => {
+  const deleteButton = document.getElementById(`softDeleteButton${userId}`);
+  const isBlocking = deleteButton.classList.contains("btn-danger");
+
+  const result = await Swal.fire({
+    title: `Are you sure you want to ${
+      isBlocking ? "block" : "unblock"
+    } this person?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#ffffff",
+    confirmButtonText: `Yes, ${isBlocking ? "block" : "unblock"}`,
+    didOpen: () => {
+      applySwalButtonStyles();
+    },
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(`/admin/customers/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Error ${response.status}: ${errorData.message || "Unknown error"}`
+        );
       }
-    });
-  };
+
+      const data = await response.json();
+
+      if (data.userData.isBlocked) {
+          deleteButton.classList.remove("btn-danger");
+          deleteButton.classList.add("btn-success");
+          deleteButton.textContent = "Unblock";
+          Swal.fire({
+            title: "Blocked!",
+            text: "This person no longer has access.",
+            icon: "success",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+        } else {
+          deleteButton.classList.remove("btn-success");
+          deleteButton.classList.add("btn-danger");
+          deleteButton.textContent = "Block";
+          Swal.fire({
+            title: "Unblocked!",
+            text: "This person now has access.",
+            icon: "success",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+        }
+    } catch (error) {
+      console.log(`There was a problem with the fetch operation:`, error);
+
+      await Swal.fire({
+        title: "Error!",
+        text: `There was a problem blocking/unblocking the person. ${
+          error.message || "Please try again."
+        }`,
+        icon: "error",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+    }
+  }
+};
+
 </script>
 <%- include('../layouts/adminLayouts/footer') %>

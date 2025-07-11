@@ -140,7 +140,7 @@
   </div>
 </div>
 
-<div class="container mt-5" id="mainContainer" style="height: 700px">
+<div class="container mt-5" id="mainContainer" style="height: 800px">
   <div class="row">
     <% if (productData.length === 0) { %>
     <div
@@ -229,6 +229,43 @@
     </div>
 
     <% } %>
+    <div
+      class="pagination-area mt-30 mb-50 text-center"
+      style="display: flex; justify-content: center; margin: 30px 0"
+    >
+      <nav aria-label="Page navigation example">
+        <ul
+          class="pagination justify-content-start"
+          style="display: flex; gap: 5px"
+        >
+          <% if (currentPage> 1) { %>
+          <li class="page-item" style="margin: 0 2px">
+            <a class="page-link" href="?page=<%= currentPage - 1 %>">
+              <strong>&lt;</strong>
+            </a>
+          </li>
+          <% } %> <% let startPage=Math.max(1, currentPage - 2); let
+          endPage=Math.min(totalPages, startPage + 4); if (endPage - startPage <
+          4) { startPage=Math.max(1, endPage - 4); } %> <% for (let i=startPage;
+          i <=endPage; i++) { %>
+          <li
+            class="page-item <%= i === currentPage ? 'active' : '' %>"
+            style="margin: 0 2px"
+          >
+            <a class="page-link" href="?page=<%= i %>"
+              ><strong> <%= i %> </strong></a
+            >
+          </li>
+          <% } %> <% if (currentPage < totalPages) { %>
+          <li class="page-item" style="margin: 0 2px">
+            <a class="page-link" href="?page=<%= currentPage + 1 %>">
+              <strong>&gt;</strong>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
   </div>
 </div>
 <script>
@@ -242,21 +279,22 @@
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
         throw new Error(
-          `Failed to remove product from wishlist: ${response.statusText}`
+          `Failed to remove product from wishlist: ${
+            errorText.message || response.statusText
+          }`
         );
       }
       const result = await response.json();
-
       setTimeout(() => {
-        window.location.reload();
+       window.location.href = "/wishlist"
       }, 1000);
     } catch (error) {
       console.log("Error removing product from wishlist:", error);
-
       Swal.fire({
         icon: "error",
-        text: "Error removing product from wishlist",
+        text: error.message || "Error removing product from wishlist",
         confirmButtonText: "OK",
         confirmButtonColor: "#000000",
       });

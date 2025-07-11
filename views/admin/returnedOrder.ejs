@@ -210,7 +210,7 @@
     }
   };
 
-  const changeReturnStatus = (returnOrderDocId, status, addToInventory) => {
+  const changeReturnStatus = (returnOrderId, status, addToInventory) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You are about to change the return status of this product.",
@@ -224,12 +224,12 @@
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("/admin/orders/return", {
+        fetch(`/admin/orders/return/${returnOrderId}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ returnOrderDocId, status, addToInventory }),
+          body: JSON.stringify({ returnOrderId, status, addToInventory }),
         })
           .then((response) => {
             if (!response.ok) {
@@ -273,7 +273,7 @@
     });
   };
 
-  const approved = async (returnOrderDocId) => {
+  const approved = async (returnOrderId) => {
     Swal.fire({
       title: "Approve Return?",
       text: "Do you want to approve this return?",
@@ -301,16 +301,16 @@
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            changeReturnStatus(returnOrderDocId, "approved", true);
+            changeReturnStatus(returnOrderId, "approved", true);
           } else {
-            changeReturnStatus(returnOrderDocId, "approved", false);
+            changeReturnStatus(returnOrderId, "approved", false);
           }
         });
       }
     });
   };
 
-  const rejected = async (returnOrderDocId) => {
+  const rejected = async (returnOrderId) => {
     Swal.fire({
       title: "Reject Return?",
       text: "Are you sure you want to reject this return?",
@@ -324,7 +324,7 @@
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        changeReturnStatus(returnOrderDocId, "rejected", false);
+        changeReturnStatus(returnOrderId, "rejected", false);
       }
     });
   };

@@ -1359,20 +1359,6 @@
     addressAltPhone,
     addressEmail
   ) => {
-    console.log(
-      id,
-      addressType,
-      addressName,
-      addressPhone,
-      address,
-      addressLocality,
-      addressCityDistTown,
-      addressState,
-      addressPincode,
-      addressLandMark,
-      addressAltPhone,
-      addressEmail
-    );
 
     const addressNameInput = document.getElementById("addressNameInput");
     const addressPhoneInput = document.getElementById("addressPhoneInput");
@@ -1647,7 +1633,7 @@
             email: addressEmailInput.value,
           };
 
-          fetch(`/editAddress`, {
+          fetch(`/address/${id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -1663,7 +1649,6 @@
             })
             .then((data) => {
               window.location.reload();
-
               sessionStorage.setItem(
                 `successMessage`,
                 `${data.updatedUserAddress.addressType} address edited successfully!`
@@ -1690,31 +1675,4 @@
       document.getElementById("addAddressButton").style.display = "block";
     });
 </script>
-<!-- Vendor JS -->
-<script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
-<script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-<script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-<script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-<script src="assets/js/plugins/slick.js"></script>
-<script src="assets/js/plugins/jquery.syotimer.min.js"></script>
-<script src="assets/js/plugins/wow.js"></script>
-<script src="assets/js/plugins/jquery-ui.js"></script>
-<script src="assets/js/plugins/perfect-scrollbar.js"></script>
-<script src="assets/js/plugins/magnific-popup.js"></script>
-<script src="assets/js/plugins/select2.min.js"></script>
-<script src="assets/js/plugins/waypoints.js"></script>
-<script src="assets/js/plugins/counterup.js"></script>
-<script src="assets/js/plugins/jquery.countdown.min.js"></script>
-<script src="assets/js/plugins/images-loaded.js"></script>
-<script src="assets/js/plugins/isotope.js"></script>
-<script src="assets/js/plugins/scrollup.js"></script>
-<script src="assets/js/plugins/jquery.vticker-min.js"></script>
-<script src="assets/js/plugins/jquery.theia.sticky.js"></script>
-<!-- Template  JS -->
-<script src="./assets/js/main.js?v=3.4"></script>
-<script src="./assets/js/shop.js?v=3.4"></script>
-
-<!-- sweet alert js file from the installed npm install sweetalert2 library -->
-<script src="/modules/sweetalert2/dist/sweetalert2.min.js"></script>
-</body>
-</html>
+<%- include('../layouts/userLayouts/footer') %>

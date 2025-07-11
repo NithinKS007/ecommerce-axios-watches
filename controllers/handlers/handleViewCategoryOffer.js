@@ -9,7 +9,7 @@ const handleViewCategoryOffer = (req, res) => {
     case "editoffers":
       return offerController.loadEditCategoryOffer(req, res);
     default:
-      break;
+      return res.status(400).send("Invalid view parameter");
   }
 };
 

@@ -171,7 +171,7 @@ const addProduct = async (req, res) => {
 };
 
 const softDeleteProduct = async (req, res) => {
-  const productId = req.query.productId;
+  const { id: productId } = req.params;
 
   try {
     const productData = await products.findById(productId);
@@ -182,31 +182,28 @@ const softDeleteProduct = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
-    if (productData.isBlocked) {
-      const updatedProduct = await products.findByIdAndUpdate(
-        { _id: productId },
-        { $set: { isBlocked: false } },
-        { new: true }
-      );
+    const isBlocked = productData.isBlocked;
+    const newStatus = !isBlocked;
+    const statusText = newStatus ? "blocked" : "unblocked";
 
-      return res.status(statusCode.OK).json({
-        success: true,
-        message: "product successfully soft deleted",
-        productId: updatedProduct,
-      });
-    } else {
-      const updatedProduct = await products.findByIdAndUpdate(
-        { _id: productId },
-        { $set: { isBlocked: true } },
-        { new: true }
-      );
-
-      return res.status(statusCode.OK).json({
-        success: true,
-        message: "undone product soft deletion",
-        productId: updatedProduct,
+    const updatedProduct = await products.findByIdAndUpdate(
+      { _id: productId },
+      { $set: { isBlocked: newStatus } },
+      { new: true }
+    );
+    
+    if (!updatedProduct) {
+      return res.status(statusCode.NOT_FOUND).json({
+        success: false,
+        message: "Failed to update product",
       });
     }
+
+    return res.status(statusCode.OK).json({
+      success: true,
+      message: `Product successfully ${statusText}`,
+      productData: updatedProduct,
+    });
   } catch (error) {
     console.log(`error while deleting the product`, error.message);
 
@@ -244,8 +241,8 @@ const loadEditProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
+    const { id: productId } = req.params;
     const {
-      productId,
       name,
       brand,
       category,
@@ -321,14 +318,22 @@ const editProduct = async (req, res) => {
 
 const editImage = async (req, res) => {
   try {
-    const { productId, imageName } = req.body;
+    const { id: productId } = req.params;
+    const { imageName } = req.body;
 
-    if (productId && imageName) {
-      await products.updateOne(
-        { _id: productId },
-        { $pull: { images: { filename: imageName } } }
-      );
+    if (!productId || !imageName) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Product id and Image Name are required",
+        success: false,
+      });
+    }
 
+    const result = await products.updateOne(
+      { _id: productId },
+      { $pull: { images: { filename: imageName } } }
+    );
+
+    if (result) {
       return res
         .status(statusCode.OK)
         .json({ message: "Product Image successfully removed", success: true });

@@ -11,7 +11,7 @@
         <p>Add or Delete Offer</p>
       </div>
       <div>
-        <a href="/admin/categories/offer?view=addoffers" class="btn btn-primary btn-sm rounded"
+        <a href="/admin/categories/offers?view=addoffers" class="btn btn-primary btn-sm rounded"
           >Add Category Offer</a
         >
       </div>
@@ -67,7 +67,7 @@
                 </td>
                 <td class="text-center">
                   <a
-                    href="/admin/categories/offer?view=editoffers&categoryId=<%= category._id %>"
+                    href="/admin/categories/offers?view=editoffers&categoryId=<%= category._id %>"
                   >
                     <button
                       style="
@@ -134,7 +134,7 @@
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/categories/offer?view=offers&page=<%= currentPage - 1 %>"
+              href="/admin/categories/offers?view=offers&page=<%= currentPage - 1 %>"
             >
               <strong>&lt;</strong>
             </a>
@@ -144,7 +144,7 @@
           startPage = Math.max(1, endPage - 4); } %> <% for (let i = startPage;
           i <= endPage; i++) { %>
           <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-            <a class="page-link" href="/admin/categories/offer?view=offers&page=<%= i %>"
+            <a class="page-link" href="/admin/categories/offers?view=offers&page=<%= i %>"
               ><strong><%= i %></strong></a
             >
           </li>
@@ -152,7 +152,7 @@
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/categories/offer?view=offers&page=<%= currentPage + 1 %>"
+              href="/admin/categories/offers?view=offers&page=<%= currentPage + 1 %>"
             >
               <strong>&gt;</strong>
             </a>

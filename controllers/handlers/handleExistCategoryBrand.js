@@ -5,6 +5,8 @@ const handleCategoryBrandExists = (req, res) => {
     return categoryBrandController.categoryExists(req, res);
   } else if (req.query.encodedBName) {
     return categoryBrandController.brandExists(req, res);
+  } else {
+     return res.status(400).send("Invalid Query Params");
   }
 };
 

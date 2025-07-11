@@ -605,12 +605,9 @@
           formData.append(`productimages`, file, file.name);
         });
 
-        console.log(
-          "Target Group before sending:",
-          formData.get("targetGroup")
-        );
+        const productId = formData.get('productId');
 
-        fetch("/admin/editProduct", {
+        fetch(`/admin/products/${productId}`, {
           method: "PUT",
           body: formData,
         })
@@ -622,16 +619,13 @@
           })
           .then((data) => {
             if (data.success) {
-              // Store the message in sessionStorage
               sessionStorage.setItem(
                 "successMessage",
                 `Successfully updated product ${data.updatedProductName} details`
               );
             }
-            // Redirect to the same page
-            window.location.href = `/admin/products`;
+            window.location.href = `/admin/products?view=list`;
           })
-
           .catch((error) => {
             console.error(
               "There was a problem with the fetch operation:",
@@ -682,9 +676,7 @@
         })
         if (result.isConfirmed) {
           sendImageNameToBackend(imageName);
-
           button.closest(".existing-image-container").remove();
-
           Swal.fire("Removed!", "The image has been removed.", "success");
         }
       } else {
@@ -698,14 +690,14 @@
 
     // Function to send image name to backend
     function sendImageNameToBackend(imageName) {
-      fetch("/admin/removeProductImage", {
+      const productId = document.getElementById("productId").value;
+      fetch(`/admin/products/${productId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           imageName: imageName,
-          productId: document.getElementById("productId").value,
         }),
       })
         .then((response) => response.json())
@@ -891,33 +883,26 @@
     const productExists = async (id, productName) => {
       try {
         const encodedPName = encodeURIComponent(productName);
-
         const response = await fetch(
-          `/admin/productExists?encodedPName=${encodedPName}${
+          `/admin/products?view=exist&encodedPName=${encodedPName}${
             id ? `&productId=${id}` : ""
           }`,
-          {
-            method: "GET",
-
+          { method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
         const data = await response.json();
-
         return data.exists;
       } catch (error) {
         console.log(
           `error while checking the category existence`,
           error.message
         );
-
         throw error;
       }
     };

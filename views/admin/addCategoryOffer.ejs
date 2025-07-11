@@ -225,7 +225,7 @@
       };
 
       try {
-        const response = await fetch(`/admin/categories/offer`, {
+        const response = await fetch(`/admin/categories/offers`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -258,7 +258,7 @@
           timerProgressBar: true,
           timer: 3000,
         }).then(() => {
-          window.location.href = `/admin/categories/offer?view=offers`;
+          window.location.href = `/admin/categories/offers?view=offers`;
         });
       } catch (error) {
         Swal.fire({

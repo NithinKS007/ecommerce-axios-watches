@@ -215,6 +215,43 @@
             </div>
           <% }); %>
         <% }); %>
+        <div
+      class="pagination-area mt-30 mb-50 text-center"
+      style="display: flex; justify-content: center; margin: 30px 0"
+    >
+      <nav aria-label="Page navigation example">
+        <ul
+          class="pagination justify-content-start"
+          style="display: flex; gap: 5px"
+        >
+          <% if (currentPage> 1) { %>
+          <li class="page-item" style="margin: 0 2px">
+            <a class="page-link" href="/cart?page=<%= currentPage - 1 %>">
+              <strong>&lt;</strong>
+            </a>
+          </li>
+          <% } %> <% let startPage=Math.max(1, currentPage - 2); let
+          endPage=Math.min(totalPages, startPage + 4); if (endPage - startPage <
+          4) { startPage=Math.max(1, endPage - 4); } %> <% for (let i=startPage;
+          i <=endPage; i++) { %>
+          <li
+            class="page-item <%= i === currentPage ? 'active' : '' %>"
+            style="margin: 0 2px"
+          >
+            <a class="page-link" href="/cart?page=<%= i %>"
+              ><strong> <%= i %> </strong></a
+            >
+          </li>
+          <% } %> <% if (currentPage < totalPages) { %>
+          <li class="page-item" style="margin: 0 2px">
+            <a class="page-link" href="/cart?page=<%= currentPage + 1 %>">
+              <strong>&gt;</strong>
+            </a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
       </div>
       <% } %>
     
@@ -258,6 +295,8 @@
           </div>
         </div>
       </div>
+
+      
     </div>
 
 </div>
@@ -627,8 +666,6 @@
               data.finalPrice ? data.finalPrice : 0
             }`;
             discount.innerHTML = `Rs ${data.discount ? data.discount : 0}`;
-
-            // Update the quantity display
             const quantityDisplay = document.querySelector(
               `[data-product-item-id="${productId}"]`
             ).nextElementSibling;
@@ -806,7 +843,6 @@
 
     function handleCheckoutClick() {
       const checkoutUrl = `/checkout`;
-
       window.location.href = checkoutUrl;
     }
 

@@ -28,10 +28,16 @@ const loadCustomer = async (req, res) => {
       ];
     }
 
-    if (statusFilter === "Active") {
-      query.isBlocked = false;
-    } else if (statusFilter === "Disabled") {
-      query.isBlocked = true;
+    switch (statusFilter) {
+      case "Active":
+        query.isBlocked = false;
+        break;
+      case "Disabled":
+        query.isBlocked = true;
+        break;
+      default:
+        console.log(`Unknown statusFilter value: ${statusFilter}`);
+        break;
     }
 
     const skip = (pageNumber - 1) * perPageData;
@@ -63,38 +69,39 @@ const loadCustomer = async (req, res) => {
 };
 
 const blockOrUnblockCustomer = async (req, res) => {
-  const userId = req.query.userId;
+  const { id: userId } = req.params;
   try {
     const user = await users.findById(userId);
 
     if (!user) {
-      return res.status(statusCode.NOT_FOUND).render("user/404");
-    }
-    if (user.isBlocked) {
-      const updatedUser = await users.findByIdAndUpdate(
-        { _id: userId },
-        { $set: { isBlocked: false } },
-        { new: true }
-      );
-     
-      return res.status(statusCode.OK).json({
-        success: true,
-        message: "user successfully unblocked",
-        userId: updatedUser,
-      });
-    } else {
-      const updatedUser = await users.findByIdAndUpdate(
-        { _id: userId },
-        { $set: { isBlocked: true } },
-        { new: true }
-      );
-      
-      return res.status(statusCode.OK).json({
-        success: true,
-        message: "user successfully blocked",
-        userId: updatedUser,
+      return res.status(statusCode.NOT_FOUND).json({
+        success: false,
+        message: "User not found",
       });
     }
+
+    const isBlocked = user.isBlocked;
+    const newStatus = !isBlocked;
+    const statusText = newStatus ? "blocked" : "unblocked"; 
+
+    const updatedUser = await users.findByIdAndUpdate(
+      userId,
+      { $set: { isBlocked: newStatus } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(statusCode.NOT_FOUND).json({
+        success: false,
+        message: "Failed to update user",
+      });
+    }
+
+    return res.status(statusCode.OK).json({
+      success: true,
+      message: `User successfully ${statusText}`,
+      userData: updatedUser,
+    });
   } catch (error) {
     console.log(
       `error while blocking or unblocking the customer`,

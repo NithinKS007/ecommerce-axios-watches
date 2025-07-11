@@ -86,7 +86,7 @@ const loadOrderList = async (req, res) => {
 
 const loadOrderDetailsPage = async (req, res) => {
   try {
-    const { id:orderId } = req.params
+    const { id: orderId } = req.params;
 
     const userOrderDataPromise = orders
       .findOne({ _id: orderId })
@@ -308,10 +308,11 @@ const loadReturnedOrder = async (req, res) => {
 
 const approveReturn = async (req, res) => {
   try {
-    const { returnOrderDocId, addToInventory } = req.body;
+    const { id: returnId } = req.params;
+    const { addToInventory } = req.body;
 
     const returnedOrderData = await returnUserOrder.findOne({
-      _id: returnOrderDocId,
+      _id: returnId,
     });
 
     if (!returnedOrderData) {
@@ -414,10 +415,10 @@ const approveReturn = async (req, res) => {
 
 const rejectReturn = async (req, res) => {
   try {
-    const { returnOrderDocId } = req.body;
+    const { id: returnId } = req.params;
 
     const returnedOrderData = await returnUserOrder.findOne({
-      _id: returnOrderDocId,
+      _id: returnId,
     });
 
     if (!returnedOrderData) {
@@ -469,6 +470,7 @@ const rejectReturn = async (req, res) => {
       .json({ message: "Internal server error", success: false });
   }
 };
+
 module.exports = {
   loadOrderList,
   loadOrderDetailsPage,

@@ -8,7 +8,6 @@ const statusCode = require("../utils/statusCodes");
 const loadCart = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-
     const [cartDetails, couponDetails, isAlreadyUsedCoupons] =
       await Promise.all([
         cart.find({ user: currentUser }).populate("items.product").exec(),

@@ -5,6 +5,8 @@ const handleEditCategoryBrand = (req, res) => {
     return categoryBrandController.editCategory(req, res);
   } else if (req.body.brandId) {
     return categoryBrandController.editBrand(req, res);
+  } else {
+    return res.status(400).send("Invalid Query Params");
   }
 };
 
