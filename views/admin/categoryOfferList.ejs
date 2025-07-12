@@ -191,51 +191,6 @@
     }
   };
 
-  const deleteOffer = async (id) => {
-    const result = await Swal.fire({
-      title: "Confirm Changes",
-      text: "Are you sure you want to save these changes? This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, save changes",
-      cancelButtonText: "No, cancel",
-      confirmButtonColor: "#000000",
-      cancelButtonColor: "#ffffff",
-      didOpen: () => {
-        applySwalButtonStyles();
-      },
-    });
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(`/admin/categories/offer`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-      } catch (error) {
-        console.log(`error while deleting the offer`, error.message);
-        await Swal.fire({
-          title: "Error!",
-          text: `There was a problem updating the category: ${error.message}`,
-          icon: "error",
-          toast: true,
-          position: "top-right",
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000,
-        });
-      }
-    }
-  };
-
   const activateOrInactivate = (categoryId) => {
     const deleteButton = document.getElementById(
       `activateOrDeactivateButton${categoryId}`
@@ -257,7 +212,7 @@
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`/admin/categories/offer?categoryId=${categoryId}`, {
+        fetch(`/admin/categories/${categoryId}/offers`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -311,7 +266,7 @@
               timer: 3000,
             });
           });
-      }
+        }
     });
   };
 </script>

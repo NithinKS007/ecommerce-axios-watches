@@ -74,7 +74,7 @@
                 </td>
                 <td><%= returnedOrder.orderId.toString() %></td>
                 <td><%= returnedOrder.productId.toString() %></td>
-                <td><%= returnedOrder.productRefundAmount %></td>
+                <td><%= returnedOrder.productRefundAmount.toFixed(3) %></td>
                 <td><%= returnedOrder.productReturnReason %></td>
                 <td id="statusUpdate<%= returnedOrder._id %>">
                   <span class="badge rounded-pill alert-warning">

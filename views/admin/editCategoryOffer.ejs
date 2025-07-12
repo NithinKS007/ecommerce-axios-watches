@@ -219,14 +219,13 @@
       }
 
       const offerData = {
-        categoryId: document.getElementById("categoryId").value,
         offerName: document.getElementById("offerName").value,
         discountPercentage: document.getElementById("discountPercentage").value,
         expiryDate: document.getElementById("expiryDate").value,
       };
-
+      const categoryId = document.getElementById("categoryId").value
       try {
-        const response = await fetch(`/admin/categories/offer`, {
+        const response = await fetch(`/admin/categories/${categoryId}/offers`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -248,7 +247,7 @@
               timerProgressBar: true,
               timer: 3000,
             }).then(() => {
-              window.location.href = `/admin/categories/offer?view=offers`;
+              window.location.href = `/admin/categories/offers?view=offers`;
             });
           } else {
             Swal.fire({

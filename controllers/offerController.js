@@ -182,7 +182,7 @@ const addCategoryOffer = async (req, res) => {
 
 const activateDeactivateCategoryOffer = async (req, res) => {
   try {
-    const categoryId = req.query.categoryId;
+    const { id: categoryId } = req.params;
 
     const categoryData = await categories.findById(categoryId);
 
@@ -256,7 +256,8 @@ const loadEditCategoryOffer = async (req, res) => {
 
 const editCategoryOffer = async (req, res) => {
   try {
-    const { categoryId, offerName, discountPercentage, expiryDate } = req.body;
+    const { id: categoryId } = req.params;
+    const { offerName, discountPercentage, expiryDate } = req.body;
 
     if (!categoryId || !offerName || !discountPercentage || !expiryDate) {
       return res
@@ -502,7 +503,7 @@ const addProductOffer = async (req, res) => {
 };
 const activateDeactivateProductOffer = async (req, res) => {
   try {
-    const productId = req.query.productId;
+    const { id: productId } = req.params;
 
     const productData = await products.findById(productId);
 
@@ -565,7 +566,8 @@ const loadEditProductOffer = async (req, res) => {
 };
 const editProductOffer = async (req, res) => {
   try {
-    const { productId, offerName, discountPercentage, expiryDate } = req.body;
+    const { id: productId } = req.params;
+    const { offerName, discountPercentage, expiryDate } = req.body;
 
     if (!productId || !offerName || !discountPercentage || !expiryDate) {
       return res
@@ -585,7 +587,7 @@ const editProductOffer = async (req, res) => {
         .status(statusCode.BAD_REQUEST)
         .json({ success: false, message: "Expiry date must be in the future" });
     }
-    
+
     const productGivenId = ObjectId.createFromHexString(productId);
 
     const productData = await products.findById(productGivenId);

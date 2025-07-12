@@ -1,161 +1,4 @@
-<%- include('../layouts/userLayouts/header') %>\
-
-<style>
-
-  .product-img-action-wrap {
-    position: relative;
-  }
-
-  .product-cart-wrap {
-    border: none;
-    box-shadow: none;
-  }
-
-  .product-cart-wrap:hover {
-    box-shadow: none;
-  }
-
-  .product-img {
-    position: relative;
-  }
-
-  .jumbotron {
-    background-color: #e9ecef;
-    border-radius: 1rem;
-    padding: 3rem;
-    margin-bottom: 2rem;
-  }
-
-  .card {
-    border: none;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    height: 100%;
-  }
-
-  .card:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-
-  .card-img-top {
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .card-body {
-    padding: 1.5rem;
-  }
-
-  .btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: white;
-    padding: 0.5rem 1.5rem;
-    font-weight: 600;
-  }
-
-  .btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-  }
-
-  .text-danger {
-    color: #dc3545;
-  }
-
-  .display-4 {
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    font-weight: 300;
-  }
-
-  .section-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .popular-brands-section {
-    background-color: #000;
-    color: #fff;
-    padding: 2rem;
-    border-radius: 10px;
-  }
-
-  .brands-container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .brand-card {
-    background-color: #1c1c1c;
-    border: 2px solid #333;
-    border-radius: 8px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    min-width: 150px;
-    max-width: 200px;
-    width: 100%;
-    color: #f0f0f0;
-  }
-
-  .brand-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
-    background-color: #2a2a2a;
-  }
-
-  .brand-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    display: block;
-    color: #f0f0f0;
-  }
-
-  h2.h4.font-weight-bold {
-    color: #f0f0f0;
-
-    text-transform: uppercase;
-  }
-
-  .popular-brands-section h2::after {
-    content: "";
-    display: block;
-    width: 60px;
-    height: 4px;
-    background-color: #f0f0f0;
-
-    margin: 0.5rem auto 0;
-    border-radius: 2px;
-  }
-
-  .new-arrivals-section {
-    background-color: #f8f9fa;
-    padding: 2rem;
-    border-radius: 10px;
-  }
-
-  .card {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-  }
-
-  .card-img-top {
-    border-bottom: 1px solid #dee2e6;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-</style>
+<%- include('../layouts/userLayouts/header') %>
 <div class="bg-white sticky-top">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -299,27 +142,62 @@
 
 <main class="main">
   <div class="container my-5">
-    <div class="jumbotron text-center">
-      <p class="lead">Discover amazing deals and exclusive offers!</p>
+    <div
+      class="jumbotron text-center"
+      style="
+        background-color: #e9ecef;
+        border-radius: 1rem;
+        padding: 3rem;
+        margin-bottom: 2rem;
+      "
+    >
+      <p class="lead" style="font-size: 1.25rem; font-weight: 300">
+        Discover amazing deals and exclusive offers!
+      </p>
     </div>
-
     <section class="mb-5">
       <div class="row">
         <% activeProductOffers.forEach(product=> { %> <% if
         (product.productOffer) { %>
-        <h2 class="section-title">Exclusive Product Offers</h2>
+        <h2
+          class="section-title"
+          style="
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+          "
+        >
+          Exclusive Product Offers
+        </h2>
         <div class="col-md-3 mb-4">
-          <div class="card h-100 shadow-sm">
+          <div
+            class="card h-100 shadow-sm"
+            style="
+              border: none;
+              cursor: pointer;
+              border-radius: 0.5rem;
+              overflow: hidden;
+              height: 100%;
+            "
+          >
             <a href="/products/<%= product._id %>" class="text-decoration-none">
               <img
                 class="card-img-top"
                 src="/productImages/<%= product?.images[0]?.filename %>"
                 alt="<%= product.productOffer.offerName %>"
+                style="
+                  height: 200px;
+                  object-fit: cover;
+                  border-bottom: 1px solid #dee2e6;
+                "
             /></a>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title" style="color: #333;"><%= product.productOffer.offerName %></h5>
-              <p class="card-text" style="color: #555;">
-                <span class="text-danger fw-bold">
+            <div class="card-body d-flex flex-column" style="padding: 1.5rem">
+              <h5 class="card-title" style="color: #333">
+                <%= product.productOffer.offerName %>
+              </h5>
+              <p class="card-text" style="color: #555">
+                <span class="text-danger fw-bold" style="color: #dc3545">
                   <%= product.productOffer.offerDiscountPercentage %>% OFF
                 </span>
               </p>
@@ -340,12 +218,35 @@
         <div class="row">
           <% activeCategoryOffers.forEach(category=> { %> <% if
           (category.categoryOffer) { %>
-          <h2 class="section-title">Category Offers</h2>
+          <h2
+            class="section-title"
+            style="
+              font-size: 2rem;
+              font-weight: 700;
+              margin-bottom: 2rem;
+              text-align: center;
+            "
+          >
+            Category Offers
+          </h2>
           <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
+            <div
+              class="card h-100 shadow-sm"
+              style="
+                border: none;
+                cursor: pointer;
+                border-radius: 0.5rem;
+                overflow: hidden;
+                height: 100%;
+              "
+            >
               <div
                 class="card-body d-flex flex-column text-center p-4"
-                style="background-color: #f8f9fa; border-radius: 10px"
+                style="
+                  background-color: #f8f9fa;
+                  border-radius: 10px;
+                  padding: 1.5rem;
+                "
               >
                 <div class="icon mb-3">
                   <i class="fas fa-tag fa-3x" style="color: #333"></i>
@@ -353,14 +254,14 @@
 
                 <h5
                   class="card-title"
-                  style="color: #333; font-size: 1.8rem; font-weight: 700 "
+                  style="color: #333; font-size: 1.8rem; font-weight: 700"
                 >
                   <%= category.categoryOffer.offerName %>
                 </h5>
 
                 <p
                   class="card-text mt-3"
-                  style="color: #555; font-size: 1.4rem ;color: #555;"
+                  style="color: #555; font-size: 1.4rem; color: #555"
                 >
                   <span class="fw-bold">
                     <%= category.categoryOffer.offerDiscountPercentage %>% OFF
@@ -387,20 +288,68 @@
       <div class="bg-square"></div>
       <div class="container">
         <div class="container my-5">
-          <section class="popular-brands-section my-5">
-            <h2 class="h4 font-weight-bold text-center mb-4">Popular Brands</h2>
+          <section
+            class="popular-brands-section my-5"
+            style="
+              background-color: #000;
+              color: #fff;
+              padding: 2rem;
+              border-radius: 10px;
+            "
+          >
+            <h2
+              class="h4 font-weight-bold text-center mb-4"
+              style="
+                color: #f0f0f0;
+
+                text-transform: uppercase;
+              "
+            >
+              Popular Brands
+            </h2>
             <div
               class="brands-container d-flex justify-content-center flex-wrap"
+              style="max-width: 1200px; margin: 0 auto"
             >
               <% popularBrand.forEach(brand=> { %>
-              <div class="brand-card p-3 m-2 text-center">
-                <span class="brand-name"> <%= brand.brandName %> </span>
+              <div
+                class="brand-card p-3 m-2 text-center"
+                style="
+                  background-color: #1c1c1c;
+                  border: 2px solid #333;
+                  border-radius: 8px;
+                  transition: transform 0.3s, box-shadow 0.3s;
+                  min-width: 150px;
+                  max-width: 200px;
+                  width: 100%;
+                  color: #f0f0f0;
+                "
+              >
+                <span
+                  class="brand-name"
+                  style="
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    display: block;
+                    color: #f0f0f0;
+                  "
+                >
+                  <%= brand.brandName %>
+                </span>
               </div>
               <% }) %>
             </div>
           </section>
 
-          <section class="new-arrivals-section my-5">
+          <section
+            class="new-arrivals-section my-5"
+            style="
+              background-color: #f8f9fa;
+              padding: 2rem;
+              border-radius: 10px;
+            "
+          >
             <h2
               class="h4 font-weight-bold text-center mb-4"
               style="
@@ -419,20 +368,35 @@
                 <div
                   class="card shadow-sm mb-3"
                   id="productContainer<%= product._id %>"
-                  style="width: 100%; max-width: 18rem; margin: auto"
+                  style="
+                    width: 100%;
+                    max-width: 18rem;
+                    margin: auto;
+                    cursor: pointer;
+                    border-radius: 0.5rem;
+                    overflow: hidden;
+                    height: 100%;
+                  "
                 >
                   <a
-                    href="/products/id=<%= product._id %>"
+                    href="/products/<%= product._id %>"
                     class="text-decoration-none"
                   >
                     <img
                       src="/productImages/<%= product.images[0]?.filename %>"
                       class="card-img-top"
-                      style="width: 100%; height: 200px; object-fit: cover"
+                      style="
+                        width: 100%;
+                        height: 200px;
+                        object-fit: cover;
+                        height: 200px;
+                        object-fit: cover;
+                        border-bottom: 1px solid #dee2e6;
+                      "
                       alt="Product Image"
                     />
                   </a>
-                  <div class="card-body">
+                  <div class="card-body" style="padding: 1.5rem">
                     <div
                       class="d-flex justify-content-between align-items-center mb-2"
                     >
@@ -462,7 +426,7 @@
                         </h5>
                       </a>
                     </div>
-                    <p class="card-text" style="color: #555;">
+                    <p class="card-text" style="color: #555">
                       <% if (product?.productSalesPriceAfterOfferDiscount && new
                       Date(product?.productOffer?.offerExpiryDate)> new Date()
                       && product?.productSalesPriceAfterOfferDiscount !== 0 &&
@@ -498,7 +462,16 @@
             <div class="row">
               <% bestSellers.forEach(item=> { %>
               <div class="col-6 col-md-3 mb-4">
-                <div class="card h-100 shadow-sm border-0">
+                <div
+                  class="card h-100 shadow-sm border-0"
+                  style="
+                    border: none;
+                    cursor: pointer;
+                    border-radius: 0.5rem;
+                    overflow: hidden;
+                    height: 100%;
+                  "
+                >
                   <a
                     href="/products/<%= item._id %>"
                     class="text-decoration-none"
@@ -506,11 +479,18 @@
                     <img
                       src="/productImages/<%= item?.firstImage?.filename %>"
                       class="card-img-top"
-                      style="height: 200px; object-fit: cover; border-radius: 0"
+                      style="
+                        height: 200px;
+                        object-fit: cover;
+                        border-radius: 0;
+                        height: 200px;
+                        object-fit: cover;
+                        border-bottom: 1px solid #dee2e6;
+                      "
                       alt="<%= item.productName %>"
                     />
                   </a>
-                  <div class="card-body">
+                  <div class="card-body" style="padding: 1.5rem">
                     <h5
                       class="card-title text-dark"
                       style="
@@ -520,14 +500,13 @@
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         color: #333;
-                        
                       "
                     >
                       <%= item.productName %>
                     </h5>
                     <p
                       class="card-text text-muted"
-                      style="color: black !important; color: #555;"
+                      style="color: black !important; color: #555"
                     >
                       ₹<%= item.price.toFixed(2) %>
                     </p>
@@ -550,7 +529,16 @@
             <div class="row">
               <% topDeals.forEach(item=> { %>
               <div class="col-6 col-md-3 mb-4">
-                <div class="card h-100 shadow-sm border-0">
+                <div
+                  class="card h-100 shadow-sm border-0"
+                  style="
+                    border: none;
+                    cursor: pointer;
+                    border-radius: 0.5rem;
+                    overflow: hidden;
+                    height: 100%;
+                  "
+                >
                   <a
                     href="/products/<%= item._id %>"
                     class="text-decoration-none"
@@ -558,11 +546,18 @@
                     <img
                       src="/productImages/<%= item?.images[0]?.filename %>"
                       class="card-img-top"
-                      style="height: 200px; object-fit: cover; border-radius: 0"
+                      style="
+                        height: 200px;
+                        object-fit: cover;
+                        border-radius: 0;
+                        height: 200px;
+                        object-fit: cover;
+                        border-bottom: 1px solid #dee2e6;
+                      "
                       alt="<%= item.name %>"
                     />
                   </a>
-                  <div class="card-body">
+                  <div class="card-body" style="padding: 1.5rem">
                     <h5
                       class="card-title text-dark"
                       style="
@@ -632,9 +627,18 @@
                 <div class="row product-grid-5">
                   <% for(let i=0; i < productsArray.length; i++) { %>
                   <div class="col-lg-2-4 col-md-3 col-6 col-sm-4">
-                    <div class="product-cart-wrap mb-30">
-                      <div class="product-img-action-wrap">
-                        <div class="product-img product-img-zoom">
+                    <div
+                      class="product-cart-wrap mb-30"
+                      style="border: none; box-shadow: none"
+                    >
+                      <div
+                        class="product-img-action-wrap"
+                        style="position: relative"
+                      >
+                        <div
+                          class="product-img product-img-zoom"
+                          style="position: relative"
+                        >
                           <a href="/products/<%= productsArray[i]._id %>">
                             <img
                               class="default-img"
@@ -729,9 +733,10 @@
                 <% } %>
               </div>
 
-              <div class="pagination-area mt-30 mb-50 text-center" style="   display: flex;
-    justify-content: center;
-    margin: 30px 0;">
+              <div
+                class="pagination-area mt-30 mb-50 text-center"
+                style="display: flex; justify-content: center; margin: 30px 0"
+              >
                 <nav aria-label="Page navigation example">
                   <ul
                     class="pagination justify-content-start"
@@ -770,24 +775,23 @@
         </div>
       </div>
     </section>
-    </main>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        let successMessage = "<%= successMessage %>";
-
-        if (successMessage) {
-          Swal.fire({
-            text: successMessage,
-            icon: "success",
-            toast: true,
-            position: "top-right",
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000,
-          });
-        }
-      });
-    </script>
-    <%- include('../layouts/userLayouts/footer') %>
   </div>
 </main>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    let successMessage = "<%= successMessage %>";
+    if (successMessage) {
+      Swal.fire({
+        text: successMessage,
+        icon: "success",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+    }
+  });
+</script>
+<%- include('../layouts/userLayouts/footer') %>
+

@@ -215,7 +215,7 @@
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`/admin/products/offers?productId=${productId}`, {
+        fetch(`/admin/products/${productId}/offers`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -228,7 +228,6 @@
             return response.json();
           })
           .then((data) => {
-            console.log(data);
             if (data.updatedProductOfferStatus.productOffer.offerStatus) {
               deleteButton.classList.remove("btn-success");
               deleteButton.classList.add("btn-danger");

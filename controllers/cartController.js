@@ -8,16 +8,30 @@ const statusCode = require("../utils/statusCodes");
 const loadCart = async (req, res) => {
   try {
     const currentUser = req?.currentUser;
-    const [cartDetails, couponDetails, isAlreadyUsedCoupons] =
-      await Promise.all([
-        cart.find({ user: currentUser }).populate("items.product").exec(),
-        coupons.find({ couponStatus: true }).exec(),
-        coupons.find({ userBy: currentUser }).exec(),
-      ]);
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 3;
+
+    let [cartDetails, couponDetails, isAlreadyUsedCoupons] = await Promise.all([
+      cart.find({ user: currentUser }).populate("items.product").exec(),
+      coupons.find({ couponStatus: true }).exec(),
+      coupons.find({ userBy: currentUser }).exec(),
+    ]);
 
     if (!cartDetails) {
       return res.status(statusCode.NOT_FOUND).render("user/404");
     }
+
+    const totalItems = cartDetails[0].items.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / perPageData));
+
+    pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+
+    const skip = (pageNumber - 1) * perPageData;
+
+    const itemsData = cartDetails[0].items
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(skip, skip + perPageData);
+
     const usedCoupons = isAlreadyUsedCoupons.map((coupon) => coupon.couponCode);
 
     const availableCoupons = couponDetails.filter(
@@ -37,12 +51,15 @@ const loadCart = async (req, res) => {
       (item) => item?.isSelected
     ).length;
 
+    cartDetails[0].items = itemsData;
     return res.status(statusCode.OK).render("user/cart", {
       cartDetails,
       finalPrice,
       subTotal,
       selectedItemsCount,
       availableCoupons,
+      totalPages,
+      currentPage: pageNumber,
     });
   } catch (error) {
     console.log(`error while loading the cart page`, error.message);

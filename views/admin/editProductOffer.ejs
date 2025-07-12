@@ -220,14 +220,14 @@
       }
 
       const offerData = {
-        productId: document.getElementById("productId").value,
         offerName: document.getElementById("offerName").value,
         discountPercentage: document.getElementById("discountPercentage").value,
         expiryDate: document.getElementById("expiryDate").value,
       };
+      const productId = document.getElementById("productId").value
 
       try {
-        const response = await fetch(`/admin/products/offers`, {
+        const response = await fetch(`/admin/products/${productId}/offers`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

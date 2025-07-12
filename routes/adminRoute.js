@@ -74,13 +74,13 @@ adminRoute.get("/best-sellers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLog
 // Category offer management
 adminRoute.get("/categories/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleViewCategoryOffer);
 adminRoute.post("/categories/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.addCategoryOffer);
-adminRoute.patch("/categories/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.activateDeactivateCategoryOffer);
-adminRoute.put("/categories/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.editCategoryOffer);
+adminRoute.patch("/categories/:id/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.activateDeactivateCategoryOffer);
+adminRoute.put("/categories/:id/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.editCategoryOffer);
 
 // Product offer management
 adminRoute.get("/products/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleViewProductOffer);
 adminRoute.post("/products/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.addProductOffer);
-adminRoute.patch("/products/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.activateDeactivateProductOffer);
-adminRoute.put("/products/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.editProductOffer);
+adminRoute.patch("/products/:id/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.activateDeactivateProductOffer);
+adminRoute.put("/products/:id/offers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,offerController.editProductOffer);
 
 module.exports = adminRoute;
