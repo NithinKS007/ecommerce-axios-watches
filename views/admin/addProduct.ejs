@@ -208,25 +208,37 @@
               <!-- Category and Brand -->
               <div class="mb-4">
                 <label class="form-label">Category</label>
-                <select class="form-select" name="category">
+                <select class="form-select" name="category" id="categorySelect">
+                  <option value="" disabled selected>Select a Category</option>
                   <% if(categoriesData.length> 0) { %> <%
                   categoriesData.forEach(category=> { %>
                   <option><%= category.name %></option>
                   <% }) %> <% } else { %>
-                  <option>No Category Found</option>
+                  <option value="" disabled>No Category Found</option>
                   <% } %>
                 </select>
+                <span
+                  id="categoryError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
               <div class="mb-4">
                 <label class="form-label">Brands</label>
-                <select class="form-select" name="brand">
+                <select class="form-select" name="brand" id="brandSelect">
+                  <option value="" disabled selected>Select a Brand</option>
                   <% if(brandsData.length> 0) { %> <% brandsData.forEach(brand=>
                   { %>
                   <option><%= brand.name %></option>
                   <% }) %> <% } else { %>
-                  <option>No Brand Found</option>
+                  <option value="" disabled>No Brand Found</option>
                   <% } %>
                 </select>
+                <span
+                  id="brandError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
               <div class="container mt-4">
                 <div class="mb-3">
@@ -346,6 +358,12 @@
     const menRadio = document.getElementById("men");
     const womenRadio = document.getElementById("women");
     const kidsRadio = document.getElementById("kids");
+
+    const categorySelect = document.getElementById("categorySelect");
+    const brandSelect = document.getElementById("brandSelect");
+
+    const categoryError = document.getElementById("categoryError");
+    const brandError = document.getElementById("brandError");
 
     const productNameError = document.getElementById("productNameError");
     const productDescriptionError = document.getElementById(
@@ -492,6 +510,8 @@
       const isValidateStrapColor = validateStrapColor();
       const isValidateStock = validateStock();
       const isValidateTargetGroup = validateTargetGroup();
+      const isValidCategory = validateCategory();
+      const isValidBrand = validateBrand();
       const isValidateImage = Array.from(imageInput.files).every(validateImage);
       const imageCount = imageInput.files.length;
       const imagereq = imageInput.files.length === 0;
@@ -509,7 +529,9 @@
           isValidateStrapColor &&
           isValidateStock &&
           isValidateTargetGroup &&
-          isValidateImage
+          isValidateImage &&
+          isValidCategory &&
+          isValidBrand
         )
       ) {
         return;
@@ -525,23 +547,6 @@
         return;
       }
       try {
-        const pExists = await productExists(productNameE);
-
-        if (pExists) {
-          Swal.fire({
-            title: "Product Exists!",
-            text: "A Product with this name already exists.",
-            icon: "warning",
-            toast: true,
-            position: "top-right",
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000,
-          });
-
-          return;
-        }
-
         const formData = new FormData();
         const formElements = document.getElementById("productForm").elements;
 
@@ -563,31 +568,46 @@
           formData.append(`productimages`, file, file.name);
         });
 
-        if (imageInput.files.length > 0) {
-          fetch("/admin/addProducts", {
-            method: "POST",
-            body: formData,
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              window.location.reload();
-            })
-            .catch((error) => {
-              console.error(
-                "There was a problem with the fetch operation:",
-                error
-              );
-            });
-        } else {
-          console.error("No images to upload");
+        if (imageInput.files.length === 0) {
+          console.log("No images to upload");
+          return;
         }
+
+        const response = await fetch("/admin/products", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`${errorData.message || "Unknown error"}`);
+        }
+
+        const data = await response.json();
+        await Swal.fire({
+          title: "Product Added!",
+          text: "The product has been successfully added.",
+          icon: "success",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+
+        window.location.reload();
       } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
+        console.error("There was a problem adding products:", error);
+        await Swal.fire({
+          title: `${error.ProductNameExists ? "Error!" : "Info"}`,
+          text: `${error.message || "Please try again."}`,
+          icon: `${error.ProductNameExists ? "error" : "info"}`,
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     });
 
@@ -758,31 +778,26 @@
     womenRadio.addEventListener("change", validateTargetGroup);
     kidsRadio.addEventListener("change", validateTargetGroup);
 
-    const productExists = async (productName) => {
-      try {
-        const encodedPName = encodeURIComponent(productName);
-        const response = await fetch(
-          `/admin/products?view=exist&encodedPName=${encodedPName}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        return data.exists;
-      } catch (error) {
-        console.log(
-          `error while checking the category existence`,
-          error.message
-        );
-        throw error;
+    const validateCategory = () => {
+      if (categorySelect.value === "") {
+        categoryError.textContent = "* Please select a category";
+        return false;
       }
+      categoryError.textContent = "";
+      return true;
     };
+
+    const validateBrand = () => {
+      if (brandSelect.value === "") {
+        brandError.textContent = "* Please select a brand";
+        return false;
+      }
+      brandError.textContent = "";
+      return true;
+    };
+
+    categorySelect.addEventListener("change", validateCategory);
+    brandSelect.addEventListener("change", validateBrand);
   });
 </script>
 <%- include('../layouts/adminLayouts/footer') %>

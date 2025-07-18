@@ -7,6 +7,7 @@ const offerSchema = new Schema(
     offerName: {
       type: String,
       required: true,
+      trim: true,
     },
     offerDiscountPercentage: {
       type: Number,
@@ -49,14 +50,17 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     dialShape: {
       type: String,
       required: true,
+      trim: true,
     },
     displayType: {
       type: String,
       required: true,
+      trim: true,
     },
     salesPrice: {
       type: Number,
@@ -69,10 +73,12 @@ const productSchema = new mongoose.Schema(
     strapMaterial: {
       type: String,
       required: true,
+      trim: true,
     },
     strapColor: {
       type: String,
       required: true,
+      trim: true,
     },
     stock: {
       type: Number,
@@ -81,6 +87,7 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     isBlocked: {
       type: Boolean,
@@ -89,6 +96,7 @@ const productSchema = new mongoose.Schema(
     targetGroup: {
       type: String,
       required: true,
+      trim: true,
     },
 
     productSalesPriceAfterOfferDiscount: {

@@ -42,13 +42,19 @@
               <div class="mb-4">
                 <label for="product" class="form-label">Product</label>
                 <select class="form-select" id="product" name="product">
+                  <option value="" disabled selected>Select a Product</option>
                   <% if(productsData.length> 0) { %> <%
                   productsData.forEach(product=> { %>
                   <option value="<%= product.id %>"><%= product.name %></option>
                   <% }) %> <% } else { %>
-                  <option>No Product Found</option>
+                  <option value="" disabled>No Product Found</option>
                   <% } %>
                 </select>
+                <span
+                  id="productSelectError"
+                  class="error"
+                  style="font-size: 0.8em; color: red"
+                ></span>
               </div>
 
               <!-- Discount Percentage -->
@@ -184,7 +190,16 @@
       return validateField(input, errorElement, "* Expiry date is required");
     };
 
+    const validateProductSelect = () => {
+      const input = document.getElementById("product");
+      const errorElement = document.getElementById("productSelectError");
+      return validateField(input, errorElement, "* Product is required");
+    };
     // Event Listeners for Validation
+    document
+      .getElementById("product")
+      .addEventListener("change", validateProductSelect);
+
     document
       .getElementById("offerName")
       .addEventListener("input", validateOfferName);
@@ -208,12 +223,14 @@
       const isDiscountPercentageValid = validateDiscountPercentage();
       const isStartDateValid = validateStartDate();
       const isExpiryDateValid = validateExpiryDate();
+      const isValidProductSelect = validateProductSelect();
 
       if (
         !isOfferNameValid ||
         !isDiscountPercentageValid ||
         !isStartDateValid ||
-        !isExpiryDateValid
+        !isExpiryDateValid ||
+        !isValidProductSelect
       ) {
         return;
       }

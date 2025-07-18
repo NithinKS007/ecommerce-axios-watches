@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const userOrderController = require("../userOrderController");
 
 const handleViewOrders = (req, res) => {
@@ -9,7 +10,7 @@ const handleViewOrders = (req, res) => {
     case "confirmation":
       return userOrderController.loadPlaceOrder(req, res);
     default:
-      return res.status(400).send("Invalid view parameter");
+      return res.status(statusCodes.BAD_REQUEST).send("Invalid view parameter");
   }
 };
 

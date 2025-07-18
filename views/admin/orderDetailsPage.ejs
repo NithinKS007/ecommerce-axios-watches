@@ -46,7 +46,9 @@
                 <input class="form-check-input" type="radio" id="statusPending"
                 name="orderStatus" value="pending" <%=
                 userOrderDataDetails.orderStatus === 'pending' ? 'checked' : ''
-                %>>
+                %>    <%= ['delivered', 'shipped', 'cancelled', 'returnInitiated', 'returnApproved',
+                    'returnRejected'].includes(userOrderDataDetails.orderStatus) ? 'disabled' : ''
+                    %> >
                 <label class="form-check-label" for="statusPending"
                   >Pending</label
                 >
@@ -55,7 +57,9 @@
                 <input class="form-check-input" type="radio" id="statusShipped"
                 name="orderStatus" value="shipped" <%=
                 userOrderDataDetails.orderStatus === 'shipped' ? 'checked' : ''
-                %>>
+                %> <%= ['delivered', 'cancelled', 'returnInitiated', 'returnApproved',
+                  'returnRejected'].includes(userOrderDataDetails.orderStatus) ? 'disabled' : ''
+                  %> >
                 <label class="form-check-label" for="statusShipped"
                   >Shipped</label
                 >
@@ -64,7 +68,10 @@
                 <input class="form-check-input" type="radio"
                 id="statusDelivered" name="orderStatus" value="delivered" <%=
                 userOrderDataDetails.orderStatus === 'delivered' ? 'checked' :
-                '' %>>
+                '' %>
+               <%= ['delivered', 'cancelled', 'returnInitiated', 'returnApproved',
+                'returnRejected'].includes(userOrderDataDetails.orderStatus) ? 'disabled' : ''
+                %> >
                 <label class="form-check-label" for="statusDelivered"
                   >Delivered</label
                 >
@@ -73,7 +80,10 @@
                 <input class="form-check-input" type="radio"
                 id="statusCancelled" name="orderStatus" value="cancelled" <%=
                 userOrderDataDetails.orderStatus === 'cancelled' ? 'checked' :
-                '' %> >
+                '' %>   <%= 
+                    ['delivered', 'returnInitiated', 'returnApproved',
+                'returnRejected'].includes(userOrderDataDetails.orderStatus) ? 'disabled' : ''
+                %> >
                 <label class="form-check-label" for="statusCancelled"
                   >Cancelled</label
                 >

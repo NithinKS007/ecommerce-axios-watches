@@ -3,6 +3,7 @@ const brands = require("../models/brandModel");
 
 const escapeRegExp = require("../utils/escapeSpecialChars");
 const statusCode = require("../utils/statusCodes");
+const statusCodes = require("../utils/statusCodes");
 
 const loadCategoryBrand = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ const loadCategoryBrand = async (req, res) => {
     const brandTotalPages = Math.max(1, Math.ceil(brandTotal / perPageData));
     const brandCurrentPage = Math.max(1, Math.min(brandPage, brandTotalPages));
 
-    return res.status(200).render("admin/brandCategoryManagement", {
+    return res.status(statusCodes.OK).render("admin/brandCategoryManagement", {
       categoriesData,
       brandsData,
       categoryTotalPages,

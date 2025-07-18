@@ -76,6 +76,7 @@
                   <td><%= coupon.minAmount %></td>
                   <td><%= coupon.maxAmount %></td>
                   <td class="text-end">
+                      <a href="/admin/coupons/<%= coupon._id %>?view=edit" class="btn btn-primary">Edit Coupon</a>
                     <% if (coupon.couponStatus) { %>
                     <button  style="width: 120px; height: 40px; font-size: 14px; padding: 0.5rem;" onclick="softDeleteCoupon('<%= coupon._id %>')" id="softDeleteButton<%= coupon._id %>" class="btn btn-danger rounded btn-sm font-sm flex-fill mx-1">Deactivate</button>
                     <% } else { %>
@@ -84,7 +85,6 @@
                   </td>
                 </tr>
               <% }); %>
-
               <%}%>
             </tbody>
           </table>

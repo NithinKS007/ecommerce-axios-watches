@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const categoryBrandController = require("../categoryBrandController");
 
 const handleSoftDelete = (req, res) => {
@@ -6,7 +7,7 @@ const handleSoftDelete = (req, res) => {
   } else if (req.query.brandId) {
     return categoryBrandController.softDeleteBrand(req, res);
   } else {
-    return res.status(400).send("Invalid Query Params");
+    return res.status(statusCodes.BAD_REQUEST).send("Invalid Query Params");
   }
 };
 

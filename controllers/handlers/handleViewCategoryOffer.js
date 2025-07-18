@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const offerController = require("../offerController");
 
 const handleViewCategoryOffer = (req, res) => {
@@ -9,7 +10,7 @@ const handleViewCategoryOffer = (req, res) => {
     case "editoffers":
       return offerController.loadEditCategoryOffer(req, res);
     default:
-      return res.status(400).send("Invalid view parameter");
+      return res.status(statusCodes.BAD_REQUEST).send("Invalid view parameter");
   }
 };
 

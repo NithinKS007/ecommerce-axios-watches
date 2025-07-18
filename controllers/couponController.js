@@ -2,6 +2,7 @@ const cart = require("../models/cartModel");
 const priceSummary = require("../utils/priceSummary");
 const coupons = require("../models/couponModel");
 const statusCode = require("../utils/statusCodes");
+const statusCodes = require("../utils/statusCodes");
 
 const applyCoupon = async (req, res) => {
   try {
@@ -151,6 +152,92 @@ const loadAddCoupon = async (req, res) => {
   }
 };
 
+const loadEditCoupon = async (req, res) => {
+  try {
+    const { id: couponId } = req.params;
+
+    const couponData = await coupons.findById(couponId);
+
+    if (!couponData) {
+      return res.status(statusCodes.BAD_REQUEST).render("admin/400");
+    }
+    return res.status(statusCode.OK).render("admin/editCoupon", { couponData });
+  } catch (error) {
+    console.log(`error while adding the coupon`, error.message);
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
+  }
+};
+
+const editCoupon = async (req, res) => {
+  try {
+    const { id: couponId } = req.params;
+
+    const {
+      couponName,
+      couponDescription,
+      couponCode,
+      couponDiscount,
+      maxAmount,
+      minAmount,
+      couponStatus,
+    } = req.body;
+
+    const calculatedMax = Math.floor(
+      Number(minAmount) * Number(couponDiscount / 100)
+    );
+
+    if (Number(maxAmount) <= calculatedMax) {
+      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+        message: `Maximum Discount Amount cannot be less than the calculated maximum discount of ${calculatedMax}`,
+      });
+    }
+
+    const exists = await coupons.findOne({
+      couponName,
+      _id: { $ne: couponId },
+    });
+
+    if (exists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Coupon Name already exists",
+        success: false,
+        couponNameExists: exists,
+      });
+    }
+
+    const updatedCoupon = await coupons.findByIdAndUpdate(
+      couponId,
+      {
+        couponName,
+        couponDescription,
+        couponCode,
+        couponDiscount,
+        maxAmount,
+        minAmount,
+        couponStatus,
+      },
+      { new: true }
+    );
+
+    if (!updatedCoupon) {
+      return res.status(statusCode.NOT_FOUND).json({
+        message: "Coupon not found",
+        success: false,
+      });
+    }
+
+    return res.status(statusCode.OK).json({
+      message: "Coupon updated successfully",
+      success: true,
+      updatedCoupon,
+    });
+    
+  } catch (error) {
+    console.log(`error while adding the coupon`, error.message);
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
+  }
+};
+
 const addCoupon = async (req, res) => {
   try {
     const {
@@ -218,7 +305,6 @@ const addCoupon = async (req, res) => {
 const activateDeactivateCoupon = async (req, res) => {
   const { id: couponId } = req.params;
   try {
-
     const couponData = await coupons.findById(couponId);
 
     if (!couponData) {
@@ -239,7 +325,6 @@ const activateDeactivateCoupon = async (req, res) => {
       message: `Coupon status set to ${newStatus ? "active" : "inactive"}`,
       couponData: updatedCouponStatus,
     });
-
   } catch (error) {
     console.log(
       `error while while blocking or unblocking the coupon`,
@@ -261,5 +346,7 @@ module.exports = {
   loadCoupon,
   loadAddCoupon,
   addCoupon,
+  loadEditCoupon,
+  editCoupon,
   activateDeactivateCoupon,
 };

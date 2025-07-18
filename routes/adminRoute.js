@@ -64,8 +64,10 @@ adminRoute.patch("/orders/return/:id",noCacheMid.noCacheMiddleware,adminAuth.isA
 
 // Coupon management
 adminRoute.get("/coupons",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleViewCoupon);
+adminRoute.get("/coupons/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleViewCoupon);
 adminRoute.post("/coupons",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,couponController.addCoupon);
 adminRoute.patch("/coupons/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,couponController.activateDeactivateCoupon);
+adminRoute.put("/coupons/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,couponController.editCoupon);
 
 // Sales report
 adminRoute.get("/sales-report",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,dashboardController.fetchSalesReport);

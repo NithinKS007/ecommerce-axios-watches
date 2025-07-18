@@ -22,6 +22,7 @@ const isBlocked = require("../middleware/checkBlockStatusMiddleware");
 //Handlers
 const { handleViewOrders } = require("../controllers/handlers/handleViewOrders");
 const handleCartUpdate = require("../controllers/handlers/handleCartUpdate");
+const { handleViewAddress } = require("../controllers/handlers/handleViewAddress");
 
 // Home and Showcase routes
 userRoute.get("/", noCacheMid.noCacheMiddleware, homePageController.loadHome);
@@ -83,7 +84,7 @@ userRoute.get("/profile",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserL
 userRoute.put("/profile",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userProfileController.editProfile);
 userRoute.patch("/profile",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userProfileController.editPassword);
 
-userRoute.get("/address",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,addressController.loadAddress);
+userRoute.get("/address",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,handleViewAddress);
 userRoute.post("/address",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,addressController.addAddress);
 userRoute.delete("/address/:id",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,addressController.removeAddress);
 userRoute.put("/address/:id",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,addressController.editAddress);

@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const productController = require("../productController");
 
 const handleViewProductsAdmin = (req, res) => {
@@ -8,10 +9,8 @@ const handleViewProductsAdmin = (req, res) => {
       return productController.loadaddProduct(req, res);
     case "edit":
       return productController.loadEditProduct(req, res);
-    case "exist":
-      return productController.ProductExists(req, res);
     default:
-      return res.status(400).send("Invalid view parameter");
+      return res.status(statusCodes.BAD_REQUEST).send("Invalid view parameter");
   }
 };
 

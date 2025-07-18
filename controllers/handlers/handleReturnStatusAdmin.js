@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const adminOrderController = require("../adminOrderController");
 
 const handleReturnStatus = (req, res) => {
@@ -7,7 +8,7 @@ const handleReturnStatus = (req, res) => {
     case "rejected":
       return adminOrderController.rejectReturn(req, res);
     default:
-      return res.status(400).send("Invalid status value");
+      return res.status(statusCodes.BAD_REQUEST).send("Invalid status value");
   }
 };
 

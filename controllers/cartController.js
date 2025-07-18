@@ -4,6 +4,7 @@ const coupons = require("../models/couponModel");
 
 const priceSummary = require("../utils/priceSummary");
 const statusCode = require("../utils/statusCodes");
+const statusCodes = require("../utils/statusCodes");
 
 const loadCart = async (req, res) => {
   try {
@@ -236,7 +237,7 @@ const updateQuantityFromCart = async (req, res) => {
 
     if (quantity < 1 || quantity > 5) {
       return res
-        .status(400)
+        .status(statusCodes.BAD_REQUEST)
         .json({ message: `Quantity must be between 1 and ${quantity}` });
     }
 

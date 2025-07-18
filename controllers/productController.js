@@ -125,6 +125,16 @@ const addProduct = async (req, res) => {
         .json({ message: "All fields are required", success: false });
     }
 
+    const exists = await products.findOne({ name: name });
+
+    if (exists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Product Name already exists",
+        success: false,
+        ProductNameExists: exists,
+      });
+    }
+
     const [brandData, categoryData] = await Promise.all([
       brands.findOne({ name: brand }),
       categories.findOne({ name: category }),
@@ -191,7 +201,7 @@ const softDeleteProduct = async (req, res) => {
       { $set: { isBlocked: newStatus } },
       { new: true }
     );
-    
+
     if (!updatedProduct) {
       return res.status(statusCode.NOT_FOUND).json({
         success: false,
@@ -258,6 +268,22 @@ const editProduct = async (req, res) => {
 
     const images = req.files;
 
+    const query = { name: name };
+
+    if (productId) {
+      query._id = { $ne: productId };
+    }
+
+    const exists = await products.findOne(query);
+
+    if (exists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Product Name already exists",
+        success: false,
+        ProductNameExists: exists,
+      });
+    }
+    
     const existingProduct = await products.findById(productId);
 
     if (!existingProduct) {
@@ -351,36 +377,6 @@ const editImage = async (req, res) => {
   }
 };
 
-const ProductExists = async (req, res) => {
-  const { encodedPName, productId } = req.query;
-
-  try {
-    const query = { name: encodedPName };
-
-    if (productId) {
-      query._id = { $ne: productId };
-    }
-
-    const exists = await products.findOne(query);
-
-    if (exists) {
-      return res
-        .status(statusCode.OK)
-        .json({ message: "Product already exists", exists: true });
-    }
-
-    return res
-      .status(statusCode.OK)
-      .json({ message: "Product does not exist", exists: false });
-  } catch (error) {
-    console.log(`error while checking the existing product`, error.message);
-
-    return res
-      .status(statusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server error" });
-  }
-};
-
 module.exports = {
   loadProducts,
   loadaddProduct,
@@ -389,5 +385,4 @@ module.exports = {
   editProduct,
   editImage,
   softDeleteProduct,
-  ProductExists,
 };

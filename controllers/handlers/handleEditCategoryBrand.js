@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const categoryBrandController = require("../categoryBrandController");
 
 const handleEditCategoryBrand = (req, res) => {
@@ -6,7 +7,7 @@ const handleEditCategoryBrand = (req, res) => {
   } else if (req.body.brandId) {
     return categoryBrandController.editBrand(req, res);
   } else {
-    return res.status(400).send("Invalid Query Params");
+    return res.status(statusCodes.BAD_REQUEST).send("Invalid Query Params");
   }
 };
 

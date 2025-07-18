@@ -110,7 +110,7 @@
                   class="form-control"
                   rows="4"
                 >
-               <%= productDataToEdit?.description %></textarea
+               <%= productDataToEdit?.description?.trim() %></textarea
                 >
                 <span id="productDescriptionError" class="error" style=" font-size: 0.8em; color: red;"></span>
               </div>
@@ -568,23 +568,7 @@
       }
 
       try {
-        const pExists = await productExists(id, productNameE);
-
-        if (pExists) {
-          Swal.fire({
-            title: "Product Exists!",
-            text: "A Product with this name already exists.",
-            icon: "warning",
-            toast: true,
-            position: "top-right",
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000,
-          });
-
-          return;
-        }
-
+        
         const formData = new FormData();
         const formElements = document.getElementById("productForm").elements;
 
@@ -607,33 +591,39 @@
 
         const productId = formData.get('productId');
 
-        fetch(`/admin/products/${productId}`, {
+        const response = await fetch(`/admin/products/${productId}`, {
           method: "PUT",
           body: formData,
         })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.success) {
-              sessionStorage.setItem(
-                "successMessage",
-                `Successfully updated product ${data.updatedProductName} details`
-              );
-            }
-            window.location.href = `/admin/products?view=list`;
-          })
-          .catch((error) => {
-            console.error(
-              "There was a problem with the fetch operation:",
-              error
-            );
+         if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`${errorData.message || "Unknown error"}`);
+        }
+          const data = await response.json();
+          await Swal.fire({
+            title: "Edited!",
+            text: `Successfully updated product ${data.updatedProductName} details`,
+            icon: "success",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
           });
+
+           window.location.href = `/admin/products?view=list`;
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
+        await Swal.fire({
+          title: `${error.ProductNameExists ? "Error!" : "Info"}`,
+          text: `${error.message || "Please try again."}`,
+          icon: `${error.ProductNameExists ? "error" : "info"}`,
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     });
 
@@ -880,32 +870,32 @@
     //Form validation stops
 
     //checking for existing product
-    const productExists = async (id, productName) => {
-      try {
-        const encodedPName = encodeURIComponent(productName);
-        const response = await fetch(
-          `/admin/products?view=exist&encodedPName=${encodedPName}${
-            id ? `&productId=${id}` : ""
-          }`,
-          { method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        return data.exists;
-      } catch (error) {
-        console.log(
-          `error while checking the category existence`,
-          error.message
-        );
-        throw error;
-      }
-    };
+    // const productExists = async (id, productName) => {
+    //   try {
+    //     const encodedPName = encodeURIComponent(productName);
+    //     const response = await fetch(
+    //       `/admin/products?view=exist&encodedPName=${encodedPName}${
+    //         id ? `&productId=${id}` : ""
+    //       }`,
+    //       { method: "GET",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //       }
+    //     );
+    //     if (!response.ok) {
+    //       throw new Error("Network response was not ok");
+    //     }
+    //     const data = await response.json();
+    //     return data.exists;
+    //   } catch (error) {
+    //     console.log(
+    //       `error while checking the category existence`,
+    //       error.message
+    //     );
+    //     throw error;
+    //   }
+    // };
   });
 </script>
 <%- include('../layouts/adminLayouts/footer') %>

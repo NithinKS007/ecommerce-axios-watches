@@ -1,3 +1,4 @@
+const statusCodes = require("../../utils/statusCodes");
 const cartController = require("../cartController");
 
 const handleCartUpdate = (req, res) => {
@@ -6,7 +7,7 @@ const handleCartUpdate = (req, res) => {
   } else if (req.body.selectedProductIds) {
     return cartController.updatedSelectedItems(req, res);
   } else {
-    return res.status(400).json({ message: "Invalid request body" });
+    return res.status(statusCodes.BAD_REQUEST).json({ message: "Invalid request body" });
   }
 };
 

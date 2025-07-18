@@ -1,18 +1,26 @@
 const users = require("../models/userModel");
 const userAddress = require("../models/addressModel");
 const statusCode = require("../utils/statusCodes");
+const statusCodes = require("../utils/statusCodes");
 
 const loadAddress = async (req, res) => {
   try {
-    if (req.query.view === "addnew") {
-      return res.status(statusCode.OK).render("user/addAddress");
-    }
     const currentUser = req?.currentUser;
     const addressDetails = await userAddress
       .find({ userId: currentUser?._id })
       .sort({ createdAt: -1 });
 
     return res.status(statusCode.OK).render("user/address", { addressDetails });
+  } catch (error) {
+    console.log(`error while loading the address page`, error.message);
+
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
+  }
+};
+
+const loadAddAddress = async (req, res) => {
+  try {
+    return res.status(statusCode.OK).render("user/addAddress");
   } catch (error) {
     console.log(`error while loading the address page`, error.message);
 
@@ -62,7 +70,9 @@ const addAddress = async (req, res) => {
     );
 
     if (addressData && pushAddressIntoUser) {
-      return res.redirect(sourcePage === "checkout" ? "/checkout" : "/address");
+      return res
+        .status(statusCodes.CREATED)
+        .redirect(sourcePage === "checkout" ? "/checkout" : "/address");
     }
   } catch (error) {
     console.log(`error while adding the address`, error.message);
@@ -154,4 +164,5 @@ module.exports = {
   addAddress,
   removeAddress,
   editAddress,
+  loadAddAddress,
 };

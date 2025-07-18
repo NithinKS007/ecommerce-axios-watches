@@ -217,22 +217,6 @@
   </section>
 </main>
 <script>
-  window.addEventListener("DOMContentLoaded", (event) => {
-    const successMessage = sessionStorage.getItem("successMessage");
-    if (successMessage) {
-      Swal.fire({
-        title: "Success!",
-        text: successMessage,
-        icon: "success",
-        toast: true,
-        position: "top-right",
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 5000,
-      });
-      sessionStorage.removeItem("successMessage");
-    }
-  });
   
   const applySwalButtonStyles = () => {
     const confirmButton = Swal.getConfirmButton();
