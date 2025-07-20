@@ -20,7 +20,7 @@
             <h4>Coupon Details</h4>
           </div>
           <div class="card-body">
-            <form method="post" action="/admin/coupons" id="couponForm">
+            <form id="couponForm">
               <!-- Coupon Name -->
               <div class="mb-4">
                 <label for="couponName" class="form-label">Coupon Name</label>
@@ -63,6 +63,14 @@
                   class="form-control"
                   id="couponCode"
                 />
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="generateCouponCode"
+                  style="margin-top: 10px"
+                >
+                  Generate Coupon Code
+                </button>
                 <span
                   id="couponCodeError"
                   class="error"
@@ -181,6 +189,29 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const generateCouponCode = () => {
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+      let couponCode = "";
+      const couponLength = Math.floor(Math.random() * (20 - 5 + 1)) + 5;
+
+      for (let i = 0; i < couponLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        couponCode += characters[randomIndex];
+      }
+
+      return couponCode;
+    };
+
+    document
+      .getElementById("generateCouponCode")
+      .addEventListener("click", () => {
+        const couponCodeInput = document.getElementById("couponCode");
+        const generatedCode = generateCouponCode();
+        couponCodeInput.value = generatedCode;
+
+        validateCouponCode();
+      });
+
     const clearError = (input, errorElement) => {
       input.addEventListener("focus", () => {
         errorElement.textContent = "";
@@ -351,7 +382,8 @@
 
     // Form Submission Validation
     const form = document.getElementById("couponForm");
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
       const isCouponNameValid = validateCouponName();
       const isDescriptionValid = validateDescription();
       const isCouponCodeValid = validateCouponCode();
@@ -367,7 +399,62 @@
         !isMaxAmountValid ||
         !isMinAmountValid
       ) {
-        event.preventDefault();
+        return;
+      }
+
+      const couponData = {
+        couponName: document.getElementById("couponName").value,
+        couponDescription: document.getElementById("couponDescription").value,
+        couponCode: document.getElementById("couponCode").value,
+        couponDiscount: document.getElementById("couponDiscount").value,
+        minAmount: document.getElementById("minAmount").value,
+        maxAmount: document.getElementById("maxAmount").value,
+        couponStatus: document.querySelector("select[name='couponStatus']")
+          .value,
+      };
+
+      try {
+        const response = await fetch("/admin/coupons", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(couponData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`${errorData.message || "Unknown error"}`);
+        }
+
+        const data = await response.json();
+
+        await Swal.fire({
+          title: "Success!",
+          text: "Coupon added successfully.",
+          icon: "success",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+        window.location.href = `/admin/coupons?view=list`;
+      } catch (error) {
+        await Swal.fire({
+          title: `${
+            error.couponNameExists || error.couponCodeExists ? "Error!" : "Info"
+          }`,
+          text: `${error.message || "Please try again."}`,
+          icon: `${
+            error.couponNameExists || error.couponCodeExists ? "error" : "info"
+          }`,
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     });
   });

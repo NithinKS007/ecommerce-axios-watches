@@ -30,7 +30,7 @@ passport.use(
         request.session.user_id = user._id;
         request.session.user = user;
         request.session.userType = "google";
-
+        request.session.successMessage = `Login successful! Welcome back, ${user.fname}`;
         return cb(null, user);
       } catch (error) {
         console.error("Error while receiving data from Google:", error.message);

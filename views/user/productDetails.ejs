@@ -582,7 +582,6 @@
     zoomLens.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
   }
 
-  //add to wishlist
   const addToWishList = async (productId) => {
     try {
       const response = await fetch(`/wishlist/${productId}`, {
@@ -593,9 +592,8 @@
       });
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to add product to wishlist: ${response.statusText}`
-        );
+        const errorData = await response.json();
+        throw new Error(`${errorData.message || "Unknown error"}`);
       }
 
       const result = await response.json();
@@ -606,7 +604,7 @@
         icon.querySelector("i").style.color = "#f00";
         icon.onclick = () => removeFromWishList(productId);
       }
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
         text: "Product Added to wishlist successfully",
         toast: true,
@@ -617,11 +615,19 @@
       });
     } catch (error) {
       console.log("Error adding product to wishlist:", error);
-
-      window.location.href = "/signin";
+      await Swal.fire({
+        title: "Error!",
+        text: `${error.message || "Please try again."}`,
+        icon: "error",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
     }
   };
-  //removing product from wishlist
+
   const removeFromWishList = async (productId) => {
     try {
       const response = await fetch(`/wishlist/${productId}`, {
@@ -632,9 +638,8 @@
       });
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to remove product from wishlist: ${response.statusText}`
-        );
+        const errorData = await response.json();
+        throw new Error(`${errorData.message || "Unknown error"}`);
       }
 
       const result = await response.json();
@@ -646,7 +651,7 @@
         icon.onclick = () => addToWishList(productId);
       }
 
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
         text: "Product removed from wishlist successfully",
         toast: true,
@@ -658,55 +663,70 @@
     } catch (error) {
       console.log("Error removing product from wishlist:", error);
 
-      Swal.fire({
+      await Swal.fire({
+        title: "Error!",
+        text: `${error.message || "Please try again."}`,
         icon: "error",
-        text: "Error removing product from wishlist",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#000000",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
       });
     }
   };
 
-  const addToCart = (productId) => {
+  const addToCart = async (productId) => {
     const addToCartButton = document.getElementById("addToCart");
 
-    fetch(`/products/${productId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          Swal.fire({
-            icon: "success",
-            text: "The product has been added to your cart successfully.",
-            toast: true,
-            position: "top-right",
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: 3000,
-          });
-
-          addToCartButton.textContent = "Go to Cart";
-          addToCartButton.removeAttribute("onclick");
-          addToCartButton.addEventListener("click", () => {
-            window.location.href = "/cart";
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(`error while fetching the data`, error.message);
-
-        window.location.href = "/signin";
+    try {
+      const response = await fetch(`/products/${productId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      if (response.redirected) {
+        console.log(`Redirected to: ${response.url}`);
+        window.location.href = "/signin"; 
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.message || "Unknown error"}`);
+      }
+
+      const result = await response.json();
+      Swal.fire({
+        icon: "success",
+        text: "The product has been added to your cart successfully.",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+      addToCartButton.textContent = "Go to Cart";
+      addToCartButton.removeAttribute("onclick");
+      addToCartButton.addEventListener("click", () => {
+        window.location.href = "/cart";
+      });
+    } catch (error) {
+      console.log("Error adding product to cart:", error);
+
+      await Swal.fire({
+        title: "Error!",
+        text: `${error.message || "Please try again."}`,
+        icon: "error",
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+    }
   };
 </script>
 

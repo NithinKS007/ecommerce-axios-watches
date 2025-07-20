@@ -287,9 +287,17 @@
         );
       }
       const result = await response.json();
-      setTimeout(() => {
-       window.location.href = "/wishlist"
-      }, 1000);
+      await Swal.fire({
+        icon: "success",
+        text: result.message,
+        toast: true,
+        position: "top-right",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+
+      window.location.reload();
     } catch (error) {
       console.log("Error removing product from wishlist:", error);
       Swal.fire({

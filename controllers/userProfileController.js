@@ -20,6 +20,7 @@ const loadUserProfile = async (req, res) => {
     return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
   }
 };
+
 const editProfile = async (req, res) => {
   try {
     const { id, updatedUserDetails } = req.body;

@@ -43,7 +43,10 @@ const categorySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    categoryOffer: offerSchema,
+    categoryOffer: {
+      type: offerSchema,
+      default: null,
+    },
   },
   { timestamps: true }
 );

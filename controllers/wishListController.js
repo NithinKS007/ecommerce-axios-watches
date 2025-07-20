@@ -58,24 +58,17 @@ const addToWishList = async (req, res) => {
         .json({ message: "Product id is required" });
     }
 
-    const findExistingWishListForUser = await wishList
+    const userWishList = await wishList
       .findOne({ userId: currentUser?._id })
       .exec();
 
-    if (!findExistingWishListForUser) {
+    if (!userWishList) {
       const wishListProducts = new wishList({
         userId: currentUser?._id,
         productIds: [productId],
       });
 
-      const wishListData = await wishListProducts.save();
-
-      if (!wishListData) {
-        return res.status(404).json({
-          success: false,
-          message: "Cannot add product to wishlist, something went wrong",
-        });
-      }
+      await wishListProducts.save();
 
       return res.status(statusCode.OK).json({
         success: true,
@@ -123,28 +116,37 @@ const removeFromWishList = async (req, res) => {
     if (!productId) {
       return res
         .status(statusCode.BAD_REQUEST)
-        .json({ message: "Product ID is required" });
+        .json({ message: "Product id is required" });
     }
 
-    const findExistingWishListForUser = await wishList
+    const userWishList = await wishList
       .findOne({ userId: currentUser?._id })
       .exec();
 
-    if (!findExistingWishListForUser) {
+    if (!userWishList) {
       return res
         .status(statusCode.BAD_REQUEST)
         .json({ message: "User wishlist is not found" });
-    } else {
-      await wishList.updateOne(
-        { userId: currentUser?._id },
-        { $pull: { productIds: productId } }
-      );
-
-      return res.status(statusCode.OK).json({
-        success: true,
-        message: "Product removed from the existing user's wishlist ",
-      });
     }
+
+    const product = await products.findById(productId).exec();
+
+    if (!product) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .json({ message: "Product not found" });
+    }
+
+    await wishList.updateOne(
+      { userId: currentUser?._id },
+      { $pull: { productIds: productId } }
+    );
+
+    return res.status(statusCode.OK).json({
+      success: true,
+      data: product.name,
+      message: `${product.name} removed from your wishlist `,
+    });
   } catch (error) {
     console.log(
       `error while removing the product from the wishlist`,

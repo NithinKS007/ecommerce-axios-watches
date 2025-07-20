@@ -1,7 +1,5 @@
 const categories = require("../models/categoryModel");
 const brands = require("../models/brandModel");
-
-const escapeRegExp = require("../utils/escapeSpecialChars");
 const statusCode = require("../utils/statusCodes");
 const statusCodes = require("../utils/statusCodes");
 
@@ -53,48 +51,85 @@ const loadCategoryBrand = async (req, res) => {
   }
 };
 
-const addCategoryBrand = async (req, res) => {
-  const { cName, cDescription } = req.body;
-  const { bName } = req.body;
+const addCategory = async (req, res) => {
+  const { name, description } = req.body;
 
-  if (cName && cDescription) {
-    try {
-      const category = new categories({
-        name: cName.trim(),
-        description: cDescription.trim(),
+  if (!name || !description) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    const categoryExists = await categories.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+
+    if (categoryExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Category Name already exists",
+        success: false,
+        categoryNameExists: categoryExists,
       });
-
-      await category.save();
-
-      return res
-        .status(statusCode.CREATED)
-        .redirect("/admin/categories-brands");
-    } catch (error) {
-      console.log(`error adding the category`, error.message);
-
-      return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
     }
-  } else if (bName) {
-    try {
-      const brand = new brands({
-        name: bName.trim(),
+
+    const category = new categories({
+      name: name.trim(),
+      description: description.trim(),
+    });
+
+    await category.save();
+
+    return res
+      .status(statusCode.CREATED)
+      .json({ success: false, message: "Category created successfully" });
+  } catch (error) {
+    console.log(`error adding the category`, error.message);
+
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
+  }
+};
+
+const addBrand = async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .json({ success: false, message: "All fields are required" });
+  }
+  try {
+    const brandExists = await brands.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+
+    if (brandExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Brand Name already exists",
+        success: false,
+        brandNameExists: brandExists,
       });
-
-      await brand.save();
-
-      return res
-        .status(statusCode.CREATED)
-        .redirect("/admin/categories-brands");
-    } catch (error) {
-      console.log(`error adding the brand`, error.message);
-
-      return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
     }
+
+    const brand = new brands({
+      name: name.trim(),
+    });
+
+    await brand.save();
+
+    return res
+      .status(statusCode.CREATED)
+      .json({ success: false, message: "Brand created successfully" });
+  } catch (error) {
+    console.log(`error adding the brand`, error.message);
+
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
   }
 };
 
 const editCategory = async (req, res) => {
-  const { categoryId, name, description } = req.body;
+  const { id: categoryId } = req.params;
+  const { name, description } = req.body;
 
   if (!categoryId || !name || !description) {
     return res.status(statusCode.BAD_REQUEST).json({
@@ -104,6 +139,18 @@ const editCategory = async (req, res) => {
   }
 
   try {
+    const categoryExists = await categories.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+      _id: { $ne: categoryId },
+    });
+
+    if (categoryExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Category Name already exists",
+        success: false,
+        categoryNameExists: categoryExists,
+      });
+    }
     const category = await categories.findById({ _id: categoryId });
 
     if (!category) {
@@ -136,7 +183,8 @@ const editCategory = async (req, res) => {
 };
 
 const editBrand = async (req, res) => {
-  const { brandId, name } = req.body;
+  const { id: brandId } = req.params;
+  const { name } = req.body;
 
   if (!brandId || !name) {
     return res
@@ -145,6 +193,18 @@ const editBrand = async (req, res) => {
   }
 
   try {
+    const brandExists = await brands.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+      _id: { $ne: brandId },
+    });
+
+    if (brandExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        message: "Brand Name already exists",
+        success: false,
+        brandNameExists: brandExists,
+      });
+    }
     const brand = await brands.findById({ _id: brandId });
 
     if (!brand) {
@@ -177,7 +237,7 @@ const editBrand = async (req, res) => {
 };
 
 const softDeleteCategory = async (req, res) => {
-  const categoryId = req.query.categoryId;
+  const { id: categoryId } = req.params;
 
   try {
     const category = await categories.findById({ _id: categoryId });
@@ -224,7 +284,7 @@ const softDeleteCategory = async (req, res) => {
 };
 
 const softDeleteBrand = async (req, res) => {
-  const brandId = req.query.brandId;
+  const { id: brandId } = req.params;
 
   try {
     const brandData = await brands.findById({ _id: brandId });
@@ -270,78 +330,12 @@ const softDeleteBrand = async (req, res) => {
   }
 };
 
-const categoryExists = async (req, res) => {
-  const { encodedCName, categoryId } = req.query;
-
-  const decodedCName = decodeURIComponent(encodedCName);
-  const escapedCName = escapeRegExp(decodedCName);
-
-  try {
-    const query = { name: { $regex: new RegExp(`^${escapedCName}`, "i") } };
-
-    if (categoryId) {
-      query._id = { $ne: categoryId };
-    }
-
-    const exist = await categories.findOne(query);
-
-    if (exist) {
-      return res
-        .status(statusCode.OK)
-        .json({ message: "Category already exists", exists: true });
-    }
-
-    return res
-      .status(statusCode.OK)
-      .json({ message: "Category does not exist", exists: false });
-  } catch (error) {
-    console.log("Error while checking the existing category:", error.message);
-
-    return res
-      .status(statusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server error" });
-  }
-};
-
-const brandExists = async (req, res) => {
-  const { encodedBName, brandId } = req.query;
-
-  const escapedBName = escapeRegExp(encodedBName);
-
-  try {
-    const query = { name: { $regex: new RegExp(`^${escapedBName}`, "i") } };
-
-    if (brandId) {
-      query._id = { $ne: brandId };
-    }
-
-    const exists = await brands.findOne(query);
-
-    if (exists) {
-      return res
-        .status(statusCode.OK)
-        .json({ message: "Brand already exists", exists: true });
-    }
-
-    return res
-      .status(statusCode.OK)
-      .json({ message: "Brand does not exist", exists: false });
-  } catch (error) {
-    console.log(`error while checking the existing brand`, error.message);
-
-    return res
-      .status(statusCode.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server error" });
-  }
-};
-
 module.exports = {
   loadCategoryBrand,
-  addCategoryBrand,
+  addCategory,
+  addBrand,
   editCategory,
   editBrand,
   softDeleteCategory,
   softDeleteBrand,
-  categoryExists,
-  brandExists,
 };

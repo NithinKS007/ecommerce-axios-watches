@@ -110,7 +110,6 @@ const addToCart = async (req, res) => {
       if (!savedCartData) {
         return res.status(statusCode.NOT_FOUND).json({
           success: false,
-
           message: "Cannot save the cart data",
         });
       }
@@ -118,7 +117,7 @@ const addToCart = async (req, res) => {
       return res.status(statusCode.OK).json({
         success: true,
         message:
-          "New cart created for the user and added the product to items array successfully",
+          "cart item added successfully",
       });
     } else {
       await cart.updateOne(
@@ -138,7 +137,7 @@ const addToCart = async (req, res) => {
       return res.status(statusCode.OK).json({
         success: true,
         message:
-          "product added to items array for the existing cart successfully",
+          "cart item added successfully",
       });
     }
   } catch (error) {

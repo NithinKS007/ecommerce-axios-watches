@@ -1,0 +1,703 @@
+<%- include('../layouts/userLayouts/header') %>
+<div class="bg-white sticky-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container">
+      <!-- Logo with Dummy Image -->
+      <a class="navbar-brand d-flex align-items-center" href="">
+        <span style="font-size: 32px; font-weight: bold; color: black"
+          >AXIOS</span
+        ><sup style="color: black">®</sup>
+      </a>
+      <!-- Search Form -->
+      <form
+        class="d-flex mx-auto w-50"
+        id="searchForm"
+        action="/showcase"
+        method="GET"
+      >
+        <input
+          class="form-control search-bar"
+          style="
+            border: none;
+            box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
+
+            padding: 20px 15px;
+            border-radius: 5px;
+            height: 48px;
+          "
+          type="search"
+          name="searchProduct"
+          placeholder="Search for items..."
+          aria-label="Search"
+          value="<%= searchProduct || '' %>"
+        />
+      </form>
+
+      <!-- Icons -->
+      <ul
+        style="margin-right: 10px"
+        class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center"
+      >
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/wishlist"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-heart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/cart"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-shopping-cart"></i>
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a
+            class="nav-link"
+            href="/profile"
+            style="color: black; font-weight: bold; font-size: 24px"
+          >
+            <i class="fi-rs-user"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="height: 70px">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <ul style="user-select: none" class="list-inline">
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=men"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Mens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=women"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Womens</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/showcase?targetGroup=kids"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Kids</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >About Us</a
+            >
+          </li>
+          <li class="list-inline-item">
+            <a
+              href="/"
+              style="
+                color: black;
+                font-weight: bold;
+                font-size: 20px;
+                padding-right: 10px;
+              "
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+  <section class="pt-150 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 m-auto">
+          <div class="row">
+            <%- include('../layouts/userLayouts/sidebar') %>
+            <div class="col-md-8">
+              <div class="container mt-5">
+                <h2
+                  style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  EDIT ADDRESS
+                </h2>
+                <form id="editAddressForm">
+                  <input type="hidden" name="id" value="<%= addressData._id %>" />
+                  <div class="mb-3">
+                    <input
+                      type="text"
+                      id="addressNameInput"
+                      class="form-control"
+                      name="name"
+                      placeholder="Name"
+                      value="<%= addressData.name || '' %>"
+                    />
+                    <span
+                      id="editNameError"
+                      class="error"
+                      style="font-size: 0.9rem; color: red"
+                    ></span>
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="tel"
+                      id="addressPhoneInput"
+                      class="form-control"
+                      name="phone"
+                      placeholder="10-digit mobile number"
+                      value="<%= addressData.phone || '' %>"
+                    />
+                    <span
+                      id="editPhoneError"
+                      class="error"
+                      style="font-size: 0.9rem; color: red"
+                    ></span>
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="text"
+                      id="addressPincodeInput"
+                      class="form-control"
+                      name="pincode"
+                      placeholder="Pincode"
+                      value="<%= addressData.pincode || '' %>"
+                    />
+                    <span
+                      id="editPincodeError"
+                      class="error"
+                      style="font-size: 0.9rem; color: red"
+                    ></span>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <input
+                        type="text"
+                        id="addressLocalityInput"
+                        class="form-control"
+                        name="locality"
+                        placeholder="Locality"
+                        value="<%= addressData.locality || '' %>"
+                      />
+                      <span
+                        id="editLocalityError"
+                        class="error"
+                        style="font-size: 0.9rem; color: red"
+                      ></span>
+                    </div>
+                    <div class="col">
+                      <textarea
+                        class="form-control"
+                        id="addressTextAreaInput"
+                        name="address"
+                        rows="3"
+                        placeholder="Address (Area and Street)"
+                      ><%= addressData.address || '' %></textarea>
+                      <span
+                        id="editAddressError"
+                        class="error"
+                        style="font-size: 0.9rem; color: red"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addressCityDistTownInput"
+                        name="cityDistTown"
+                        placeholder="City/District/Town"
+                        value="<%= addressData.cityDistTown || '' %>"
+                      />
+                      <span
+                        id="editCityDistTownError"
+                        class="error"
+                        style="font-size: 0.9rem; color: red"
+                      ></span>
+                    </div>
+                    <div class="col">
+                      <select
+                        class="form-select"
+                        id="addressStateInput"
+                        name="state"
+                      >
+                        <option value="" disabled <%= !addressData.state ? 'selected' : '' %>>Select State</option>
+                        <option value="Andhra Pradesh" <%= addressData.state === 'Andhra Pradesh' ? 'selected' : '' %>>Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh" <%= addressData.state === 'Arunachal Pradesh' ? 'selected' : '' %>>Arunachal Pradesh</option>
+                        <option value="Assam" <%= addressData.state === 'Assam' ? 'selected' : '' %>>Assam</option>
+                        <option value="Bihar" <%= addressData.state === 'Bihar' ? 'selected' : '' %>>Bihar</option>
+                        <option value="Chhattisgarh" <%= addressData.state === 'Chhattisgarh' ? 'selected' : '' %>>Chhattisgarh</option>
+                        <option value="Goa" <%= addressData.state === 'Goa' ? 'selected' : '' %>>Goa</option>
+                        <option value="Gujarat" <%= addressData.state === 'Gujarat' ? 'selected' : '' %>>Gujarat</option>
+                        <option value="Haryana" <%= addressData.state === 'Haryana' ? 'selected' : '' %>>Haryana</option>
+                        <option value="Himachal Pradesh" <%= addressData.state === 'Himachal Pradesh' ? 'selected' : '' %>>Himachal Pradesh</option>
+                        <option value="Jharkhand" <%= addressData.state === 'Jharkhand' ? 'selected' : '' %>>Jharkhand</option>
+                        <option value="Karnataka" <%= addressData.state === 'Karnataka' ? 'selected' : '' %>>Karnataka</option>
+                        <option value="Kerala" <%= addressData.state === 'Kerala' ? 'selected' : '' %>>Kerala</option>
+                        <option value="Madhya Pradesh" <%= addressData.state === 'Madhya Pradesh' ? 'selected' : '' %>>Madhya Pradesh</option>
+                        <option value="Maharashtra" <%= addressData.state === 'Maharashtra' ? 'selected' : '' %>>Maharashtra</option>
+                        <option value="Manipur" <%= addressData.state === 'Manipur' ? 'selected' : '' %>>Manipur</option>
+                        <option value="Meghalaya" <%= addressData.state === 'Meghalaya' ? 'selected' : '' %>>Meghalaya</option>
+                        <option value="Mizoram" <%= addressData.state === 'Mizoram' ? 'selected' : '' %>>Mizoram</option>
+                        <option value="Nagaland" <%= addressData.state === 'Nagaland' ? 'selected' : '' %>>Nagaland</option>
+                        <option value="Odisha" <%= addressData.state === 'Odisha' ? 'selected' : '' %>>Odisha</option>
+                        <option value="Punjab" <%= addressData.state === 'Punjab' ? 'selected' : '' %>>Punjab</option>
+                        <option value="Rajasthan" <%= addressData.state === 'Rajasthan' ? 'selected' : '' %>>Rajasthan</option>
+                        <option value="Sikkim" <%= addressData.state === 'Sikkim' ? 'selected' : '' %>>Sikkim</option>
+                        <option value="Tamil Nadu" <%= addressData.state === 'Tamil Nadu' ? 'selected' : '' %>>Tamil Nadu</option>
+                        <option value="Telangana" <%= addressData.state === 'Telangana' ? 'selected' : '' %>>Telangana</option>
+                        <option value="Tripura" <%= addressData.state === 'Tripura' ? 'selected' : '' %>>Tripura</option>
+                        <option value="Uttar Pradesh" <%= addressData.state === 'Uttar Pradesh' ? 'selected' : '' %>>Uttar Pradesh</option>
+                        <option value="Uttarakhand" <%= addressData.state === 'Uttarakhand' ? 'selected' : '' %>>Uttarakhand</option>
+                        <option value="West Bengal" <%= addressData.state === 'West Bengal' ? 'selected' : '' %>>West Bengal</option>
+                      </select>
+                      <span
+                        id="editStateError"
+                        class="error"
+                        style="font-size: 0.9rem; color: red"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="text"
+                      id="addressLandMarkInput"
+                      class="form-control"
+                      name="landMark"
+                      placeholder="Landmark (Optional)"
+                      value="<%= addressData.landMark || '' %>"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="tel"
+                      id="addressAltPhoneInput"
+                      class="form-control"
+                      name="altPhone"
+                      placeholder="Alternate Phone (Optional)"
+                      value="<%= addressData.altPhone || '' %>"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="email"
+                      id="addressEmailInput"
+                      class="form-control"
+                      name="email"
+                      placeholder="Email"
+                      value="<%= addressData.email || '' %>"
+                    />
+                    <span
+                      id="editEmailError"
+                      class="error"
+                      style="font-size: 0.9rem; color: red"
+                    ></span>
+                  </div>
+                  <label class="form-label">Address Type</label>
+                  <div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="addressType"
+                        id="home"
+                        value="home"
+                        <%= addressData.addressType === 'home' ? 'checked' : '' %>
+                      />
+                      <label class="form-check-label" for="home">Home</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="addressType"
+                        id="work"
+                        value="work"
+                        <%= addressData.addressType === 'work' ? 'checked' : '' %>
+                      />
+                      <label class="form-check-label" for="work">Work</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="addressType"
+                        id="other"
+                        value="other"
+                        <%= addressData.addressType === 'other' ? 'checked' : '' %>
+                      />
+                      <label class="form-check-label" for="other">Other</label>
+                    </div>
+                    <span
+                      id="editAddressTypeError"
+                      class="error"
+                      style="font-size: 0.9rem; color: red"
+                    ></span>
+                  </div>
+                  <button
+                    type="submit"
+                    id="saveChangesEditAddressFormButton"
+                    class="btn btn-primary"
+                  >
+                    Save Address
+                  </button>
+                  <button
+                    type="button"
+                    id="cancelEditAddressFormButton"
+                    class="btn btn-secondary"
+                    onclick="window.location.href='/profile'"
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const applySwalButtonStyles = () => {
+    const confirmButton = Swal.getConfirmButton();
+    const cancelButton = Swal.getCancelButton();
+
+    confirmButton.style.width = "100%";
+    confirmButton.style.margin = "5px 0";
+    confirmButton.style.border = "1px solid #000";
+    confirmButton.style.borderRadius = "0.25rem";
+    confirmButton.style.backgroundColor = "#000";
+    confirmButton.style.color = "#fff";
+
+    cancelButton.style.width = "100%";
+    cancelButton.style.margin = "5px 0";
+    cancelButton.style.border = "1px solid #000";
+    cancelButton.style.borderRadius = "0.25rem";
+    cancelButton.style.color = "#000";
+
+    if (window.innerWidth <= 768) {
+      confirmButton.style.width = "100%";
+      cancelButton.style.width = "100%";
+    } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+      confirmButton.style.width = "150px";
+      cancelButton.style.width = "150px";
+    }
+  };
+
+  const addressNameInput = document.getElementById("addressNameInput");
+  const addressPhoneInput = document.getElementById("addressPhoneInput");
+  const addressPincodeInput = document.getElementById("addressPincodeInput");
+  const addressLocalityInput = document.getElementById("addressLocalityInput");
+  const addressTextAreaInput = document.getElementById("addressTextAreaInput");
+  const addressCityDistTownInput = document.getElementById("addressCityDistTownInput");
+  const addressStateInput = document.getElementById("addressStateInput");
+  const addressLandMarkInput = document.getElementById("addressLandMarkInput");
+  const addressAltPhoneInput = document.getElementById("addressAltPhoneInput");
+  const addressEmailInput = document.getElementById("addressEmailInput");
+  const addressTypeHome = document.getElementById("home");
+  const addressTypeWork = document.getElementById("work");
+  const addressTypeOther = document.getElementById("other");
+
+  const editNameError = document.getElementById("editNameError");
+  const editPhoneError = document.getElementById("editPhoneError");
+  const editPincodeError = document.getElementById("editPincodeError");
+  const editLocalityError = document.getElementById("editLocalityError");
+  const editAddressError = document.getElementById("editAddressError");
+  const editCityDistTownError = document.getElementById("editCityDistTownError");
+  const editStateError = document.getElementById("editStateError");
+  const editEmailError = document.getElementById("editEmailError");
+  const editAddressTypeError = document.getElementById("editAddressTypeError");
+
+  const validateEditName = () => {
+    if (addressNameInput.value.trim() === "") {
+      editNameError.textContent = "* Name is required";
+      return false;
+    } else if (!/^[a-zA-Z\s]+$/.test(addressNameInput.value.trim())) {
+      editNameError.textContent = "* Name must contain only letters";
+      return false;
+    } else if (addressNameInput.value.trim().length < 2) {
+      editNameError.textContent = "* Name must be at least 2 characters long";
+      return false;
+    } else {
+      editNameError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditPhone = () => {
+    const phoneRegex = /^\d{10}$/;
+    if (addressPhoneInput.value.trim() === "") {
+      editPhoneError.textContent = "* Phone Number is required";
+      return false;
+    } else if (!phoneRegex.test(addressPhoneInput.value.trim())) {
+      editPhoneError.textContent = "* Enter a valid Phone Number";
+      return false;
+    } else {
+      editPhoneError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditPincode = () => {
+    const pincodeRegex = /^\d{6}$/;
+    if (addressPincodeInput.value.trim() === "") {
+      editPincodeError.textContent = "* Pincode is required";
+      return false;
+    } else if (!pincodeRegex.test(addressPincodeInput.value.trim())) {
+      editPincodeError.textContent = "* Enter a valid Pincode";
+      return false;
+    } else {
+      editPincodeError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditLocality = () => {
+    if (addressLocalityInput.value.trim() === "") {
+      editLocalityError.textContent = "* Locality is required";
+      return false;
+    } else if (addressLocalityInput.value.trim().length < 5) {
+      editLocalityError.textContent = "* Locality must be at least 5 characters long";
+      return false;
+    } else if (!/^[a-zA-Z\s]+$/.test(addressLocalityInput.value.trim())) {
+      editLocalityError.textContent = "* Locality can only contain letters";
+      return false;
+    } else {
+      editLocalityError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditAddress = () => {
+    if (addressTextAreaInput.value.trim() === "") {
+      editAddressError.textContent = "* Address is required";
+      return false;
+    } else if (addressTextAreaInput.value.trim().length < 5) {
+      editAddressError.textContent = "* Address must be at least 5 characters long";
+      return false;
+    } else {
+      editAddressError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditCityDistTown = () => {
+    if (addressCityDistTownInput.value.trim() === "") {
+      editCityDistTownError.textContent = "* City/District/Town is required";
+      return false;
+    } else {
+      editCityDistTownError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditState = () => {
+    if (addressStateInput.value === "") {
+      editStateError.textContent = "* State is required";
+      return false;
+    } else {
+      editStateError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (addressEmailInput.value.trim() === "") {
+      editEmailError.textContent = "* Email is required";
+      return false;
+    } else if (!emailRegex.test(addressEmailInput.value.trim())) {
+      editEmailError.textContent = "* Enter a valid Email";
+      return false;
+    } else {
+      editEmailError.textContent = "";
+      return true;
+    }
+  };
+
+  const validateEditAltPhone = () => {
+    if (addressAltPhoneInput.value.trim() === "") {
+      return true; // Optional field
+    }
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(addressAltPhoneInput.value.trim())) {
+      editPhoneError.textContent = "* Enter a valid Alternate Phone Number";
+      return false;
+    }
+    return true;
+  };
+
+  const validateEditAddressType = () => {
+    const isChecked = [addressTypeHome, addressTypeWork, addressTypeOther].some(
+      (input) => input.checked
+    );
+    if (!isChecked) {
+      editAddressTypeError.textContent = "* Address Type is required";
+      return false;
+    } else {
+      editAddressTypeError.textContent = "";
+      return true;
+    }
+  };
+
+  addressNameInput.addEventListener("input", validateEditName);
+  addressPhoneInput.addEventListener("input", validateEditPhone);
+  addressPincodeInput.addEventListener("input", validateEditPincode);
+  addressLocalityInput.addEventListener("input", validateEditLocality);
+  addressTextAreaInput.addEventListener("input", validateEditAddress);
+  addressCityDistTownInput.addEventListener("input", validateEditCityDistTown);
+  addressStateInput.addEventListener("change", validateEditState);
+  addressEmailInput.addEventListener("input", validateEditEmail);
+  addressAltPhoneInput.addEventListener("input", validateEditAltPhone);
+  [addressTypeHome, addressTypeWork, addressTypeOther].forEach((input) =>
+    input.addEventListener("change", validateEditAddressType)
+  );
+
+  const saveChangesEditAddressFormButton = document.getElementById(
+    "saveChangesEditAddressFormButton"
+  );
+
+  saveChangesEditAddressFormButton.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const isNameValid = validateEditName();
+    const isPhoneValid = validateEditPhone();
+    const isPincodeValid = validateEditPincode();
+    const isLocalityValid = validateEditLocality();
+    const isAddressValid = validateEditAddress();
+    const isCityDistTownValid = validateEditCityDistTown();
+    const isStateValid = validateEditState();
+    const isEmailValid = validateEditEmail();
+    const isAddressTypeValid = validateEditAddressType();
+    const isAltPhoneValid = validateEditAltPhone();
+
+    if (
+      !(
+        isNameValid &&
+        isPhoneValid &&
+        isPincodeValid &&
+        isLocalityValid &&
+        isAddressValid &&
+        isCityDistTownValid &&
+        isStateValid &&
+        isEmailValid &&
+        isAddressTypeValid &&
+        isAltPhoneValid
+      )
+    ) {
+      return;
+    }
+
+    const id = document.querySelector('input[name="id"]').value;
+
+    const result = await Swal.fire({
+      text: "Are you sure you want to save these changes?",
+      showCancelButton: true,
+      confirmButtonColor: "#000000",
+      cancelButtonColor: "#ffffff",
+      confirmButtonText: "Yes, save changes",
+      cancelButtonText: "No, cancel",
+      didOpen: () => {
+        applySwalButtonStyles();
+      },
+    });
+
+    if (result.isConfirmed) {
+      const updatedAddress = {
+        id,
+        addressType: document.querySelector('input[name="addressType"]:checked').value,
+        name: addressNameInput.value.trim(),
+        phone: addressPhoneInput.value.trim(),
+        address: addressTextAreaInput.value.trim(),
+        locality: addressLocalityInput.value.trim(),
+        cityDistTown: addressCityDistTownInput.value.trim(),
+        state: addressStateInput.value,
+        pincode: addressPincodeInput.value.trim(),
+        landMark: addressLandMarkInput.value.trim(),
+        altPhone: addressAltPhoneInput.value.trim(),
+        email: addressEmailInput.value.trim(),
+      };
+
+      try {
+        const response = await fetch(`/address/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({updatedAddress:updatedAddress}),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to update address");
+        }
+
+        const data = await response.json();
+        await Swal.fire({
+          title: "Success!",
+          text: `${data.updatedUserAddress.addressType} address successfully updated.`,
+          icon: "success",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+        window.location.reload();
+      } catch (error) {
+        await Swal.fire({
+          title: "Error!",
+          text: `Error: ${error.message || "There was an issue processing your request."}`,
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
+    }
+  });
+});
+</script>
+<%- include('../layouts/userLayouts/footer') %>

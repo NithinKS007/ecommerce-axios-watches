@@ -5,12 +5,27 @@ const statusCodes = require("../utils/statusCodes");
 
 const loadAddress = async (req, res) => {
   try {
-    const currentUser = req?.currentUser;
-    const addressDetails = await userAddress
-      .find({ userId: currentUser?._id })
-      .sort({ createdAt: -1 });
+    let pageNumber = parseInt(req.query.page) || 1;
+    const perPageData = 2;
+    const skip = (pageNumber - 1) * perPageData;
 
-    return res.status(statusCode.OK).render("user/address", { addressDetails });
+    const currentUser = req?.currentUser;
+    const [totalAddressCount, addressDetails] = await Promise.all([
+      userAddress.countDocuments({ userId: currentUser?._id }),
+      userAddress
+        .find({ userId: currentUser?._id })
+        .skip(skip)
+        .limit(perPageData)
+        .sort({ createdAt: -1 }),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(totalAddressCount / perPageData));
+    pageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+    return res.status(statusCode.OK).render("user/address", {
+      addressDetails,
+      totalPages,
+      currentPage: pageNumber,
+    });
   } catch (error) {
     console.log(`error while loading the address page`, error.message);
 
@@ -21,6 +36,23 @@ const loadAddress = async (req, res) => {
 const loadAddAddress = async (req, res) => {
   try {
     return res.status(statusCode.OK).render("user/addAddress");
+  } catch (error) {
+    console.log(`error while loading the address page`, error.message);
+
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
+  }
+};
+
+const loadEditAddress = async (req, res) => {
+  try {
+    const { addressId } = req.query;
+
+    const addressData = await userAddress.findById(addressId)
+
+    if(!addressData){
+       return res.status(statusCode.BAD_REQUEST).render("user/400");
+    }
+    return res.status(statusCode.OK).render("user/editAddress",{addressData});
   } catch (error) {
     console.log(`error while loading the address page`, error.message);
 
@@ -41,8 +73,7 @@ const addAddress = async (req, res) => {
     altPhone,
     email,
     addressType,
-    sourcePage,
-  } = req.body;
+  } = req.body.address;
 
   const currentUser = req?.currentUser;
   try {
@@ -70,9 +101,10 @@ const addAddress = async (req, res) => {
     );
 
     if (addressData && pushAddressIntoUser) {
-      return res
-        .status(statusCodes.CREATED)
-        .redirect(sourcePage === "checkout" ? "/checkout" : "/address");
+      return res.status(statusCodes.CREATED).json({
+        success: true,
+        message: "Address added successfully",
+      });
     }
   } catch (error) {
     console.log(`error while adding the address`, error.message);
@@ -85,6 +117,7 @@ const editAddress = async (req, res) => {
   const { id } = req.params;
   const { updatedAddress } = req.body;
 
+  console.log("add",req.body,id)
   if (!updatedAddress || !id) {
     return res
       .status(statusCode.BAD_REQUEST)
@@ -125,36 +158,27 @@ const removeAddress = async (req, res) => {
 
     const currentUser = req?.currentUser;
 
-    const deletedAddressFromCollection = await userAddress.deleteOne({
+    const deletedAddress = await userAddress.deleteOne({
       userId: currentUser?._id,
       _id: id,
     });
 
-    const isAddressEmpty = await userAddress.countDocuments({
-      userId: currentUser?._id,
-    });
-
-    if (deletedAddressFromCollection) {
+    if (deletedAddress) {
       return res.status(statusCode.OK).json({
         success: true,
-        message: "Item deleted from the address collection successfully",
-        isAddressEmpty: isAddressEmpty,
-        deletedAddressFromCollection: deletedAddressFromCollection,
-      });
-    } else {
-      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message:
-          "Something went wrong while deleting item from the address collection",
+        message: "Address deleted successfully",
       });
     }
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Something went wrong while editing address",
+    });
   } catch (error) {
     console.log(`error while deleting the address`, error.message);
 
     return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message:
-        "Something went wrong while deleting item from the address collection",
+      message: "Something went wrong while editing address",
     });
   }
 };
@@ -165,4 +189,5 @@ module.exports = {
   removeAddress,
   editAddress,
   loadAddAddress,
+  loadEditAddress,
 };

@@ -836,7 +836,7 @@
 
     strapColorInput.addEventListener("input", validateStrapColor);
 
-    //form validation for product stock
+    //Form validation for product stock
 
     const validateStock = () => {
       if (stockInput.value.trim() === "") {
@@ -852,7 +852,7 @@
 
     stockInput.addEventListener("input", validateStock);
 
-    //form validation for product target group
+    //Form validation for product target group
 
     const validateTargetGroup = () => {
       if (menRadio.checked || womenRadio.checked || kidsRadio.checked) {
@@ -866,36 +866,6 @@
     menRadio.addEventListener("change", validateTargetGroup);
     womenRadio.addEventListener("change", validateTargetGroup);
     kidsRadio.addEventListener("change", validateTargetGroup);
-
-    //Form validation stops
-
-    //checking for existing product
-    // const productExists = async (id, productName) => {
-    //   try {
-    //     const encodedPName = encodeURIComponent(productName);
-    //     const response = await fetch(
-    //       `/admin/products?view=exist&encodedPName=${encodedPName}${
-    //         id ? `&productId=${id}` : ""
-    //       }`,
-    //       { method: "GET",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //       }
-    //     );
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     const data = await response.json();
-    //     return data.exists;
-    //   } catch (error) {
-    //     console.log(
-    //       `error while checking the category existence`,
-    //       error.message
-    //     );
-    //     throw error;
-    //   }
-    // };
   });
 </script>
 <%- include('../layouts/adminLayouts/footer') %>

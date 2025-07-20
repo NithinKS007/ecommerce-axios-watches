@@ -193,7 +193,7 @@ const editCoupon = async (req, res) => {
     }
 
     const exists = await coupons.findOne({
-      couponName,
+      couponName: { $regex: new RegExp(`^${couponName}$`, "i") },
       _id: { $ne: couponId },
     });
 
@@ -231,7 +231,6 @@ const editCoupon = async (req, res) => {
       success: true,
       updatedCoupon,
     });
-    
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
     return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
@@ -255,27 +254,32 @@ const addCoupon = async (req, res) => {
     );
 
     if (Number(maxAmount) <= calculatedMax) {
-      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
         message: `Maximum Discount Amount cannot be less than the calculated maximum discount of ${calculatedMax}`,
       });
     }
     const existingCouponName = await coupons.findOne({
-      couponName: couponName,
+      couponName: { $regex: new RegExp(`^${couponName}$`, "i") },
     });
 
     if (existingCouponName) {
-      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
         message:
           "Coupon name already exists. Please choose a different coupon name.",
+        couponNameExists: existingCouponName,
       });
     }
     const existingCouponCode = await coupons.findOne({
-      couponCode: couponCode,
+      couponCode: { $regex: new RegExp(`^${couponCode}$`, "i") },
     });
 
     if (existingCouponCode) {
-      return res.status(statusCode.BAD_REQUEST).render("admin/addCoupon", {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
         message: "Coupon code already exists. Please choose a different code.",
+        couponCodeExists: existingCouponCode,
       });
     }
 
@@ -291,10 +295,17 @@ const addCoupon = async (req, res) => {
 
     const couponData = coupon.save();
     if (couponData) {
-      return res.status(statusCode.OK).redirect("/admin/addCoupon");
+      return res.status(statusCode.OK).json({
+        success: true,
+        message: "Coupon added successfully.",
+        data: couponData,
+      });
     }
 
-    return res.status(statusCode.INTERNAL_SERVER_ERROR).render("admin/500");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "There was an issue saving the coupon. Please try again.",
+    });
   } catch (error) {
     console.log(`error while adding the coupon`, error.message);
 

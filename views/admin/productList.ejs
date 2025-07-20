@@ -274,7 +274,7 @@
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `Error ${response.status}: ${errorData.message || "Unknown error"}`
+          `Error ${errorData.message || "Unknown error"}`
         );
       }
 

@@ -1,4 +1,5 @@
-<%- include('../layouts/userLayouts/header') %><div class="bg-white sticky-top">
+<%- include('../layouts/userLayouts/header') %>
+<div class="bg-white sticky-top">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container">
@@ -159,7 +160,7 @@
                   ADD A NEW ADDRESS
                 </h2>
 
-                <form id="formData" method="post" action="/address">
+                <form id="formData">
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <input
@@ -394,8 +395,32 @@
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    //first name validation
+    const applySwalButtonStyles = () => {
+      const confirmButton = Swal.getConfirmButton();
+      const cancelButton = Swal.getCancelButton();
 
+      confirmButton.style.width = "100%";
+      confirmButton.style.margin = "5px 0";
+      confirmButton.style.border = "1px solid #000";
+      confirmButton.style.borderRadius = "0.25rem";
+      confirmButton.style.backgroundColor = "#000";
+      confirmButton.style.color = "#fff";
+
+      cancelButton.style.width = "100%";
+      cancelButton.style.margin = "5px 0";
+      cancelButton.style.border = "1px solid #000";
+      cancelButton.style.borderRadius = "0.25rem";
+      cancelButton.style.color = "#000";
+
+      if (window.innerWidth <= 768) {
+        confirmButton.style.width = "100%";
+        cancelButton.style.width = "100%";
+      } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = "150px";
+        cancelButton.style.width = "150px";
+      }
+    };
+    //first name validation
     const nameInput = document.getElementById("name");
     const nameError = document.getElementById("nameError");
 
@@ -581,7 +606,8 @@
 
     const form = document.getElementById("formData");
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
       const isNameValid = validateName();
       const isPhoneValid = validatePhone();
       const isPincodeValid = validatePincode();
@@ -605,7 +631,81 @@
           isAddressTypeValid
         )
       ) {
-        event.preventDefault();
+        return;
+      }
+      try {
+        const result = await Swal.fire({
+          text: "Are you sure? You want to save these changes.",
+          showCancelButton: true,
+          confirmButtonColor: "#000000",
+          cancelButtonColor: "#ffffff",
+          confirmButtonText: "Yes, save it!",
+          cancelButtonText: "No, cancel!",
+          didOpen: () => {
+            applySwalButtonStyles();
+          },
+        });
+
+        if (result.isConfirmed) {
+          const address = {
+            addressType: document.querySelector(
+              'input[name="addressType"]:checked'
+            ).value,
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            address: addressInput.value.trim(),
+            locality: localityInput.value.trim(),
+            cityDistTown: cityDistTownInput.value.trim(),
+            state: stateInput.value,
+            pincode: pincodeInput.value.trim(),
+            landMark: document
+              .querySelector('input[name="landMark"]')
+              .value.trim(),
+            altPhone: document
+              .querySelector('input[name="altPhone"]')
+              .value.trim(),
+            email: emailInput.value.trim(),
+          };
+
+          const response = await fetch(`/address`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ address }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${errorData.message || "Unknown error"}`);
+          }
+          const data = await response.json();
+          await Swal.fire({
+            title: "Success!",
+            text: `Address Added successfully`,
+            icon: "success",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+          window.location.href = "/address";
+        }
+      } catch (error) {
+        console.error("Error adding address", error.message);
+        await Swal.fire({
+          title: "Error!",
+          text: `Error: ${
+            error.message || "There was an issue processing your request."
+          }`,
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     });
   });

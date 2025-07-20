@@ -14,11 +14,11 @@ const loadCategoryOffer = async (req, res) => {
     const [totalOfferAppliedCategories, offerAppliedCategories] =
       await Promise.all([
         categories.countDocuments({
-          "categoryOffer.offerName": { $exists: true },
+          categoryOffer: { $ne: null, $exists: true },
         }),
 
         categories
-          .find({ "categoryOffer.offerName": { $exists: true } })
+          .find({ categoryOffer: { $ne: null, $exists: true } })
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(perPageData)
@@ -124,6 +124,19 @@ const addCategoryOffer = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "Sorry no products are found in this category",
+      });
+    }
+
+     const offerNameExists = await categories.findOne({
+      "categoryOffer.offerName": { $regex: new RegExp(`^${offerName}$`, "i") },
+    });
+
+    if (offerNameExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message:
+          "Offer name already exists. Please choose a different Offer name.",
+        offerNameExists: offerNameExists,
       });
     }
 
@@ -295,6 +308,19 @@ const editCategoryOffer = async (req, res) => {
       });
     }
 
+    const offerNameExists = await categories.findOne({
+      "categoryOffer.offerName": { $regex: new RegExp(`^${offerName}$`, "i") },
+    });
+
+    if (offerNameExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message:
+          "Offer name already exists. Please choose a different Offer name.",
+        offerNameExists: offerNameExists,
+      });
+    }
+
     await categories.findByIdAndUpdate(
       { _id: categoryId },
       {
@@ -350,10 +376,12 @@ const loadProductOffer = async (req, res) => {
     const [totalOfferAppliedProducts, offerAppliedProducts] = await Promise.all(
       [
         products.countDocuments({
-          "productOffer.offerDiscountAmount": { $exists: true },
+          productOffer: { $exists: true, $ne: null },
         }),
         products
-          .find({ "productOffer.offerDiscountAmount": { $exists: true } })
+          .find({
+            productOffer: { $exists: true, $ne: null },
+          })
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(perPageData)
@@ -456,6 +484,19 @@ const addProductOffer = async (req, res) => {
         success: false,
         message:
           "No category found with the associated product for checking which offer is better",
+      });
+    }
+
+    const offerNameExists = await products.findOne({
+      "productOffer.offerName": { $regex: new RegExp(`^${offerName}$`, "i") },
+    });
+
+    if (offerNameExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message:
+          "Offer name already exists. Please choose a different Offer name.",
+        offerNameExists: offerNameExists,
       });
     }
 
@@ -607,6 +648,19 @@ const editProductOffer = async (req, res) => {
         success: false,
         message:
           "No category found with the associated product for checking which offer is better",
+      });
+    }
+
+     const offerNameExists = await products.findOne({
+      "productOffer.offerName": { $regex: new RegExp(`^${offerName}$`, "i") },
+    });
+
+    if (offerNameExists) {
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message:
+          "Offer name already exists. Please choose a different Offer name.",
+        offerNameExists: offerNameExists,
       });
     }
 

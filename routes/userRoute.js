@@ -62,7 +62,6 @@ userRoute.delete("/cart/coupon",isBlocked,noCacheMid.noCacheMiddleware,userAuth.
 
 // Checkout and Payment routes
 userRoute.get("/checkout",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userOrderController.loadCheckout);
-userRoute.post("/checkout/address",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,addressController.addAddress);
 userRoute.post("/checkout",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,userOrderController.placeOrder);
 
 userRoute.post("/payments/verify",isBlocked,noCacheMid.noCacheMiddleware,userAuth.isUserLogin,checkoutOnlinePaymentController.verifyOnlinePayment);

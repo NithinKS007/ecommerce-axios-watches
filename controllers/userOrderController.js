@@ -434,13 +434,12 @@ const cancelOrder = async (req, res) => {
 
       return res.status(statusCode.OK).json({
         message: "order cancelled successfully",
-        orderNotDelivered: true,
       });
     }
 
     return res
       .status(statusCode.OK)
-      .json({ message: "Order status is delivered" });
+      .json({ message: "Order already delivered is delivered" });
   } catch (error) {
     console.log(`Error while canceling the order`, error.message);
 

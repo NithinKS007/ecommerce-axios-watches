@@ -15,11 +15,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-md-3">
-            <form
-              action="/admin/categories-brands"
-              id="formDataCreateCategory"
-              method="post"
-            >
+            <form id="formDataCreateCategory">
               <div class="mb-4">
                 <label for="categoryName" class="form-label">Name</label>
                 <input
@@ -226,11 +222,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-md-3">
-            <form
-              action="/admin/categories-brands"
-              id="formDataCreateBrand"
-              method="post"
-            >
+            <form id="formDataCreateBrand">
               <div class="mb-4">
                 <label for="brandName" class="form-label">Name</label>
                 <input
@@ -437,179 +429,181 @@
       }
     };
 
-    const softDeleteCategory = (categoryId) => {
+    const softDeleteCategory = async (categoryId) => {
       const deleteButton = document.getElementById(
         `softDeleteButton${categoryId}`
       );
       const isDeleting = deleteButton.classList.contains("btn-danger");
 
-      Swal.fire({
-        title: `Are you sure you want to ${
-          isDeleting ? "Unlist" : "List"
-        } this category?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#ffffff",
-        confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
-        didOpen: () => {
-          applySwalButtonStyles();
-        },
-      }).then((result) => {
+      try {
+        const result = await Swal.fire({
+          title: `Are you sure you want to ${
+            isDeleting ? "Unlist" : "List"
+          } this category?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
+          didOpen: () => {
+            applySwalButtonStyles();
+          },
+        });
+
         if (result.isConfirmed) {
-          fetch(`/admin/categories-brands/?categoryId=${categoryId}`, {
+          const response = await fetch(`/admin/categories/${categoryId}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },
-          })
-            .then((response) => {
-              if (response.status !== 200) {
-                throw new Error("Network response was not ok");
-              }
+          });
 
-              return response.json();
-            })
-            .then((data) => {
-              const deleteButton = document.getElementById(
-                `softDeleteButton${categoryId}`
-              );
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${errorData.message || "Unknown error"}`);
+          }
 
-              if (data.categoryId.isBlocked) {
-                deleteButton.classList.remove("btn-danger");
-                deleteButton.classList.add("btn-success");
-                deleteButton.textContent = "List";
-                Swal.fire({
-                  icon: "success",
-                  title: "Unlist!",
-                  text: "Successfully deleted category",
-                  toast: true,
-                  position: "top-right",
-                  showConfirmButton: false,
-                  timerProgressBar: true,
-                  timer: 3000,
-                });
-              } else {
-                deleteButton.classList.remove("btn-success");
-                deleteButton.classList.add("btn-danger");
-                deleteButton.textContent = "Unlist";
-                Swal.fire({
-                  title: "Retrieved!",
-                  text: "Category has been retrieved.",
-                  icon: "success",
-                  toast: true,
-                  position: "top-right",
-                  showConfirmButton: false,
-                  timerProgressBar: true,
-                  timer: 3000,
-                });
-              }
-            })
-            .catch((error) => {
-              console.log(`There is a problem with the fetch operation`, error);
+          const data = await response.json();
+          const deleteButton = document.getElementById(
+            `softDeleteButton${categoryId}`
+          );
 
-              Swal.fire({
-                title: "Error!",
-                text: "There was a problem deleting the category.",
-                icon: "error",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
+          if (data.categoryId.isBlocked) {
+            deleteButton.classList.remove("btn-danger");
+            deleteButton.classList.add("btn-success");
+            deleteButton.textContent = "List";
+            Swal.fire({
+              icon: "success",
+              title: "Unlist!",
+              text: "Successfully deleted category",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
             });
+          } else {
+            deleteButton.classList.remove("btn-success");
+            deleteButton.classList.add("btn-danger");
+            deleteButton.textContent = "Unlist";
+            Swal.fire({
+              title: "Retrieved!",
+              text: "Category has been retrieved.",
+              icon: "success",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
+            });
+          }
         }
-      });
+      } catch (error) {
+        console.log(`There is a problem with the soft delete operation`, error);
+
+        await Swal.fire({
+          title: "Error!",
+          text: `${error.message || "Please try again."}`,
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
     };
 
     //soft deleting brand
 
-    const softDeleteBrand = (brandId) => {
+    const softDeleteBrand = async (brandId) => {
       const deleteButton = document.getElementById(
         `softDeleteButton${brandId}`
       );
       const isDeleting = deleteButton.classList.contains("btn-danger");
 
-      Swal.fire({
-        title: `Are you sure you want to ${
-          isDeleting ? "Unlist" : "List"
-        } this Brand ?`,
+      try {
+        const result = await Swal.fire({
+          title: `Are you sure you want to ${
+            isDeleting ? "Unlist" : "List"
+          } this Brand ?`,
 
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#ffffff",
-        confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
-        didOpen: () => {
-          applySwalButtonStyles();
-        },
-      }).then((result) => {
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#ffffff",
+          confirmButtonText: `Yes, ${isDeleting ? "Unlist" : "List"}`,
+          didOpen: () => {
+            applySwalButtonStyles();
+          },
+        });
+
         if (result.isConfirmed) {
-          fetch(`/admin/categories-brands/?brandId=${brandId}`, {
+          const response = await fetch(`/admin/brands/${brandId}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },
-          })
-            .then((response) => {
-              if (response.status != 200) {
-                throw new Error("Network response was not ok");
-              }
+          });
 
-              return response.json();
-            })
-            .then((data) => {
-              const deleteButton = document.getElementById(
-                `softDeleteButton${brandId}`
-              );
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${errorData.message || "Unknown error"}`);
+          }
 
-              if (data.brandId.isBlocked) {
-                deleteButton.classList.remove("btn-danger");
-                deleteButton.classList.add("btn-success");
-                deleteButton.textContent = "List";
+          const data = await response.json();
 
-                Swal.fire({
-                  title: "Deleted!",
-                  text: "Successfully deleted Brand",
-                  icon: "success",
-                  toast: true,
-                  position: "top-right",
-                  showConfirmButton: false,
-                  timerProgressBar: true,
-                  timer: 3000,
-                });
-              } else {
-                deleteButton.classList.remove("btn-success");
-                deleteButton.classList.add("btn-danger");
-                deleteButton.textContent = "Unlist";
-                Swal.fire({
-                  title: "Retrieved!",
-                  text: "Brand has been retrieved.",
-                  icon: "success",
-                  toast: true,
-                  position: "top-right",
-                  showConfirmButton: false,
-                  timerProgressBar: true,
-                  timer: 3000,
-                });
-              }
-            })
-            .catch((error) => {
-              console.log(`There is a problem with the fetch operation`, error);
-              Swal.fire({
-                title: "Error!",
-                text: "There was a problem deleting the Brand.",
-                icon: "error",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
+          const deleteButton = document.getElementById(
+            `softDeleteButton${brandId}`
+          );
+
+          if (data.brandId.isBlocked) {
+            deleteButton.classList.remove("btn-danger");
+            deleteButton.classList.add("btn-success");
+            deleteButton.textContent = "List";
+
+            Swal.fire({
+              title: "Deleted!",
+              text: "Successfully deleted Brand",
+              icon: "success",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
             });
+          } else {
+            deleteButton.classList.remove("btn-success");
+            deleteButton.classList.add("btn-danger");
+            deleteButton.textContent = "Unlist";
+            Swal.fire({
+              title: "Retrieved!",
+              text: "Brand has been retrieved.",
+              icon: "success",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
+            });
+          }
         }
-      });
+      } catch (error) {
+        console.log(
+          `There is a problem with the delete brand operation`,
+          error
+        );
+        await Swal.fire({
+          title: "Error!",
+          text: `${error.message || "Please try again."}`,
+          icon: "error",
+          toast: true,
+          position: "top-right",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
     };
 
     const categoryNameInput = document.getElementById("categoryName");
@@ -654,119 +648,113 @@
       saveChangesCategoryFormButton.style.display = "block";
       cancelChangesCategoryFormButton.style.display = "block";
 
-      saveChangesCategoryFormButton.addEventListener("click", async (event) => {
-        event.preventDefault();
+      saveChangesCategoryFormButton.addEventListener(
+        "click",
+        async (event) => {
+          event.preventDefault();
 
-        const isValidateCategoryName = validateCategoryName();
-        const isValidateCategoryDescription = validateCategoryDescription();
+          const isValidateCategoryName = validateCategoryName();
+          const isValidateCategoryDescription = validateCategoryDescription();
 
-        const categoryName = categoryNameInput.value.trim();
+          const categoryName = categoryNameInput.value.trim();
 
-        if (!(isValidateCategoryName && isValidateCategoryDescription)) {
-          return;
-        }
-        const result = await Swal.fire({
-          title: "Confirm Changes",
-          text: "Are you sure you want to save these changes? This action cannot be undone.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, save changes",
-          cancelButtonText: "No, cancel",
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#ffffff",
-          didOpen: () => {
-            const confirmButton = Swal.getConfirmButton();
-            const cancelButton = Swal.getCancelButton();
-
-            confirmButton.style.width = "100%";
-            confirmButton.style.margin = "5px 0";
-            confirmButton.style.border = "1px solid #000";
-            confirmButton.style.borderRadius = "0.25rem";
-            confirmButton.style.backgroundColor = "#000";
-            confirmButton.style.color = "#fff";
-
-            cancelButton.style.width = "100%";
-            cancelButton.style.margin = "5px 0";
-            cancelButton.style.border = "1px solid #000";
-            cancelButton.style.borderRadius = "0.25rem";
-            cancelButton.style.color = "#000";
-
-            if (window.innerWidth <= 768) {
-              confirmButton.style.width = "100%";
-              cancelButton.style.width = "100%";
-            } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
-              confirmButton.style.width = "150px";
-              cancelButton.style.width = "150px";
-            }
-          },
-        });
-        const cExists = await categoryExists(categoryName, id);
-
-        if (result.isConfirmed) {
-          if (cExists) {
-            Swal.fire({
-              title: "Category Exists!",
-              text: "A category with this name already exists.",
-              icon: "warning",
-              toast: true,
-              position: "top-right",
-              showConfirmButton: false,
-              timerProgressBar: true,
-              timer: 3000,
-            });
+          if (!(isValidateCategoryName && isValidateCategoryDescription)) {
             return;
           }
-          const name = categoryNameInput.value;
-          const description = categoryDescriptionInput.value;
-          const categoryId = id;
+          const result = await Swal.fire({
+            title: "Confirm Changes",
+            text: "Are you sure you want to save these changes? This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, save changes",
+            cancelButtonText: "No, cancel",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#ffffff",
+            didOpen: () => {
+              const confirmButton = Swal.getConfirmButton();
+              const cancelButton = Swal.getCancelButton();
 
-          try {
-            const response = await fetch(`/admin/categories-brands`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name, description, categoryId }),
-            });
+              confirmButton.style.width = "100%";
+              confirmButton.style.margin = "5px 0";
+              confirmButton.style.border = "1px solid #000";
+              confirmButton.style.borderRadius = "0.25rem";
+              confirmButton.style.backgroundColor = "#000";
+              confirmButton.style.color = "#fff";
 
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
+              cancelButton.style.width = "100%";
+              cancelButton.style.margin = "5px 0";
+              cancelButton.style.border = "1px solid #000";
+              cancelButton.style.borderRadius = "0.25rem";
+              cancelButton.style.color = "#000";
+
+              if (window.innerWidth <= 768) {
+                confirmButton.style.width = "100%";
+                cancelButton.style.width = "100%";
+              } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+                confirmButton.style.width = "150px";
+                cancelButton.style.width = "150px";
+              }
+            },
+          });
+
+          if (result.isConfirmed) {
+            const name = categoryNameInput.value;
+            const description = categoryDescriptionInput.value;
+            const categoryId = id;
+
+            try {
+              const response = await fetch(`/admin/categories/${categoryId}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, description }),
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${errorData.message || "Unknown error"}`);
+              }
+
+              const data = await response.json();
+
+              if (data.categoryDetails) {
+                await Swal.fire({
+                  title: "Edited!",
+                  text: `Successfully updated category ${data.categoryDetails.name} details`,
+                  icon: "success",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
+                categoryNameInput.value = "";
+                categoryDescriptionInput.value = "";
+                createCategoryFormButton.style.display = "block";
+                saveChangesCategoryFormButton.style.display = "none";
+
+                cancelChangesCategoryFormButton.style.display = "none";
+
+                window.location.reload();
+              }
+            } catch (error) {
+              console.error("Error:", error.message);
+              await Swal.fire({
+                title: `${error.categoryNameExists ? "Error!" : "Info"}`,
+                text: `${error.message || "Please try again."}`,
+                icon: `${error.categoryNameExists ? "error" : "info"}`,
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
             }
-
-            const data = await response.json();
-
-            if (data.categoryDetails) {
-              sessionStorage.setItem(
-                "successMessage",
-                "Category has been updated successfully!"
-              );
-              sessionStorage.setItem("categoryName", name);
-
-              categoryNameInput.value = "";
-              categoryDescriptionInput.value = "";
-              createCategoryFormButton.style.display = "block";
-              saveChangesCategoryFormButton.style.display = "none";
-
-              cancelChangesCategoryFormButton.style.display = "none";
-
-              window.location.reload();
-            }
-          } catch (error) {
-            console.error("Error:", error.message);
-
-            await Swal.fire({
-              title: "Error!",
-              text: `There was a problem updating the category: ${error.message}`,
-              icon: "error",
-              toast: true,
-              position: "top-right",
-              showConfirmButton: false,
-              timerProgressBar: true,
-              timer: 3000,
-            });
           }
-        }
-      });
+        },
+        { once: true }
+      );
 
       cancelChangesCategoryFormButton.addEventListener("click", () => {
         categoryNameInput.value = "";
@@ -783,125 +771,107 @@
       saveChangesBrandFormButton.style.display = "block";
       cancelChangesBrandFormButton.style.display = "block";
 
-      saveChangesBrandFormButton.addEventListener("click", async (event) => {
-        event.preventDefault();
+      saveChangesBrandFormButton.addEventListener(
+        "click",
+        async (event) => {
+          event.preventDefault();
 
-        const isValidateBrandName = validateBrandName();
-        const brandName = brandNameInput.value.trim();
+          const isValidateBrandName = validateBrandName();
+          const brandName = brandNameInput.value.trim();
 
-        if (!isValidateBrandName) {
-          return;
-        }
-        const result = await Swal.fire({
-          title: "Confirm Changes",
-          text: "Are you sure you want to save these changes? This action cannot be undone.",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, save changes",
-          cancelButtonText: "No, cancel",
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#ffffff",
-          didOpen: () => {
-            const confirmButton = Swal.getConfirmButton();
-            const cancelButton = Swal.getCancelButton();
-
-            confirmButton.style.width = "100%";
-            confirmButton.style.margin = "5px 0";
-            confirmButton.style.border = "1px solid #000";
-            confirmButton.style.borderRadius = "0.25rem";
-            confirmButton.style.backgroundColor = "#000";
-            confirmButton.style.color = "#fff";
-
-            cancelButton.style.width = "100%";
-            cancelButton.style.margin = "5px 0";
-            cancelButton.style.border = "1px solid #000";
-            cancelButton.style.borderRadius = "0.25rem";
-            cancelButton.style.color = "#000";
-
-            if (window.innerWidth <= 768) {
-              confirmButton.style.width = "100%";
-              cancelButton.style.width = "100%";
-            } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
-              confirmButton.style.width = "150px";
-              cancelButton.style.width = "150px";
-            }
-          },
-        });
-        const bExists = await brandExists(brandName, id);
-
-        if (result.isConfirmed) {
-          try {
-            if (bExists) {
-              Swal.fire({
-                title: "Brand Exists!",
-                text: "A brand with this name already exists.",
-                icon: "warning",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
-              return;
-            }
-            const name = brandNameInput.value;
-            const brandId = id;
-
-            const response = await fetch(`/admin/categories-brands`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name, brandId }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-
-            const data = await response.json();
-
-            if (data.brandDetails) {
-              sessionStorage.setItem(
-                "successMessage",
-                "Brand has been updated successfully!"
-              );
-              sessionStorage.setItem("brandName", name);
-
-              brandNameInput.value = "";
-              createBrandFormButton.style.display = "block";
-              saveChangesBrandFormButton.style.display = "none";
-              cancelChangesBrandFormButton.style.display = "none";
-
-              window.location.reload();
-            } else {
-              Swal.fire({
-                title: "Error!",
-                text:
-                  data.errorMessage ||
-                  "There was a problem updating the brand.",
-                icon: "error",
-                toast: true,
-                position: "top-right",
-                showConfirmButton: false,
-                timerProgressBar: true,
-                timer: 3000,
-              });
-            }
-          } catch (error) {
-            Swal.fire({
-              title: "Error!",
-              text: `There was a problem updating the brand: ${error.message}`,
-              icon: "error",
-              toast: true,
-              position: "top-right",
-              showConfirmButton: false,
-              timerProgressBar: true,
-              timer: 3000,
-            });
+          if (!isValidateBrandName) {
+            return;
           }
-        }
-      });
+          const result = await Swal.fire({
+            title: "Confirm Changes",
+            text: "Are you sure you want to save these changes? This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, save changes",
+            cancelButtonText: "No, cancel",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#ffffff",
+            didOpen: () => {
+              const confirmButton = Swal.getConfirmButton();
+              const cancelButton = Swal.getCancelButton();
+
+              confirmButton.style.width = "100%";
+              confirmButton.style.margin = "5px 0";
+              confirmButton.style.border = "1px solid #000";
+              confirmButton.style.borderRadius = "0.25rem";
+              confirmButton.style.backgroundColor = "#000";
+              confirmButton.style.color = "#fff";
+
+              cancelButton.style.width = "100%";
+              cancelButton.style.margin = "5px 0";
+              cancelButton.style.border = "1px solid #000";
+              cancelButton.style.borderRadius = "0.25rem";
+              cancelButton.style.color = "#000";
+
+              if (window.innerWidth <= 768) {
+                confirmButton.style.width = "100%";
+                cancelButton.style.width = "100%";
+              } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+                confirmButton.style.width = "150px";
+                cancelButton.style.width = "150px";
+              }
+            },
+          });
+
+          if (result.isConfirmed) {
+            try {
+              const name = brandNameInput.value;
+              const brandId = id;
+
+              const response = await fetch(`/admin/brands/${brandId}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name }),
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${errorData.message || "Unknown error"}`);
+              }
+              const data = await response.json();
+
+              if (data.brandDetails) {
+                await Swal.fire({
+                  title: "Edited!",
+                  text: `Successfully updated brand ${data.brandDetails.name} details`,
+                  icon: "success",
+                  toast: true,
+                  position: "top-right",
+                  showConfirmButton: false,
+                  timerProgressBar: true,
+                  timer: 3000,
+                });
+                brandNameInput.value = "";
+                createBrandFormButton.style.display = "block";
+                saveChangesBrandFormButton.style.display = "none";
+                cancelChangesBrandFormButton.style.display = "none";
+
+                window.location.reload();
+              }
+            } catch (error) {
+              await Swal.fire({
+                title: `${error.brandNameExists ? "Error!" : "Info"}`,
+                text: `${error.message || "Please try again."}`,
+                icon: `${error.brandNameExists ? "error" : "info"}`,
+                toast: true,
+                position: "top-right",
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000,
+              });
+              window.location.reload();
+            }
+          }
+        },
+        { once: true }
+      );
       cancelChangesBrandFormButton.addEventListener("click", () => {
         brandNameInput.value = "";
         createBrandFormButton.style.display = "block";
@@ -956,197 +926,132 @@
 
     brandNameInput.addEventListener("input", validateBrandName);
 
-    //checking for existing category
-    const categoryExists = async (categoryName, id) => {
-      try {
-        const encodedCName = encodeURIComponent(categoryName);
+    formDataCreateCategory.addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
 
-        const response = await fetch(
-          `/admin/categories-brands-exists?encodedCName=${encodedCName}${
-            id ? `&categoryId=${id}` : ""
-          }`,
-          {
-            method: "GET",
+        const isValidateCategoryName = validateCategoryName();
+        const isValidateCategoryDescription = validateCategoryDescription();
+
+        const categoryName = categoryNameInput.value.trim();
+
+        if (!(isValidateCategoryName && isValidateCategoryDescription)) {
+          return;
+        }
+
+        try {
+          event.preventDefault();
+
+          const isValidateCategoryName = validateCategoryName();
+          const isValidateCategoryDescription = validateCategoryDescription();
+
+          if (!(isValidateCategoryName && isValidateCategoryDescription)) {
+            return;
+          }
+
+          const response = await fetch("/admin/categories", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              name: categoryNameInput.value.trim(),
+              description: categoryDescriptionInput.value.trim(),
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${errorData.message || "Unknown error"}`);
           }
-        );
+          const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
+          await Swal.fire({
+            title: "Success!",
+            text: "Category created successfully.",
+            icon: "success",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timer: 3000,
+          });
 
-        return data.exists;
-      } catch (error) {
-        console.log(
-          `error while checking the category existence`,
-          error.message
-        );
+          categoryNameInput.value = "";
+          categoryDescriptionInput.value = "";
+          window.location.reload();
+        } catch (error) {
+          console.error("error checking category existence:", error);
 
-        throw error;
-      }
-    };
-
-    formDataCreateCategory.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const isValidateCategoryName = validateCategoryName();
-      const isValidateCategoryDescription = validateCategoryDescription();
-
-      const categoryName = categoryNameInput.value.trim();
-
-      if (!(isValidateCategoryName && isValidateCategoryDescription)) {
-        return;
-      }
-
-      try {
-        const cExists = await categoryExists(categoryName);
-
-        if (cExists) {
-          Swal.fire({
-            title: "Category Exists!",
-            text: "A category with this name already exists.",
-            icon: "warning",
+          await Swal.fire({
+            title: `${error.categoryNameExists ? "Error!" : "Info"}`,
+            text: `${error.message || "Please try again."}`,
+            icon: `${error.categoryNameExists ? "error" : "info"}`,
             toast: true,
             position: "top-right",
             showConfirmButton: false,
             timerProgressBar: true,
             timer: 3000,
           });
+          window.location.reload();
+        }
+      },
+      { once: true }
+    );
+
+    formDataCreateBrand.addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+        const isValidateBrandName = validateBrandName();
+        const brandName = brandNameInput.value.trim();
+
+        if (!isValidateBrandName) {
           return;
         }
-
-        formDataCreateCategory.submit();
-      } catch (error) {
-        console.error("error checking category existence:", error);
-
-        Swal.fire({
-          title: "Error",
-          text: "An error occurred while checking the category. Please try again.",
-          icon: "error",
-          toast: true,
-          position: "top-right",
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000,
-        });
-      }
-    });
-
-    //checking for existing brand
-
-    const brandExists = async (brandName, id) => {
-      try {
-        const encodedBName = encodeURIComponent(brandName);
-
-        const response = await fetch(
-          `/admin/categories-brands-exists?encodedBName=${encodedBName}${
-            id ? `&brandId=${id}` : ""
-          }`,
-          {
-            method: "GET",
+        try {
+          const response = await fetch("/admin/brands", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              name: brandName,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${errorData.message || "Unknown error"}`);
           }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        return data.exists;
-      } catch (error) {
-        console.log(
-          `error while checking the category existence`,
-          error.message
-        );
 
-        throw error;
-      }
-    };
-
-    formDataCreateBrand.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const isValidateBrandName = validateBrandName();
-      const brandName = brandNameInput.value.trim();
-
-      if (!isValidateBrandName) {
-        return;
-      }
-      try {
-        const bExists = await brandExists(brandName);
-
-        if (bExists) {
-          Swal.fire({
-            title: "Brand Exists!",
-            text: "A brand with this name already exists.",
-            icon: "warning",
+          await Swal.fire({
+            title: "Success!",
+            text: "Brand created successfully.",
+            icon: "success",
             toast: true,
             position: "top-right",
             showConfirmButton: false,
-            timerProgressBar: true,
             timer: 3000,
           });
-          return;
+
+          brandNameInput.value = "";
+          window.location.reload();
+        } catch (error) {
+          console.error("Error creating brand:", error);
+          await Swal.fire({
+            title: `${error.brandNameExists ? "Error!" : "Info"}`,
+            text: `${error.message || "Please try again."}`,
+            icon: `${error.brandNameExists ? "error" : "info"}`,
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timer: 3000,
+          });
         }
-
-        formDataCreateBrand.submit();
-      } catch (error) {
-        console.log(`error checking brand existence:`, error);
-
-        Swal.fire({
-          title: "Error",
-          text: "An error occurred while checking the brand. Please try again.",
-          icon: "error",
-          toast: true,
-          position: "top-right",
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000,
-        });
-      }
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const successMessage = sessionStorage.getItem("successMessage");
-      const brandName = sessionStorage.getItem("brandName");
-      const categoryName = sessionStorage.getItem("categoryName");
-
-      if (successMessage && brandName) {
-        Swal.fire({
-          text: `${successMessage} for ${brandName}`,
-          icon: "success",
-          toast: true,
-          position: "top-right",
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000,
-        });
-
-        // Clear the message after displaying
-        sessionStorage.removeItem("successMessage");
-        sessionStorage.removeItem("brandName");
-      }
-
-      if (successMessage && categoryName) {
-        Swal.fire({
-          title: successMessage,
-          text: `${successMessage} for ${categoryName}`,
-          icon: "success",
-          toast: true,
-          position: "top-right",
-          showConfirmButton: false,
-          timerProgressBar: true,
-          timer: 3000,
-        });
-
-        // Clear session storage
-        sessionStorage.removeItem("successMessage");
-        sessionStorage.removeItem("categoryName");
-      }
-    });
+      },
+      { once: true }
+    );
   </script>
 
   <%- include('../layouts/adminLayouts/footer') %>

@@ -140,39 +140,6 @@
   </div>
 </div>
 
-<style>
-  .swal1-cancel {
-    width: 100%;
-    margin: 5px 0;
-    color: #000 !important;
-    border: 1px solid #000 !important;
-    border-radius: 0.25rem !important;
-  }
-
-  .swal1-confirm {
-    background-color: #000;
-    color: #fff;
-    width: 100%;
-    margin: 5px 0;
-    border: 1px solid #000;
-    border-radius: 0.25rem;
-  }
-
-  @media (max-width: 768px) {
-    .swal1-confirm,
-    .swal1-cancel {
-      width: 100%;
-      margin: 5px 0;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 992px) {
-    .swal1-confirm,
-    .swal1-cancel {
-      width: 150px;
-    }
-  }
-</style>
 <main class="container my-5">
   <div class="row">
     <div class="col-lg-8">
@@ -269,11 +236,11 @@
                     Date()&&item?.product?.productOffer!==0&&item?.product?.productSalesPriceAfterOfferDiscount&&item?.product?.productOffer?.offerStatus)
                     { %>
                     <strong>Price:</strong>
-                    <%= item?.productSalesPriceAfterOfferDiscount %>
-                    <del> <%= item?.product?.salesPrice %> </del>
+                    <%= item?.productSalesPriceAfterOfferDiscount.toFixed(3) %>
+                    <del> <%= item?.product?.salesPrice.toFixed(3) %> </del>
                     <% } else { %>
                     <strong>Price:</strong>
-                    <%= item?.product?.salesPrice %> <% } %>
+                    <%= item?.product?.salesPrice.toFixed(3) %> <% } %>
                   </div>
                 </div>
               </div>
@@ -291,228 +258,8 @@
         >
           <i class="bi bi-plus-lg"></i> Add New Address
         </button>
-
-        <!-- for editing address starts-->
-        <div id="editContainer" style="display: none; margin-bottom: 16px">
-          <form id="editAddressForm">
-            <input type="hidden" value="address" />
-            <div class="mb-3">
-              <input
-                type="text"
-                id="addressNameInput"
-                class="form-control"
-                name="name"
-                placeholder="Name"
-              />
-              <span
-                id="editNameError"
-                class="error"
-                style="font-size: 0.9rem; color: red"
-              ></span>
-            </div>
-            <div class="mb-3">
-              <input
-                type="tel"
-                id="addressPhoneInput"
-                class="form-control"
-                name="phone"
-                placeholder="10-digit mobile number"
-              />
-              <span
-                id="editPhoneError"
-                class="error"
-                style="font-size: 0.9rem; color: red"
-              ></span>
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="addressPincodeInput"
-                class="form-control"
-                name="pincode"
-                placeholder="Pincode"
-              />
-              <span
-                id="editPincodeError"
-                class="error"
-                style="font-size: 0.9rem; color: red"
-              ></span>
-            </div>
-            <div class="row mb-3">
-              <div class="col">
-                <input
-                  type="text"
-                  id="addressLocalityInput"
-                  class="form-control"
-                  name="locality"
-                  placeholder="Locality"
-                />
-                <span
-                  id="editLocalityError"
-                  class="error"
-                  style="font-size: 0.9rem; color: red"
-                ></span>
-              </div>
-              <div class="col">
-                <textarea
-                  class="form-control"
-                  id="addressTextAreaInput"
-                  name="address"
-                  rows="3"
-                  placeholder="Address (Area and Street)"
-                ></textarea>
-                <span
-                  id="editAddressError"
-                  class="error"
-                  style="font-size: 0.9rem; color: red"
-                ></span>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="addressCityDistTownInput"
-                  name="cityDistTown"
-                  placeholder="City/District/Town"
-                />
-                <span
-                  id="editCityDistTownError"
-                  class="error"
-                  style="font-size: 0.9rem; color: red"
-                ></span>
-              </div>
-              <div class="col">
-                <select class="form-select" id="addressStateInput" name="state">
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                  <option value="Assam">Assam</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Chhattisgarh">Chhattisgarh</option>
-                  <option value="Goa">Goa</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Haryana">Haryana</option>
-                  <option value="Himachal Pradesh">Himachal Pradesh</option>
-                  <option value="Jharkhand">Jharkhand</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Manipur">Manipur</option>
-                  <option value="Meghalaya">Meghalaya</option>
-                  <option value="Mizoram">Mizoram</option>
-                  <option value="Nagaland">Nagaland</option>
-                  <option value="Odisha">Odisha</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Sikkim">Sikkim</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Telangana">Telangana</option>
-                  <option value="Tripura">Tripura</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                  <option value="Uttarakhand">Uttarakhand</option>
-                  <option value="West Bengal">West Bengal</option>
-                </select>
-                <span
-                  id="editStateError"
-                  class="error"
-                  style="font-size: 0.9rem; color: red"
-                ></span>
-              </div>
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="addressLandMarkInput"
-                class="form-control"
-                name="landMark"
-                placeholder="Landmark (Optional)"
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="tel"
-                id="addressAltPhoneInput"
-                class="form-control"
-                name="altPhone"
-                placeholder="Alternate Phone (Optional)"
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="email"
-                id="addressEmailInput"
-                class="form-control"
-                name="email"
-                placeholder="Email"
-              />
-              <span
-                id="editEmailError"
-                class="error"
-                style="font-size: 0.9rem; color: red"
-              ></span>
-            </div>
-            <label class="form-label">Address Type</label>
-            <div>
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="addressType"
-                  id="home"
-                  value="home"
-                />
-                <label class="form-check-label" for="home">Home</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="addressType"
-                  id="work"
-                  value="work"
-                />
-                <label class="form-check-label" for="work">Work</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="addressType"
-                  id="other"
-                  value="other"
-                />
-                <label class="form-check-label" for="other">Other</label>
-              </div>
-              <span
-                id="editAddressTypeError"
-                class="error"
-                style="font-size: 0.9rem; color: red"
-              ></span>
-            </div>
-            <button
-              type="submit"
-              id="saveChangesEditAddressFormButton"
-              class="btn btn-primary"
-            >
-              Save Address
-            </button>
-            <button
-              type="button"
-              id="cancelEditAddressFormButton"
-              class="btn btn-secondary"
-            >
-              Cancel
-            </button>
-          </form>
-        </div>
-
-        <!-- for editing address ends-->
-
         <div id="addAddressContainer" style="display: none">
-          <form id="addAddressForm" method="post" action="/checkout/address">
-            <input type="hidden" name="sourcePage" value="checkout" />
+          <form id="addAddressForm">
             <div class="mb-3">
               <input
                 type="text"
@@ -776,9 +523,7 @@
                             </svg>
                           </a>
                           <div class="dropdown-menu">
-                            <a
-                              onclick="editAddress('<%=address._id%>','<%= address.addressType %>','<%= address.name %>','<%= address.phone %>','<%= address.address %>','<%= address.locality %>','<%= address.cityDistTown %>','<%= address.state %>','<%= address.pincode %>','<%= address.landMark %>','<%= address.altPhone %>','<%= address.email %>')"
-                              class="dropdown-item"
+                            <a href="/address?view=edit&addressId=<%=address._id%>" class="dropdown-item"
                               >Edit info</a
                             >
                           </div>
@@ -875,6 +620,32 @@
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const applySwalButtonStyles = () => {
+      const confirmButton = Swal.getConfirmButton();
+      const cancelButton = Swal.getCancelButton();
+
+      confirmButton.style.width = "100%";
+      confirmButton.style.margin = "5px 0";
+      confirmButton.style.border = "1px solid #000";
+      confirmButton.style.borderRadius = "0.25rem";
+      confirmButton.style.backgroundColor = "#000";
+      confirmButton.style.color = "#fff";
+
+      cancelButton.style.width = "100%";
+      cancelButton.style.margin = "5px 0";
+      cancelButton.style.border = "1px solid #000";
+      cancelButton.style.borderRadius = "0.25rem";
+      cancelButton.style.color = "#000";
+
+      if (window.innerWidth <= 768) {
+        confirmButton.style.width = "100%";
+        cancelButton.style.width = "100%";
+      } else if (window.innerWidth > 768 && window.innerWidth <= 992) {
+        confirmButton.style.width = "150px";
+        cancelButton.style.width = "150px";
+      }
+    };
+
     //form validation ids for adding new address
     const nameInput = document.getElementById("name");
     const nameError = document.getElementById("nameError");
@@ -1064,7 +835,8 @@
       input.addEventListener("change", validateAddressType)
     );
 
-    formAddNewAddress.addEventListener("submit", (event) => {
+    formAddNewAddress.addEventListener("submit", async (event) => {
+      event.preventDefault();
       const isNameValid = validateName();
       const isPhoneValid = validatePhone();
       const isPincodeValid = validatePincode();
@@ -1088,21 +860,92 @@
           isAddressTypeValid
         )
       ) {
-        event.preventDefault();
+        return;
       } else {
-        console.log("Form is valid. Submitting");
+        try {
+          const result = await Swal.fire({
+            text: "Are you sure? You want to save these changes.",
+            showCancelButton: true,
+            confirmButtonColor: "#000000",
+            cancelButtonColor: "#ffffff",
+            confirmButtonText: "Yes, save it!",
+            cancelButtonText: "No, cancel!",
+            didOpen: () => {
+              applySwalButtonStyles();
+            },
+          });
+
+          if (result.isConfirmed) {
+            const address = {
+              addressType: document.querySelector(
+                'input[name="addressType"]:checked'
+              ).value,
+              name: nameInput.value.trim(),
+              phone: phoneInput.value.trim(),
+              address: addressInput.value.trim(),
+              locality: localityInput.value.trim(),
+              cityDistTown: cityDistTownInput.value.trim(),
+              state: stateInput.value,
+              pincode: pincodeInput.value.trim(),
+              landMark: document
+                .querySelector('input[name="landMark"]')
+                .value.trim(),
+              altPhone: document
+                .querySelector('input[name="altPhone"]')
+                .value.trim(),
+              email: emailInput.value.trim(),
+            };
+
+            const response = await fetch(`/address`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ address }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(`${errorData.message || "Unknown error"}`);
+            }
+            const data = await response.json();
+            await Swal.fire({
+              title: "Success!",
+              text: `Address Added successfully`,
+              icon: "success",
+              toast: true,
+              position: "top-right",
+              showConfirmButton: false,
+              timerProgressBar: true,
+              timer: 3000,
+            });
+            window.location.href = "/checkout";
+          }
+        } catch (error) {
+          console.error("Error adding address", error.message);
+          await Swal.fire({
+            title: "Error!",
+            text: `Error: ${
+              error.message || "There was an issue processing your request."
+            }`,
+            icon: "error",
+            toast: true,
+            position: "top-right",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+        }
       }
     });
 
     addAddressButton.addEventListener("click", () => {
       addAddressContainer.style.display = "block";
-
       addressList.style.display = "none";
     });
 
     cancelAddAddressFormButton.addEventListener("click", () => {
       addAddressContainer.style.display = "none";
-
       addressList.style.display = "block";
     });
 
@@ -1315,364 +1158,6 @@
 
       return selectedAddressId;
     }
-
-    const successMessage = sessionStorage.getItem("successMessage");
-
-    if (successMessage) {
-      Swal.fire({
-        title: "Success!",
-        text: successMessage,
-        icon: "success",
-        toast: true,
-        position: "top-right",
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 3000,
-      });
-
-      sessionStorage.removeItem("successMessage");
-    }
-    const displayMessage = (icon, message) => {
-      Swal.fire({
-        icon: icon,
-        text: message,
-        toast: true,
-        position: "top-right",
-        showConfirmButton: false,
-        timerProgressBar: true,
-        timer: 3000,
-      });
-    };
   });
-
-  const editAddress = (
-    id,
-    addressType,
-    addressName,
-    addressPhone,
-    address,
-    addressLocality,
-    addressCityDistTown,
-    addressState,
-    addressPincode,
-    addressLandMark,
-    addressAltPhone,
-    addressEmail
-  ) => {
-
-    const addressNameInput = document.getElementById("addressNameInput");
-    const addressPhoneInput = document.getElementById("addressPhoneInput");
-    const addressPincodeInput = document.getElementById("addressPincodeInput");
-    const addressLocalityInput = document.getElementById(
-      "addressLocalityInput"
-    );
-    const addressTextAreaInput = document.getElementById(
-      "addressTextAreaInput"
-    );
-    const addressCityDistTownInput = document.getElementById(
-      "addressCityDistTownInput"
-    );
-    const addressStateInput = document.getElementById("addressStateInput");
-    const addressLandMarkInput = document.getElementById(
-      "addressLandMarkInput"
-    );
-    const addressAltPhoneInput = document.getElementById(
-      "addressAltPhoneInput"
-    );
-    const addressEmailInput = document.getElementById("addressEmailInput");
-    const addressTypeHome = document.getElementById("home");
-    const addressTypeWork = document.getElementById("work");
-    const addressTypeOther = document.getElementById("other");
-
-    const editNameError = document.getElementById("editNameError");
-    const editPhoneError = document.getElementById("editPhoneError");
-    const editPincodeError = document.getElementById("editPincodeError");
-    const editLocalityError = document.getElementById("editLocalityError");
-    const editAddressError = document.getElementById("editAddressError");
-    const editCityDistTownError = document.getElementById(
-      "editCityDistTownError"
-    );
-    const editStateError = document.getElementById("editStateError");
-    const editEmailError = document.getElementById("editEmailError");
-    const editAddressTypeError = document.getElementById(
-      "editAddressTypeError"
-    );
-
-    const editContainer = document.getElementById("editContainer");
-
-    addressNameInput.value = addressName;
-    addressPhoneInput.value = addressPhone;
-    addressPincodeInput.value = addressPincode;
-    addressLocalityInput.value = addressLocality;
-    addressTextAreaInput.value = address;
-    addressCityDistTownInput.value = addressCityDistTown;
-    addressStateInput.value = addressState;
-    addressLandMarkInput.value = addressLandMark;
-    addressAltPhoneInput.value = addressAltPhone;
-    addressEmailInput.value = addressEmail;
-
-    if (addressType === "home") {
-      addressTypeHome.checked = true;
-    } else if (addressType === "work") {
-      addressTypeWork.checked = true;
-    } else {
-      addressTypeOther.checked = true;
-    }
-
-    if (editContainer.style.display === "none") {
-      editContainer.style.display = "block";
-      document.getElementById("addressList").style.display = "none";
-      document.getElementById("addAddressButton").style.display = "none";
-    } else {
-      editContainer.style.display = "none";
-      document.getElementById("addressList").style.display = "block";
-      document.getElementById("addAddressButton").style.display = "block";
-    }
-
-    const validateEditName = () => {
-      if (addressNameInput.value.trim() === "") {
-        editNameError.textContent = "* Name is required";
-        return false;
-      } else if (!/^[a-zA-Z\s]+$/.test(addressNameInput.value.trim())) {
-        editNameError.textContent = "* Name must contain only letters";
-        return false;
-      } else if (addressNameInput.value.trim().length < 2) {
-        editNameError.textContent = "* Name must be at least 2 characters long";
-        return false;
-      } else {
-        editNameError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditPhone = () => {
-      const phoneRegex = /^\d{10}$/;
-      if (addressPhoneInput.value.trim() === "") {
-        editPhoneError.textContent = "* Phone Number is required";
-        return false;
-      } else if (!phoneRegex.test(addressPhoneInput.value.trim())) {
-        editPhoneError.textContent = "* Enter a valid Phone Number";
-        return false;
-      } else {
-        editPhoneError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditPincode = () => {
-      const pincodeRegex = /^\d{6}$/;
-      if (addressPincodeInput.value.trim() === "") {
-        editPincodeError.textContent = "* Pincode is required";
-        return false;
-      } else if (!pincodeRegex.test(addressPincodeInput.value.trim())) {
-        editPincodeError.textContent = "* Enter a valid Pincode";
-        return false;
-      } else {
-        editPincodeError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditLocality = () => {
-      if (addressLocalityInput.value.trim() === "") {
-        editLocalityError.textContent = "* Locality is required";
-        return false;
-      } else if (addressLocalityInput.value.trim().length < 5) {
-        editLocalityError.textContent =
-          "* Locality must be at least 5 characters long";
-        return false;
-      } else if (!/^[a-zA-Z\s]+$/.test(addressLocalityInput.value.trim())) {
-        editLocalityError.textContent = "* Locality can only contain letters";
-        return false;
-      } else {
-        editLocalityError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditAddress = () => {
-      if (addressTextAreaInput.value.trim() === "") {
-        editAddressError.textContent = "* Address is required";
-        return false;
-      } else if (addressTextAreaInput.value.trim().length < 5) {
-        editAddressError.textContent =
-          "* Address must be at least 5 characters long";
-        return false;
-      } else {
-        editAddressError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditCityDistTown = () => {
-      if (addressCityDistTownInput.value.trim() === "") {
-        editCityDistTownError.textContent = "* City/District/Town is required";
-        return false;
-      } else {
-        editCityDistTownError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditState = () => {
-      if (addressStateInput.value === "") {
-        editStateError.textContent = "* State is required";
-        return false;
-      } else {
-        editStateError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditEmail = () => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (addressEmailInput.value.trim() === "") {
-        editEmailError.textContent = "* Email is required";
-        return false;
-      } else if (!emailRegex.test(addressEmailInput.value.trim())) {
-        editEmailError.textContent = "* Enter a valid Email";
-        return false;
-      } else {
-        editEmailError.textContent = "";
-        return true;
-      }
-    };
-
-    const validateEditAddressType = () => {
-      const isChecked = [
-        addressTypeHome,
-        addressTypeWork,
-        addressTypeOther,
-      ].some((input) => input.checked);
-      if (!isChecked) {
-        editAddressTypeError.textContent = "* Address Type is required";
-        return false;
-      } else {
-        editAddressTypeError.textContent = "";
-        return true;
-      }
-    };
-
-    // Attach validation to inputs
-    addressNameInput.addEventListener("input", validateEditName);
-    addressPhoneInput.addEventListener("input", validateEditPhone);
-    addressPincodeInput.addEventListener("input", validateEditPincode);
-    addressLocalityInput.addEventListener("input", validateEditLocality);
-    addressTextAreaInput.addEventListener("input", validateEditAddress);
-    addressCityDistTownInput.addEventListener(
-      "input",
-      validateEditCityDistTown
-    );
-    addressStateInput.addEventListener("change", validateEditState);
-    addressEmailInput.addEventListener("input", validateEditEmail);
-    [addressTypeHome, addressTypeWork, addressTypeOther].forEach((input) =>
-      input.addEventListener("change", validateEditAddressType)
-    );
-
-    const saveChangesEditAddressFormButton = document.getElementById(
-      "saveChangesEditAddressFormButton"
-    );
-
-    saveChangesEditAddressFormButton.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      // Perform all validation checks
-      const isNameValid = validateEditName();
-      const isPhoneValid = validateEditPhone();
-      const isPincodeValid = validateEditPincode();
-      const isLocalityValid = validateEditLocality();
-      const isAddressValid = validateEditAddress();
-      const isCityDistTownValid = validateEditCityDistTown();
-      const isStateValid = validateEditState();
-      const isEmailValid = validateEditEmail();
-      const isAddressTypeValid = validateEditAddressType();
-
-      if (
-        !(
-          isNameValid &&
-          isPhoneValid &&
-          isPincodeValid &&
-          isLocalityValid &&
-          isAddressValid &&
-          isCityDistTownValid &&
-          isStateValid &&
-          isEmailValid &&
-          isAddressTypeValid
-        )
-      ) {
-        return;
-      }
-
-      Swal.fire({
-        text: "Are you sure you want to save these changes?",
-        showCancelButton: true,
-        confirmButtonColor: "#000000",
-        cancelButtonColor: "#ffffff",
-        confirmButtonText: "Yes, save changes",
-        cancelButtonText: "No, cancel",
-        customClass: {
-          confirmButton: "swal1-confirm",
-          cancelButton: "swal1-cancel",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const updatedAddress = {
-            id,
-            addressType: document.querySelector(
-              'input[name="addressType"]:checked'
-            ).value,
-            name: addressNameInput.value,
-            phone: addressPhoneInput.value,
-            address: addressTextAreaInput.value,
-            locality: addressLocalityInput.value,
-            cityDistTown: addressCityDistTownInput.value,
-            state: addressStateInput.value,
-            pincode: addressPincodeInput.value,
-            landMark: addressLandMarkInput.value,
-            altPhone: addressAltPhoneInput.value,
-            email: addressEmailInput.value,
-          };
-
-          fetch(`/address/${id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ updatedAddress, id }),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Network response was not ok`);
-              }
-
-              return response.json();
-            })
-            .then((data) => {
-              window.location.reload();
-              sessionStorage.setItem(
-                `successMessage`,
-                `${data.updatedUserAddress.addressType} address edited successfully!`
-              );
-            })
-            .catch((error) => {
-              Swal.fire({
-                icon: "error",
-                text: `An error occurred: ${error.message}`,
-                confirmButtonText: "OK",
-                confirmButtonColor: "#000000",
-              });
-            });
-        }
-      });
-    });
-  };
-
-  document
-    .getElementById("cancelEditAddressFormButton")
-    .addEventListener("click", () => {
-      editContainer.style.display = "none";
-      document.getElementById("addressList").style.display = "block";
-      document.getElementById("addAddressButton").style.display = "block";
-    });
 </script>
 <%- include('../layouts/userLayouts/footer') %>

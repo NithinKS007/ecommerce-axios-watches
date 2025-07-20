@@ -252,8 +252,6 @@ const loadShowCase = async (req, res) => {
     sortby: sortbyData,
   } = req.query;
 
-  console.log("query", req.query);
-
   let pageNumber = parseInt(req.query.page) || 1;
   const perPageData = 9;
   let filter = {};

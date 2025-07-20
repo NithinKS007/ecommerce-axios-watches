@@ -21,9 +21,6 @@ const noCacheMid = require("../middleware/cacheClearMiddleWare");
 const handleReturnStatus = require("../controllers/handlers/handleReturnStatusAdmin");
 const { handleViewProductOffer } = require("../controllers/handlers/handleViewProductOfferAdmin");
 const { handleViewCoupon } = require("../controllers/handlers/handleViewCouponsAdmin");
-const softdeleteHandle = require("../controllers/handlers/softDeletehandle");
-const handleEditCategoryBrand = require("../controllers/handlers/handleEditCategoryBrand");
-const handleCategoryBrandExists = require("../controllers/handlers/handleExistCategoryBrand");
 const { handleViewOrdersAdmin } = require("../controllers/handlers/handleViewOrdersAdmin");
 const { handleViewCategoryOffer } = require("../controllers/handlers/handleViewCategoryOffer");
 const { handleViewProductsAdmin } = require("../controllers/handlers/handleViewProductsAdmin");
@@ -41,12 +38,16 @@ adminRoute.get("/dashboard",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,
 adminRoute.get("/customers",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,userController.loadCustomer);
 adminRoute.patch("/customers/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,userController.blockOrUnblockCustomer);
 
-// Brand and Category management
 adminRoute.get("/categories-brands",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.loadCategoryBrand);
-adminRoute.get("/categories-brands-exists",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleCategoryBrandExists.handleCategoryBrandExists);
-adminRoute.post("/categories-brands",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.addCategoryBrand);
-adminRoute.patch("/categories-brands",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,softdeleteHandle.handleSoftDelete);
-adminRoute.put("/categories-brands",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleEditCategoryBrand.handleEditCategoryBrand);
+// Brands
+adminRoute.post("/brands",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.addBrand);
+adminRoute.put("/brands/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.editBrand);
+adminRoute.patch("/brands/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.softDeleteBrand);
+
+// Categories
+adminRoute.post("/categories",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.addCategory);
+adminRoute.patch("/categories/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.softDeleteCategory);
+adminRoute.put("/categories/:id",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,categoryBrandController.editCategory);
 
 // Product management
 adminRoute.get("/products",noCacheMid.noCacheMiddleware,adminAuth.isAdminLogin,handleViewProductsAdmin);
